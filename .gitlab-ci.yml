@@ -1,0 +1,37 @@
+image: eicweb.phy.anl.gov:4567/containers/image_recipes/root_base:latest
+#
+stages:
+  - phase1
+  - phase2
+
+eic_docker:
+  stage: phase1
+  tags:
+     - eic0 docker
+  script:
+     - cd containers/docker
+     - make login
+     - make release 
+
+eic_singularity:
+  stage: phase2
+  tags:
+     - singularity
+  script:
+     - cp containers/singularity/eic.def .
+     - /bin/bash .gitlabci/setup.sh
+     - /bin/bash .gitlabci/build.sh eic.def
+     - mkdir -p build 
+     - cp eic.sif build/.
+     - cp eic.def build/.
+
+  # This is where you can save job artifacts
+  # https://docs.gitlab.com/ee/user/project/pipelines/job_artifacts.html
+  # You can specify the path to containers or the build folder to save.
+  # Don't forget to save your recipes too!
+  artifacts:
+      paths:
+        - build/eic.sif
+        - build/eic.def
+
+
