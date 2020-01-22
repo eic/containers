@@ -77,7 +77,9 @@ login: ## Auto login to AWS-ECR unsing aws-cli
 	@docker login $(REG_URL) -u $(REG_USER) -p $(REG_TOKEN)
 	echo "Login COMPLETE"
 
-release: build publish ## Make a release by building and publishing the `{version}` ans `latest` tagged containers to ECR
+release: build-nc publish ## Make a release by building and publishing the `{version}` ans `latest` tagged containers to ECR
+	@echo "Cleaning up"
+	docker rmi $(APP_NAME):latest
 
 release-cached: build publish ## Make a release by building and publishing the `{version}` ans `latest` tagged containers to ECR
 
