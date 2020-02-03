@@ -8,12 +8,7 @@ LABEL maintainer="Whitney Armstrong <warmstrong@anl.gov>" \
       base="dd4hep_base"
 
 
-ENV EPICS_ROOT="/usr/local/epics"                                         \
-    EPICS_BASE="/usr/local/epics/base"                                     \
-    PYTHONPATH="/usr/local/lib:${PYTHONPATH}"                              \
-    EPICS_HOST_ARCH="linux-x86_64"                                         \
-    PATH="${EPICS_ROOT}/bin:${EPICS_ROOT}/bin/${EPICS_HOST_ARCH}:${PATH}:" \
-    LD_LIBRARY_PATH="${EPICS_ROOT}/lib:${EPICS_BASE}/bin/${EPICS_HOST_ARCH}:${LD_LIBRARY_PATH}"
+ENV PYTHONPATH="/usr/local/lib:${PYTHONPATH}"                            
 
 #RUN source /usr/local/bin/thisroot.sh                                                     \
 #      && echo "  -------------------------------------------------"                            \

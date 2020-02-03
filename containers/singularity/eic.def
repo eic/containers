@@ -45,7 +45,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 # ddsim
 # ===================================
 %apprun ddsim
-  source /usr/local/bin/thisdd4hep.sh
+  . /usr/local/bin/thisdd4hep.sh
   ddsim "%@"
 
 %appenv ddsim
@@ -58,7 +58,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 # ddeve
 # =======================
 %apprun ddeve
-  source /usr/local/bin/thisdd4hep.sh
+  . /usr/local/bin/thisdd4hep.sh
   ddeve "$@"
 
 %appenv ddeve
@@ -71,7 +71,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 # root
 # =======================
 %apprun root
-  source /usr/local/bin/thisdd4hep.sh
+  . /usr/local/bin/thisdd4hep.sh
   root "$@"
 
 %appenv root
@@ -91,7 +91,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 # root-config
 # =======================
 %apprun root-config
-  source /usr/local/bin/thisdd4hep.sh
+  . /usr/local/bin/thisdd4hep.sh
   root-config "$@"
 
 %appenv root-config
@@ -105,7 +105,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 # rootbrowse
 # =======================
 %apprun rootbrowse
-  source /usr/local/bin/thisdd4hep.sh
+  . /usr/local/bin/thisdd4hep.sh
   rootbrowse "$@"
 
 %appenv rootbrowse
@@ -118,7 +118,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 # rootls
 # =======================
 %apprun rootls
-  source /usr/local/bin/thisdd4hep.sh
+  . /usr/local/bin/thisdd4hep.sh
   rootls "$@"
 
 %appenv rootls
@@ -131,7 +131,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 # hadd
 # =======================
 %apprun hadd
-  source /usr/local/bin/thisdd4hep.sh
+  . /usr/local/bin/thisdd4hep.sh
   hadd "$@"
 
 %appenv hadd
@@ -144,7 +144,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 # h2root
 # =======================
 %apprun h2root
-  source /usr/local/bin/thisdd4hep.sh
+  . /usr/local/bin/thisdd4hep.sh
   h2root "$@"
 
 %appenv h2root
@@ -157,7 +157,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 # xml2evio
 # =======================
 %apprun xml2evio
-  source /usr/local/bin/thisdd4hep.sh
+  . /usr/local/bin/thisdd4hep.sh
   xml2evio "$@"
 
 %appenv xml2evio
@@ -182,7 +182,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 # evioCat
 # =======================
 %apprun evioCat
-  source /usr/local/bin/thisdd4hep.sh
+  . /usr/local/bin/thisdd4hep.sh
   evioCat "$@"
 
 %appenv evioCat
