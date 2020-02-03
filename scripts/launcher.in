@@ -14,7 +14,7 @@ if [ -p /dev/stdin ]; then
 fi
 
 if [ ${piped_args} ]  ; then
-echo -e ${piped_args} | @SINGULARITY@ exec @OPT_BIND_DIRECTIVE@@INSTALL_LIB_DIR@/@CONTAINER@ @APP@ $@
+echo -e ${piped_args} | @SINGULARITY@ exec @OPT_BIND_DIRECTIVE@@INSTALL_LIB_DIR@/@CONTAINER@ @APP@_wrap $@
 else
-@SINGULARITY@ run --app @APP@ @OPT_BIND_DIRECTIVE@@INSTALL_LIB_DIR@/@CONTAINER@  $@
+@SINGULARITY@ exec @OPT_BIND_DIRECTIVE@@INSTALL_LIB_DIR@/@CONTAINER@ @APP@_wrap $@
 fi

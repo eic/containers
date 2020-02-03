@@ -49,7 +49,9 @@ find_program(SINGULARITY singularity)
 
 foreach(APP ${APPS})
   configure_file(launcher.in ${APP} @ONLY)
+  configure_file(wrapper.in ${APP}_wrap @ONLY)
   set(APPS_ABSOLUTE_PATH ${APPS_ABSOLUTE_PATH} "${CMAKE_CURRENT_BINARY_DIR}/${APP}")
+  set(APPS_ABSOLUTE_PATH ${APPS_ABSOLUTE_PATH} "${CMAKE_CURRENT_BINARY_DIR}/${APP}_wrap")
 endforeach ()
 
 ################################################################################
@@ -57,3 +59,5 @@ endforeach ()
 ################################################################################
 install(PROGRAMS ${APPS_ABSOLUTE_PATH}
   DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
+
+
