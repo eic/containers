@@ -11,7 +11,7 @@ eic_docker:
   script:
      - cd containers/docker
      - make login
-     - make release 
+     - make release-cached
 
 eic_singularity:
   stage: phase2
