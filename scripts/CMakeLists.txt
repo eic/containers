@@ -3,11 +3,11 @@
 ################################################################################
 
 set(APPS 
-  "analyzer"
+  "ddsim"
   "evio2xml"
   "evioCat"
   "eviocopy"
-  "hcana"
+  "ddeve"
   "root"
   "root-config"
   "rootbrowse"

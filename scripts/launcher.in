@@ -16,5 +16,5 @@ fi
 if [ ${piped_args} ]  ; then
 echo -e ${piped_args} | @SINGULARITY@ exec @OPT_BIND_DIRECTIVE@@INSTALL_LIB_DIR@/@CONTAINER@ @APP@ $@
 else
-@SINGULARITY@ exec @OPT_BIND_DIRECTIVE@@INSTALL_LIB_DIR@/@CONTAINER@ @APP@ $@
+@SINGULARITY@ run --app @APP@ @OPT_BIND_DIRECTIVE@@INSTALL_LIB_DIR@/@CONTAINER@  $@
 fi
