@@ -39,7 +39,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
 %runscript
   echo "Launching a shell in the Hall A/C container."
   echo "Use through singularity apps recommended (see help for more info)."
-  exec bash
+  exec "$@"
 
 # ===================================
 # ddsim
