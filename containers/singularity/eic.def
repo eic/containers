@@ -36,7 +36,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_container:latest
   export PATH=$EPICS_BASE/bin/$EPICS_HOST_ARCH:$PATH
   export LD_LIBRARY_PATH=$EPICS_BASE/lib/$EPICS_HOST_ARCH:$LD_LIBRARY_PATH
 
-%runscript
+%runscript -c /bin/bash
   echo "Launching a shell in the Hall A/C container."
   echo "Use through singularity apps recommended (see help for more info)."
   exec "$@"
