@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source /usr/local/bin/thisdd4hep.sh
 piped_args=
 if [ -p /dev/stdin ]; then
   # If we want to read the input line by line
