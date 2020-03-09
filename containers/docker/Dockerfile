@@ -15,7 +15,7 @@ ENV PYTHONPATH="/usr/local/lib:${PYTHONPATH}"
 RUN cd /tmp && git clone https://github.com/GenFit/GenFit.git \
       && mkdir -p /tmp/GenFit/build \
       && cd /tmp/GenFit/build \
-      && cmake ../.  \
-      && make -j20 \
+      && cmake ../.  -DCMAKE_CXX_STANDARD=17 \
+      && make VERBOSE=1 \
       && make install 
 
