@@ -19,3 +19,11 @@ RUN cd /tmp && git clone https://github.com/GenFit/GenFit.git \
       && make VERBOSE=1 \
       && make install 
 
+RUN cd /tmp && git clone git@eicweb.phy.anl.gov:EIC/GenFind.git \
+      && mkdir -p /tmp/GenFind/build \
+      && cd /tmp/GenFind/build \
+      && cmake ../.  -DCMAKE_CXX_STANDARD=17 \
+      && make VERBOSE=1 \
+      && make install 
+
+
