@@ -11,3 +11,11 @@ LABEL maintainer="Whitney Armstrong <warmstrong@anl.gov>" \
 ENV PYTHONPATH="/usr/local/lib:${PYTHONPATH}"                            
 
 #RUN source /usr/local/bin/thisroot.sh                                                     \
+
+RUN cd /tmp && git clone https://github.com/GenFit/GenFit.git \
+      && mkdir -p /tmp/GenFit/build \
+      && cd /tmp/GenFit/build \
+      && cmake ../.  \
+      && make -j20 \
+      && make install 
+
