@@ -12,6 +12,21 @@ ENV PYTHONPATH="/usr/local/lib:${PYTHONPATH}"
 
 #RUN source /usr/local/bin/thisroot.sh                                                     \
 
+RUN  cd /tmp \
+      && source /usr/local/bin/thisroot.sh \
+      && source /usr/local/bin/geant4.sh \
+      && git clone https://eicweb.phy.anl.gov/EIC/podio.git \
+      && mkdir -p podio/build && cd podio/build \
+      && cmake ../. -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_CXX_STANDARD=17 \
+      && make -j30  && make -j4 install \
+      && cd /tmp/podio/lcio2 && mkdir build && cd build \
+      && cmake ../. -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_CXX_STANDARD=17 \
+      && make -j30  && make -j4 install \
+      && cd /tmp/podio/lcio2_tools && mkdir build && cd build \
+      && cmake ../. -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_CXX_STANDARD=17 \
+      && make -j30  && make -j4 install \
+      && cd /tmp && rm -rf /tmp/podio
+
 RUN cd /tmp && git clone https://github.com/GenFit/GenFit.git \
       && mkdir -p /tmp/GenFit/build \
       && cd /tmp/GenFit/build \
