@@ -32,13 +32,15 @@ RUN cd /tmp && git clone https://github.com/GenFit/GenFit.git \
       && cd /tmp/GenFit/build \
       && cmake ../.  -DCMAKE_CXX_STANDARD=17 \
       && make VERBOSE=1 \
-      && make install 
+      && make -j4 install \
+      && cd /tmp && rm -rf /tmp/GenFit
 
 RUN cd /tmp && git clone https://eicweb.phy.anl.gov/EIC/GenFind.git \
       && mkdir -p /tmp/GenFind/build \
       && cd /tmp/GenFind/build \
       && cmake ../.  -DCMAKE_CXX_STANDARD=17 \
       && make VERBOSE=1 \
-      && make install 
+      && make -j4 install  \
+      && cd /tmp && rm -rf /tmp/GenFind
 
 
