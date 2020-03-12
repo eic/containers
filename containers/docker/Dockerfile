@@ -46,11 +46,11 @@ RUN  cd /tmp \
       && make -j30  && make -j4 install \
       && cd /tmp && rm -rf /tmp/podio
 
-RUN mkdir /usr/local/src && cd /usr/local/src \
-      && git clone https://github.com/GenFit/GenFit.git \
+RUN cd /tmp \
+      && git clone https://eicweb.phy.anl.gov/eic_tools/GenFit.git \
       && mkdir -p /tmp/GenFit/build \
       && cd /tmp/GenFit/build \
-      && cmake /usr/local/src/GenFit/.  -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_CXX_STANDARD=17 \
+      && cmake ../.  -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_CXX_STANDARD=17 \
       && make -j4  \
       && make -j4 install \
       && cd /tmp && rm -rf /tmp/GenFit
