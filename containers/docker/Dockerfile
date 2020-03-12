@@ -49,7 +49,7 @@ RUN  cd /tmp \
 RUN cd /tmp && git clone https://github.com/GenFit/GenFit.git \
       && mkdir -p /tmp/GenFit/build \
       && cd /tmp/GenFit/build \
-      && cmake ../.  -DCMAKE_CXX_STANDARD=17 \
+      && cmake ../.  -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_CXX_STANDARD=17 \
       && make VERBOSE=1 \
       && make -j4 install \
       && cd /tmp && rm -rf /tmp/GenFit
