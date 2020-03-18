@@ -1,6 +1,6 @@
 #!/bin/bash
 source /usr/local/bin/thisdd4hep.sh
-ROOT_INCLUDE_PATH=/usr/local/include:$ROOT_INCLUDE_PATH
+ROOT_INCLUDE_PATH=/usr/local/include:/usr/include/eigen3:$ROOT_INCLUDE_PATH
 piped_args=
 if [ -p /dev/stdin ]; then
   # If we want to read the input line by line
