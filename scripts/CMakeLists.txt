@@ -54,6 +54,11 @@ foreach(APP ${APPS})
   set(APPS_ABSOLUTE_PATH ${APPS_ABSOLUTE_PATH} "${CMAKE_CURRENT_BINARY_DIR}/${APP}_wrap")
 endforeach ()
 
+configure_file(container_dev.in container_dev @ONLY)
+configure_file(container_shell_wrap.in container_shell_wrap @ONLY)
+set(APPS_ABSOLUTE_PATH ${APPS_ABSOLUTE_PATH} "${CMAKE_CURRENT_BINARY_DIR}/container_dev")
+set(APPS_ABSOLUTE_PATH ${APPS_ABSOLUTE_PATH} "${CMAKE_CURRENT_BINARY_DIR}/container_shell_wrap")
+
 ################################################################################
 ## Install the launcher scripts to <prefix>/bin
 ################################################################################

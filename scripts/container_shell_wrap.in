@@ -1,0 +1,21 @@
+#!/bin/bash
+source /usr/local/bin/thisdd4hep.sh
+ROOT_INCLUDE_PATH=/usr/local/include:/usr/include/eigen3:$ROOT_INCLUDE_PATH
+piped_args=
+if [ -p /dev/stdin ]; then
+  # If we want to read the input line by line
+  while IFS= read line; do
+    #echo "Line: ${line}"
+    if [ -z "$piped_args" ]; then
+      piped_args="${line}"
+    else 
+      piped_args="${piped_args}\n${line}"
+    fi
+  done
+fi
+
+if [ ${piped_args} ]  ; then
+echo -e ${piped_args} | /usr/bin/bash $@
+else
+/usr/bin/bash $@
+fi
