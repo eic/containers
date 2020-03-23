@@ -10,15 +10,6 @@ LABEL maintainer="Whitney Armstrong <warmstrong@anl.gov>" \
 ENV PYTHONPATH="/usr/local/lib:${PYTHONPATH}"                            
 #RUN source /usr/local/bin/thisroot.sh                                                     \
 
-RUN cd /tmp  \
-      && git clone  https://eicweb.phy.anl.gov/EIC/NPDet.git \
-      && source /usr/local/bin/thisroot.sh \
-      && source /usr/local/bin/geant4.sh \
-      && source /usr/local/bin/thisdd4hep.sh \
-      && mkdir -p NPDet/build && cd NPDet/build \
-      && cmake ../. -DCMAKE_INSTALL_PREFIX=/usr/local  -DCMAKE_CXX_STANDARD=17 \
-      && make -j30  && make -j4 install \
-      && cd /tmp && rm -rf /tmp/NPDet 
 
 RUN cd /tmp \
       && git clone  https://gitlab.cern.ch/acts/acts-core.git \
@@ -62,5 +53,17 @@ RUN cd /tmp && git clone https://eicweb.phy.anl.gov/EIC/GenFind.git \
       && make VERBOSE=1 \
       && make -j4 install  \
       && cd /tmp && rm -rf /tmp/GenFind
+
+
+RUN cd /tmp  \
+      && git clone  https://eicweb.phy.anl.gov/EIC/NPDet.git \
+      && source /usr/local/bin/thisroot.sh \
+      && source /usr/local/bin/geant4.sh \
+      && source /usr/local/bin/thisdd4hep.sh \
+      && mkdir -p NPDet/build && cd NPDet/build \
+      && cmake ../. -DCMAKE_INSTALL_PREFIX=/usr/local  -DCMAKE_CXX_STANDARD=17 \
+      && make -j30  && make -j4 install \
+      && cd /tmp && rm -rf /tmp/NPDet 
+
 
 
