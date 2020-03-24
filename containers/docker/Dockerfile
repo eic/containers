@@ -55,7 +55,7 @@ RUN cd /tmp && git clone https://eicweb.phy.anl.gov/EIC/GenFind.git \
       && cd /tmp && rm -rf /tmp/GenFind
 
 
-RUN cd /tmp  \
+RUN cd /tmp             \
       && git clone  https://eicweb.phy.anl.gov/EIC/NPDet.git \
       && source /usr/local/bin/thisroot.sh \
       && source /usr/local/bin/geant4.sh \
