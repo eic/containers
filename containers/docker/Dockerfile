@@ -65,5 +65,13 @@ RUN cd /tmp             \
       && make -j30  && make -j4 install \
       && cd /tmp && rm -rf /tmp/NPDet 
 
+RUN cd /tmp \
+      && git clone https://gitlab.cern.ch/hepmc/HepMC3.git  \
+      && mkdir HepMC3/build && cd HepMC3/build \
+      && cmake ../. -DHEPMC3_ENABLE_ROOTIO=ON -DCMAKE_INSTALL_PREFIX=$HOME/stow/hepmc3 -DHEPMC3_BUILD_EXAMPLES=ON \
+      && make -j20 \
+      && make install  \
+      && cd /tmp && rm -rf /tmp/HepMC3
+
 
 
