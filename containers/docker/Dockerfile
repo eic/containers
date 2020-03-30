@@ -12,14 +12,19 @@ ENV PYTHONPATH="/usr/local/lib:${PYTHONPATH}"
 
 
 RUN cd /tmp \
-      && git clone  https://gitlab.cern.ch/acts/acts-core.git \
+      && git clone  https://github.com/acts-project/acts.git \
       && source /usr/local/bin/thisroot.sh \
       && source /usr/local/bin/geant4.sh \
       && source /usr/local/bin/thisdd4hep.sh \
-      && mkdir -p acts-core/build && cd acts-core/build \
-      && cmake ../. -DCMAKE_INSTALL_PREFIX=/usr/local  -DCMAKE_CXX_STANDARD=17 -DACTS_BUILD_DD4HEP_PLUGIN=ON \
+      && mkdir -p acts/build && cd acts/build \
+      && cmake ../. -DCMAKE_INSTALL_PREFIX=/usr/local  \
+                    -DCMAKE_CXX_STANDARD=17  \
+                    -DACTS_BUILD_DD4HEP_PLUGIN=ON  \
+                    -DACTS_BUILD_TGEO_PLUGIN=ON  \
+                    -DACTS_BUILD_IDENTIFICATION_PLUGIN=ON  \
+                    -DACTS_BUILD_DIGITIZATION_PLUGIN=ON \
       && make -j30  && make -j4 install \
-      && cd /tmp && rm -rf /tmp/acts-core 
+      && cd /tmp && rm -rf /tmp/acts 
 
 
 RUN  cd /tmp \
