@@ -91,13 +91,13 @@ publish-latest: ## Publish the `latest` taged container to ECR
 	@echo 'publish latest to $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME)'
 	docker tag $(APP_NAME):latest $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
 	docker push $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
-	docker rmi  $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
+	#docker rmi  $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
 
 publish-version: tag-version ## Publish the `{version}` taged container to ECR
 	@echo 'publish latest to $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(VERSION)'
 	docker tag $(APP_NAME):latest $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(VERSION)
 	docker push $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(VERSION)
-	docker rmi  $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(VERSION)
+	#docker rmi  $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(VERSION)
 
 push: login ## push after login @echo 'push latest to $(REG_NAME)/$(REPO)/$(APP_NAME):latest'
 	docker tag  $(APP_NAME):latest $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
