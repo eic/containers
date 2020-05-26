@@ -16,7 +16,7 @@ eic_docker:
 eic_singularity:
   stage: phase2
   tags:
-     - singularity
+     - eic0 docker
   script:
      - cp containers/singularity/eic.def .
      - /bin/bash .gitlabci/setup.sh
