@@ -10,6 +10,12 @@ LABEL maintainer="Whitney Armstrong <warmstrong@anl.gov>" \
 ENV PYTHONPATH="/usr/local/lib:${PYTHONPATH}"                            
 #RUN source /usr/local/bin/thisroot.sh                                                     \
 
+RUN cd /tmp \
+    && wget http://lcgapp.cern.ch/project/simu/HepPDT/download/HepPDT-3.04.01.tar.gz \
+    && tar -zxf HepPDT-3.04.01.tar.gz \
+    && cd HepPDT-3.04.01 \
+    && ./configure && make -j10 && make install \
+    && cd /tmp  && rm -r HepPDT-3.04.01
 
 RUN cd /tmp \
       && git clone  https://github.com/acts-project/acts.git \
