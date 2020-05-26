@@ -132,9 +132,9 @@ if [ -f "$recipe" ]; then
     imagefile="`basename ${recipe} .def`.sif"
 
     echo "Creating $imagefile using $recipe..."
-    mkdir -p $HOME/tmp
+    mkdir -p /home/tmp_singularity
     
-    TMPDIR=$HOME/tmp singularity build $imagefile $recipe
+    TMPDIR=/home/tmp_singularity singularity build $imagefile $recipe
 
     # If the image is successfully built, test it and upload (examples)
   
