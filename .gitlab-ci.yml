@@ -18,6 +18,8 @@ eic_singularity:
   stage: phase2
   tags:
      - singularity
+  only:
+     - tags
   script:
      - cp containers/singularity/eic.def .
      - /bin/bash .gitlabci/setup.sh
