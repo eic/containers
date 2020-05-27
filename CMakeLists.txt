@@ -4,7 +4,7 @@
 ## PROJECT: hallac_container
 ################################################################################
 cmake_minimum_required (VERSION 3.8)
-project (eic_container VERSION 1.2.1)
+project (eic_container VERSION 1.2.2)
 
 ################################################################################
 ## The name of our container
