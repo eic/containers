@@ -14,8 +14,17 @@ RUN cd /tmp \
     && wget http://lcgapp.cern.ch/project/simu/HepPDT/download/HepPDT-3.04.01.tar.gz \
     && tar -zxf HepPDT-3.04.01.tar.gz \
     && cd HepPDT-3.04.01 \
-    && ./configure && make -j10 && make install \
+    && ./configure && make -j30 && make install \
     && cd /tmp  && rm -r HepPDT-3.04.01
+
+RUN cd /tmp \
+      && git clone https://gitlab.cern.ch/hepmc/HepMC3.git  \
+      && mkdir HepMC3/build && cd HepMC3/build \
+      && cmake ../. -DHEPMC3_ENABLE_ROOTIO=ON -DCMAKE_INSTALL_PREFIX=$HOME/stow/hepmc3 -DHEPMC3_BUILD_EXAMPLES=ON \
+      && make -j20 \
+      && make install  \
+      && cd /tmp && rm -rf /tmp/HepMC3
+
 
 RUN cd /tmp \
       && git clone  https://github.com/acts-project/acts.git \
@@ -33,7 +42,6 @@ RUN cd /tmp \
                     -DACTS_BUILD_DIGITIZATION_PLUGIN=ON \
       && make -j30  && make -j4 install \
       && cd /tmp && rm -rf /tmp/acts 
-
 
 RUN  cd /tmp \
       && source /usr/local/bin/thisroot.sh \
@@ -77,14 +85,6 @@ RUN cd /tmp             \
       && cmake ../. -DCMAKE_INSTALL_PREFIX=/usr/local  -DCMAKE_CXX_STANDARD=17 \
       && make -j30  && make -j4 install \
       && cd /tmp && rm -rf /tmp/NPDet 
-
-RUN cd /tmp \
-      && git clone https://gitlab.cern.ch/hepmc/HepMC3.git  \
-      && mkdir HepMC3/build && cd HepMC3/build \
-      && cmake ../. -DHEPMC3_ENABLE_ROOTIO=ON -DCMAKE_INSTALL_PREFIX=$HOME/stow/hepmc3 -DHEPMC3_BUILD_EXAMPLES=ON \
-      && make -j20 \
-      && make install  \
-      && cd /tmp && rm -rf /tmp/HepMC3
 
 
 
