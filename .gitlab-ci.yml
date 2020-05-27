@@ -1,4 +1,4 @@
-image: eicweb.phy.anl.gov:4567/containers/image_recipes/root_base:latest
+image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 #
 stages:
   - phase1
