@@ -14,6 +14,7 @@ eic_docker:
      - make release-cached
 
 eic_singularity:
+  image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
   stage: phase2
   tags:
      - eic0 docker
