@@ -27,7 +27,9 @@ RUN cd /tmp \
                     -DCMAKE_CXX_STANDARD=17  \
                     -DACTS_BUILD_DD4HEP_PLUGIN=ON  \
                     -DACTS_BUILD_TGEO_PLUGIN=ON  \
+                    -DACTS_BUILD_JSON_PLUGIN=ON  \
                     -DACTS_BUILD_IDENTIFICATION_PLUGIN=ON  \
+                    -DACTS_BUILD_FATRAS_PLUGIN=ON  \
                     -DACTS_BUILD_DIGITIZATION_PLUGIN=ON \
       && make -j30  && make -j4 install \
       && cd /tmp && rm -rf /tmp/acts 
