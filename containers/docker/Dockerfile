@@ -26,6 +26,15 @@ RUN cd /tmp \
       && make install  \
       && cd /tmp && rm -rf /tmp/HepMC3
 
+RUN cd /tmp \
+      && wget http://home.thep.lu.se/~torbjorn/pythia8/pythia8244.tgz \
+      && tar -zxf pythia8244.tgz && cd pythia8244 \
+      && ./configure --prefix=/usr/local --enable-shared --enable-64bit --with-root --with-hepmc3 \
+      && make -j30 \
+      && make install  \
+      && cd /tmp && rm -rf /tmp/pythia8244
+
+
 
 RUN cd /tmp \
       && git clone  https://github.com/acts-project/acts.git \
