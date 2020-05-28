@@ -27,7 +27,7 @@ RUN cd /tmp \
       && cd /tmp && rm -rf /tmp/HepMC3
 
 RUN cd /tmp \
-      && sudo apt-get update && sudo apt-get install -y rsync \
+      && apt-get update && sudo apt-get install -y rsync \
       && wget http://home.thep.lu.se/~torbjorn/pythia8/pythia8244.tgz \
       && tar -zxf pythia8244.tgz && cd pythia8244 \
       && ./configure --prefix=/usr/local --enable-shared --enable-64bit --with-root --with-hepmc3 \
