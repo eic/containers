@@ -11,7 +11,7 @@ eic_docker:
   script:
      - cd containers/docker
      - make login
-     - make release-cached
+     - make release
 
 eic_singularity:
   image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
