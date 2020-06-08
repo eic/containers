@@ -35,6 +35,21 @@ RUN cd /tmp \
       && make install  \
       && cd /tmp && rm -rf /tmp/pythia8244
 
+RUN apt-get update && apt-get remove -y libtbb-dev libtbb2   \
+      && cd /tmp \
+      && git clone https://eicweb.phy.anl.gov/eic_tools/DD4hep.git \
+      && source /usr/local/bin/thisroot.sh \
+      && source /usr/local/bin/geant4.sh \
+      && mkdir -p DD4hep/build && cd DD4hep/build \
+      && cmake ../. -DCMAKE_INSTALL_PREFIX=/usr/local  \
+                    -DCMAKE_CXX_STANDARD=17  \
+                    -DDD4HEP_USE_GEANT4=ON \
+                    -DDD4HEP_USE_HEPMC3=ON \
+      && make -j30  && make -j4 install \
+      && cd /tmp && rm -rf /tmp/DD4hep  \
+      && apt-get update && apt-get install -y libtbb-dev libtbb2  \
+      && apt-get clean -y 
+ 
 
 
 RUN cd /tmp \
