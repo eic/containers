@@ -112,5 +112,22 @@ RUN cd /tmp             \
       && make -j30  && make -j4 install \
       && cd /tmp && rm -rf /tmp/NPDet 
 
+RUN cd /tmp  \
+      && apt-get install -y libtbb-dev \
+      && source /usr/local/bin/thisroot.sh \
+      && source /usr/local/bin/geant4.sh \
+      && source /usr/local/bin/thisdd4hep.sh \
+      && git clone https://eicweb.phy.anl.gov/eic_tools/gaudi.git \
+      && mkdir -p gaudi/build && cd gaudi/build \
+      && cmake --version \
+      && cmake ../. -DBoost_NO_BOOST_CMAKE=TRUE  \
+              -DCMAKE_INSTALL_PREFIX=/usr/local  \
+              -DGAUDI_USE_SYSTEM_CPP_GSL=OFF \
+              -DGAUDI_USE_SYSTEM_RANGES_V3=OFF \
+              -DCMAKE_CXX_STANDARD=17 \
+      && make -j30  && make -j4 install \
+      && cd /tmp && rm -rf /tmp/gaudi 
+
+
 
 
