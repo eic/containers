@@ -10,9 +10,9 @@ LABEL maintainer="Whitney Armstrong <warmstrong@anl.gov>" \
 ENV PYTHONPATH="/usr/local/lib:${PYTHONPATH}"                            
 #RUN source /usr/local/bin/thisroot.sh                                                     \
 
+COPY HepPDT-3.04.01.tar.gz /tmp/HepPDT-3.04.01.tar.gz
 RUN cd /tmp \
     && apt-get update && apt-get install -y libtbb-dev libtbb2  \
-    && wget http://lcgapp.cern.ch/project/simu/HepPDT/download/HepPDT-3.04.01.tar.gz \
     && tar -zxf HepPDT-3.04.01.tar.gz \
     && cd HepPDT-3.04.01 \
     && ./configure && make -j30 && make install \
