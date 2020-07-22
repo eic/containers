@@ -15,7 +15,7 @@ RUN cd /tmp \
     && apt-get update && apt-get install -y libtbb-dev libtbb2  \
     && tar -zxf HepPDT-3.04.01.tar.gz \
     && cd HepPDT-3.04.01 \
-    && ./configure && make -j30 && make install \
+    && ./configure --prefix=/usr/local && make -j30 && make install \
     && cd /tmp  && rm -r HepPDT-3.04.01
 
 RUN cd /tmp \
