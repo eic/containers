@@ -114,7 +114,7 @@ RUN cd /tmp             \
 
 RUN cd /tmp  \
       && apt-get install -y libtbb-dev \
-      && pip install six \
+      && pip3 install six \
       && source /usr/local/bin/thisroot.sh \
       && source /usr/local/bin/geant4.sh \
       && source /usr/local/bin/thisdd4hep.sh \
