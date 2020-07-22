@@ -126,7 +126,7 @@ RUN cd /tmp  \
               -DGAUDI_USE_SYSTEM_CPP_GSL=OFF \
               -DGAUDI_USE_SYSTEM_RANGES_V3=OFF \
               -DCMAKE_CXX_STANDARD=17 \
-      && make -j3  && make -j4 install \
+      && make VERBOSE=1  && make -j4 install \
       && cd /tmp && rm -rf /tmp/gaudi 
 
 
