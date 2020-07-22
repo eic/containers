@@ -1,0 +1,26 @@
+spack:
+  specs:
+    - heppdt@3.04.01
+    - cmake@3.17.3
+    - fmt@6.1.2 cxxstd=17
+    - spdlog@1.5.0
+    - nlohmann-json
+    - python@3.7.7
+    - py-pip
+    - py-numpy
+    - py-scipy
+    - py-pyyaml
+    - clhep@2.4.1.3 cxxstd=17
+    - xrootd@4.12.3 cxxstd=17 +python
+    - root@6.22.00 cxxstd=17 +dataframe +fftw +fortran +gdml +http +mlp +pythia8 +root7 +tmva +vc +xrootd +ssl -opengl ^xrootd@4.12.3 cxxstd=17 +python
+    - hepmc3@3.2.2 +python +rootio
+    - geant4@10.6.2 cxxstd=17 opengl=on python=on vecgeom=on x11=on
+    - podio@0.10.0
+    - dd4hep@1.12.1 +geant4
+    - gaudi@33.1
+    - acts@0.24.0 +dd4hep +digitization +json +tgeo +identification
+  config:
+    install_tree: /usr/local/opt
+  view: /usr/local
+
+
