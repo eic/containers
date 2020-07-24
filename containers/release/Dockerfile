@@ -24,7 +24,11 @@ COPY --from=builder /opt/spack-environment /opt/spack-environment
 COPY --from=builder /opt/software /opt/software
 COPY --from=builder /opt/view /opt/view
 COPY --from=builder /etc/profile.d/z10_spack_environment.sh /etc/profile.d/z10_spack_environment.sh
+## Setup global bashrc, useful for singularity
 COPY --from=builder /root/.bashrc /etc/bash.bashrc
 
-ENTRYPOINT ["/bin/bash", "--rcfile", "/etc/profile", "-l", "-c"]
-CMD ["bash"]
+## make sure we have the entrypoints setup correctly
+ENTRYPOINT []
+CMD ["bash", "--rcfile", "/etc/profile", "-l"]
+USER 0
+WORKDIR /
