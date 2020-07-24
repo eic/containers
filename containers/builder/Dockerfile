@@ -51,4 +51,5 @@ RUN find -L /opt/view/* -type f -exec readlink -f '{}' \; | \
 RUN cd /opt/spack-environment && \
     spack env activate --sh -d . >> /etc/profile.d/z10_spack_environment.sh
 
-ENTRYPOINT ["/bin/bash", "--rcfile", "/etc/profile", "-l"]
+ENTRYPOINT ["/bin/bash", "--rcfile", "/etc/profile", "-l", "-c"]
+CMD ["bash"]

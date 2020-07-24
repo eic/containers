@@ -26,4 +26,5 @@ COPY --from=builder /opt/view /opt/view
 COPY --from=builder /etc/profile.d/z10_spack_environment.sh /etc/profile.d/z10_spack_environment.sh
 COPY --from=builder /root/.bashrc /etc/bash.bashrc
 
-ENTRYPOINT ["/bin/bash", "--rcfile", "/etc/profile", "-l"]
+ENTRYPOINT ["/bin/bash", "--rcfile", "/etc/profile", "-l", "-c"]
+CMD ["bash"]
