@@ -49,6 +49,11 @@ RUN find -L /opt/view/* -type f -exec readlink -f '{}' \; | \
 
 # Modifications to the environment that are necessary to run
 RUN cd /opt/spack-environment && \
-    spack env activate --sh -d . >> /etc/profile.d/z10_spack_environment.sh
+    spack env activate --sh -d . >> /etc/profile.d/z10_spack_environment.sh && \
+    echo "export BINARY_TAG=x86_64-linux-gcc9-opt" >> /etc/profile.d/z10_spack_environment.sh
 
-ENTRYPOINT ["/bin/bash", "--rcfile", "/etc/profile", "-l"]
+## make sure we have the entrypoints setup correctly
+ENTRYPOINT []
+CMD ["bash", "--rcfile", "/etc/profile", "-l"]
+USER 0
+WORKDIR /

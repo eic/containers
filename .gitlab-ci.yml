@@ -30,7 +30,6 @@ eic_builder_singularity:
      - sodium dind
   only:
      - tags
-     - develop
   when: manual
   script:
      - cp containers/builder/eic_builder.def .
@@ -50,7 +49,6 @@ eic_singularity:
      - sodium dind
   only:
      - tags
-     - develop
   script:
      - cp containers/release/eic.def .
      - /bin/bash .gitlabci/setup.sh

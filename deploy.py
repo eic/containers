@@ -92,14 +92,14 @@ if __name__ == "__main__":
     ## Create our install prefix if needed and ensure it is writable
     args.prefix = os.path.abspath(args.prefix)
     if not args.module_path:
-        args.module_path = '{}/etc/modulefiles'.format(args.prefix)
+        args.module_path = os.path.abspath('{}/../../etc/modulefiles'.format(args.prefix))
     print('Install prefix:', args.prefix)
     print('Creating install prefix if needed...')
     bindir = '{}/bin'.format(args.prefix)
     libdir = '{}/lib'.format(args.prefix)
     libexecdir = '{}/libexec'.format(args.prefix)
     root_prefix = os.path.abspath('{}/..'.format(args.prefix))
-    moduledir = '{}/etc/modulefiles/{}'.format(root_prefix, PROJECT_NAME)
+    moduledir = '{}/{}'.format(args.module_path, PROJECT_NAME)
     for dir in [bindir, libdir, libexecdir, moduledir]:
         print(' -', dir)
         smart_mkdir(dir)
