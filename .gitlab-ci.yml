@@ -3,38 +3,62 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 stages:
   - phase1
   - phase2
+  - phase3
 
-eic_docker:
+eic_builder_docker:
   stage: phase1
   tags:
-     - eic0 docker
+     - sodium dind
   script:
-     - cd containers/docker
+     - cd containers/builder
+     - head Dockerfile
      - make login
-     - make release
+     - make release-cached
 
-eic_singularity:
-  image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
+eic_docker:
   stage: phase2
   tags:
-     - singularity
+     - sodium dind
+  script:
+     - cd containers/release
+     - make login
+     - make release-cached
+
+eic_builder_singularity:
+  stage: phase2
+  tags:
+     - sodium dind
   only:
      - tags
+     - develop
+  when: manual
   script:
-     - cp containers/singularity/eic.def .
+     - cp containers/builder/eic_builder.def .
+     - /bin/bash .gitlabci/setup.sh
+     - /bin/bash .gitlabci/build.sh eic_builder.def
+     - mkdir -p build 
+     - cp eic_builder.sif build/.
+     - cp eic_builder.def build/.
+  artifacts:
+      paths:
+        - build/eic_builder.sif
+        - build/eic_builder.def
+
+eic_singularity:
+  stage: phase3
+  tags:
+     - sodium dind
+  only:
+     - tags
+     - develop
+  script:
+     - cp containers/release/eic.def .
      - /bin/bash .gitlabci/setup.sh
      - /bin/bash .gitlabci/build.sh eic.def
      - mkdir -p build 
      - cp eic.sif build/.
      - cp eic.def build/.
-
-  # This is where you can save job artifacts
-  # https://docs.gitlab.com/ee/user/project/pipelines/job_artifacts.html
-  # You can specify the path to containers or the build folder to save.
-  # Don't forget to save your recipes too!
   artifacts:
       paths:
         - build/eic.sif
         - build/eic.def
-
-

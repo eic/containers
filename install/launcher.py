@@ -94,7 +94,7 @@ def make_launcher(app, container, bindir,
         libexecdir = bindir
 
     ## actual exe we want to run, default: same as app
-    exe=app
+    exe=exe
     
     ## paths
     launcher_path = '{}/{}'.format(bindir, app)
