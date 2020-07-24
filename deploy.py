@@ -22,42 +22,16 @@ from install.util import smart_mkdir, project_version, InvalidArgumentError
 ## Gitlab group and project/program name. 
 GROUP_NAME='containers'
 PROJECT_NAME='eic_container'
-PROGRAMS = [('container_dev', '/usr/bin/bash'),
-            'ddsim', 
-            'geoConverter',
-            'materialScan',
-            'geoDisplay',
-            'geoPluginRun',
-            'teveDisplay',
-            'ddeve',
-            'g4FromXML'
-            'geoDisplay',
-            'listcomponents',
-            'print_materials',
-            'dumpBfield',
-            'g4gdmlDisplay',
-            'geoPluginRun',
-            'materialBudget',
-            'pyddg4',
-            'dumpdetector',
-            'graphicalScan',
-            'root',
-            'root-config',
-            'rootbrowse',
-            'rootls',
-            'mongo',
-            'mongod',
-            'mongodump',
-            'mongoexport',
-            'mongoimport',
-            'mongostat']
+IMAGE_ROOT='eic'
+
+PROGRAMS = [('eic_shell', '/usr/bin/bash'),
+            'root', 
+            'ipython']
 
 ## URL for the current container (git tag will be filled in by the script)
-CONTAINER_URL = r'https://eicweb.phy.anl.gov/{group}/{project}/-/jobs/artifacts/{version}/raw/build/eic.sif?job=eic_singularity'
+CONTAINER_URL = r'https://eicweb.phy.anl.gov/{group}/{project}/-/jobs/artifacts/{version}/raw/build/{img}.sif?job={img}_singularity'
 
-CONTAINER_ENV=r'''source /usr/local/bin/thisdd4hep.sh
-ROOT_INCLUDE_PATH=/usr/local/include:/usr/include/eigen3:$ROOT_INCLUDE_PATH
-'''
+CONTAINER_ENV=r'''source /etc/profile'''
 
 ## Singularity bind directive
 BIND_DIRECTIVE= '-B {0}:{0}'
@@ -86,6 +60,10 @@ if __name__ == "__main__":
             '-m', '--module-path',
             dest='module_path',
             help='(opt.) Root module path where you want to install a modulefile. D: <prefix>/../../etc/modulefiles')
+    parser.add_argument(
+            '--install-builder',
+            dest='builder',
+            help='(opt.) Install fat builder image, instead of normal slim image')
 
     args = parser.parse_args()
 
@@ -114,14 +92,14 @@ if __name__ == "__main__":
     ## Create our install prefix if needed and ensure it is writable
     args.prefix = os.path.abspath(args.prefix)
     if not args.module_path:
-        args.module_path = '{}/etc/modulefiles'.format(args.prefix)
+        args.module_path = os.path.abspath('{}/../../etc/modulefiles'.format(args.prefix))
     print('Install prefix:', args.prefix)
     print('Creating install prefix if needed...')
     bindir = '{}/bin'.format(args.prefix)
     libdir = '{}/lib'.format(args.prefix)
     libexecdir = '{}/libexec'.format(args.prefix)
     root_prefix = os.path.abspath('{}/..'.format(args.prefix))
-    moduledir = '{}/etc/modulefiles/{}'.format(root_prefix, PROJECT_NAME)
+    moduledir = '{}/{}'.format(args.module_path, PROJECT_NAME)
     for dir in [bindir, libdir, libexecdir, moduledir]:
         print(' -', dir)
         smart_mkdir(dir)
@@ -131,9 +109,13 @@ if __name__ == "__main__":
 
     ## Get the container
     ## We want to slightly modify our version specifier: if it leads with a 'v' drop the v
-    container = '{}/{}.sif.{}'.format(libdir, PROJECT_NAME, version)
+    img = IMAGE_ROOT
+    if args.builder:
+        img += "_builder"
+    container = '{}/{}.sif.{}'.format(libdir, img, version)
     if not os.path.exists(container) or args.force:
-        url = CONTAINER_URL.format(group=GROUP_NAME, project=PROJECT_NAME, version=vversion)
+        url = CONTAINER_URL.format(group=GROUP_NAME, project=PROJECT_NAME,
+                version=vversion, img=img)
         print('Downloading container from:', url)
         print('Destination:', container)
         urllib.request.urlretrieve(url, container)
