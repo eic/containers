@@ -29,9 +29,7 @@ PROGRAMS = ['eic-shell',
             'ipython']
 
 ## URL for the current container (git tag will be filled in by the script)
-CONTAINER_URL = r'https://eicweb.phy.anl.gov/{group}/{project}/-/jobs/artifacts/{version}/raw/build/{img}.sif?job={img}_singularity'
-
-CONTAINER_ENV=r'''source /etc/profile'''
+CONTAINER_URL = r'https://eicweb.phy.anl.gov/{group}/{project}/-/jobs/artifacts/{version}/raw/build/{img}.sif?job=release_singularity'
 
 ## Singularity bind directive
 BIND_DIRECTIVE= '-B {0}:{0}'
@@ -66,10 +64,13 @@ if __name__ == "__main__":
             dest='local',
             help='Local deploy, will not install the modulefiles (you will have to run'
                   'the launchers scripts from their relative paths).')
-    parser.add_argument(
-            '--install-builder',
-            dest='builder',
-            help='(opt.) Install fat builder image, instead of normal slim image')
+    ## deprecated, we should just make sure the release image is good enough
+    ## builder singularity image will most likely be removed from the CI
+    ## in a future release
+    #parser.add_argument(
+            #'--install-builder',
+            #dest='builder',
+            #help='(opt.) Install fat builder image, instead of normal slim image')
 
     args = parser.parse_args()
 
@@ -119,8 +120,9 @@ if __name__ == "__main__":
     ## Get the container
     ## We want to slightly modify our version specifier: if it leads with a 'v' drop the v
     img = IMAGE_ROOT
-    if args.builder:
-        img += "_builder"
+    ## Builder SIF is not built anymore, deprecated
+    #if args.builder:
+        #img += "_builder"
     container = '{}/{}.sif.{}'.format(libdir, img, version)
     if not os.path.exists(container) or args.force:
         url = CONTAINER_URL.format(group=GROUP_NAME, project=PROJECT_NAME,
@@ -145,8 +147,6 @@ if __name__ == "__main__":
             exe = prog[1]
         make_launcher(app, container, bindir,
                       bind=bind_directive,
-                      libexecdir=libexecdir,
-                      exe=exe,
-                      env=CONTAINER_ENV)
+                      exe=exe)
 
     print('Container deployment successful!')
