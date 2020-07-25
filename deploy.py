@@ -24,7 +24,7 @@ GROUP_NAME='containers'
 PROJECT_NAME='eic_container'
 IMAGE_ROOT='eic'
 
-PROGRAMS = [('eic_shell', '/usr/bin/bash'),
+PROGRAMS = ['eic-shell',
             'root', 
             'ipython']
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
             '-v', '--version',
             dest='version',
             default=project_version(),
-            help='(opt.) project version. Default: current git branch/tag.')
+            help='(opt.) project version. Default: current version (in repo).')
     parser.add_argument(
             '-f', '--force',
             action='store_true',
@@ -60,6 +60,12 @@ if __name__ == "__main__":
             '-m', '--module-path',
             dest='module_path',
             help='(opt.) Root module path where you want to install a modulefile. D: <prefix>/../../etc/modulefiles')
+    parser.add_argument(
+            '-l', '--local',
+            action='store_true',
+            dest='local',
+            help='Local deploy, will not install the modulefiles (you will have to run'
+                  'the launchers scripts from their relative paths).')
     parser.add_argument(
             '--install-builder',
             dest='builder',
@@ -100,7 +106,10 @@ if __name__ == "__main__":
     libexecdir = '{}/libexec'.format(args.prefix)
     root_prefix = os.path.abspath('{}/..'.format(args.prefix))
     moduledir = '{}/{}'.format(args.module_path, PROJECT_NAME)
-    for dir in [bindir, libdir, libexecdir, moduledir]:
+    dirs = [bindir, libdir, libexecdir]
+    if not args.local:
+        dirs.append(moduledir)
+    for dir in dirs:
         print(' -', dir)
         smart_mkdir(dir)
 
@@ -123,7 +132,8 @@ if __name__ == "__main__":
         print('WARNING: Container found at', container)
         print(' ---> run with -f to force a re-download')
 
-    make_modulefile(PROJECT_NAME, version, moduledir, bindir)
+    if not args.local:
+        make_modulefile(PROJECT_NAME, version, moduledir, bindir)
 
     ## configure the application launchers
     print('Configuring applications launchers: ')

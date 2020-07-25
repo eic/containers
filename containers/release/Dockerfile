@@ -26,9 +26,12 @@ COPY --from=builder /opt/view /opt/view
 COPY --from=builder /etc/profile.d/z10_spack_environment.sh /etc/profile.d/z10_spack_environment.sh
 ## Setup global bashrc, useful for singularity
 COPY --from=builder /root/.bashrc /etc/bash.bashrc
+COPY eic-shell /usr/local/bin/eic-shell
+COPY --from=builder /etc/profile.d/z10_spack_environment.sh /etc/eic-env.sh
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
 CMD ["bash", "--rcfile", "/etc/profile", "-l"]
 USER 0
 WORKDIR /
+SHELL ["/usr/local/bin/eic-shell"]
