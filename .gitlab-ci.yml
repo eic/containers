@@ -12,6 +12,7 @@ eic_builder_release:
   only:
      - tags
      - master
+     - staging
   script:
      - cd containers/builder
      - head Dockerfile
@@ -36,6 +37,7 @@ eic_release:
   only:
      - tags
      - master
+     - staging
   script:
      - cd containers/release
      - make login
