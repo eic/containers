@@ -12,6 +12,7 @@ eic_builder_release:
   only:
      - tags
      - master
+     - staging
   script:
      - cd containers/builder
      - head Dockerfile
@@ -36,6 +37,7 @@ eic_release:
   only:
      - tags
      - master
+     - staging
   script:
      - cd containers/release
      - make login
@@ -56,6 +58,7 @@ eic_builder_singularity:
   tags:
      - sodium dind
   only:
+     - staging
      - tags
   when: manual
   script:
@@ -75,6 +78,7 @@ eic_singularity:
   tags:
      - sodium dind
   only:
+     - staging
      - tags
   script:
      - cp containers/release/eic.def .
