@@ -13,12 +13,13 @@ eic_builder_docker:
      - cd containers/builder
      - head Dockerfile
      - make login
-     - make release-cached
+     - make develop-cached
 
 eic_docker:
   stage: phase2
   tags:
      - sodium dind
+  when: manual
   script:
      - cd containers/release
      - make login
