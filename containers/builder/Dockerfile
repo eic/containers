@@ -25,11 +25,8 @@ RUN rm -rf $SPACK_ROOT/np-spack \
  && echo " - $SPACK_ROOT/np-spack" >> $SPACK_ROOT/etc/spack/repos.yaml
 
 ## Install the software, building on the existing root environment.
-## This is a raw builder image, so no calls to spack gc
-## FIXME: eigen should be explicitly added upstream
 RUN cd /opt/spack-environment && spack env activate . \
  && spack add npdet@master \
- && spack add eigen \
  && spack install \
  && spack clean -a
 
