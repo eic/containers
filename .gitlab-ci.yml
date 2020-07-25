@@ -5,25 +5,51 @@ stages:
   - phase2
   - phase3
 
-eic_builder_docker:
+eic_builder_release:
   stage: phase1
   tags:
      - sodium dind
+  only:
+     - tags
+     - master
+  script:
+     - cd containers/builder
+     - head Dockerfile
+     - make login
+     - make release-cached
+eic_builder_develop:
+  stage: phase1
+  tags:
+     - sodium dind
+  only:
+     - develop
   script:
      - cd containers/builder
      - head Dockerfile
      - make login
      - make develop-cached
 
-eic_docker:
+eic_release:
   stage: phase2
   tags:
      - sodium dind
-  when: manual
+  only:
+     - tags
+     - master
   script:
      - cd containers/release
      - make login
      - make release-cached
+eic_develop:
+  stage: phase2
+  tags:
+     - sodium dind
+  only:
+     - develop
+  script:
+     - cd containers/release
+     - make login
+     - make develop-cached
 
 eic_builder_singularity:
   stage: phase2
