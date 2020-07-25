@@ -32,3 +32,4 @@ ENTRYPOINT []
 CMD ["bash", "--rcfile", "/etc/profile", "-l"]
 USER 0
 WORKDIR /
+SHELL ["bash", "--rcfile", "/etc/profile"]
