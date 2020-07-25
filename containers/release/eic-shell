@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+source /etc/profile
+
+if [ -p /dev/stdin ]; then
+  # If we want to read the input line by line
+  while IFS= read line; do
+    if [ -z "$piped_args" ]; then
+      piped_args="${line}"
+    else 
+      piped_args="${piped_args}\n${line}"
+    fi
+  done
+fi
+
+## Fire off bash
+if [ ${piped_args} ]  ; then
+  echo -e ${piped_args} | exec bash
+elif [ $# -gt 0 ]; then
+  exec bash -c "$@"
+else
+  exec bash
+fi
