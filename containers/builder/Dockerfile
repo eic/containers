@@ -25,11 +25,8 @@ RUN rm -rf $SPACK_ROOT/np-spack \
  && echo " - $SPACK_ROOT/np-spack" >> $SPACK_ROOT/etc/spack/repos.yaml
 
 ## Install the software, building on the existing root environment.
-## This is a raw builder image, so no calls to spack gc
-## FIXME: eigen should be explicitly added upstream
 RUN cd /opt/spack-environment && spack env activate . \
  && spack add npdet@master \
- && spack add eigen \
  && spack install \
  && spack clean -a
 
@@ -41,16 +38,18 @@ RUN cd /opt/spack-environment && spack env activate . \
         ipython matplotlib scipy
 
 ## Strip the binaries
-RUN find -L /opt/view/* -type f -exec readlink -f '{}' \; | \
-    xargs file -i | \
-    grep 'charset=binary' | \
-    grep 'x-executable\|x-archive\|x-sharedlib' | \
-    awk -F: '{print $1}' | xargs strip -s
+#RUN find -L /opt/view/* -type f -exec readlink -f '{}' \; | \
+#    xargs file -i | \
+#    grep 'charset=binary' | \
+#    grep 'x-executable\|x-archive\|x-sharedlib' | \
+#    awk -F: '{print $1}' | xargs strip -s
 
 # Modifications to the environment that are necessary to run
 RUN cd /opt/spack-environment && \
-    spack env activate --sh -d . >> /etc/profile.d/z10_spack_environment.sh && \
+    spack env activate --sh -d . > /etc/profile.d/z10_spack_environment.sh && \
     echo "export BINARY_TAG=x86_64-linux-gcc9-opt" >> /etc/profile.d/z10_spack_environment.sh
+
+##
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
