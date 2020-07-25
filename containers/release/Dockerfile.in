@@ -12,20 +12,23 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       basedist="ubuntu" \
       base="ubuntu"
 
-ENV DOCKERFILE_BASE=ubuntu            \
-    DOCKERFILE_DISTRO=ubuntu          \
+## @ENV@ will be automatically expanded to auto-load the 
+## runtime environment
+ENV DOCKERFILE_DISTRO=ubuntu          \
     DOCKERFILE_DISTRO_VERSION=20.04   \
     DEBIAN_FRONTEND=noninteractive    \
-    CURRENTLY_BUILDING_DOCKER_IMAGE=1 \
-    container=docker
+@ENV@
 
 ## Copy over files from builder
 COPY --from=builder /opt/spack-environment /opt/spack-environment
 COPY --from=builder /opt/software /opt/software
 COPY --from=builder /opt/view /opt/view
 COPY --from=builder /etc/profile.d/z10_spack_environment.sh /etc/profile.d/z10_spack_environment.sh
-## Setup global bashrc, useful for singularity
-COPY --from=builder /root/.bashrc /etc/bash.bashrc
+## Setup fresh bashrc, useful for singularity
+COPY bashrc /etc/bash.bashrc
+COPY bashrc /root/.bashrc
+## eic-shell and environment scripts. Not strictly needed anymore now we auto-load
+## the environment but still provided for backward compatibility (and documentation).
 COPY eic-shell /usr/local/bin/eic-shell
 COPY --from=builder /etc/profile.d/z10_spack_environment.sh /etc/eic-env.sh
 

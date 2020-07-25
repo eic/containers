@@ -1,12 +1,13 @@
 image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 #
 stages:
-  - phase1
-  - phase2
-  - phase3
+  - builder
+  - config
+  - main
+  - singularity
 
-eic_builder_release:
-  stage: phase1
+builder_stable:
+  stage: builder
   tags:
      - sodium dind
   only:
@@ -18,20 +19,55 @@ eic_builder_release:
      - head Dockerfile
      - make login
      - make release-cached
-eic_builder_develop:
-  stage: phase1
+builder_unstable:
+  stage: builder
   tags:
      - sodium dind
-  only:
-     - develop
+  except:
+     - tags
+     - master
+     - staging
   script:
      - cd containers/builder
      - head Dockerfile
      - make login
      - make develop-cached
 
-eic_release:
-  stage: phase2
+## I wish there were a simple way to transfer the "latest/unstable" strings
+## between jobs...
+config_stable:
+  image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest
+  stage: config
+  tags:
+    - sodium dind
+  only:
+     - tags
+     - master
+     - staging
+  script:
+    - bash containers/release/config_release.sh
+  artifacts:
+    paths:
+      - config/eic-env.sh
+      - config/Dockerfile
+config_unstable:
+  image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:unstable
+  stage: config
+  tags:
+    - sodium dind
+  except:
+     - tags
+     - master
+     - staging
+  script:
+    - bash containers/release/config_release.sh
+  artifacts:
+    paths:
+      - config/eic-env.sh
+      - config/Dockerfile
+      
+release_stable:
+  stage: main
   tags:
      - sodium dind
   only:
@@ -39,22 +75,26 @@ eic_release:
      - master
      - staging
   script:
+     - cp config/Dockerfile containers/release/Dockerfile
      - cd containers/release
      - make login
      - make release-cached
-eic_develop:
-  stage: phase2
+release_unstable:
+  stage: main
   tags:
      - sodium dind
-  only:
-     - develop
+  except:
+     - tags
+     - master
+     - staging
   script:
+     - cp config/Dockerfile containers/release/Dockerfile
      - cd containers/release
      - make login
      - make develop-cached
 
-eic_builder_singularity:
-  stage: phase2
+builder_singularity:
+  stage: singularity
   tags:
      - sodium dind
   only:
@@ -73,8 +113,8 @@ eic_builder_singularity:
         - build/eic_builder.sif
         - build/eic_builder.def
 
-eic_singularity:
-  stage: phase3
+release_singularity:
+  stage: singularity
   tags:
      - sodium dind
   only:
