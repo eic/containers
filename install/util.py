@@ -32,7 +32,7 @@ def smart_mkdir(dir):
 
 def project_version():
     '''Return the project version based on the current git branch/tag.'''
-    ## Shell command to get the current git version
-    git_version_cmd = 'git symbolic-ref -q --short HEAD || git describe --tags --exact-match'
+    ## Shell command to get the current project version
+    version_cmd = 'cat VERSION'
     ## Strip will remove the leading \n character
-    return os.popen(git_version_cmd).read().strip()
+    return os.popen(version_cmd).read().strip()

@@ -56,6 +56,7 @@ eic_builder_singularity:
   tags:
      - sodium dind
   only:
+     - staging
      - tags
   when: manual
   script:
@@ -75,6 +76,7 @@ eic_singularity:
   tags:
      - sodium dind
   only:
+     - staging
      - tags
   script:
      - cp containers/release/eic.def .
