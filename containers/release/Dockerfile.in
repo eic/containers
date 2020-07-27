@@ -27,6 +27,15 @@ COPY --from=builder /etc/profile.d/z10_spack_environment.sh /etc/profile.d/z10_s
 ## Setup fresh bashrc, useful for singularity
 COPY bashrc /etc/bash.bashrc
 COPY bashrc /root/.bashrc
+
+## Symlink /opt/view to /usr/local
+## Maybe in a future release we should install the view directly to /usr/local
+## Note that this is mostly useful for downstream use of the container (e.g.
+## using the default install prefix for cmake-based builds), as this way
+## the users don't have to remember the special /opt/view directory, which is
+## more an internal detail of how the container works.
+RUN rm -rf /usr/local && ln -s /opt/view /usr/local
+
 ## eic-shell and environment scripts. Not strictly needed anymore now we auto-load
 ## the environment but still provided for backward compatibility (and documentation).
 COPY eic-shell /usr/local/bin/eic-shell

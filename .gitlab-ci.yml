@@ -45,7 +45,7 @@ config_stable:
      - master
      - staging
   script:
-    - bash containers/release/config_release.sh
+    - bash containers/release/configure_release.sh
   artifacts:
     paths:
       - config/eic-env.sh
@@ -60,7 +60,7 @@ config_unstable:
      - master
      - staging
   script:
-    - bash containers/release/config_release.sh
+    - bash containers/release/configure_release.sh
   artifacts:
     paths:
       - config/eic-env.sh

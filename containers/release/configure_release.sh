@@ -16,6 +16,10 @@ grep export /etc/profile.d/z10_spack_environment.sh | \
 ## as it contains important ubuntu system libraries
 sed -i "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?" config/eic-env.sh
 
+## Spack sets the man-path, which stops bash from using the default man-path
+## We can fix this by appending a trailing colon to MANPATH
+sed -i '/MANPATH/ s/ \\$/: \\/' config/eic-env.sh
+
 ## create our release Dockerfile
 sed '/^@ENV@/r config/eic-env.sh' containers/release/Dockerfile.in | \
   sed '/^@ENV@/d' > config/Dockerfile
