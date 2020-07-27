@@ -4,6 +4,13 @@
 FROM eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest as builder
 RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 
+# Strip all the binaries
+RUN find -L /opt/view/* -type f -exec readlink -f '{}' \; | \
+    xargs file -i | \
+    grep 'charset=binary' | \
+    grep 'x-executable\|x-archive\|x-sharedlib' | \
+    awk -F: '{print $1}' | xargs strip -s
+
 FROM eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_minimal:20.04
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="eic_container" \
@@ -23,10 +30,6 @@ ENV DOCKERFILE_DISTRO=ubuntu          \
 COPY --from=builder /opt/spack-environment /opt/spack-environment
 COPY --from=builder /opt/software /opt/software
 COPY --from=builder /opt/view /opt/view
-COPY --from=builder /etc/profile.d/z10_spack_environment.sh /etc/profile.d/z10_spack_environment.sh
-## Setup fresh bashrc, useful for singularity
-COPY bashrc /etc/bash.bashrc
-COPY bashrc /root/.bashrc
 
 ## Symlink /opt/view to /usr/local
 ## Maybe in a future release we should install the view directly to /usr/local
@@ -39,7 +42,12 @@ RUN rm -rf /usr/local && ln -s /opt/view /usr/local
 ## eic-shell and environment scripts. Not strictly needed anymore now we auto-load
 ## the environment but still provided for backward compatibility (and documentation).
 COPY eic-shell /usr/local/bin/eic-shell
-COPY --from=builder /etc/profile.d/z10_spack_environment.sh /etc/eic-env.sh
+COPY config/eic-env.sh /etc/eic-env.sh
+COPY config/eic-env.sh /etc/profile.d/z10_eic-env.sh
+
+## Setup fresh bashrc, useful for singularity
+COPY bashrc /etc/bash.bashrc
+COPY bashrc /root/.bashrc
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
