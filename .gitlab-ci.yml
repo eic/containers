@@ -48,6 +48,7 @@ config_stable:
     - bash containers/release/configure_release.sh
   artifacts:
     paths:
+      - config/spack-env.sh
       - config/eic-env.sh
       - config/Dockerfile
 config_unstable:
@@ -63,6 +64,7 @@ config_unstable:
     - bash containers/release/configure_release.sh
   artifacts:
     paths:
+      - config/spack-env.sh
       - config/eic-env.sh
       - config/Dockerfile
       
