@@ -42,8 +42,8 @@ RUN rm -rf /usr/local && ln -s /opt/view /usr/local
 ## eic-shell and environment scripts. Not strictly needed anymore now we auto-load
 ## the environment but still provided for backward compatibility (and documentation).
 COPY eic-shell /usr/local/bin/eic-shell
-COPY config/eic-env.sh /etc/eic-env.sh
-COPY config/eic-env.sh /etc/profile.d/z10_eic-env.sh
+COPY eic-env.sh /etc/eic-env.sh
+COPY eic-env.sh /etc/profile.d/z10_eic-env.sh
 
 ## Setup fresh bashrc, useful for singularity
 COPY bashrc /etc/bash.bashrc

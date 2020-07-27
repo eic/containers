@@ -78,6 +78,7 @@ release_stable:
      - staging
   script:
      - cp config/Dockerfile containers/release/Dockerfile
+     - cp config/eic-env.sh containers/release/eic-env.sh
      - cd containers/release
      - make login
      - make release-cached
@@ -91,6 +92,7 @@ release_unstable:
      - staging
   script:
      - cp config/Dockerfile containers/release/Dockerfile
+     - cp config/eic-env.sh containers/release/eic-env.sh
      - cd containers/release
      - make login
      - make develop-cached
