@@ -4,6 +4,13 @@
 FROM eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest as builder
 RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 
+# Strip all the binaries
+RUN find -L /opt/view/* -type f -exec readlink -f '{}' \; | \
+    xargs file -i | \
+    grep 'charset=binary' | \
+    grep 'x-executable\|x-archive\|x-sharedlib' | \
+    awk -F: '{print $1}' | xargs strip -s
+
 FROM eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_minimal:20.04
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="eic_container" \
