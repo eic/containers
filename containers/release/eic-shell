@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
 source /etc/profile
+## Force environment to be clean
+source /etc/eic-env.sh
 
 if [ -p /dev/stdin ]; then
   # If we want to read the input line by line
