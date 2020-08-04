@@ -25,6 +25,7 @@ PROJECT_NAME='eic_container'
 IMAGE_ROOT='eic'
 
 PROGRAMS = ['eic-shell',
+            'container_dev',
             'root', 
             'ipython']
 

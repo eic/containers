@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+## Boilerplate to make pipes work
+piped_args=
+if [ -p /dev/stdin ]; then
+  # If we want to read the input line by line
+  while IFS= read line; do
+    if [ -z "$piped_args" ]; then
+      piped_args="${line}"
+    else 
+      piped_args="${piped_args}
+${line}"
+    fi
+  done
+fi
+
+## Fire off the application wrapper
+if [ ${piped_args} ]  ; then
+    echo -e ${piped_args} | singularity exec  /home/sjoosten/projects/eic_container/build/lib/eic.sif.2.0.4 ipython $@
+else
+    singularity exec  /home/sjoosten/projects/eic_container/build/lib/eic.sif.2.0.4 ipython $@
+fi

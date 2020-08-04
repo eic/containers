@@ -51,7 +51,10 @@ RUN rm -rf /usr/local && ln -s /opt/view /usr/local
 ## the environment but still provided for backward compatibility (and documentation).
 COPY eic-shell /usr/local/bin/eic-shell
 COPY eic-env.sh /etc/eic-env.sh
-COPY eic-env.sh /etc/profile.d/z10_eic-env.sh
+COPY eic-env.sh /etc/profile.d/z10_eic-env.s
+
+## also make sure we have the older container_dev command available
+COPY eic-shell /usr/local/bin/container_dev
 
 ## Setup fresh bashrc, useful for singularity
 COPY bashrc /etc/bash.bashrc
