@@ -56,6 +56,9 @@ COPY eic-env.sh /etc/profile.d/z10_eic-env.s
 ## also make sure we have the older container_dev command available
 COPY eic-shell /usr/local/bin/container_dev
 
+## also make sure we have the older container_dev command available
+COPY eic-shell /usr/local/bin/container_dev
+
 ## Setup fresh bashrc, useful for singularity
 COPY bashrc /etc/bash.bashrc
 COPY bashrc /root/.bashrc
