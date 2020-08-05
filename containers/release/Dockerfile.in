@@ -26,14 +26,6 @@ ENV DOCKERFILE_DISTRO=ubuntu          \
     DEBIAN_FRONTEND=noninteractive    \
 @ENV@
 
-## TODO: move this to upstream, as we should have ssh available in
-## any dev container
-RUN apt-get -yqq update \
- && apt-get -yqq install --no-install-recommends \
-        openssh-client \
- && locale-gen en_US.UTF-8 \
- && rm -rf /var/lib/apt/lists/*
-
 ## Copy over files from builder
 COPY --from=builder /opt/spack-environment /opt/spack-environment
 COPY --from=builder /opt/software /opt/software
