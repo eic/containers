@@ -63,7 +63,6 @@ RUN cd /opt/spack-environment \
  && spack env activate --sh -d . > /etc/profile.d/z10_spack_environment.sh \
  && sed -i "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?" /etc/profile.d/z10_spack_environment.sh
 
-# Add some extra environment variables
 # Somehow PODIO env isn't automatically set, 
 # and Gaudi likes BINARY_TAG to be set
 RUN cd /opt/spack-environment \

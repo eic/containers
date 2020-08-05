@@ -1,0 +1,28 @@
+spack:
+  specs:
+    - cmake@3.17.3
+    - fmt@6.1.2 cxxstd=17
+    - spdlog@1.5.0
+    - nlohmann-json
+    - heppdt@3.04.01
+    - clhep@2.4.1.3 cxxstd=17
+    - eigen@3.3.7
+    - python@3.7.7
+    - py-pip
+    - py-numpy
+    - py-pyyaml
+    - py-yapf
+    - xrootd@4.12.3 cxxstd=17 +python
+    - root@6.22.00 cxxstd=17 +dataframe +fftw +fortran +gdml +http +mlp +pythia8 +root7 +tmva +vc +xrootd +ssl ^mesa+opengl -llvm -osmesa
+    - pythia8@8244
+    - hepmc3@3.2.2 +python +rootio 
+    - stow@2.2.2
+    - podio@0.11.0
+    - geant4@10.6.2 cxxstd=17 +opengl +vecgeom +x11 +qt ^qt +opengl
+    - dd4hep@1.13.1 +geant4 +assimp +hepmc3
+    - acts@0.29.0 +dd4hep +digitization +identification +json +tgeo
+    - gaudi@33.2
+  concretization: together
+  config:
+    install_tree: /opt/software
+  view: /usr/local
