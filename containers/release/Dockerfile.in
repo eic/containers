@@ -5,7 +5,7 @@ FROM eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest as buil
 RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 
 # Strip all the binaries
-RUN find -L /opt/view/* -type f -exec readlink -f '{}' \; | \
+RUN find -L /usr/local/* -type f -exec readlink -f '{}' \; | \
     xargs file -i | \
     grep 'charset=binary' | \
     grep 'x-executable\|x-archive\|x-sharedlib' | \
@@ -37,15 +37,8 @@ RUN apt-get -yqq update \
 ## Copy over files from builder
 COPY --from=builder /opt/spack-environment /opt/spack-environment
 COPY --from=builder /opt/software /opt/software
-COPY --from=builder /opt/view /opt/view
-
-## Symlink /opt/view to /usr/local
-## Maybe in a future release we should install the view directly to /usr/local
-## Note that this is mostly useful for downstream use of the container (e.g.
-## using the default install prefix for cmake-based builds), as this way
-## the users don't have to remember the special /opt/view directory, which is
-## more an internal detail of how the container works.
-RUN rm -rf /usr/local && ln -s /opt/view /usr/local
+RUN rm -rf /usr/local
+COPY --from=builder /usr/local /usr/local
 
 ## eic-shell and environment scripts. Not strictly needed anymore now we auto-load
 ## the environment but still provided for backward compatibility (and documentation).
