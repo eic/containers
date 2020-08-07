@@ -1,6 +1,6 @@
 # Builder with Argonne EIC software
 #
-FROM eicweb.phy.anl.gov:4567/containers/image_recipes/eic_spack:1.0.0
+FROM eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_spack:0.15.3
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="eic_builder" \
@@ -20,36 +20,57 @@ ENV DOCKERFILE_BASE=ubuntu            \
 ## Ensure an up-to-date custom package list
 RUN rm -rf $SPACK_ROOT/np-spack \
  && git clone https://eicweb.phy.anl.gov/EIC/np-spack.git $SPACK_ROOT/np-spack \
+ && cd $SPACK_ROOT/np-spack && git checkout v`spack --version` && cd - \
  && rm -rf $SPACK_ROOT/np-spack/.git \
  && echo "repos:" > $SPACK_ROOT/etc/spack/repos.yaml \
  && echo " - $SPACK_ROOT/np-spack" >> $SPACK_ROOT/etc/spack/repos.yaml
 
-## Install the software, building on the existing root environment.
-RUN cd /opt/spack-environment && spack env activate . \
- && spack add npdet@master \
- && spack install \
+## Setup our environment definition
+COPY spack.yaml /opt/spack-environment/spack.yaml
+
+## Install the software, no garbage collection at this stage
+## as this is a raw builder image
+RUN cd /opt/spack-environment \
+ && spack env activate . \
+ && spack install -j32 \
  && spack clean -a
 
-## FIXME: ipython etc should be added upstream
+## Install additional python packages
 RUN cd /opt/spack-environment && spack env activate . \
  && pip install --trusted-host pypi.org \
                 --trusted-host files.pythonhosted.org \
                 --no-cache-dir \
         ipython matplotlib scipy
 
+## Build elements prone to change here, to allow us to rebuild
+## from runner cache efficiently
+RUN cd /opt/spack-environment \
+ && spack env activate . \
+ && spack add npdet@master \
+ && spack install \
+ && spack clean -a
+
 ## Strip the binaries
-#RUN find -L /opt/view/* -type f -exec readlink -f '{}' \; | \
+#RUN find -L /usr/local/* -type f -exec readlink -f '{}' \; | \
 #    xargs file -i | \
 #    grep 'charset=binary' | \
 #    grep 'x-executable\|x-archive\|x-sharedlib' | \
 #    awk -F: '{print $1}' | xargs strip -s
 
 # Modifications to the environment that are necessary to run
-RUN cd /opt/spack-environment && \
-    spack env activate --sh -d . > /etc/profile.d/z10_spack_environment.sh && \
-    echo "export BINARY_TAG=x86_64-linux-gcc9-opt" >> /etc/profile.d/z10_spack_environment.sh
+# Also make sure we keep the /lib/x86_65-linux-gnu in our PATH
+RUN cd /opt/spack-environment \
+ && spack env activate --sh -d . > /etc/profile.d/z10_spack_environment.sh \
+ && sed -i "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?" /etc/profile.d/z10_spack_environment.sh
 
-##
+# Add some extra environment variables
+# Somehow PODIO env isn't automatically set, 
+# and Gaudi likes BINARY_TAG to be set
+RUN cd /opt/spack-environment \
+ && spack env activate . \
+ && export PODIO=`spack find -p podio | grep software | awk '{print $2}'` \
+ && echo "export PODIO=${PODIO};" >> /etc/profile.d/z10_spack_environment.sh \
+ && echo "export BINARY_TAG=x86_64-linux-gcc9-opt" >> /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []

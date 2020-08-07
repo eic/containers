@@ -100,7 +100,7 @@ release_unstable:
 builder_singularity:
   stage: singularity
   tags:
-     - sodium dind
+     - singularity
   only:
      - staging
      - tags
@@ -120,7 +120,7 @@ builder_singularity:
 release_singularity:
   stage: singularity
   tags:
-     - sodium dind
+     - singularity
   only:
      - staging
      - tags
