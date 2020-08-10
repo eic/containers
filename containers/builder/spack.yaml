@@ -17,7 +17,7 @@ spack:
     - pythia8@8244
     - hepmc3@3.2.2 +python +rootio 
     - stow@2.2.2
-    - podio@0.11.0
+    - podio@master
     - geant4@10.6.2 cxxstd=17 +opengl +vecgeom +x11 +qt ^qt +opengl
     - dd4hep@1.13.1 +geant4 +assimp +hepmc3
     - acts@0.29.0 +dd4hep +digitization +identification +json +tgeo
