@@ -31,6 +31,7 @@ COPY spack.yaml /opt/spack-environment/spack.yaml
 ## Install the software, no garbage collection at this stage
 ## as this is a raw builder image
 RUN cd /opt/spack-environment \
+ && echo "force" \
  && spack env activate . \
  && spack install -j32 \
  && spack clean -a
