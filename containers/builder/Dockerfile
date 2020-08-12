@@ -48,6 +48,7 @@ RUN cd /opt/spack-environment && spack env activate . \
 RUN cd /opt/spack-environment \
  && spack env activate . \
  && spack add npdet@master \
+ && spack add eicd@master \
  && spack install \
  && spack clean -a
 
