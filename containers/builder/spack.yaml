@@ -11,7 +11,6 @@ spack:
     - py-pip
     - py-numpy
     - py-pyyaml
-    - py-yapf
     - xrootd@4.12.3 cxxstd=17 +python
     - root@6.22.00 cxxstd=17 +dataframe +fftw +fortran +gdml +http +mlp +pythia8 +root7 +tmva +vc +xrootd +ssl ^mesa+opengl -llvm -osmesa
     - pythia8@8244

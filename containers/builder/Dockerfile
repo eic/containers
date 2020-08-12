@@ -41,7 +41,7 @@ RUN cd /opt/spack-environment && spack env activate . \
  && pip install --trusted-host pypi.org \
                 --trusted-host files.pythonhosted.org \
                 --no-cache-dir \
-        ipython matplotlib scipy
+        ipython matplotlib scipy yapf
 
 ## Build elements prone to change here, to allow us to rebuild
 ## from runner cache efficiently
