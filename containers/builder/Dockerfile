@@ -19,6 +19,7 @@ ENV DOCKERFILE_BASE=ubuntu            \
 
 ## Ensure an up-to-date custom package list
 RUN rm -rf $SPACK_ROOT/np-spack \
+ && echo "force-redownload" \
  && git clone https://eicweb.phy.anl.gov/EIC/np-spack.git $SPACK_ROOT/np-spack \
  && cd $SPACK_ROOT/np-spack && git checkout v`spack --version` && cd - \
  && rm -rf $SPACK_ROOT/np-spack/.git \
@@ -31,7 +32,6 @@ COPY spack.yaml /opt/spack-environment/spack.yaml
 ## Install the software, no garbage collection at this stage
 ## as this is a raw builder image
 RUN cd /opt/spack-environment \
- && echo "force" \
  && spack env activate . \
  && spack install -j32 \
  && spack clean -a
