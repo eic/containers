@@ -18,7 +18,7 @@ builder_stable:
      - cd containers/builder
      - head Dockerfile
      - make login
-     - make release
+     - make release-cached
 builder_unstable:
   stage: builder
   tags:
