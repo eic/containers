@@ -19,7 +19,6 @@ ENV DOCKERFILE_BASE=ubuntu            \
 
 ## Ensure an up-to-date custom package list
 RUN rm -rf $SPACK_ROOT/np-spack \
- && echo "force-redownload" \
  && git clone https://eicweb.phy.anl.gov/EIC/np-spack.git $SPACK_ROOT/np-spack \
  && cd $SPACK_ROOT/np-spack && git checkout v`spack --version` && cd - \
  && rm -rf $SPACK_ROOT/np-spack/.git \
@@ -43,14 +42,15 @@ RUN cd /opt/spack-environment && spack env activate . \
                 --no-cache-dir \
         ipython matplotlib scipy yapf
 
+## --> disabled for now as we are changing them by the hour
 ## Build elements prone to change here, to allow us to rebuild
 ## from runner cache efficiently
-RUN cd /opt/spack-environment \
- && spack env activate . \
- && spack add npdet@master \
- && spack add eicd@master \
- && spack install \
- && spack clean -a
+#RUN cd /opt/spack-environment \
+ #&& spack env activate . \
+ #&& spack add npdet@master \
+ #&& spack add eicd@master \
+ #&& spack install \
+ #&& spack clean -a
 
 ## Strip the binaries
 #RUN find -L /usr/local/* -type f -exec readlink -f '{}' \; | \
