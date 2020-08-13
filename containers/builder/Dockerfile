@@ -31,7 +31,6 @@ COPY spack.yaml /opt/spack-environment/spack.yaml
 ## Install the software, no garbage collection at this stage
 ## as this is a raw builder image
 RUN cd /opt/spack-environment \
- && echo "force" \
  && spack env activate . \
  && spack install -j32 \
  && spack clean -a
@@ -41,15 +40,17 @@ RUN cd /opt/spack-environment && spack env activate . \
  && pip install --trusted-host pypi.org \
                 --trusted-host files.pythonhosted.org \
                 --no-cache-dir \
-        ipython matplotlib scipy
+        ipython matplotlib scipy yapf
 
+## --> disabled for now as we are changing them by the hour
 ## Build elements prone to change here, to allow us to rebuild
 ## from runner cache efficiently
-RUN cd /opt/spack-environment \
- && spack env activate . \
- && spack add npdet@master \
- && spack install \
- && spack clean -a
+#RUN cd /opt/spack-environment \
+ #&& spack env activate . \
+ #&& spack add npdet@master \
+ #&& spack add eicd@master \
+ #&& spack install \
+ #&& spack clean -a
 
 ## Strip the binaries
 #RUN find -L /usr/local/* -type f -exec readlink -f '{}' \; | \
