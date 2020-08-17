@@ -19,7 +19,7 @@ ENV DOCKERFILE_BASE=ubuntu            \
 
 ## Ensure an up-to-date custom package list
 RUN rm -rf $SPACK_ROOT/np-spack \
- && echo "update spack for v2.1.3" \
+ && echo "Update spack for v2.1.3" \
  && git clone https://eicweb.phy.anl.gov/EIC/np-spack.git $SPACK_ROOT/np-spack \
  && cd $SPACK_ROOT/np-spack && git checkout v`spack --version` && cd - \
  && rm -rf $SPACK_ROOT/np-spack/.git \
