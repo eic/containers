@@ -83,7 +83,7 @@ release: build-nc publish ## Make a release by building and publishing the `{ver
 
 develop: build-nc publish-dev ## Develop build, do not publish latest
 	@echo "Cleaning up"
-	docker rmi $(APP_NAME):unstable
+	#docker rmi $(APP_NAME):latest
 
 release-cached: build publish ## Make a release by building and publishing the `{version}` ans `latest` tagged containers to ECR
 develop-cached: build login publish-dev ## develop release

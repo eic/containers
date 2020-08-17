@@ -79,11 +79,11 @@ login: ## Auto login to AWS-ECR unsing aws-cli
 
 release: build-nc publish ## Make a release by building and publishing the `{version}` ans `latest` tagged containers to ECR
 	@echo "Cleaning up"
-	docker rmi $(APP_NAME):latest
+	#docker rmi $(APP_NAME):latest
 
 develop: build-nc publish-dev ## Develop build, do not publish latest
 	@echo "Cleaning up"
-	docker rmi $(APP_NAME):unstable
+	#docker rmi $(APP_NAME):latest
 
 release-cached: build publish ## Make a release by building and publishing the `{version}` ans `latest` tagged containers to ECR
 develop-cached: build login publish-dev ## develop release
