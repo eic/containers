@@ -31,7 +31,7 @@ builder_unstable:
      - cd containers/builder
      - head Dockerfile
      - make login
-     - make develop-cached
+     - make develop
 
 ## I wish there were a simple way to transfer the "latest/unstable" strings
 ## between jobs...
