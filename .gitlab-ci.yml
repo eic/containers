@@ -132,6 +132,7 @@ release_singularity:
      - cp eic.sif build/.
      - cp eic.def build/.
   artifacts:
+      expire_in: 90 days # this will change in future gitlab vesions :https://docs.gitlab.com/13.3/ee/ci/yaml/README.html#artifactsexpire_in
       paths:
         - build/eic.sif
         - build/eic.def
