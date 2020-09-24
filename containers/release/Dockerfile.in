@@ -31,6 +31,8 @@ ENV DOCKERFILE_DISTRO=ubuntu          \
 RUN apt-get -yqq update \
  && apt-get -yqq install --no-install-recommends \
         openssh-client \
+        ghostscript \
+        gv \
  && locale-gen en_US.UTF-8 \
  && rm -rf /var/lib/apt/lists/*
 
