@@ -9,7 +9,7 @@ stages:
 builder_stable:
   stage: builder
   tags:
-     - sodium dind
+     - silicon
   only:
      - tags
      - master
@@ -22,7 +22,7 @@ builder_stable:
 builder_unstable:
   stage: builder
   tags:
-     - sodium dind
+     - silicon
   except:
      - tags
      - master
@@ -39,7 +39,7 @@ config_stable:
   image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest
   stage: config
   tags:
-    - sodium dind
+    - silicon
   only:
      - tags
      - master
@@ -55,7 +55,7 @@ config_unstable:
   image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:unstable
   stage: config
   tags:
-    - sodium dind
+    - silicon
   except:
      - tags
      - master
@@ -71,7 +71,7 @@ config_unstable:
 release_stable:
   stage: main
   tags:
-     - sodium dind
+     - silicon
   only:
      - tags
      - master
@@ -85,7 +85,7 @@ release_stable:
 release_unstable:
   stage: main
   tags:
-     - sodium dind
+     - silicon
   except:
      - tags
      - master
@@ -132,6 +132,7 @@ release_singularity:
      - cp eic.sif build/.
      - cp eic.def build/.
   artifacts:
+      expire_in: 90 days # this will change in future gitlab vesions :https://docs.gitlab.com/13.3/ee/ci/yaml/README.html#artifactsexpire_in
       paths:
         - build/eic.sif
         - build/eic.def
