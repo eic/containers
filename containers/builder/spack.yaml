@@ -22,6 +22,8 @@ spack:
     - dd4hep@1.13.1 +geant4 +assimp +hepmc3
     - acts@1.00.0 +dd4hep +digitization +identification +json +tgeo
     - gaudi@34.0
+    - dawn@3_91a
+    - dawncut@1_54a
   concretization: together
   config:
     install_tree: /opt/software
