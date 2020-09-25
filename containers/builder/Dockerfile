@@ -1,28 +1,36 @@
 # Builder with Argonne EIC software
 #
-FROM eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_spack:0.15.3
+FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_spack:snapshot-20200922
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="eic_builder" \
       group="eic_builder" \
       march="native" \
-      basedist="ubuntu" \
-      base="ubuntu"
+      basedist="debian" \
+      base="debian"
 
-ENV DOCKERFILE_BASE=ubuntu            \
-    DOCKERFILE_DISTRO=ubuntu          \
-    DOCKERFILE_DISTRO_VERSION=20.04   \
+ENV DOCKERFILE_BASE=debian            \
+    DOCKERFILE_DISTRO=debian          \
+    DOCKERFILE_DISTRO_VERSION=20200908-testing \
     SPACK_ROOT=/opt/spack             \
     DEBIAN_FRONTEND=noninteractive    \
     CURRENTLY_BUILDING_DOCKER_IMAGE=1 \
     container=docker
 
+## install ghostview/ghostscript needed by some of the tools
+RUN apt-get -yqq update \
+ && apt-get -yqq install --no-install-recommends \
+        ghostscript \
+        gv \
+ && rm -rf /var/lib/apt/lists/*
+
 ## Ensure an up-to-date custom package list
 RUN rm -rf $SPACK_ROOT/np-spack \
- && echo "Update spack for v2.1.3" \
  && git clone https://eicweb.phy.anl.gov/EIC/np-spack.git $SPACK_ROOT/np-spack \
- && cd $SPACK_ROOT/np-spack && git checkout v`spack --version` && cd - \
- && rm -rf $SPACK_ROOT/np-spack/.git \
+ && cd $SPACK_ROOT/np-spack \
+ && git checkout snapshot-`echo $(spack --version) | cut -d- -f3` \
+ && cd - \
+ && echo "DISABLED: rm -rf $SPACK_ROOT/np-spack/.git" \
  && echo "repos:" > $SPACK_ROOT/etc/spack/repos.yaml \
  && echo " - $SPACK_ROOT/np-spack" >> $SPACK_ROOT/etc/spack/repos.yaml
 
@@ -33,7 +41,7 @@ COPY spack.yaml /opt/spack-environment/spack.yaml
 ## as this is a raw builder image
 RUN cd /opt/spack-environment \
  && spack env activate . \
- && spack install -j32 \
+ && spack install -j64 \
  && spack clean -a
 
 ## Install additional python packages
@@ -73,7 +81,7 @@ RUN cd /opt/spack-environment \
  && spack env activate . \
  && export PODIO=`spack find -p podio | grep software | awk '{print $2}'` \
  && echo "export PODIO=${PODIO};" >> /etc/profile.d/z10_spack_environment.sh \
- && echo "export BINARY_TAG=x86_64-linux-gcc9-opt" >> /etc/profile.d/z10_spack_environment.sh
+ && echo "export BINARY_TAG=x86_64-linux-gcc10-opt" >> /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []

@@ -6,7 +6,7 @@ stages:
   - main
   - singularity
 
-builder_stable:
+builder:stable:
   stage: builder
   tags:
      - silicon
@@ -19,7 +19,7 @@ builder_stable:
      - head Dockerfile
      - make login
      - make release-cached
-builder_unstable:
+builder:unstable:
   stage: builder
   tags:
      - silicon
@@ -35,7 +35,7 @@ builder_unstable:
 
 ## I wish there were a simple way to transfer the "latest/unstable" strings
 ## between jobs...
-config_stable:
+config:stable:
   image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest
   stage: config
   tags:
@@ -44,6 +44,7 @@ config_stable:
      - tags
      - master
      - staging
+  needs: ["builder:stable"]
   script:
     - bash containers/release/configure_release.sh
   artifacts:
@@ -51,7 +52,7 @@ config_stable:
       - config/spack-env.sh
       - config/eic-env.sh
       - config/Dockerfile
-config_unstable:
+config:unstable:
   image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:unstable
   stage: config
   tags:
@@ -60,6 +61,7 @@ config_unstable:
      - tags
      - master
      - staging
+  needs: ["builder:unstable"]
   script:
     - bash containers/release/configure_release.sh
   artifacts:
@@ -68,7 +70,7 @@ config_unstable:
       - config/eic-env.sh
       - config/Dockerfile
       
-release_stable:
+release:stable:
   stage: main
   tags:
      - silicon
@@ -76,13 +78,14 @@ release_stable:
      - tags
      - master
      - staging
+  needs: ["config:stable"]
   script:
      - cp config/Dockerfile containers/release/Dockerfile
      - cp config/eic-env.sh containers/release/eic-env.sh
      - cd containers/release
      - make login
      - make release-cached
-release_unstable:
+release:unstable:
   stage: main
   tags:
      - silicon
@@ -90,6 +93,7 @@ release_unstable:
      - tags
      - master
      - staging
+  needs: ["config:unstable"]
   script:
      - cp config/Dockerfile containers/release/Dockerfile
      - cp config/eic-env.sh containers/release/eic-env.sh
@@ -97,13 +101,14 @@ release_unstable:
      - make login
      - make develop-cached
 
-builder_singularity:
+builder:singularity:
   stage: singularity
   tags:
      - singularity
   only:
      - staging
      - tags
+  needs: ["builder:stable"]
   when: manual
   script:
      - cp containers/builder/eic_builder.def .
@@ -117,13 +122,14 @@ builder_singularity:
         - build/eic_builder.sif
         - build/eic_builder.def
 
-release_singularity:
+release:singularity:
   stage: singularity
   tags:
      - singularity
   only:
      - staging
      - tags
+  needs: ["release:stable"]
   script:
      - cp containers/release/eic.def .
      - /bin/bash .gitlabci/setup.sh
