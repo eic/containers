@@ -11,18 +11,18 @@ RUN find -L /usr/local/* -type f -exec readlink -f '{}' \; | \
     grep 'x-executable\|x-archive\|x-sharedlib' | \
     awk -F: '{print $1}' | xargs strip -s
 
-FROM eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_minimal:20.04
+FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_minimal:testing-20200908
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
-      name="eic_container" \
-      group="eic_container" \
+      name="eic" \
+      group="eic" \
       march="native" \
-      basedist="ubuntu" \
-      base="ubuntu"
+      basedist="debian" \
+      base="debian"
 
 ## @ENV@ will be automatically expanded to auto-load the 
 ## runtime environment
 ENV DOCKERFILE_DISTRO=ubuntu          \
-    DOCKERFILE_DISTRO_VERSION=20.04   \
+    DOCKERFILE_DISTRO_VERSION=20200908-testing   \
     DEBIAN_FRONTEND=noninteractive    \
 @ENV@
 
@@ -31,6 +31,8 @@ ENV DOCKERFILE_DISTRO=ubuntu          \
 RUN apt-get -yqq update \
  && apt-get -yqq install --no-install-recommends \
         openssh-client \
+        ghostscript \
+        gv \
  && locale-gen en_US.UTF-8 \
  && rm -rf /var/lib/apt/lists/*
 
