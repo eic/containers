@@ -30,7 +30,8 @@ PROGRAMS = ['eic-shell',
             'ipython']
 
 ## URL for the current container (git tag will be filled in by the script)
-CONTAINER_URL = r'https://eicweb.phy.anl.gov/{group}/{project}/-/jobs/artifacts/{version}/raw/build/{img}.sif?job=release_singularity'
+CONTAINER_URL = r'https://eicweb.phy.anl.gov/api/v4/projects/290/jobs/artifacts/{version}/raw/build/{img}.sif?job=release:singularity'
+#api/v4/projects/1/jobs/artifacts/master/raw/some/release/file.pdf
 
 ## Singularity bind directive
 BIND_DIRECTIVE= '-B {0}:{0}'
