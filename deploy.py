@@ -26,7 +26,7 @@ IMAGE_ROOT='eic'
 
 PROGRAMS = ['eic-shell',
             'container_dev',
-            'root', 
+            #'root', 
             'ipython']
 
 ## URL for the current container (git tag will be filled in by the script)
