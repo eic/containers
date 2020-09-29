@@ -1,7 +1,7 @@
 # Release container for Argonne EIC software
 # Copy over relevant files from builder
 #
-FROM eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest as builder
+FROM eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:@TAG@ as builder
 RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 
 # Strip all the binaries

@@ -13,12 +13,22 @@ builder:stable:
   only:
      - tags
      - master
-     - staging
   script:
      - cd containers/builder
      - head Dockerfile
      - make login
      - make release-cached
+builder:testing:
+  stage: builder
+  tags:
+     - silicon
+  only:
+     - staging
+  script:
+     - cd containers/builder
+     - head Dockerfile
+     - make login
+     - make staging-cached
 builder:unstable:
   stage: builder
   tags:
@@ -43,10 +53,24 @@ config:stable:
   only:
      - tags
      - master
-     - staging
   needs: ["builder:stable"]
   script:
-    - bash containers/release/configure_release.sh
+    - bash containers/release/configure_release.sh latest
+  artifacts:
+    paths:
+      - config/spack-env.sh
+      - config/eic-env.sh
+      - config/Dockerfile
+config:testing:
+  image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:testing
+  stage: config
+  tags:
+    - silicon
+  only:
+     - staging
+  needs: ["builder:testing"]
+  script:
+    - bash containers/release/configure_release.sh testing
   artifacts:
     paths:
       - config/spack-env.sh
@@ -63,7 +87,7 @@ config:unstable:
      - staging
   needs: ["builder:unstable"]
   script:
-    - bash containers/release/configure_release.sh
+    - bash containers/release/configure_release.sh unstable
   artifacts:
     paths:
       - config/spack-env.sh
@@ -77,7 +101,6 @@ release:stable:
   only:
      - tags
      - master
-     - staging
   needs: ["config:stable"]
   script:
      - cp config/Dockerfile containers/release/Dockerfile
@@ -85,6 +108,19 @@ release:stable:
      - cd containers/release
      - make login
      - make release-cached
+release:testing:
+  stage: main
+  tags:
+     - silicon
+  only:
+     - staging
+  needs: ["config:testing"]
+  script:
+     - cp config/Dockerfile containers/release/Dockerfile
+     - cp config/eic-env.sh containers/release/eic-env.sh
+     - cd containers/release
+     - make login
+     - make staging-cached
 release:unstable:
   stage: main
   tags:
@@ -106,7 +142,6 @@ builder:singularity:
   tags:
      - singularity
   only:
-     - staging
      - tags
   needs: ["builder:stable"]
   when: manual
@@ -127,7 +162,6 @@ release:singularity:
   tags:
      - singularity
   only:
-     - staging
      - tags
   needs: ["release:stable"]
   script:
