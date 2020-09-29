@@ -93,7 +93,7 @@ if __name__ == "__main__":
     ## for everything installed, but ensure we have the leading v as well where needed
     version = '{}'.format(args.version)
     vversion = '{}'.format(args.version)
-    if version[0] is 'v':
+    if version[0] == 'v':
         version = version[1:]
     if vversion[0].isdigit():
         vversion= 'v{}'.format(args.version)
