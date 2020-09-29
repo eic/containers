@@ -36,7 +36,7 @@ RUN apt-get -yqq update \
         gv \
         poppler-utils \
  && apt-get -yqq purge lmod \
- && apt-get autoremove \
+ && apt-get -yqq autoremove \
  && rm -rf /var/lib/apt/lists/*
 
 ## Copy over files from builder
