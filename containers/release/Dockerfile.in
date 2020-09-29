@@ -1,7 +1,7 @@
 # Release container for Argonne EIC software
 # Copy over relevant files from builder
 #
-FROM eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest as builder
+FROM eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:@TAG@ as builder
 RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 
 # Strip all the binaries
@@ -28,12 +28,15 @@ ENV DOCKERFILE_DISTRO=ubuntu          \
 
 ## TODO: move this to upstream, as we should have ssh available in
 ## any dev container
+## poppler-utils for pdftoppm, is this is right now now supported by the
+## Spack version
 RUN apt-get -yqq update \
  && apt-get -yqq install --no-install-recommends \
-        openssh-client \
         ghostscript \
         gv \
- && locale-gen en_US.UTF-8 \
+        poppler-utils \
+ && apt-get -yqq purge lmod \
+ && apt-get -yqq autoremove \
  && rm -rf /var/lib/apt/lists/*
 
 ## Copy over files from builder

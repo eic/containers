@@ -85,8 +85,13 @@ develop: build-nc publish-dev ## Develop build, do not publish latest
 	@echo "Cleaning up"
 	#docker rmi $(APP_NAME):latest
 
+staging: build-nc publish-staging ## Develop build, do not publish latest
+	@echo "Cleaning up"
+	#docker rmi $(APP_NAME):latest
+
 release-cached: build publish ## Make a release by building and publishing the `{version}` ans `latest` tagged containers to ECR
 develop-cached: build login publish-dev ## develop release
+staging-cached: build login publish-staging ## develop release
 
 publish: login publish-latest publish-version #publish-version ## Publish the `{version}` ans `latest` tagged containers to ECR
 	@echo "Publishing done"
@@ -97,6 +102,11 @@ publish-latest: ## Publish the `latest` taged container to ECR
 	docker tag $(APP_NAME):latest $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
 	docker push $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
 	#docker rmi  $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
+
+publish-staging: ## Publish the `unstable` taged container to ECR
+	@echo 'publish unstable to $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME)'
+	docker tag $(APP_NAME):latest $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):testing
+	docker push $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):testing
 
 publish-dev: ## Publish the `unstable` taged container to ECR
 	@echo 'publish unstable to $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME)'
