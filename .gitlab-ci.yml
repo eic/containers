@@ -95,7 +95,7 @@ config:unstable:
       - config/Dockerfile
       
 release:stable:
-  stage: main
+  stage: slim
   tags:
      - silicon
   only:
@@ -109,7 +109,7 @@ release:stable:
      - make login
      - make release-cached
 release:testing:
-  stage: main
+  stage: slim
   tags:
      - silicon
   only:
@@ -122,7 +122,7 @@ release:testing:
      - make login
      - make staging-cached
 release:unstable:
-  stage: main
+  stage: slim
   tags:
      - silicon
   except:

@@ -28,11 +28,15 @@ ENV DOCKERFILE_DISTRO=ubuntu          \
 
 ## TODO: move this to upstream, as we should have ssh available in
 ## any dev container
+## poppler-utils for pdftoppm, is this is right now now supported by the
+## Spack version
 RUN apt-get -yqq update \
  && apt-get -yqq install --no-install-recommends \
         ghostscript \
         gv \
+        poppler-utils \
  && apt-get -yqq purge lmod \
+ && apt-get autoremove \
  && rm -rf /var/lib/apt/lists/*
 
 ## Copy over files from builder
