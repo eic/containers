@@ -35,7 +35,6 @@ RUN apt-get -yqq update \
         ghostscript \
         gv \
         poppler-utils \
- && apt-get -yqq purge lmod \
  && apt-get -yqq autoremove \
  && rm -rf /var/lib/apt/lists/*
 
