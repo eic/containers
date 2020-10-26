@@ -26,7 +26,4 @@ spack:
   - dawn@3_91a
   - dawncut@1_54a
   concretization: together
-  config: 
-    install-tree: 
-      root: /opt/software
   view: /usr/local
