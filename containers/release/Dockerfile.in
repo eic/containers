@@ -11,7 +11,7 @@ RUN find -L /usr/local/* -type f -exec readlink -f '{}' \; | \
     grep 'x-executable\|x-archive\|x-sharedlib' | \
     awk -F: '{print $1}' | xargs strip -s
 
-FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_minimal:testing-20200908
+FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_minimal:testing-20201012
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="eic" \
       group="eic" \
@@ -22,7 +22,7 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 ## @ENV@ will be automatically expanded to auto-load the 
 ## runtime environment
 ENV DOCKERFILE_DISTRO=ubuntu          \
-    DOCKERFILE_DISTRO_VERSION=20200908-testing   \
+    DOCKERFILE_DISTRO_VERSION=20201012-testing   \
     DEBIAN_FRONTEND=noninteractive    \
 @ENV@
 
@@ -35,7 +35,6 @@ RUN apt-get -yqq update \
         ghostscript \
         gv \
         poppler-utils \
- && apt-get -yqq purge lmod \
  && apt-get -yqq autoremove \
  && rm -rf /var/lib/apt/lists/*
 
