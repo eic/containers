@@ -11,7 +11,7 @@ RUN find -L /usr/local/* -type f -exec readlink -f '{}' \; | \
     grep 'x-executable\|x-archive\|x-sharedlib' | \
     awk -F: '{print $1}' | xargs strip -s
 
-FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_minimal:testing-20201012
+FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_minimal:testing-20201117
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="eic" \
       group="eic" \
@@ -21,14 +21,12 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 
 ## @ENV@ will be automatically expanded to auto-load the 
 ## runtime environment
-ENV DOCKERFILE_DISTRO=ubuntu          \
-    DOCKERFILE_DISTRO_VERSION=20201012-testing   \
+ENV DOCKERFILE_DISTRO=debian          \
+    DOCKERFILE_DISTRO_VERSION=20201117-testing   \
     DEBIAN_FRONTEND=noninteractive    \
 @ENV@
 
-## TODO: move this to upstream, as we should have ssh available in
-## any dev container
-## poppler-utils for pdftoppm, is this is right now now supported by the
+## poppler-utils for pdftoppm, is this is right now not supported by the
 ## Spack version
 RUN apt-get -yqq update \
  && apt-get -yqq install --no-install-recommends \
