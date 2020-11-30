@@ -22,7 +22,7 @@ spack:
     - cairo+fc+ft+X+pdf+gobject
     - podio@master
     - geant4@10.6.2 cxxstd=17 +opengl +vecgeom +x11 +qt ^qt +opengl
-    - dd4hep@1.14.1 +geant4 +assimp +hepmc3
+    - dd4hep@1.14.1 +geant4 +assimp +hepmc3 +ipo
     - acts@2.00.0 +dd4hep +digitization +identification +json +tgeo +ipo
     - gaudi@35.0
     - dawn@3_91a
