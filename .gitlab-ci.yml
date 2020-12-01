@@ -125,8 +125,6 @@ release:singularity:unstable:
   stage: singularity
   tags:
      - silicon
-  only:
-     - develop
   needs: ["release:unstable"]
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
