@@ -28,14 +28,13 @@ RUN apt-get -yqq update \
 COPY spack.yaml /opt/spack-environment/spack.yaml
 
 ## Ensure an up-to-date custom package list
+## TODO: We should just remove this from the upstream container
+##       and only initialize the custom packages here for more
+##       transparency
 RUN rm -rf $SPACK_ROOT/np-spack \
- && git clone https://eicweb.phy.anl.gov/EIC/np-spack.git $SPACK_ROOT/np-spack \
- && cd $SPACK_ROOT/np-spack \
- && git checkout v$(spack --version) \
- && cd - \
- && echo "DISABLED: rm -rf $SPACK_ROOT/np-spack/.git" \
  && echo "repos:" > $SPACK_ROOT/etc/spack/repos.yaml \
  && echo " - $SPACK_ROOT/np-spack" >> $SPACK_ROOT/etc/spack/repos.yaml
+COPY np-spack $SPACK_ROOT/np-spack
 
 ## Install the software, no garbage collection at this stage
 ## as this is a raw builder image
@@ -50,23 +49,6 @@ RUN cd /opt/spack-environment && spack env activate . \
                 --trusted-host files.pythonhosted.org \
                 --no-cache-dir \
         ipython matplotlib scipy yapf
-
-## --> disabled for now as we are changing them by the hour
-## Build elements prone to change here, to allow us to rebuild
-## from runner cache efficiently
-#RUN cd /opt/spack-environment \
- #&& spack env activate . \
- #&& spack add npdet@master \
- #&& spack add eicd@master \
- #&& spack install \
- #&& spack clean -a
-
-## Strip the binaries/DISABLED for builder, do this for release step
-#RUN find -L /usr/local/* -type f -exec readlink -f '{}' \; | \
-#    xargs file -i | \
-#    grep 'charset=binary' | \
-#    grep 'x-executable\|x-archive\|x-sharedlib' | \
-#    awk -F: '{print $1}' | xargs strip -s
 
 # Modifications to the environment that are necessary to run
 # Also make sure we keep the /lib/x86_65-linux-gnu in our PATH

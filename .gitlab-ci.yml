@@ -1,219 +1,156 @@
 image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
-#
+
 stages:
   - builder
   - config
   - slim
   - singularity
 
-builder:stable:
-  stage: builder
+## We use minimal file artifacts to transport variables between job
+## stages, such as the branch we are working on and the need for 
+## caching.
+## By evaluating these files in the before_script, we can set
+## relevant environment variables before our pipelines run
+default:
+  artifacts:
+    paths: 
+      - .ci-env
+  before_script:
+    - mkdir -p .ci-env
+    - |
+      if [ -f .ci-env/release ]; then 
+        export BRANCH='release'
+      elif [ -f .ci-env/develop ]; then
+        export BRANCH='develop'
+      else export BRANCH='UNKNOWN'
+      fi
+    - |
+      if [ -f .ci-env/builder-nc ]; then 
+        export BUILDER_TARGET="${BRANCH}"
+      else
+        export BUILDER_TARGET="${BRANCH}-cached"
+      fi
+    - |
+      if [ -f .ci-env/release-nc ]; then 
+        export RELEASE_TARGET="${BRANCH}"
+      else
+        export RELEASE_TARGET="${BRANCH}-cached"
+      fi
   tags:
-     - silicon
-  only:
-     - tags
-     - master
-  script:
-     - cd containers/builder
-     - head Dockerfile
-     - make login
-     - make release-cached
-builder:testing:
-  stage: builder
-  tags:
-     - silicon
-  only:
-     - staging
-  script:
-     - cd containers/builder
-     - head Dockerfile
-     - make login
-     - make staging-cached
-builder:unstable:
-  stage: builder
-  tags:
-     - silicon
-  except:
-     - tags
-     - master
-     - staging
-  script:
-     - cd containers/builder
-     - head Dockerfile
-     - make login
-     - make develop-cached
+    - silicon
 
-## I wish there were a simple way to transfer the "latest/unstable" strings
-## between jobs...
+## Stable or unstable branch?
+init:stable:
+  stage: .pre
+  rules:
+    - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH == "master"'
+      when: always
+  script:
+    - touch .ci-env/release
+init:unstable:
+  stage: .pre
+  rules:
+    - if: '$CI_COMMIT_TAG == null && $CI_COMMIT_BRANCH != "master"'
+      when: always
+  script:
+    - touch .ci-env/develop
+init:builder-nc:
+  stage: .pre
+  rules:
+    - changes:
+        - containers/builder/Dockerfile
+        - containers/builder/spack.yaml
+        - spack/packages/**/*
+  script:
+    - touch .ci-env/builder-nc
+init:release-nc:
+  stage: .pre
+  rules:
+    - changes:
+        - containers/release/Dockerfile.in
+        - containers/release/configure_release.sh
+  script:
+    - touch .ci-env/release-nc
+
+builder:
+  stage: builder
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: on_success
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
+      when: on_success
+  script:
+    - cp -r spack containers/builder/np-spack
+    - cd containers/builder
+    - head Dockerfile
+    - make login
+    - echo "Creating builder image for ${BUILDER_TARGET}"
+    - make ${BUILDER_TARGET}
+
+.config:
+  stage: config
+  script:
+    - bash containers/release/configure_release.sh ${BRANCH}
+  artifacts:
+    paths:
+      - config
 config:stable:
+  extends: .config
   image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest
-  stage: config
-  tags:
-    - silicon
   only:
-     - tags
-     - master
-  needs: ["builder:stable"]
-  script:
-    - bash containers/release/configure_release.sh latest
-  artifacts:
-    paths:
-      - config/spack-env.sh
-      - config/eic-env.sh
-      - config/Dockerfile
-config:testing:
-  image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:testing
-  stage: config
-  tags:
-    - silicon
-  only:
-     - staging
-  needs: ["builder:testing"]
-  script:
-    - bash containers/release/configure_release.sh testing
-  artifacts:
-    paths:
-      - config/spack-env.sh
-      - config/eic-env.sh
-      - config/Dockerfile
+    - tags
+    - master
 config:unstable:
+  extends: .config
   image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:unstable
-  stage: config
-  tags:
-    - silicon
-  except:
-     - tags
-     - master
-     - staging
-  needs: ["builder:unstable"]
-  script:
-    - bash containers/release/configure_release.sh unstable
-  artifacts:
-    paths:
-      - config/spack-env.sh
-      - config/eic-env.sh
-      - config/Dockerfile
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: on_success
       
-release:stable:
+release:
   stage: slim
-  tags:
-     - silicon
-  only:
-     - tags
-     - master
-  needs: ["config:stable"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: on_success
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
+      when: manual
   script:
      - cp config/Dockerfile containers/release/Dockerfile
      - cp config/eic-env.sh containers/release/eic-env.sh
      - cd containers/release
      - make login
-     - make release-cached
-release:testing:
-  stage: slim
-  tags:
-     - silicon
-  only:
-     - staging
-  needs: ["config:testing"]
-  script:
-     - cp config/Dockerfile containers/release/Dockerfile
-     - cp config/eic-env.sh containers/release/eic-env.sh
-     - cd containers/release
-     - make login
-     - make staging-cached
-release:unstable:
-  stage: slim
-  tags:
-     - silicon
-  except:
-     - tags
-     - master
-     - staging
-  needs: ["config:unstable"]
-  script:
-     - cp config/Dockerfile containers/release/Dockerfile
-     - cp config/eic-env.sh containers/release/eic-env.sh
-     - cd containers/release
-     - make login
-     - make develop-cached
-
-builder:singularity:
-  stage: singularity
-  tags:
-     - silicon
-  only:
-     - tags
-  needs: ["builder:stable"]
-  when: manual
-  script:
-     - cp containers/builder/eic_builder.def .
-     - /bin/bash .gitlabci/setup.sh
-     - /bin/bash .gitlabci/build.sh eic_builder.def
-     - mkdir -p build 
-     - cp eic_builder.sif build/.
-     - cp eic_builder.def build/.
-  artifacts:
-      paths:
-        - build/eic_builder.sif
-        - build/eic_builder.def
-
-builder:singularity:unstable:
-  stage: singularity
-  tags:
-     - silicon
-  only:
-     - develop
-  needs: ["builder:unstable"]
-  when: manual
-  script:
-     - cp containers/builder/eic_builder.def .
-     - /bin/bash .gitlabci/setup.sh
-     - /bin/bash .gitlabci/build.sh eic_builder.def
-     - mkdir -p build 
-     - cp eic_builder.sif build/.
-     - cp eic_builder.def build/.
-  artifacts:
-      paths:
-        - build/eic_builder.sif
-        - build/eic_builder.def
+     - make ${RELEASE_TARGET}
 
 release:singularity:
   stage: singularity
-  tags:
-     - silicon
-  only:
-     - tags
-  needs: ["release:stable"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: manual
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
+      when: manual
   script:
-     - cp containers/release/eic.def .
+     - cp config/eic.def eic.def
      - /bin/bash .gitlabci/setup.sh
      - /bin/bash .gitlabci/build.sh eic.def
      - mkdir -p build 
      - cp eic.sif build/.
      - cp eic.def build/.
   artifacts:
-      expire_in: 90 days # this will change in future gitlab vesions :https://docs.gitlab.com/13.3/ee/ci/yaml/README.html#artifactsexpire_in
-      paths:
-        - build/eic.sif
-        - build/eic.def
-
-release:singularity:unstable:
-  stage: singularity
-  tags:
-     - silicon
-  only:
-     - develop
-  needs: ["release:unstable"]
-  when: manual
-  script:
-     - cp containers/release/eic.def .
-     - /bin/bash .gitlabci/setup.sh
-     - /bin/bash .gitlabci/build.sh eic.def
-     - mkdir -p build 
-     - cp eic.sif build/.
-     - cp eic.def build/.
-  artifacts:
-      expire_in: 90 days # this will change in future gitlab vesions :https://docs.gitlab.com/13.3/ee/ci/yaml/README.html#artifactsexpire_in
+      expire_in: 90 days
       paths:
         - build/eic.sif
         - build/eic.def
