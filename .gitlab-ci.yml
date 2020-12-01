@@ -18,7 +18,8 @@ default:
       - config
   before_script:
     - mkdir -p .ci-env
-    - if [ -f .ci-env/release ]; then 
+    - |
+      if [ -f .ci-env/release ]; then 
         export BRANCH='release'
         export SINGULARITY_DEF='eic-latest.def'
       elif [ -f .ci-env/develop ]; then
@@ -26,12 +27,14 @@ default:
         export SINGULARITY_DEF='eic-unstable.def'
       else export BRANCH='UNKNOWN'
       fi
-    - if [ -f .ci-env/builder-nc ]; then 
+    - |
+      if [ -f .ci-env/builder-nc ]; then 
         export BUILDER_TARGET="${BRANCH}"
       else
         export BUILDER_TARGET="${BRANCH}-cached"
       fi
-    - if [ -f .ci-env/release-nc ]; then 
+    - |
+      if [ -f .ci-env/release-nc ]; then 
         export RELEASE_TARGET="${BRANCH}"
       else
         export RELEASE_TARGET="${BRANCH}-cached"
