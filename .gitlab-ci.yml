@@ -21,10 +21,8 @@ default:
     - |
       if [ -f .ci-env/release ]; then 
         export BRANCH='release'
-        export SINGULARITY_DEF='eic-latest.def'
       elif [ -f .ci-env/develop ]; then
         export BRANCH='develop'
-        export SINGULARITY_DEF='eic-unstable.def'
       else export BRANCH='UNKNOWN'
       fi
     - |
@@ -91,6 +89,7 @@ builder:
     - cd containers/builder
     - head Dockerfile
     - make login
+    - echo "Creating builder image for ${BUILDER_TARGET}"
     - make ${BUILDER_TARGET}
 
 config:stable:
@@ -142,7 +141,7 @@ release:singularity:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
       when: manual
   script:
-     - cp containers/release/${SINGULARITY_DEF} eic.def
+     - cp config/eic.def eic.def
      - /bin/bash .gitlabci/setup.sh
      - /bin/bash .gitlabci/build.sh eic.def
      - mkdir -p build 
