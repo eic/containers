@@ -92,24 +92,27 @@ builder:
     - echo "Creating builder image for ${BUILDER_TARGET}"
     - make ${BUILDER_TARGET}
 
-config:stable:
-  image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest
+.config:
   stage: config
+  script:
+    - bash containers/release/configure_release.sh ${BRANCH}
+  artifacts:
+    paths:
+      - config
+config:stable:
+  extends: .config
+  image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest
   only:
     - tags
     - master
-  script:
-   - bash containers/release/configure_release.sh latest
 config:unstable:
+  extends: .config
   image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:unstable
-  stage: config
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
       when: manual
     - if: '$CI_COMMIT_BRANCH == "develop"'
       when: on_success
-  script:
-    - bash containers/release/configure_release.sh unstable
       
 release:
   stage: slim
