@@ -16,6 +16,7 @@ Then use spack as you normally would.
     - `dawn`: A tool to visualize detector geometries.
     - `dawncut`: A tool to edit detector visualizations.
   * Package overrides
+    * `acts`: Added version 3.00.0 which is still missing in the main repo.
     * `dd4hep`: Disabled use of the Ninja backend for cmake as it was running into dependency issues building assymp
     * `fmt`: Modified compiler flags to build shared library version.
     * `geant4`: Added explicit glu dependency for OpenGL
