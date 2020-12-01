@@ -23,7 +23,7 @@ builder:unstable:
   tags:
     - silicon
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != develop'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
       when: always
     - if: '$CI_COMMIT_BRANCH == "develop"'
       when: always
@@ -55,7 +55,7 @@ config:unstable:
   tags:
     - silicon
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != develop'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
       when: manual
     - if: '$CI_COMMIT_BRANCH == "develop"'
       when: always
@@ -87,7 +87,7 @@ release:unstable:
   tags:
      - silicon
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != develop'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
       when: manual
     - if: '$CI_COMMIT_BRANCH == "develop"'
       when: always
@@ -131,7 +131,7 @@ release:singularity:unstable:
      - develop
   needs: ["release:unstable"]
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != develop'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
       when: manual
     - if: '$CI_COMMIT_BRANCH == "develop"'
       when: manual
