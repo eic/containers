@@ -6,6 +6,7 @@
 from spack import *
 
 
+
 class Acts(CMakePackage, CudaPackage):
     """
     A Common Tracking Software (Acts)
