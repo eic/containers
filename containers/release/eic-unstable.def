@@ -1,0 +1,18 @@
+Bootstrap: docker
+From: eicweb.phy.anl.gov:4567/containers/eic_container/eic:unstable
+
+%help
+  EIC software container.
+  Tools:
+     - eic_shell   : Bash shell in this container
+     - root        : Root shell in the container
+     - ipython     : Python shell in the container
+
+%labels
+  Maintainer "Whitney Armstrong, Sylvester Joosten"
+  Version v2.x
+
+%post -c /bin/bash
+  echo "  -------------------------------------------------"
+  echo "  ===> Image setup complete"
+  echo "  -------------------------------------------------"

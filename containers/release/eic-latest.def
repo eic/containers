@@ -10,7 +10,7 @@ From: eicweb.phy.anl.gov:4567/containers/eic_container/eic:latest
 
 %labels
   Maintainer "Whitney Armstrong, Sylvester Joosten"
-  Version v2.0
+  Version v2.x
 
 %post -c /bin/bash
   echo "  -------------------------------------------------"
