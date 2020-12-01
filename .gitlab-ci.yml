@@ -137,46 +137,6 @@ release:unstable:
      - make login
      - make develop-cached
 
-builder:singularity:
-  stage: singularity
-  tags:
-     - silicon
-  only:
-     - tags
-  needs: ["builder:stable"]
-  when: manual
-  script:
-     - cp containers/builder/eic_builder.def .
-     - /bin/bash .gitlabci/setup.sh
-     - /bin/bash .gitlabci/build.sh eic_builder.def
-     - mkdir -p build 
-     - cp eic_builder.sif build/.
-     - cp eic_builder.def build/.
-  artifacts:
-      paths:
-        - build/eic_builder.sif
-        - build/eic_builder.def
-
-builder:singularity:unstable:
-  stage: singularity
-  tags:
-     - silicon
-  only:
-     - develop
-  needs: ["builder:unstable"]
-  when: manual
-  script:
-     - cp containers/builder/eic_builder.def .
-     - /bin/bash .gitlabci/setup.sh
-     - /bin/bash .gitlabci/build.sh eic_builder.def
-     - mkdir -p build 
-     - cp eic_builder.sif build/.
-     - cp eic_builder.def build/.
-  artifacts:
-      paths:
-        - build/eic_builder.sif
-        - build/eic_builder.def
-
 release:singularity:
   stage: singularity
   tags:
@@ -196,7 +156,48 @@ release:singularity:
       paths:
         - build/eic.sif
         - build/eic.def
-
+release:singularity:stable:
+  stage: singularity
+  tags:
+     - silicon
+  only:
+     - master
+  when: 
+     - manual
+  needs: ["release:stable"]
+  script:
+     - cp containers/release/eic.def .
+     - /bin/bash .gitlabci/setup.sh
+     - /bin/bash .gitlabci/build.sh eic.def
+     - mkdir -p build 
+     - cp eic.sif build/.
+     - cp eic.def build/.
+  artifacts:
+      expire_in: 90 days # this will change in future gitlab vesions :https://docs.gitlab.com/13.3/ee/ci/yaml/README.html#artifactsexpire_in
+      paths:
+        - build/eic.sif
+        - build/eic.def
+release:singularity:testing:
+  stage: singularity
+  tags:
+     - silicon
+  only:
+     - staging
+  when: 
+     - manual
+  needs: ["release:testing"]
+  script:
+     - cp containers/release/eic.def .
+     - /bin/bash .gitlabci/setup.sh
+     - /bin/bash .gitlabci/build.sh eic.def
+     - mkdir -p build 
+     - cp eic.sif build/.
+     - cp eic.def build/.
+  artifacts:
+      expire_in: 90 days # this will change in future gitlab vesions :https://docs.gitlab.com/13.3/ee/ci/yaml/README.html#artifactsexpire_in
+      paths:
+        - build/eic.sif
+        - build/eic.def
 release:singularity:unstable:
   stage: singularity
   tags:
