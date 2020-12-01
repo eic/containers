@@ -10,7 +10,7 @@ mkdir -p config
 cp /etc/profile.d/z10_spack_environment.sh config/spack-env.sh
 
 export BRANCH=$1
-if [ ${BRANCH} == "release" ];
+if [ ${BRANCH} == "release" ]; then
   export TAG="latest"
 else
   export TAG="unstable"
