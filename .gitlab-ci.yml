@@ -36,6 +36,8 @@ default:
       else
         export RELEASE_TARGET="${BRANCH}-cached"
       fi
+  tags:
+    - silicon
 
 ## Stable or unstable branch?
 init:stable:
@@ -72,8 +74,6 @@ init:release-nc:
 
 builder:
   stage: builder
-  tags:
-    - silicon
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
@@ -93,8 +93,6 @@ builder:
 config:stable:
   image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest
   stage: config
-  tags:
-    - silicon
   only:
     - tags
     - master
@@ -103,8 +101,6 @@ config:stable:
 config:unstable:
   image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:unstable
   stage: config
-  tags:
-    - silicon
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
       when: manual
@@ -115,8 +111,6 @@ config:unstable:
       
 release:
   stage: slim
-  tags:
-     - silicon
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
@@ -135,8 +129,6 @@ release:
 
 release:singularity:
   stage: singularity
-  tags:
-     - silicon
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: manual
