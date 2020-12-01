@@ -162,7 +162,7 @@ builder:singularity:unstable:
   tags:
      - singularity
   only:
-     - tags
+     - develop
   needs: ["builder:unstable"]
   when: manual
   script:
@@ -182,7 +182,7 @@ release:singularity:
   tags:
      - singularity
   only:
-     - develop
+     - tags
   needs: ["release:stable"]
   script:
      - cp containers/release/eic.def .
