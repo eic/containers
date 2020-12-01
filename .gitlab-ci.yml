@@ -162,8 +162,7 @@ release:singularity:stable:
      - silicon
   only:
      - master
-  when: 
-     - manual
+  when: manual
   needs: ["release:stable"]
   script:
      - cp containers/release/eic.def .
@@ -183,8 +182,7 @@ release:singularity:testing:
      - silicon
   only:
      - staging
-  when: 
-     - manual
+  when: manual
   needs: ["release:testing"]
   script:
      - cp containers/release/eic.def .
