@@ -32,11 +32,9 @@ COPY spack.yaml /opt/spack-environment/spack.yaml
 ##       and only initialize the custom packages here for more
 ##       transparency
 RUN rm -rf $SPACK_ROOT/np-spack \
- && pwd \
- && cp -r ../../spack $SPACK_ROOT/np-spack \
- && cd $SPACK_ROOT/np-spack \
  && echo "repos:" > $SPACK_ROOT/etc/spack/repos.yaml \
  && echo " - $SPACK_ROOT/np-spack" >> $SPACK_ROOT/etc/spack/repos.yaml
+COPY np-spack $SPACK_ROOT/np-spack
 
 ## Install the software, no garbage collection at this stage
 ## as this is a raw builder image
