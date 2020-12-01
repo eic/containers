@@ -146,7 +146,6 @@ release:singularity:
       when: on_success
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH != "develop"'
       when: manual
-  needs: ["release:stable"]
   script:
      - cp containers/release/${SINGULARITY_DEF} eic.def
      - /bin/bash .gitlabci/setup.sh
