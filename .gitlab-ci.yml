@@ -15,7 +15,6 @@ default:
   artifacts:
     paths: 
       - .ci-env
-      - config
   before_script:
     - mkdir -p .ci-env
     - |
