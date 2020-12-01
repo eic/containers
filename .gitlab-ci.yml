@@ -140,7 +140,7 @@ release:unstable:
 builder:singularity:
   stage: singularity
   tags:
-     - singularity
+     - silicon
   only:
      - tags
   needs: ["builder:stable"]
@@ -160,7 +160,7 @@ builder:singularity:
 builder:singularity:unstable:
   stage: singularity
   tags:
-     - singularity
+     - silicon
   only:
      - develop
   needs: ["builder:unstable"]
@@ -180,7 +180,7 @@ builder:singularity:unstable:
 release:singularity:
   stage: singularity
   tags:
-     - singularity
+     - silicon
   only:
      - tags
   needs: ["release:stable"]
@@ -200,7 +200,7 @@ release:singularity:
 release:singularity:unstable:
   stage: singularity
   tags:
-     - singularity
+     - silicon
   only:
      - develop
   needs: ["release:unstable"]
