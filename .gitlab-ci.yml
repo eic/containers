@@ -157,13 +157,54 @@ builder:singularity:
         - build/eic_builder.sif
         - build/eic_builder.def
 
-release:singularity:
+builder:singularity:unstable:
   stage: singularity
   tags:
      - singularity
   only:
      - tags
+  needs: ["builder:unstable"]
+  when: manual
+  script:
+     - cp containers/builder/eic_builder.def .
+     - /bin/bash .gitlabci/setup.sh
+     - /bin/bash .gitlabci/build.sh eic_builder.def
+     - mkdir -p build 
+     - cp eic_builder.sif build/.
+     - cp eic_builder.def build/.
+  artifacts:
+      paths:
+        - build/eic_builder.sif
+        - build/eic_builder.def
+
+release:singularity:
+  stage: singularity
+  tags:
+     - singularity
+  only:
+     - develop
   needs: ["release:stable"]
+  script:
+     - cp containers/release/eic.def .
+     - /bin/bash .gitlabci/setup.sh
+     - /bin/bash .gitlabci/build.sh eic.def
+     - mkdir -p build 
+     - cp eic.sif build/.
+     - cp eic.def build/.
+  artifacts:
+      expire_in: 90 days # this will change in future gitlab vesions :https://docs.gitlab.com/13.3/ee/ci/yaml/README.html#artifactsexpire_in
+      paths:
+        - build/eic.sif
+        - build/eic.def
+
+release:singularity:unstable:
+  stage: singularity
+  tags:
+     - singularity
+  only:
+     - develop
+  needs: ["release:unstable"]
+  when: manual
   script:
      - cp containers/release/eic.def .
      - /bin/bash .gitlabci/setup.sh

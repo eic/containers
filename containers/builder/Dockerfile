@@ -1,6 +1,6 @@
 # Builder with Argonne EIC software
 #
-FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_spack:snapshot-20201025
+FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_spack:snapshot-20201117
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="eic_builder" \
@@ -11,7 +11,7 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 
 ENV DOCKERFILE_BASE=debian            \
     DOCKERFILE_DISTRO=debian          \
-    DOCKERFILE_DISTRO_VERSION=20201012-testing \
+    DOCKERFILE_DISTRO_VERSION=20201117-testing \
     SPACK_ROOT=/opt/spack             \
     DEBIAN_FRONTEND=noninteractive    \
     CURRENTLY_BUILDING_DOCKER_IMAGE=1 \
@@ -24,18 +24,18 @@ RUN apt-get -yqq update \
         gv \
  && rm -rf /var/lib/apt/lists/*
 
+## Setup our environment definition
+COPY spack.yaml /opt/spack-environment/spack.yaml
+
 ## Ensure an up-to-date custom package list
 RUN rm -rf $SPACK_ROOT/np-spack \
  && git clone https://eicweb.phy.anl.gov/EIC/np-spack.git $SPACK_ROOT/np-spack \
  && cd $SPACK_ROOT/np-spack \
- && git checkout snapshot-`echo $(spack --version) | cut -d- -f3` \
+ && git checkout v$(spack --version) \
  && cd - \
  && echo "DISABLED: rm -rf $SPACK_ROOT/np-spack/.git" \
  && echo "repos:" > $SPACK_ROOT/etc/spack/repos.yaml \
  && echo " - $SPACK_ROOT/np-spack" >> $SPACK_ROOT/etc/spack/repos.yaml
-
-## Setup our environment definition
-COPY spack.yaml /opt/spack-environment/spack.yaml
 
 ## Install the software, no garbage collection at this stage
 ## as this is a raw builder image
@@ -61,7 +61,7 @@ RUN cd /opt/spack-environment && spack env activate . \
  #&& spack install \
  #&& spack clean -a
 
-## Strip the binaries
+## Strip the binaries/DISABLED for builder, do this for release step
 #RUN find -L /usr/local/* -type f -exec readlink -f '{}' \; | \
 #    xargs file -i | \
 #    grep 'charset=binary' | \
@@ -81,7 +81,7 @@ RUN cd /opt/spack-environment \
  && spack env activate . \
  && export PODIO=`spack find -p podio | grep software | awk '{print $2}'` \
  && echo "export PODIO=${PODIO};" >> /etc/profile.d/z10_spack_environment.sh \
- && echo "export BINARY_TAG=x86_64-linux-gcc9-opt" >> /etc/profile.d/z10_spack_environment.sh
+ && echo "export BINARY_TAG=x86_64-linux-gcc10-opt" >> /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
