@@ -58,6 +58,9 @@ release:docker:
     - make $TARGET_RELEASE
     - echo "Publishing image $PUBLISH"
     - make $PUBLISH
+  artifacts:
+    paths:
+      - config
 
 release:singularity:
   stage: singularity

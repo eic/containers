@@ -9,12 +9,7 @@ mkdir -p config
 
 cp /etc/profile.d/z10_spack_environment.sh config/spack-env.sh
 
-export BRANCH=$1
-if [ ${BRANCH} == "release" ]; then
-  export TAG="latest"
-else
-  export TAG="unstable"
-fi
+export TAG=$1
 
 ## Spack sets the man-path, which stops bash from using the default man-path
 ## We can fix this by appending a trailing colon to MANPATH
