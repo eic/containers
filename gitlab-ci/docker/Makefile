@@ -12,8 +12,8 @@ export $(shell sed 's/=.*//' $(cnf))
 SHELL = bash
 
 ## Get our version tag and stable version tag
-VERSION=$(shell head -n1 ../../VERSION)
-STABLE=$(shell echo ${$(head -n1 ../../VERSION)%.*}-stable)
+VERSION=$(shell bash version.sh)
+STABLE=$(shell bash version-stable.sh)
 
 # help will output the help for each task
 # thanks to https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
@@ -39,7 +39,7 @@ build-unstable-nc: ## Build the container without caching (from scratch)
 # ==========================================================================
 #
 login: ## Auto login to AWS-ECR unsing aws-cli
-	docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}/${CI_PROJECT_PATH}
+	docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
 	echo "Login COMPLETE"
 
 stable: build-nc
