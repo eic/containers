@@ -16,7 +16,6 @@ detect_changes:builder:
   stage: .pre
   rules:
     - changes:
-        - gitlab-ci/docker/*
         - containers/builder/Dockerfile
         - containers/builder/spack.yaml
         - spack/packages/**/*
@@ -27,8 +26,6 @@ detect_changes:release:
   stage: .pre
   rules:
     - changes:
-        - gitlab-ci/docker/*
-        - gitlab-ci/singularity/*
         - containers/release/Dockerfile.in
         - containers/release/configure_release.sh
   script:
