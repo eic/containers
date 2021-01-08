@@ -74,8 +74,7 @@ release:singularity:
       when: on_success
   script:
      - cp config/eic.def eic.def
-     - /bin/bash .gitlabci/setup.sh
-     - /bin/bash .gitlabci/build.sh eic.def
+     - /bin/bash gitlab-ci/singularity/build.sh eic.def
      - mkdir -p build 
      - cp eic.sif build/.
      - cp eic.def build/.
