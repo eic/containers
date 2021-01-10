@@ -4,7 +4,6 @@ stages:
   - build
   - config
   - package
-  - singularity
 
 ## variables:
 ##   - TARGET_XXX: docker build target (including cache modifier) 
@@ -40,12 +39,12 @@ config:
   stage: config
   needs: ["builder"]
   script:
-    - bash containers/release/configure_release.sh $TAG
+    - bash containers/release/configure_dockerfile.sh $TAG
   artifacts:
     paths:
       - config
       
-release:docker:
+release:
   stage: package
   needs: ["config"]
   script:
@@ -61,25 +60,3 @@ release:docker:
   artifacts:
     paths:
       - config
-
-release:singularity:
-  stage: singularity
-  needs: ["release:docker"]
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - if: '$CI_COMMIT_BRANCH == "v@TAG@"'
-      when: on_success
-    - if: '$CI_COMMIT_TAG == "v@TAG@"'
-      when: on_success
-  script:
-     - cp config/eic.def eic.def
-     - /bin/bash gitlab-ci/singularity/build.sh eic.def
-     - mkdir -p build 
-     - cp eic.sif build/.
-     - cp eic.def build/.
-  artifacts:
-      expire_in: 90 days
-      paths:
-        - build/eic.sif
-        - build/eic.def

@@ -1,11 +1,18 @@
 #!/bin/bash
 
-## Configure a CI pipeline based on a template file (first and only
+## Configure a CI file based on a template file (first and only
 ## argument to this script).
+
+## Known variables that will be substituted:
+## @TAG@             - docker tag used for this build
+## @TARGET_BUILDER@  - docker Makefile target for the builder image
+## @TARGET_RELEASE@  - docker Makefile target for the release image
+## @PUBLISH@         - docker push Makefile target
+
 TEMPLATE_FILE=$1
 OUTPUT_FILE=`basename ${TEMPLATE_FILE} .in`
 
-echo "Configuring pipeline script: ${TEMPLATE_FILE}"
+echo "Configuring CI file: ${TEMPLATE_FILE}"
 echo "Output will be written to: ${OUTPUT_FILE}"
 
 VERSION=`head -n1 VERSION`

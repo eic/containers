@@ -24,8 +24,3 @@ grep export config/spack-env.sh | \
 sed '/^@ENV@/r config/eic-env.sh' containers/release/Dockerfile.in | \
   sed '/^@ENV@/d' | \
   sed "s/@TAG@/$TAG/" > config/Dockerfile
-
-## And release singularity definition
-sed '/^@ENV@/r config/eic-env.sh' containers/release/eic.def.in | \
-  sed '/^@ENV@/d' | \
-  sed "s/@TAG@/$TAG/" > config/eic.def
