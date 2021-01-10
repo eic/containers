@@ -2,7 +2,8 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 
 stages:
   - config
-  - trigger
+  - build
+  - deploy
 
 ## make note if we cannot use caching for one of the stages
 ## by touching files in .ci_env
@@ -36,16 +37,37 @@ detect_changes:release:
 init:
   stage: config
   script:
-    - ./gitlab-ci/configure_pipeline.sh gitlab-ci/build_and_deploy.yml.in
+    - ./gitlab-ci/configure.sh gitlab-ci/build_and_deploy.yml.in
   artifacts:
     paths:
       - build_and_deploy.yml
 
 ## Dispatch if we ran the previous stage
 run:default:
-  stage: trigger
+  stage: build
   trigger:
     include: 
       - artifact: build_and_deploy.yml
         job: init
     strategy: depend
+
+singularity:
+  stage: deploy
+  needs: ["run:default"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH =~ /v[0-9]+\.[0-9]+-stable/'
+      when: on_success
+    - if: '$CI_COMMIT_TAG =~ /v[0-9]+\.[0-9]+\.[0-9]+/'
+      when: on_success
+  script:
+     - mkdir -p build 
+     - cd build
+     - ../gitlab-ci/configure.sh ../containers/release/eic.def.in
+     - /bin/bash ../gitlab-ci/singularity/build.sh eic.def
+  artifacts:
+      expire_in: 90 days
+      paths:
+        - build/eic.sif
+        - build/eic.def
