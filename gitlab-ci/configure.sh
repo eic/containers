@@ -47,11 +47,17 @@ fi
 TARGET_BUILDER=$TARGET
 TARGET_RELEASE=$TARGET
 
-if [ ! -f .ci_env/buider-nc ]; then
+if [ ! -f .ci-env/builder-nc ]; then
+  echo "Can use cached build directive for builder"
   TARGET_BUILDER="${TARGET_BUILDER}-cached"
+else
+  echo "No-cache required for builder"
 fi
-if [ ! -f .ci_env/release-nc ]; then
-  TARGET_BUILDER="${TARGET_RELEASE}-cached"
+if [ ! -f .ci-env/release-nc ]; then
+  echo "Can use cached build directive for release"
+  TARGET_RELEASE="${TARGET_RELEASE}-cached"
+else
+  echo "No-cache required for release"
 fi
 
 sed "s/@TAG@/$TAG/g" $TEMPLATE_FILE | \

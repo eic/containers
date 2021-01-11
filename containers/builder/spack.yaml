@@ -12,7 +12,7 @@ spack:
     - py-numpy
     - py-pyyaml
     - xrootd@4.12.3 cxxstd=17 +python
-    - root@6.22.00 cxxstd=17 
+    - root@6.22.06 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc +xrootd +ssl ^mesa+opengl 
           -llvm -osmesa
@@ -20,7 +20,7 @@ spack:
     - hepmc3@3.2.2 +python +rootio 
     - stow@2.3.1
     - cairo+fc+ft+X+pdf+gobject
-    - podio@master
+    - podio@0.13
     - geant4@10.6.2 cxxstd=17 +opengl +vecgeom +x11 +qt ^qt +opengl
     - dd4hep@1.14.1 +geant4 +assimp +hepmc3 +ipo
     - acts@1.02.0 +dd4hep +digitization +identification +json +tgeo +ipo
