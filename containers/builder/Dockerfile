@@ -17,6 +17,7 @@ ENV DOCKERFILE_BASE=debian            \
     CURRENTLY_BUILDING_DOCKER_IMAGE=1 \
     container=docker
 
+
 ## install ghostview/ghostscript needed by some of the tools
 RUN apt-get -yqq update \
  && apt-get -yqq install --no-install-recommends \
@@ -26,6 +27,10 @@ RUN apt-get -yqq update \
 
 ## Setup our environment definition
 COPY spack.yaml /opt/spack-environment/spack.yaml
+
+## Utility script to update the build cache
+## TODO: move this upstream to debian_spack
+COPY update_buildcache.sh /usr/sbin/update_buildcache
 
 ## Ensure an up-to-date custom package list
 ## TODO: We should just remove this from the upstream container

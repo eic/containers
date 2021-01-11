@@ -37,7 +37,7 @@ detect_changes:release:
 init:
   stage: config
   script:
-    - ./gitlab-ci/configure.sh gitlab-ci/build_and_deploy.yml.in
+    - ./gitlab-ci/configure.sh containers/build_and_deploy.yml.in
   artifacts:
     paths:
       - build_and_deploy.yml
