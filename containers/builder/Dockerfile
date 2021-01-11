@@ -68,7 +68,7 @@ RUN cd /opt/spack-environment \
  && spack env activate . \
  && export PODIO=`spack find -p podio | grep software | awk '{print $2}'` \
  && echo "export PODIO=${PODIO};" >> /etc/profile.d/z10_spack_environment.sh \
- && echo "export BINARY_TAG=x86_64-linux-gcc10-opt" >> /etc/profile.d/z10_spack_environment.sh
+ && echo "export BINARY_TAG=x86_64-linux-gcc9-opt" >> /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
