@@ -1,6 +1,6 @@
 # Builder with Argonne EIC software
 #
-FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_spack:snapshot-20201117
+FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_spack:snapshot-20210111
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="eic_builder" \
@@ -11,7 +11,7 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 
 ENV DOCKERFILE_BASE=debian            \
     DOCKERFILE_DISTRO=debian          \
-    DOCKERFILE_DISTRO_VERSION=20201117-testing \
+    DOCKERFILE_DISTRO_VERSION=20210111-testing \
     SPACK_ROOT=/opt/spack             \
     DEBIAN_FRONTEND=noninteractive    \
     CURRENTLY_BUILDING_DOCKER_IMAGE=1 \
@@ -27,10 +27,6 @@ RUN apt-get -yqq update \
 
 ## Setup our environment definition
 COPY spack.yaml /opt/spack-environment/spack.yaml
-
-## Utility script to update the build cache
-## TODO: move this upstream to debian_spack
-COPY update_buildcache.sh /usr/sbin/update_buildcache
 
 ## Ensure an up-to-date custom package list
 ## TODO: We should just remove this from the upstream container
