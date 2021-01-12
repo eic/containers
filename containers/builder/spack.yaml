@@ -1,6 +1,6 @@
 spack:
   specs:
-    - cmake@3.18.4
+    - cmake@3.18.1
     - fmt@7.1.2 cxxstd=17
     - spdlog@1.5.0
     - nlohmann-json@3.9.1
@@ -23,7 +23,7 @@ spack:
     - podio@0.13
     - geant4@10.6.2 cxxstd=17 +opengl +vecgeom +x11 +qt ^qt +opengl
     - dd4hep@1.14.1 +geant4 +assimp +hepmc3 +ipo
-    - acts@1.02.0 +dd4hep +digitization +identification +json +tgeo +ipo ^eigen@3.3.7
+    - acts@1.02.0 +dd4hep +digitization +identification +json +tgeo +ipo
     - gaudi@34.0
     - dawn@3_91a
     - dawncut@1_54a
