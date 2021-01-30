@@ -27,5 +27,6 @@ spack:
     - gaudi@34.0
     - dawn@3_91a
     - dawncut@1_54a
+    - opencascade
   concretization: together
   view: /usr/local
