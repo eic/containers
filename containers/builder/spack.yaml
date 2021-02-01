@@ -23,7 +23,7 @@ spack:
     - podio@0.13
     - geant4@10.6.2 cxxstd=17 +opengl +vecgeom +x11 +qt ^qt +opengl
     - dd4hep@1.14.1 +geant4 +assimp +hepmc3 +ipo
-    - acts@4.01.0 +dd4hep +digitization +identification +json +tgeo +ipo
+    - acts@5.00.0 +dd4hep +digitization +identification +json +tgeo +ipo
     - gaudi@34.0
     - dawn@3_91a
     - dawncut@1_54a
