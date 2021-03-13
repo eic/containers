@@ -55,25 +55,25 @@ publish-stable: login
 	@echo 'publish $(STABLE) to $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME)'
 	docker tag $(APP_NAME):$(VERSION) $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(STABLE)
 	docker push $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(STABLE)
-	docker rmi $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(STABLE)
+	docker rmi $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(STABLE) || true
 
 publish-latest: login 
-	@echo 'publish latest to $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME)'
+	echo 'publish latest to $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME)'
 	docker tag $(APP_NAME):$(VERSION) $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
 	docker push $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
-	docker rmi $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest
+	docker rmi $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):latest || true
 
 publish-version: login 
 	@echo 'publish $(STABLE) to $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME)'
 	docker tag $(APP_NAME):$(VERSION) $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(VERSION)
 	docker push $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(VERSION)
-	docker rmi $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(VERSION)
+	docker rmi $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):$(VERSION) || true
 
 publish-unstable: login 
 	@echo 'publish unstable to $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME)'
 	docker tag $(APP_NAME):$(VERSION)-unstable $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):unstable
 	docker push $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):unstable
-	docker rmi $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):unstable
+	docker rmi $(REG_NAME)/$(GL_REG_GROUP)/$(APP_NAME):unstable || true
 
 version: ## Output the current version
 	@echo $(VERSION)

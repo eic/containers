@@ -40,6 +40,16 @@ init:
     paths:
       - build_and_deploy.yml
 
+## Quick debug build for new spack packages
+#run:quick_build:
+#  image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest
+#  stage: build
+#  script:
+#    - rm -r /opt/spack/np-spack && cp -r spack /opt/spack/np-spack
+#    - source /opt/spack/share/spack/setup-env.sh
+#    - spack env activate /opt/spack-environment
+#    - spack add madx && spack install
+
 ## Dispatch if we ran the previous stage
 run:default:
   stage: build
