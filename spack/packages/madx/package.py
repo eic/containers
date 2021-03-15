@@ -43,6 +43,7 @@ class Madx(CMakePackage):
     #variant('pythia8', default=False, description='Build the Pythia8-based examples')
 
     depends_on("libx11")
+    depends_on("zlib")
 
     # Build dependencies
     # FIXME: Use spack's autodiff package once there is one
