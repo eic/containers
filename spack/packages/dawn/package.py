@@ -30,8 +30,11 @@ class Dawn(MakefilePackage):
           installed on your system.
     """
 
+    # Note: Dawn homepage not available anymore...
     homepage = "https://geant4.kek.jp/~tanaka"
-    url      = "http://geant4.kek.jp/~tanaka/src/dawn_3_91a.tgz"
+    #url      = "http://geant4.kek.jp/~tanaka/src/dawn_3_91a.tgz"
+    url      = "http://10.10.241.24/software/dawn_3_91a.tgz"
+
     maintainers = ['sly2j']
 
     version('3_91a', sha256='81d855ead1117681b188242dd0be3a24e005d9bd4063fd2bda9a7a794ebcf5f4')

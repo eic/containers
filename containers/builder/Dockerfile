@@ -1,6 +1,6 @@
 # Builder with Argonne EIC software
 #
-FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_spack:snapshot-20210111
+FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_spack:snapshot-20210408
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="eic_builder" \
@@ -11,7 +11,7 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 
 ENV DOCKERFILE_BASE=debian            \
     DOCKERFILE_DISTRO=debian          \
-    DOCKERFILE_DISTRO_VERSION=20210111-testing \
+    DOCKERFILE_DISTRO_VERSION=20210408-testing \
     SPACK_ROOT=/opt/spack             \
     DEBIAN_FRONTEND=noninteractive    \
     CURRENTLY_BUILDING_DOCKER_IMAGE=1 \

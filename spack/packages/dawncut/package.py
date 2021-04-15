@@ -13,8 +13,9 @@ class Dawncut(MakefilePackage):
     visualized with Fukui Renderer DAWN.
     """
 
+    # dawn webpage not available anymore
     homepage = "https://geant4.kek.jp/~tanaka"
-    url = "http://10.10.241.20/software/dawncut_1_54a.tar.gz"
+    url = "http://10.10.241.24/software/dawncut_1_54a.tar.gz"
     maintainers = ['sly2j']
 
     version('1_54a',
