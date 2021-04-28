@@ -27,14 +27,14 @@ help: ## This help.
 # ==========================================================================
 #
 build: ## build the image
-	docker build -t $(APP_NAME):$(VERSION) .
+	DOCKER_BUILDKIT=1 docker build -t $(APP_NAME):$(VERSION) .
 build-unstable: ## build the image
-	docker build -t $(APP_NAME):$(VERSION)-unstable .
+	DOCKER_BUILDKIT=1 docker build -t $(APP_NAME):$(VERSION)-unstable .
 
 build-nc: ## Build the container without caching (from scratch)
-	docker build --no-cache -t $(APP_NAME):$(VERSION) .
+	DOCKER_BUILDKIT=1 docker build --no-cache -t $(APP_NAME):$(VERSION) .
 build-unstable-nc: ## Build the container without caching (from scratch)
-	docker build --no-cache -t $(APP_NAME):$(VERSION)-unstable .
+	DOCKER_BUILDKIT=1 docker build --no-cache -t $(APP_NAME):$(VERSION)-unstable .
 
 # ==========================================================================
 #
