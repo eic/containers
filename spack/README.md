@@ -16,7 +16,7 @@ Then use spack as you normally would.
     - `dawn`: A tool to visualize detector geometries.
     - `dawncut`: A tool to edit detector visualizations.
   * Package overrides
-    * `dd4hep`: REMOVED Disabled use of the Ninja backend for cmake as it was running into dependency issues building assymp
+    * `acts`: Add version 8.0 and 8.1
     * `fmt`: Modified compiler flags to build shared library version.
     * `madx`: Add madx package
     * `mesa`: fix issue in meson step
