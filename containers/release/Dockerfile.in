@@ -44,6 +44,17 @@ COPY --from=builder /opt/software /opt/software
 RUN rm -rf /usr/local
 COPY --from=builder /usr/local /usr/local
 
+## install gitlab-runner FIXME: needs to be consolidated with other installs
+## installing package from buster (stable) instead of bullseye (testing)
+RUN curl -L \
+    "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | \
+    bash \
+ && sed -i "s/bullseye/buster/" /etc/apt/sources.list.d/runner_gitlab-runner.list \
+ && apt-get update \
+ && apt-get -yqq install --no-install-recommends gitlab-runner \
+ && apt-get -yqq autoremove \
+ && rm -rf /var/lib/apt/lists/*
+
 ## eic-shell and environment scripts. Not strictly needed anymore now we auto-load
 ## the environment but still provided for backward compatibility (and documentation).
 COPY eic-shell /usr/local/bin/eic-shell
