@@ -6,7 +6,10 @@ RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 
 # Strip all the binaries
 # This reduces the image size from 3.2GB --> 1.7GB so worth the time
-RUN find -L /usr/local/* -type f -exec readlink -f '{}' \; | \
+RUN find -L /usr/local/* \
+         -type d -name site-packages -prune -false -o \
+         -type f -not -name "zdll.lib" \
+         -exec readlink -f '{}' \; | \
     xargs file -i | \
     grep 'charset=binary' | \
     grep 'x-executable\|x-archive\|x-sharedlib' | \
