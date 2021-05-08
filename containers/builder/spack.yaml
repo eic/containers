@@ -14,7 +14,7 @@ spack:
     - xrootd@5.1.0 cxxstd=17 +python
     - root@6.22.08 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
-          +root7 +tmva +vc +xrootd +ssl ^mesa+opengl 
+          +root7 +vc +xrootd +ssl ^mesa+opengl 
           -llvm -osmesa
     - pythia8@8303
     - hepmc3@3.2.2 +python +rootio 
