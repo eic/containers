@@ -10,8 +10,8 @@ spack:
     - eigen@3.3.9
     - python@3.7.8
     - py-pip
-    - py-numpy@2.3.2
-    - py-tensorflow
+    - py-numpy
+    - py-tensorflow@2.3.2
     - py-pyyaml
     - xrootd@5.1.0 cxxstd=17 +python
     - root@6.22.08 cxxstd=17 
