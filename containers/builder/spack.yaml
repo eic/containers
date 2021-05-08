@@ -11,6 +11,7 @@ spack:
     - python@3.7.8
     - py-pip
     - py-numpy
+    - py-tensorflow
     - py-pyyaml
     - xrootd@5.1.0 cxxstd=17 +python
     - root@6.22.08 cxxstd=17 
