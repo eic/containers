@@ -6,14 +6,15 @@ RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 
 # Strip all the binaries
 # This reduces the image size from 3.2GB --> 1.7GB so worth the time
-RUN find -L /usr/local/* \
-         -type d -name site-packages -prune -false -o \
-         -type f -not -name "zdll.lib" \
-         -exec readlink -f '{}' \; | \
-    xargs file -i | \
-    grep 'charset=binary' | \
-    grep 'x-executable\|x-archive\|x-sharedlib' | \
-    awk -F: '{print $1}' | xargs strip -s
+#RUN find -L /usr/local/* \
+#         -type d -name site-packages -prune -false -o \
+#         -type f -not -name "zdll.lib" \
+#         -type f -not -name "libtinfo.so" \
+#         -exec readlink -f '{}' \; | \
+#    xargs file -i | \
+#    grep 'charset=binary' | \
+#    grep 'x-executable\|x-archive\|x-sharedlib' | \
+#    awk -F: '{print $1}' | xargs strip -s
 
 FROM eicweb.phy.anl.gov:4567/containers/image_recipes/debian_minimal:testing-20210408
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
