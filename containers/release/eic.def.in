@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: eicweb.phy.anl.gov:4567/containers/eic_container/eic:@TAG@
+From: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:@TAG@
 
 %help
   EIC software container.
