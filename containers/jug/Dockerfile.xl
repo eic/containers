@@ -1,0 +1,68 @@
+#syntax=docker/dockerfile:1.2
+ARG INTERNAL_TAG="testing" 
+
+## ========================================================================================
+## STAGE1: spack builder image
+## EIC builder image with spack
+## ========================================================================================
+FROM eicweb.phy.anl.gov:4567/containers/eic_container/jug_dev:${INTERNAL_TAG}
+
+ARG JUGGLER_VERSION="master"
+ARG NPDET_VERSION="master"
+ARG EICD_VERSION="master"
+
+## cachebust that can change values to trigger a rebuild, useful for nightly builds
+## off the master
+ARG CACHEBUST=1
+RUN cd /tmp                                                                     \
+ && echo "INSTALLING NPDET"                                                     \
+ && git clone -b ${NPDET_VERSION}  https://eicweb.phy.anl.gov/EIC/NPDet.git     \
+ && cmake -B build -S NPDet -DCMAKE_CXX_STANDARD=17                             \
+ && cmake --build build -j12 -- install                                         \
+ && rm -rf build NPDet                                                          \
+ && echo "INSTALLING EICD"                                                      \
+ && git clone -b ${EICD_VERSION}  https://eicweb.phy.anl.gov/EIC/eicd.git       \
+ && cmake -B build -S eicd -DCMAKE_CXX_STANDARD=17                              \  
+ && cmake --build build -j12 -- install                                         \
+ && rm -rf build eicd                                                           \
+ && echo "INSTALLING JUGGLER"                                                   \
+ && git clone -b ${JUGGLER_VERSION} https://eicweb.phy.anl.gov/EIC/juggler.git  \
+ && cmake -B build -S juggler -DCMAKE_CXX_STANDARD=17                           \      
+ && cmake --build build -j12 -- install                                         \
+ && rm -rf build juggler
+
+## also install detector/ip geometries into opt
+## FIXME: need to add proper compact file install directly to the reference detector
+##        build
+ARG DETECTOR_VERSION="master"
+ARG IP6_VERSION="master"
+ARG ACCELERATOR_VERSION="master"
+RUN cd /tmp                                                                     \
+ && DETECTOR_PREFIX=/opt/detector                                               \
+ && DETECTOR_DATA=$DETECTOR_PREFIX/share/reference_detector                     \
+ && mkdir -p /opt/detector/share/reference_detector                             \
+ && echo "INSTALLING REFERENCE DETECTOR"                                        \
+ && git clone -b ${DETECTOR_VERSION}                                            \
+                https://eicweb.phy.anl.gov/EIC/detectors/reference_detector.git \
+ && cmake -B build -S reference_detector -DCMAKE_CXX_STANDARD=17                \
+          -DCMAKE_INSTALL_PREFIX=${DETECTOR_PREFIX}                             \
+ && cmake --build build -j12 -- install                                         \
+ && cp -r reference_detector/compact                                            \
+          reference_detector/reference_detector.xml                             \
+          ${DETECTOR_DATA}                                                      \
+ && rm -rf build reference_detector                                             \
+ && echo "INSTALLING ACCELERATOR GEOMETRY"                                      \
+ && git clone -b ${ACCELERATOR_VERSION}                                         \
+                https://eicweb.phy.anl.gov/EIC/detectors/accelerator.git        \
+ && cp -r accelerator/eic                                                       \
+          ${DETECTOR_DATA}                                                      \
+ && rm -rf accelerator                                                          \
+ && echo "INSTALLING IP6 GEOMETRY"                                              \
+ && git clone -b ${IP6_VERSION}                                                 \
+                https://eicweb.phy.anl.gov/EIC/detectors/ip6.git                \
+ && cmake -B build -S ip6 -DCMAKE_CXX_STANDARD=17                               \
+          -DCMAKE_INSTALL_PREFIX=${DETECTOR_PREFIX}                             \
+ && cmake --build build -j12 -- install                                         \
+ && cp -r ip6/ip6                                                               \
+          ${DETECTOR_DATA}                                                      \
+ && rm -rf build ip6

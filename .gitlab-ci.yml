@@ -1,81 +1,281 @@
 image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 
+variables:
+  ## Application versions used for the main release ## note: nightly builds will always use the master branch
+  JUGGLER_VERSION: "v1.5.0"
+  NPDET_VERSION: "master"
+  EICD_VERSION: "master"
+  DETECTOR_VERSION: "master"
+  IP6_VERSION: "master"
+  ACCELERATOR_VERSION: "master"
+
+  ## Spack github version
+  SPACK_VERSION: "63915de99b6d4bc7c8b8a22dc45e5c3dd7ee4f26"
+
+  ## We need to enable Docker Buildkit to use cache mounts and better
+  ## build performance overal
+  DOCKER_BUILDKIT: 1
+
+  ## Dockerhub registry
+  DH_REGISTRY: eicweb
+  DH_PUSH: 1
+
+  ## TLS error resiliency: number of retries and second wait between tries 
+  ## (wait time is doubled with each attempt)
+  DOCKER_NTRIES: 5
+  DOCKER_WAIT_TIME: 5
+
+  ## By default this is not a nightly build, unless the CI says so
+  NIGHTLY: 0
+
 stages:
   - config
-  - build
-  - deploy
+  - build:base      ## base OS image
+  - build:dev       ## naked dev container image
+  - build:release   ## dressed release container image
+  - deploy          ## build/deploy singularity images
+  - finalize
 
-## make note if we cannot use caching for one of the stages
-## by touching files in .ci_env
 default:
   tags:
     - silicon
-  artifacts:
-    paths: 
-      - .ci-env
-detect_changes:builder:
-  stage: .pre
-  rules:
-    - changes:
-        - containers/builder/spack.yaml
-        - spack/packages/**/*
-  script:
-    - mkdir -p .ci-env
-    - touch .ci-env/builder-nc
-detect_changes:release:
-  stage: .pre
-  rules:
-    - changes:
-        - containers/release/configure_release.sh
-  script:
-    - mkdir -p .ci-env
-    - touch .ci-env/release-nc
+  before_script:
+    - ./gitlab-ci/docker_login.sh -u $DH_REGISTRY -p $DH_EICWEB_TOKEN
+                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
+    - ./gitlab-ci/docker_login.sh --ci -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
+  after_script:
+    - docker logout
+    - docker logout ${CI_REGISTRY}
 
-## Init our job for our desired branches/tags/events
-init:
+## only run CI for in the following cases:
+## master, stable branch, release tag, MR event and nightly builds
+## not that nightly builds got from the master branch, but with "NIGHTLY" set to
+## 1 which triggers a slightly different workflow
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_BRANCH =~ /v[0-9]+\.[0-9]+-stable/'
+    - if: '$CI_COMMIT_TAG =~ /v[0-9]+\.[0-9]+\.[0-9]+/'
+
+## plan:
+##  Workflows:
+##  - master      --> config + all build stages + singularity
+##  - <nightly>   --> config + build:release only + singularity
+##  - v3.0-stable --> config + all build stages + singularity
+##  - v3.0.0      --> config + all build stages + singularity
+##  - MR          --> config + all build stages
+##
+##  Container images tags
+##  - master      --> testing
+##  - <nightly>   --> nightly
+##  - v3.0-stable --> 3.0-stable
+##  - v3.0.0      --> 3.0-stable, 3.0.0
+##  - MR          --> unstable (on all registries)
+##                --> unstable-mr-XXX (on eicweb only, untag at end of pipeline)
+##  - all other   --> do nothing
+##
+## caching strategy for dispatch to multiple nodes and to avoid
+##  --> try this strategy: https://medium.com/titansoft-engineering/docker-build-cache-sharing-on-multi-hosts-with-buildkit-and-buildx-eb8f7005918e
+##  (first try with buildx didn't pan out, let's try again later)
+
+version:
   stage: config
   script:
-    - ./gitlab-ci/configure.sh containers/build_and_deploy.yml.in
+    - |
+      VERSION=`head -n1 VERSION`
+      STABLE=${VERSION%.*}-stable
+      TESTING="testing"
+      UNSTABLE="unstable"
+    ## determine appropriate major docker tag for this scenario
+    - |
+      ## internal tag used for the CI. Also temporarily tagged
+      ## on eicweb to communicate between jobs (removed in cleanup job)
+      INTERNAL_TAG="testing-$VERSION"
+      ## main export tag, optional secondary export tag,
+      EXPORT_TAG=${TESTING}
+      EXPORT_TAG2=
+      if [ "x${CI_PIPELINE_SOURCE}" == "xmerge_request_event" ]; then
+        INTERNAL_TAG="unstable-mr-${CI_MERGE_REQUEST_ID}"
+        EXPORT_TAG=$UNSTABLE
+        EXPORT_TAG2=
+      elif [ "$CI_COMMIT_TAG" = "v${VERSION}" ]; then
+        INTERNAL_TAG="stable-br-${VERSION}"
+        EXPORT_TAG=${STABLE}
+        EXPORT_TAG2=${VERSION}
+      elif [ "$CI_COMMIT_BRANCH" == "v${STABLE}" ]; then
+        INTERNAL_TAG="stable-tag-${VERSION}"
+        EXPORT_TAG=${STABLE}
+        EXPORT_TAG2=
+      elif [ "$NIGHTLY" != "0" ]; then
+        INTERNAL_TAG="nightly-${VERSION}"
+        EXPORT_TAG="nightly"
+        EXPORT_TAG2=
+      fi
+      echo "INTERNAL_TAG=$INTERNAL_TAG" >> build.env
+      echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
+      echo "EXPORT_TAG2=$EXPORT_TAG2" >> build.env
+      echo "PIPELINE_TMP_TAG=$PIPELINE_TMP_TAG" >> build.env
+      cat build.env
+
   artifacts:
-    paths:
-      - build_and_deploy.yml
+    reports:
+      dotenv: build.env
 
-## Quick debug build for new spack packages
-#run:quick_build:
-#  image: eicweb.phy.anl.gov:4567/containers/eic_container/eic_builder:latest
-#  stage: build
-#  script:
-#    - rm -r /opt/spack/np-spack && cp -r spack /opt/spack/np-spack
-#    - source /opt/spack/share/spack/setup-env.sh
-#    - spack env activate /opt/spack-environment
-#    - spack add madx && spack install
-
-## Dispatch if we ran the previous stage
-run:default:
-  stage: build
-  trigger:
-    include: 
-      - artifact: build_and_deploy.yml
-        job: init
-    strategy: depend
-
-singularity:
-  stage: deploy
-  needs: ["run:default"]
+## base job for all build jobs. Dependent jobs are expected to set
+## the BUILD_IMAGE environment variable, and take care of the actual
+## docker build during the "script" step
+## note that the nightly builds use a different pipeline
+.build:
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - if: '$CI_COMMIT_BRANCH =~ /v[0-9]+\.[0-9]+-stable/'
-      when: on_success
-    - if: '$CI_COMMIT_TAG =~ /v[0-9]+\.[0-9]+\.[0-9]+/'
-      when: on_success
+    - if: '$NIGHTLY != "0"'
+      when: never
+    - when: on_success
+  ## cookie-cutter docker push code, to be included at the
+  ## end of the regular job scripts
   script:
-     - mkdir -p build 
-     - cd build
-     - ../gitlab-ci/configure.sh ../containers/release/eic.def.in
-     - /bin/bash ../gitlab-ci/singularity/build.sh eic.def
+    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG} 
+                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
+                                 ${EXPORT_TAG} ${EXPORT_TAG2}
+    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG} 
+                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
+                                 ${INTERNAL_TAG} --eicweb
+
+## Images:
+## debian_base --> jug_dev  --> jug_xl
+##             ---------------> jug_sim
+##             ---------------> jug_ml
+
+debian_base:default:
+  extends: .build
+  stage: build:base
+  needs:
+    - version
+  variables:
+    BUILD_IMAGE: "debian_base"
+  script:
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+                   containers/debian
+    - !reference [.build, script]
+
+jug_dev:default:
+  extends: .build
+  stage: build:dev
+  needs:
+    - version
+    - debian_base:default
+  variables:
+    BUILD_IMAGE: "jug_dev"
+  script:
+    ## calculate a hash based on the spack.yaml file and the spack directory
+    ## and use this spack as a docker variable to force a rebuild when there
+    ## is a change (versus rerun from cache)
+    - PACKAGE_HASH=$(tar cf - spack* | sha1sum | head -c40)
+    - echo "PACKAGE_HASH= ${PACKAGE_HASH}"
+    ## move spacke directory and spack.yaml into the container build directory
+    - cp -r spack containers/jug
+    - cp -r spack.yaml containers/jug/spack/spack.yaml
+    ## now build our image
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+                   -f containers/jug/Dockerfile.dev
+                   --build-arg SPACK_VERSION=${SPACK_VERSION}
+                   --build-arg CACHE_BUST=${PACKAGE_HASH}
+                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   containers/jug
+    - !reference [.build, script]
+
+jug_xl:default:
+  extends: .build
+  stage: build:release
+  needs:
+    - version
+    - jug_dev:default
+  variables:
+    BUILD_IMAGE: "jug_xl"
+  script:
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+                   -f containers/jug/Dockerfile.xl
+                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
+                   --build-arg NPDET_VERSION=${NPDET_VERSION}
+                   --build-arg EICD_VERSION=${EICD_VERSION}
+                   --build-arg DETECTOR_VERSION=${DETECTOR_VERSION}
+                   --build-arg IP6_VERSION=${IP6_VERSION}
+                   --build-arg ACCELERATOR_VERSION=${ACCELERATOR_VERSION}
+                   containers/jug
+    - !reference [.build, script]
+
+jug_xl:nightly:
+  extends: .build
+  stage: build:release
+  rules:
+    - if: '$NIGHTLY != "0"'
+      when: always
+    - when: never
+  needs:
+    - version
+  variables:
+    BUILD_IMAGE: "jug_xl"
+  script:
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+                   -f containers/jug/Dockerfile.xl
+                   --build-arg INTERNAL_TAG="testing"
+                   containers/jug
+    - !reference [.build, script]
+
+.singularity:
+  rules:
+    - if: '$NIGHTLY != "0"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - when: on_success
   artifacts:
       expire_in: 90 days
       paths:
-        - build/eic.sif
-        - build/eic.def
+        - build/${BUILD_IMAGE}.sif
+  script:
+    - mkdir build
+    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+
+jug_dev:singularity:default:
+  extends: .singularity
+  stage: deploy
+  needs: 
+    - version
+    - jug_dev:default
+  variables:
+    BUILD_IMAGE: "jug_dev"
+
+jug_xl:singularity:default:
+  extends: .singularity
+  stage: deploy
+  needs: 
+    - version
+    - jug_xl:default
+  variables:
+    BUILD_IMAGE: "jug_xl"
+
+jug_xl:singularity:nightly:
+  extends: .singularity
+  stage: deploy
+  rules:
+    - if: '$NIGHTLY != "0"'
+      when: always
+    - when: never
+  needs: 
+    - version
+    - jug_xl:nightly
+  variables:
+    BUILD_IMAGE: "jug_xl"
+
+cleanup:
+  stage: finalize
+  dependencies:
+    - version
+  script:
+    ## remove the pipeline specific export from eicweb if needed
+    - echo "Cleaning up pipeline specific docker tags if needed"
+    - ./gitlab-ci/cleanup_registry.sh -i debian_base -r 66 ${INTERNAL_TAG}
+    - ./gitlab-ci/cleanup_registry.sh -i jug_dev -r 68 ${INTERNAL_TAG}
+    - ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${INTERNAL_TAG}
