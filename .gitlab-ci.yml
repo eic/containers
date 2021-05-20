@@ -5,7 +5,7 @@ variables:
   JUGGLER_VERSION: "v1.6.0"
   NPDET_VERSION: "v0.5.0"
   EICD_VERSION: "v0.1.0"
-  DETECTOR_VERSION: "v0.2.0"
+  DETECTOR_VERSION: "v0.1.0"
   IP6_VERSION: "v0.2.0"
 
   ## Spack github version
