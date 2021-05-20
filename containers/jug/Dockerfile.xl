@@ -32,25 +32,25 @@ RUN cd /tmp                                                                     
  && rm -rf build juggler
 
 ## also install detector/ip geometries into opt
-## FIXME: need to add proper compact file install directly to the reference detector
+## FIXME: need to add proper compact file install directly to the athena detector
 ##        build
 ARG DETECTOR_VERSION="master"
 ARG IP6_VERSION="master"
 ARG ACCELERATOR_VERSION="master"
 RUN cd /tmp                                                                     \
  && DETECTOR_PREFIX=/opt/detector                                               \
- && DETECTOR_DATA=$DETECTOR_PREFIX/share/reference_detector                     \
- && mkdir -p /opt/detector/share/reference_detector                             \
+ && DETECTOR_DATA=$DETECTOR_PREFIX/share/athena                                 \
+ && mkdir -p /opt/detector/share/athena                                         \
  && echo "INSTALLING REFERENCE DETECTOR"                                        \
  && git clone -b ${DETECTOR_VERSION}                                            \
-                https://eicweb.phy.anl.gov/EIC/detectors/reference_detector.git \
- && cmake -B build -S reference_detector -DCMAKE_CXX_STANDARD=17                \
+                https://eicweb.phy.anl.gov/EIC/detectors/athena.git             \
+ && cmake -B build -S athena -DCMAKE_CXX_STANDARD=17                            \
           -DCMAKE_INSTALL_PREFIX=${DETECTOR_PREFIX}                             \
  && cmake --build build -j12 -- install                                         \
- && cp -r reference_detector/compact                                            \
-          reference_detector/reference_detector.xml                             \
+ && cp -r athena/compact                                                        \
+          athena/athena.xml                                                     \
           ${DETECTOR_DATA}                                                      \
- && rm -rf build reference_detector                                             \
+ && rm -rf build athena                                                         \
  && echo "INSTALLING IP6 GEOMETRY"                                              \
  && git clone -b ${IP6_VERSION}                                                 \
                 https://eicweb.phy.anl.gov/EIC/detectors/ip6.git                \
@@ -63,4 +63,3 @@ RUN cd /tmp                                                                     
  && echo "ADDING SETUP SCRIPT"                                                  \
  && echo "export LD_LIBRARY_PATH=/opt/detector/lib:\$LD_LIBRARY_PATH"           \
          > /opt/detector/setup.sh
-    
