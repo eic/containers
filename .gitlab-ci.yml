@@ -2,12 +2,12 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 
 variables:
   ## Application versions used for the main release ## note: nightly builds will always use the master branch
-  JUGGLER_VERSION: "v1.5.0"
-  NPDET_VERSION: "master"
-  EICD_VERSION: "master"
-  DETECTOR_VERSION: "master"
-  IP6_VERSION: "master"
-  ACCELERATOR_VERSION: "master"
+  JUGGLER_VERSION: "v1.6.0"
+  NPDET_VERSION: "v0.5.0"
+  EICD_VERSION: "v0.1.0"
+  DETECTOR_VERSION: "v0.1.0"
+  IP6_VERSION: "v0.1.0"
+  ACCELERATOR_VERSION: "master" #needs to be merged into IP6
 
   ## Spack github version
   SPACK_VERSION: "63915de99b6d4bc7c8b8a22dc45e5c3dd7ee4f26"
