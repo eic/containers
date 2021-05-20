@@ -51,12 +51,6 @@ RUN cd /tmp                                                                     
           reference_detector/reference_detector.xml                             \
           ${DETECTOR_DATA}                                                      \
  && rm -rf build reference_detector                                             \
- && echo "INSTALLING ACCELERATOR GEOMETRY"                                      \
- && git clone -b ${ACCELERATOR_VERSION}                                         \
-                https://eicweb.phy.anl.gov/EIC/detectors/accelerator.git        \
- && cp -r accelerator/eic                                                       \
-          ${DETECTOR_DATA}                                                      \
- && rm -rf accelerator                                                          \
  && echo "INSTALLING IP6 GEOMETRY"                                              \
  && git clone -b ${IP6_VERSION}                                                 \
                 https://eicweb.phy.anl.gov/EIC/detectors/ip6.git                \
@@ -65,4 +59,8 @@ RUN cd /tmp                                                                     
  && cmake --build build -j12 -- install                                         \
  && cp -r ip6/ip6                                                               \
           ${DETECTOR_DATA}                                                      \
- && rm -rf build ip6
+ && rm -rf build ip6                                                            \
+ && echo "ADDING SETUP SCRIPT"                                                  \
+ && echo "export LD_LIBRARY_PATH=/opt/detector/lib:\$LD_LIBRARY_PATH"           \
+         > /opt/detector/setup.sh
+    

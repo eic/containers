@@ -5,9 +5,8 @@ variables:
   JUGGLER_VERSION: "v1.6.0"
   NPDET_VERSION: "v0.5.0"
   EICD_VERSION: "v0.1.0"
-  DETECTOR_VERSION: "v0.1.0"
-  IP6_VERSION: "v0.1.0"
-  ACCELERATOR_VERSION: "master" #needs to be merged into IP6
+  DETECTOR_VERSION: "v0.2.0"
+  IP6_VERSION: "v0.2.0"
 
   ## Spack github version
   SPACK_VERSION: "63915de99b6d4bc7c8b8a22dc45e5c3dd7ee4f26"
@@ -201,7 +200,6 @@ jug_xl:default:
                    --build-arg EICD_VERSION=${EICD_VERSION}
                    --build-arg DETECTOR_VERSION=${DETECTOR_VERSION}
                    --build-arg IP6_VERSION=${IP6_VERSION}
-                   --build-arg ACCELERATOR_VERSION=${ACCELERATOR_VERSION}
                    containers/jug
     - !reference [.build, script]
 
