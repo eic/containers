@@ -143,6 +143,14 @@ RUN cd /opt/spack-environment                                           \
         >> /etc/profile.d/z10_spack_environment.sh                      \
  && echo "export BINARY_TAG=x86_64-linux-gcc9-opt"                      \
         >> /etc/profile.d/z10_spack_environment.sh                      \
+ && echo "if [ ! -z \${ATHENA_PREFIX} ]; then"                          \
+        >> /etc/profile.d/z10_spack_environment.sh                      \
+ && echo "export LD_LIBRARY_PATH=\$ATHENA_PREFIX/lib:\$LD_LIBRARY_PATH" \
+        >> /etc/profile.d/z10_spack_environment.sh                      \
+ && echo "export PATH=\$ATHENA_PREFIX/bin:\$PATH"                       \
+        >> /etc/profile.d/z10_spack_environment.sh                      \
+ && echo "fi"                                                           \
+        >> /etc/profile.d/z10_spack_environment.sh                      \
  && cd /opt/spack-environment && spack env activate .                   \
  && echo -n ""                                                          \
  && echo "Installing additional python packages"                        \
