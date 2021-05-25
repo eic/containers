@@ -1,3 +1,7 @@
+# install.sh products
+eic-shell
+local/
+
 # vim 
 ~*
 *.swp
