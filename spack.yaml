@@ -9,9 +9,9 @@ spack:
     - clhep@2.4.4.0 cxxstd=17
     - eigen@3.3.9
     - python@3.7.8
-    - py-pip
-    - py-numpy
-    - py-pyyaml
+    - py-numpy@1.20.1
+    - py-pip@20.2
+    - pkg-config@0.29.2
     - xrootd@5.1.0 cxxstd=17 +python
     - root@6.22.08 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
@@ -20,7 +20,7 @@ spack:
     - pythia8@8303
     - hepmc3@3.2.2 +python +rootio 
     - stow@2.3.1
-    - cairo+fc+ft+X+pdf+gobject
+    - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - podio@0.13
     - geant4@10.7.1 cxxstd=17 +opengl +vecgeom +x11 +qt ^qt +opengl
     - dd4hep@1.16.1 +geant4 +assimp +hepmc3 +ipo
@@ -28,6 +28,6 @@ spack:
     - gaudi@34.0
     - dawn@3_91a
     - dawncut@1_54a
-    - opencascade
+    - opencascade@7.4.0p1
   concretization: together
   view: /usr/local
