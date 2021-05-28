@@ -24,9 +24,6 @@ variables:
   DOCKER_NTRIES: 5
   DOCKER_WAIT_TIME: 5
 
-  ## By default this is not a nightly build, unless the CI says so
-  NIGHTLY: 0
-
 stages:
   - config
   - build:base      ## base OS image
@@ -48,8 +45,8 @@ default:
 
 ## only run CI for in the following cases:
 ## master, stable branch, release tag, MR event and nightly builds
-## not that nightly builds got from the master branch, but with "NIGHTLY" set to
-## 1 which triggers a slightly different workflow
+## nightly builds are now part of the regular master build in order to keep
+## all artifacts available at all times.
 workflow:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -60,17 +57,17 @@ workflow:
 ## plan:
 ##  Workflows:
 ##  - master      --> config + all build stages + singularity
-##  - <nightly>   --> config + build:release only + singularity
+#                            + nightly build:release + nightly singularity
 ##  - v3.0-stable --> config + all build stages + singularity
 ##  - v3.0.0      --> config + all build stages + singularity
 ##  - MR          --> config + all build stages
 ##
 ##  Container images tags
 ##  - master      --> testing
-##  - <nightly>   --> nightly
+##  - <nightly>   --> nightly (run as part of master)
 ##  - v3.0-stable --> 3.0-stable
 ##  - v3.0.0      --> 3.0-stable, 3.0.0
-##  - MR          --> unstable (on all registries)
+##  - MR          --> 3.0-unstable (on all registries)
 ##                --> unstable-mr-XXX (on eicweb only, untag at end of pipeline)
 ##  - all other   --> do nothing
 ##
@@ -85,7 +82,8 @@ version:
       VERSION=`head -n1 VERSION`
       STABLE=${VERSION%.*}-stable
       TESTING="testing"
-      UNSTABLE="unstable"
+      NIGHTLY="nightly"
+      UNSTABLE=${VERSION%.*}-unstable
     ## determine appropriate major docker tag for this scenario
     - |
       ## internal tag used for the CI. Also temporarily tagged
@@ -94,27 +92,28 @@ version:
       ## main export tag, optional secondary export tag,
       EXPORT_TAG=${TESTING}
       EXPORT_TAG2=
+      ## nightly tag, only used in master
+      NIGHTLY_TAG=${NIGHTLY}
       if [ "x${CI_PIPELINE_SOURCE}" == "xmerge_request_event" ]; then
         INTERNAL_TAG="unstable-mr-${CI_MERGE_REQUEST_ID}"
+        NIGHTLY_TAG=
         EXPORT_TAG=$UNSTABLE
         EXPORT_TAG2=
       elif [ "$CI_COMMIT_TAG" = "v${VERSION}" ]; then
         INTERNAL_TAG="stable-br-${VERSION}"
+        NIGHTLY_TAG=
         EXPORT_TAG=${STABLE}
         EXPORT_TAG2=${VERSION}
       elif [ "$CI_COMMIT_BRANCH" == "v${STABLE}" ]; then
         INTERNAL_TAG="stable-tag-${VERSION}"
+        NIGHTLY_TAG=
         EXPORT_TAG=${STABLE}
-        EXPORT_TAG2=
-      elif [ "$NIGHTLY" != "0" ]; then
-        INTERNAL_TAG="nightly-${VERSION}"
-        EXPORT_TAG="nightly"
         EXPORT_TAG2=
       fi
       echo "INTERNAL_TAG=$INTERNAL_TAG" >> build.env
+      echo "NIGHTLY_TAG=$NIGHTLY_TAG" >> build.env
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
       echo "EXPORT_TAG2=$EXPORT_TAG2" >> build.env
-      echo "PIPELINE_TMP_TAG=$PIPELINE_TMP_TAG" >> build.env
       cat build.env
 
   artifacts:
@@ -127,8 +126,6 @@ version:
 ## note that the nightly builds use a different pipeline
 .build:
   rules:
-    - if: '$NIGHTLY != "0"'
-      when: never
     - when: on_success
   ## cookie-cutter docker push code, to be included at the
   ## end of the regular job scripts
@@ -207,24 +204,25 @@ jug_xl:nightly:
   extends: .build
   stage: build:release
   rules:
-    - if: '$NIGHTLY != "0"'
-      when: always
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
     - when: never
   needs:
     - version
+    - jug_dev:default
   variables:
     BUILD_IMAGE: "jug_xl"
   script:
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG} 
                    -f containers/jug/Dockerfile.xl
-                   --build-arg INTERNAL_TAG="testing"
+                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    containers/jug
-    - !reference [.build, script]
+    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
+                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
+                                 ${NIGHTLY_TAG}
 
 .singularity:
   rules:
-    - if: '$NIGHTLY != "0"'
-      when: never
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
     - when: on_success
@@ -258,14 +256,15 @@ jug_xl:singularity:nightly:
   extends: .singularity
   stage: deploy
   rules:
-    - if: '$NIGHTLY != "0"'
-      when: always
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
     - when: never
   needs: 
     - version
     - jug_xl:nightly
   variables:
     BUILD_IMAGE: "jug_xl"
+    INTERNAL_TAG: ${NIGHTLY_TAG}
 
 cleanup:
   stage: finalize

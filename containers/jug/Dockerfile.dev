@@ -134,23 +134,25 @@ RUN cd /opt/spack-environment                                           \
         /etc/profile.d/z10_spack_environment.sh                         \
  && cd /opt/spack-environment                                           \
  && echo -n ""                                                          \
- && echo "Add extra environment variables for Podio and Gaudi"          \
+ && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
  && spack env activate .                                                \
+ && echo "export JUG_DEV_VERSION=${INTERNAL_TAG}-$(date +%Y-%m-%d)"     \
+        >> /etc/profile.d/z11_jug_env.sh                                \
  && export PODIO=`spack find -p podio                                   \
         | grep software                                                 \
         | awk '{print $2}'`                                             \
  && echo "export PODIO=${PODIO};"                                       \
-        >> /etc/profile.d/z10_spack_environment.sh                      \
+        >> /etc/profile.d/z11_jug_env.sh                                \
  && echo "export BINARY_TAG=x86_64-linux-gcc9-opt"                      \
-        >> /etc/profile.d/z10_spack_environment.sh                      \
+        >> /etc/profile.d/z11_jug_env.sh                                \
  && echo "if [ ! -z \${ATHENA_PREFIX} ]; then"                          \
-        >> /etc/profile.d/z10_spack_environment.sh                      \
+        >> /etc/profile.d/z11_jug_env.sh                                \
  && echo "export LD_LIBRARY_PATH=\$ATHENA_PREFIX/lib:\$LD_LIBRARY_PATH" \
-        >> /etc/profile.d/z10_spack_environment.sh                      \
+        >> /etc/profile.d/z11_jug_env.sh                                \
  && echo "export PATH=\$ATHENA_PREFIX/bin:\$PATH"                       \
-        >> /etc/profile.d/z10_spack_environment.sh                      \
+        >> /etc/profile.d/z11_jug_env.sh                                \
  && echo "fi"                                                           \
-        >> /etc/profile.d/z10_spack_environment.sh                      \
+        >> /etc/profile.d/z11_jug_env.sh                                \
  && cd /opt/spack-environment && spack env activate .                   \
  && echo -n ""                                                          \
  && echo "Installing additional python packages"                        \
@@ -204,6 +206,9 @@ RUN --mount=from=staging,target=/staging                                \
  && cp -r /staging/usr/local /usr/local                                 \
  && cp /staging/etc/profile.d/z10_spack_environment.sh /etc/eic-env.sh  \
  && sed -i '/MANPATH/ s/;$/:;/' /etc/eic-env.sh                         \
+ && cp /staging/etc/profile.d/z11_jug_env.sh                            \
+       /etc/profile.d/z11_jug_env.sh                                    \
+ && cat /etc/profile.d/z11_jug_env.sh >> /etc/eic-env.sh                \
  && cp /etc/eic-env.sh /etc/profile.d/z10_eic-env.sh
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
