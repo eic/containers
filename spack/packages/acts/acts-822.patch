@@ -1,0 +1,31 @@
+diff --git a/Core/src/Geometry/CylinderVolumeBuilder.cpp b/Core/src/Geometry/CylinderVolumeBuilder.cpp
+index eba6f8617..950c5286b 100644
+--- a/Core/src/Geometry/CylinderVolumeBuilder.cpp
++++ b/Core/src/Geometry/CylinderVolumeBuilder.cpp
+@@ -542,6 +542,7 @@ Acts::VolumeConfig Acts::CylinderVolumeBuilder::analyzeContent(
+         double zMaxD = center.z() + 0.5 * thickness;
+         lConfig.rMin =
+             std::min(lConfig.rMin, rMinD - m_cfg.layerEnvelopeR.first);
++        lConfig.rMin = std::max(0.0, lConfig.rMin);
+         lConfig.rMax =
+             std::max(lConfig.rMax, rMaxD + m_cfg.layerEnvelopeR.second);
+         lConfig.zMin = std::min(lConfig.zMin, zMinD - m_cfg.layerEnvelopeZ);
+@@ -576,4 +577,4 @@ Acts::VolumeConfig Acts::CylinderVolumeBuilder::analyzeContent(
+ 
+   // and return what you have
+   return lConfig;
+-}
+\ No newline at end of file
++}
+diff --git a/Plugins/DD4hep/src/DD4hepLayerBuilder.cpp b/Plugins/DD4hep/src/DD4hepLayerBuilder.cpp
+index 4d1695abf..455481538 100644
+--- a/Plugins/DD4hep/src/DD4hepLayerBuilder.cpp
++++ b/Plugins/DD4hep/src/DD4hepLayerBuilder.cpp
+@@ -128,6 +128,7 @@ const Acts::LayerVector Acts::DD4hepLayerBuilder::endcapLayers(
+                                      std::abs(zMax - pl.max(Acts::binZ))};
+           pl.envelope[Acts::binR] = {std::abs(rMin - pl.min(Acts::binR)),
+                                      std::abs(rMax - pl.max(Acts::binR))};
++          pl.extent.ranges[Acts::binR] = {rMin, rMax};
+         }
+       } else {
+         throw std::logic_error(
