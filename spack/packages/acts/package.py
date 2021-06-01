@@ -37,6 +37,7 @@ class Acts(CMakePackage, CudaPackage):
 
     # Supported Acts versions
     version('master', branch='master')
+    version('8.02.0p1', commit='f25cf639915fc2ac65b03882ad3eb11fb037ed00')
     version('8.02.0', commit='f25cf639915fc2ac65b03882ad3eb11fb037ed00')
     version('8.01.0', commit='ccc8c77bbc011f3adc020c565a509815be0ea029')
     version('8.00.0', commit='50c972823144c007b406ae12d7ca25a1e0c35532')
@@ -119,6 +120,10 @@ class Acts(CMakePackage, CudaPackage):
     variant('geant4', default=False, description='Build the Geant4-based examples')
     variant('hepmc3', default=False, description='Build the HepMC3-based examples')
     variant('pythia8', default=False, description='Build the Pythia8-based examples')
+
+    ## Temporary patch for ACTS to address
+    ## https://github.com/acts-project/acts/issues/822
+    patch('acts-822.patch', when='@8.02.0p1')
 
     # Build dependencies
     # FIXME: Use spack's autodiff package once there is one
