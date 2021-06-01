@@ -22,12 +22,13 @@ RUN cd /tmp                                                                     
  && rm -rf build NPDet                                                          \
  && echo "INSTALLING EICD"                                                      \
  && git clone -b ${EICD_VERSION}  https://eicweb.phy.anl.gov/EIC/eicd.git       \
- && cmake -B build -S eicd -DCMAKE_CXX_STANDARD=17                              \  
+ && cmake -B build -S eicd -DCMAKE_CXX_STANDARD=17                              \
  && cmake --build build -j12 -- install                                         \
  && rm -rf build eicd                                                           \
  && echo "INSTALLING JUGGLER"                                                   \
  && git clone -b ${JUGGLER_VERSION} https://eicweb.phy.anl.gov/EIC/juggler.git  \
- && cmake -B build -S juggler -DCMAKE_CXX_STANDARD=17                           \      
+ && cmake -B build -S juggler                                                   \
+          -DCMAKE_CXX_STANDARD=17 -DCMAKE_INSTALL_PREFIX=/usr/local             \
  && cmake --build build -j12 -- install                                         \
  && rm -rf build juggler
 
