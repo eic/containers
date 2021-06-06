@@ -266,6 +266,22 @@ jug_xl:singularity:nightly:
     BUILD_IMAGE: "jug_xl"
     INTERNAL_TAG: ${NIGHTLY_TAG}
 
+## trigger juggler rebuild on nightly schedule to ensure both images remain in sync
+juggler:master:
+  stage: deploy
+  rules:
+    - if: '$NIGHTLY != "0" && $CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - when: never
+  needs:
+    - version
+    - jug_xl:nightly
+  variables:
+    TRIGGERED_BY_NIGHTLY: 1
+  trigger:
+    project: EIC/juggler
+  allow_failure: true
+
 cleanup:
   stage: finalize
   dependencies:
