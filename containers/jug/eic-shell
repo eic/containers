@@ -1,23 +1,21 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 source /etc/profile
 ## Force environment to be clean
 source /etc/eic-env.sh
 
+piped_args=()
 if [ -p /dev/stdin ]; then
   # If we want to read the input line by line
   while IFS= read line; do
-    if [ -z "$piped_args" ]; then
-      piped_args="${line}"
-    else 
-      piped_args="${piped_args}\n${line}"
-    fi
+    piped_args+=("${line}")
   done
 fi
 
-## Fire off bash
-if [ ${piped_args} ]  ; then
-  echo -e ${piped_args} | exec bash
+### Fire off bash
+if [ "${#piped_args[@]}" != "0" ]; then
+  echo "${#piped_args[@]}"
+  printf "%s\n" "${piped_args[@]}" | bash
 elif [ $# -gt 0 ]; then
   exec bash -c "$@"
 else
