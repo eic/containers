@@ -5,8 +5,8 @@
 function print_the_help {
   echo "USAGE:  -u user -p -password [...] [registry]"
   echo "ARGUMENTS:"
-  echo "          -u,--user       Input image name (e.g., eic_base)"
-  echo "          -p,--password   Input tag (eg., v3.0.0)"
+  echo "          -u,--user       Registry user"
+  echo "          -p,--password   Registry password"
   echo "          --ci            Login to internal CI registry; -u, -p and positional are ignored"
   echo "          -t,--time       Time interval (in seconds) between attempts"
   echo "                          (doubled each time), default: 5"
