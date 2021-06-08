@@ -222,6 +222,7 @@ jug_xl:nightly:
                                  ${NIGHTLY_TAG}
 
 .singularity:
+  stage: deploy
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
@@ -236,7 +237,6 @@ jug_xl:nightly:
 
 jug_dev:singularity:default:
   extends: .singularity
-  stage: deploy
   needs: 
     - version
     - jug_dev:default
@@ -245,7 +245,6 @@ jug_dev:singularity:default:
 
 jug_xl:singularity:default:
   extends: .singularity
-  stage: deploy
   needs: 
     - version
     - jug_xl:default
@@ -253,18 +252,23 @@ jug_xl:singularity:default:
     BUILD_IMAGE: "jug_xl"
 
 jug_xl:singularity:nightly:
-  extends: .singularity
   stage: deploy
+  needs: 
+    - version
+    - jug_xl:nightly
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
     - when: never
-  needs: 
-    - version
-    - jug_xl:nightly
+  artifacts:
+      expire_in: 1 days
+      paths:
+        - build/${BUILD_IMAGE}.sif
   variables:
     BUILD_IMAGE: "jug_xl"
-    INTERNAL_TAG: ${NIGHTLY_TAG}
+  script:
+    - mkdir build
+    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
 
 cleanup:
   stage: finalize
