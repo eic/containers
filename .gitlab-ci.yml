@@ -270,7 +270,7 @@ jug_xl:singularity:nightly:
 juggler:master:
   stage: deploy
   rules:
-    - if: '$NIGHTLY != "0" && $CI_COMMIT_BRANCH == "master"'
+    - if: '$NIGHTLY == "0" && $CI_COMMIT_BRANCH == "master"'
       when: on_success
     - when: never
   needs:
