@@ -213,9 +213,11 @@ jug_xl:nightly:
   variables:
     BUILD_IMAGE: "jug_xl"
   script:
+    - CACHEBUST=`date +%s`
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG} 
                    -f containers/jug/Dockerfile.xl
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg CACHEBUST=${CACHEBUST}
                    containers/jug
     - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
