@@ -94,12 +94,13 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
  && spack clean -a
 
 ## Update the local build cache if needed. Consists of 3 steps:
-## 1. Remove the B010 network buildcache
+## 1. Remove the B010 network buildcache (silicon)
 ## 2. Get a list of all packages, and compare with what is already on
 ##    the buildcache (using package hash)
 ## 3. Add packages that need to be added to buildcache if any
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    spack buildcache list --allarch --long                              \
+    spack mirror remove silicon                                         \
+ && spack buildcache list --allarch --long                              \
      | grep -v -e '---'                                                 \
      | sed "s/@.\+//"                                                   \
      | sort > tmp.buildcache.txt                                        \
@@ -136,8 +137,6 @@ RUN cd /opt/spack-environment                                           \
  && echo -n ""                                                          \
  && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
  && spack env activate .                                                \
- && echo "export JUG_DEV_VERSION=${INTERNAL_TAG}-$(date +%Y-%m-%d)"     \
-        >> /etc/profile.d/z11_jug_env.sh                                \
  && export PODIO=`spack find -p podio                                   \
         | grep software                                                 \
         | awk '{print $2}'`                                             \
@@ -198,6 +197,14 @@ RUN strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
 COPY eic-shell /usr/local/bin/eic-shell
 COPY entrypoint.sh /usr/local/sbin/entrypoint.sh
 
+RUN spack debug report                                                  \
+      | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//"             \
+    >> /etc/jug_info                                                    \
+ && spack find --no-groups | sed "s/^/ - /" >> /etc/jug_info            \
+ && echo "#!/bin/bash" > /usr/local/bin/eic-info                        \
+ && echo "cat /etc/jug_info" >> /usr/local/bin/eic-info                 \
+ && chmod +x /usr/local/bin/eic-info
+
 ## ========================================================================================
 ## STAGE 3
 ## Lean target image
@@ -218,8 +225,12 @@ RUN --mount=from=staging,target=/staging                                \
  && cp /staging/etc/profile.d/z11_jug_env.sh                            \
        /etc/profile.d/z11_jug_env.sh                                    \
  && cat /etc/profile.d/z11_jug_env.sh >> /etc/eic-env.sh                \
- && cp /etc/eic-env.sh /etc/profile.d/z10_eic-env.sh
+ && cp /etc/eic-env.sh /etc/profile.d/z10_eic-env.sh                    \
+ && cp /staging/etc/jug_info /etc/jug_info
 
+ARG JUG_VERSION=1
+RUN echo "" >> /etc/jug_info                                            \
+ && echo " - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT ["/usr/local/sbin/entrypoint.sh"]
