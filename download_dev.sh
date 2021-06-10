@@ -5,23 +5,33 @@ VERSION="testing"
 ODIR="$PWD"
 
 function print_the_help {
-  echo "USAGE:  ./install_dev.sh [-o DIR] [-v VERSION]"
+  echo "USAGE:  ./download_dev.sh [-o DIR] [-v VERSION]"
   echo "OPTIONAL ARGUMENTS:"
   echo "          -o,--outdir     Directory to download the container to (D: $ODIR)"
-  echo "          -v,--version    Version to install (D: $VERSION)"
+  echo "          -c,--container  Container to download (D: $CONTAINER)"
+  echo "          -v,--version    Version to download (D: $VERSION)"
   echo "          -h,--help       Print this message"
   echo ""
   echo "  Download development container into an output directory"
   echo ""
-  echo "EXAMPLE: ./install.sh" 
+  echo "EXAMPLE: ./download_dev.sh" 
   exit
 }
+
+echo "WARNING: this container download script is meant for expert usage"
+echo "         if you don't know what this script does, you are probably"
+echo "         looking for install.sh"
 
 while [ $# -gt 0 ]; do
   key=$1
   case $key in
     -o|--outdir)
       ODIR=$2
+      shift
+      shift
+      ;;
+    -c|--container)
+      CONTAINER=$2
       shift
       shift
       ;;
@@ -72,7 +82,8 @@ wget https://eicweb.phy.anl.gov/containers/eic_container/-/raw/master/install.py
 chmod +x install.py
 ./install.py -f -c $CONTAINER -v $VERSION .
 
-SIF=`ls lib/$CONTAINER.sif.* | head -n1`
+SIF=lib/$CONTAINER-$VERSION.sif
+chmod +x ${SIF}
 
 ## That's all
 if [ -z $SIF -o ! -f $SIF ]; then

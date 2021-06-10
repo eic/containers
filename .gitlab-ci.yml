@@ -177,6 +177,7 @@ jug_dev:default:
                    --build-arg SPACK_VERSION=${SPACK_VERSION}
                    --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
     - !reference [.build, script]
 
@@ -197,6 +198,7 @@ jug_xl:default:
                    --build-arg EICD_VERSION=${EICD_VERSION}
                    --build-arg DETECTOR_VERSION=${DETECTOR_VERSION}
                    --build-arg IP6_VERSION=${IP6_VERSION}
+                   --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
     - !reference [.build, script]
 
@@ -213,11 +215,10 @@ jug_xl:nightly:
   variables:
     BUILD_IMAGE: "jug_xl"
   script:
-    - CACHEBUST=`date +%s`
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG} 
                    -f containers/jug/Dockerfile.xl
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg CACHEBUST=${CACHEBUST}
+                   --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-$(git rev-parse HEAD)
                    containers/jug
     - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
