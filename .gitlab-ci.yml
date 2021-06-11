@@ -30,6 +30,7 @@ stages:
   - build:dev       ## naked dev container image
   - build:release   ## dressed release container image
   - deploy          ## build/deploy singularity images
+  - test            
   - finalize
 
 default:
@@ -96,7 +97,7 @@ version:
       NIGHTLY_TAG=${NIGHTLY}
       if [ "x${CI_PIPELINE_SOURCE}" == "xmerge_request_event" ]; then
         INTERNAL_TAG="unstable-mr-${CI_MERGE_REQUEST_ID}"
-        NIGHTLY_TAG=
+        NIGHTLY_TAG="${INTERNAL_TAG}-nightly"
         EXPORT_TAG=$UNSTABLE
         EXPORT_TAG2=
       elif [ "$CI_COMMIT_TAG" = "v${VERSION}" ]; then
@@ -208,6 +209,8 @@ jug_xl:nightly:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
     - when: never
   needs:
     - version
@@ -220,9 +223,14 @@ jug_xl:nightly:
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-$(git rev-parse HEAD)
                    containers/jug
+    - |
+      PUSH_FLAG=""
+      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
+        PUSH_FLAG="--eicweb"
+      fi
     - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
-                                 ${NIGHTLY_TAG}
+                                 ${NIGHTLY_TAG} ${PUSH_FLAG}
 
 .singularity:
   stage: deploy
@@ -262,6 +270,8 @@ jug_xl:singularity:nightly:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
     - when: never
   artifacts:
       expire_in: 1 days
@@ -289,6 +299,9 @@ juggler:master:
     project: EIC/juggler
   allow_failure: true
 
+include:
+  - local: 'tests/tutorial/config.yml'
+
 cleanup:
   stage: finalize
   dependencies:
@@ -299,3 +312,7 @@ cleanup:
     - ./gitlab-ci/cleanup_registry.sh -i debian_base -r 66 ${INTERNAL_TAG}
     - ./gitlab-ci/cleanup_registry.sh -i jug_dev -r 68 ${INTERNAL_TAG}
     - ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${INTERNAL_TAG}
+    - |
+      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
+        ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${NIGHTLY_TAG}
+      fi

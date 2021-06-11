@@ -130,9 +130,8 @@ RUN cd /opt/spack-environment                                           \
  && echo -n ""                                                          \
  && echo "Grabbing environment info"                                    \
  && spack env activate --sh -d .                                        \
-        > /etc/profile.d/z10_spack_environment.sh                       \
- && sed -i "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"                \
-        /etc/profile.d/z10_spack_environment.sh                         \
+        | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
+    > /etc/profile.d/z10_spack_environment.sh                           \
  && cd /opt/spack-environment                                           \
  && echo -n ""                                                          \
  && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
@@ -220,12 +219,12 @@ RUN --mount=from=staging,target=/staging                                \
     rm -rf /usr/local                                                   \
  && cp -r /staging/opt/software /opt/software                           \
  && cp -r /staging/usr/local /usr/local                                 \
- && cp /staging/etc/profile.d/z10_spack_environment.sh /etc/eic-env.sh  \
- && sed -i '/MANPATH/ s/;$/:;/' /etc/eic-env.sh                         \
  && cp /staging/etc/profile.d/z11_jug_env.sh                            \
        /etc/profile.d/z11_jug_env.sh                                    \
- && cat /etc/profile.d/z11_jug_env.sh >> /etc/eic-env.sh                \
- && cp /etc/eic-env.sh /etc/profile.d/z10_eic-env.sh                    \
+ && cat /staging/etc/profile.d/z10_spack_environment.sh                 \
+       | sed '/MANPATH/ s/;$/:;/'                                       \
+       > /etc/profile.d/z10_spack_env.sh                                \
+ && cat /etc/profile.d/z1*.sh > /etc/eic-env.sh                         \
  && cp /staging/etc/jug_info /etc/jug_info
 
 ARG JUG_VERSION=1
