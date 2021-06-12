@@ -199,7 +199,7 @@ COPY entrypoint.sh /usr/local/sbin/entrypoint.sh
 RUN spack debug report                                                  \
       | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//"             \
     >> /etc/jug_info                                                    \
- && spack find --no-groups | sed "s/^/ - /" >> /etc/jug_info            \
+ && spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info            \
  && echo "#!/bin/bash" > /usr/local/bin/eic-info                        \
  && echo "cat /etc/jug_info" >> /usr/local/bin/eic-info                 \
  && chmod +x /usr/local/bin/eic-info
