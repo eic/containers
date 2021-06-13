@@ -131,6 +131,7 @@ RUN cd /opt/spack-environment                                           \
  && echo "Grabbing environment info"                                    \
  && spack env activate --sh -d .                                        \
         | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
+        | sed '/MANPATH/ s/;$/:;/'                                      \
     > /etc/profile.d/z10_spack_environment.sh                           \
  && cd /opt/spack-environment                                           \
  && echo -n ""                                                          \
@@ -140,17 +141,7 @@ RUN cd /opt/spack-environment                                           \
         | grep software                                                 \
         | awk '{print $2}'`                                             \
  && echo "export PODIO=${PODIO};"                                       \
-        >> /etc/profile.d/z11_jug_env.sh                                \
- && echo "export BINARY_TAG=x86_64-linux-gcc9-opt"                      \
-        >> /etc/profile.d/z11_jug_env.sh                                \
- && echo "if [ ! -z \${ATHENA_PREFIX} ]; then"                          \
-        >> /etc/profile.d/z11_jug_env.sh                                \
- && echo "export LD_LIBRARY_PATH=\$ATHENA_PREFIX/lib:\$LD_LIBRARY_PATH" \
-        >> /etc/profile.d/z11_jug_env.sh                                \
- && echo "export PATH=\$ATHENA_PREFIX/bin:\$PATH"                       \
-        >> /etc/profile.d/z11_jug_env.sh                                \
- && echo "fi"                                                           \
-        >> /etc/profile.d/z11_jug_env.sh                                \
+        >> /etc/profile.d/z10_spack_environment.sh                      \
  && cd /opt/spack-environment && spack env activate .                   \
  && echo -n ""                                                          \
  && echo "Installing additional python packages"                        \
@@ -162,6 +153,7 @@ RUN cd /opt/spack-environment                                           \
  && echo -n ""                                                          \
  && echo "Executing cmake patch for dd4hep 16.1"                        \                
  && sed -i "s/FIND_PACKAGE(Python/#&/" /usr/local/cmake/DD4hepBuild.cmake
+
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
@@ -193,16 +185,18 @@ RUN find -L /usr/local/*                                                \
 ## and links therin for more info
 RUN strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
 
-COPY eic-shell /usr/local/bin/eic-shell
-COPY entrypoint.sh /usr/local/sbin/entrypoint.sh
-
 RUN spack debug report                                                  \
       | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//"             \
     >> /etc/jug_info                                                    \
- && spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info            \
- && echo "#!/bin/bash" > /usr/local/bin/eic-info                        \
- && echo "cat /etc/jug_info" >> /usr/local/bin/eic-info                 \
- && chmod +x /usr/local/bin/eic-info
+ && spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
+
+COPY eic-shell /usr/local/bin/eic-shell
+COPY eic-info /usr/local/bin/eic-info
+COPY entrypoint.sh /usr/local/sbin/entrypoint.sh
+COPY eic-env.sh /etc/eic-env.sh
+COPY profile.d/a00_cleanup.sh /etc/profile.d
+COPY profile.d/z11_jug_env.sh /etc/profile.d
+COPY singularity.d /.singularity.d
 
 ## ========================================================================================
 ## STAGE 3
@@ -219,13 +213,10 @@ RUN --mount=from=staging,target=/staging                                \
     rm -rf /usr/local                                                   \
  && cp -r /staging/opt/software /opt/software                           \
  && cp -r /staging/usr/local /usr/local                                 \
- && cp /staging/etc/profile.d/z11_jug_env.sh                            \
-       /etc/profile.d/z11_jug_env.sh                                    \
- && cat /staging/etc/profile.d/z10_spack_environment.sh                 \
-       | sed '/MANPATH/ s/;$/:;/'                                       \
-       > /etc/profile.d/z10_spack_env.sh                                \
- && cat /etc/profile.d/z1*.sh > /etc/eic-env.sh                         \
- && cp /staging/etc/jug_info /etc/jug_info
+ && cp /staging/etc/profile.d/*.sh /etc/profile.d/                      \
+ && cp /staging/etc/eic-env.sh /etc/eic-env.sh                          \
+ && cp /staging/etc/jug_info /etc/jug_info                              \
+ && cp -r /staging/.singularity.d /.singularity.d                        
 
 ARG JUG_VERSION=1
 RUN echo "" >> /etc/jug_info                                            \
