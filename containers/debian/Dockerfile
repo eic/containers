@@ -47,6 +47,8 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         gv                                                              \
         poppler-utils                                                   \
         parallel                                                        \
+        time                                                            \
+        valgrind                                                        \
  && localedef -i en_US -f UTF-8 en_US.UTF-8                             \
  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100  \
  && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 100  \
