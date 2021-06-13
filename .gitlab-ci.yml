@@ -239,7 +239,7 @@ jug_xl:nightly:
       when: never
     - when: on_success
   artifacts:
-      expire_in: 90 days
+      expire_in: 2 days
       paths:
         - build/${BUILD_IMAGE}.sif
   script:

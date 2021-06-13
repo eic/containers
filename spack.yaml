@@ -18,6 +18,7 @@ spack:
           +root7 +tmva +vc +xrootd +ssl ^mesa+opengl 
           -llvm -osmesa
     - pythia8@8303 +fastjet
+    - fastjet@3.3.3
     - hepmc3@3.2.2 +python +rootio 
     - stow@2.3.1
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
