@@ -17,6 +17,9 @@ function ls {
 function less {
   /usr/bin/less -R $@
 }
+function grep {
+  /bin/grep --color=auto $@
+}
 MYSHELL=$(ps -p $$ | awk '{print($4);}' | tail -n1)
 ## only export the functions for bash, as this does not work
 ## in all shells and we only care about bash here. Note that
@@ -25,5 +28,6 @@ MYSHELL=$(ps -p $$ | awk '{print($4);}' | tail -n1)
 if [ "$MYSHELL" == "bash" ]; then
   export -f ls
   export -f less
+  export -f grep
 fi
 unset MYSHELL
