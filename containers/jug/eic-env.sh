@@ -12,10 +12,10 @@ export GREP_OPTIONS='--color=auto'
 ## can import into our plain bash --norc --noprofile session
 ## (aliases cannot be transferred to a child shell)
 function ls {
-  /bin/ls --color=auto
+  /bin/ls --color=auto $@
 }
 function less {
-  /usr/bin/less -R
+  /usr/bin/less -R $@
 }
 MYSHELL=$(ps -p $$ | awk '{print($4);}' | tail -n1)
 ## only export the functions for bash, as this does not work
