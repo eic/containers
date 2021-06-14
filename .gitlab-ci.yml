@@ -177,7 +177,7 @@ jug_dev:default:
     - cp -r spack.yaml containers/jug/spack/spack.yaml
     ## now build our image
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
-                   -f containers/jug/Dockerfile.dev
+                   -f containers/jug/dev.Dockerfile
                    --build-arg SPACK_VERSION=${SPACK_VERSION}
                    --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
@@ -195,7 +195,7 @@ jug_xl:default:
     BUILD_IMAGE: "jug_xl"
   script:
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
-                   -f containers/jug/Dockerfile.xl
+                   -f containers/jug/xl.Dockerfile
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg NPDET_VERSION=${NPDET_VERSION}
@@ -222,7 +222,7 @@ jug_xl:nightly:
     BUILD_IMAGE: "jug_xl"
   script:
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG} 
-                   -f containers/jug/Dockerfile.xl
+                   -f containers/jug/xl.Dockerfile
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-$(git rev-parse HEAD)
                    containers/jug
