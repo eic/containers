@@ -6,7 +6,6 @@ done
 
 export PS1='eic-shell> \[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33'
-export GREP_OPTIONS='--color=auto'
 
 ## redefine ls and less as functions, as this is something we
 ## can import into our plain bash --norc --noprofile session
