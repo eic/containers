@@ -9,7 +9,7 @@ if [ -p /dev/stdin ]; then
 fi
 
 ## Properly setup environment
-source /etc/eic-env.sh
+. /etc/eic-env.sh
 
 
 ### Fire off bash
