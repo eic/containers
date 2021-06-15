@@ -1,3 +1,3 @@
 #!/bin/bash
 
-source /etc/eic-env.sh
+. /etc/eic-env.sh
