@@ -198,6 +198,9 @@ COPY profile.d/a00_cleanup.sh /etc/profile.d
 COPY profile.d/z11_jug_env.sh /etc/profile.d
 COPY singularity.d /.singularity.d
 
+## Add minio client into /usr/local/bin
+ADD https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin
+
 ## ========================================================================================
 ## STAGE 3
 ## Lean target image
