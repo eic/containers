@@ -17,7 +17,8 @@ ARG JUG_VERSION=1
 RUN cd /tmp                                                                     \
  && echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info                           \
  && echo "INSTALLING NPDET"                                                     \
- && git clone -b ${NPDET_VERSION}  https://eicweb.phy.anl.gov/EIC/NPDet.git     \
+ && git clone -b ${NPDET_VERSION} --depth 1                                     \
+        https://eicweb.phy.anl.gov/EIC/NPDet.git                                \
  && cmake -B build -S NPDet -DCMAKE_CXX_STANDARD=17                             \
  && cmake --build build -j12 -- install                                         \
  && pushd NPDet                                                                 \
@@ -25,7 +26,8 @@ RUN cd /tmp                                                                     
  && popd                                                                        \
  && rm -rf build NPDet                                                          \
  && echo "INSTALLING EICD"                                                      \
- && git clone -b ${EICD_VERSION}  https://eicweb.phy.anl.gov/EIC/eicd.git       \
+ && git clone -b ${EICD_VERSION} --depth 1                                      \
+        https://eicweb.phy.anl.gov/EIC/eicd.git                                 \
  && cmake -B build -S eicd -DCMAKE_CXX_STANDARD=17                              \
  && cmake --build build -j12 -- install                                         \
  && pushd eicd                                                                  \
@@ -33,7 +35,8 @@ RUN cd /tmp                                                                     
  && popd                                                                        \
  && rm -rf build eicd                                                           \
  && echo "INSTALLING JUGGLER"                                                   \
- && git clone -b ${JUGGLER_VERSION} https://eicweb.phy.anl.gov/EIC/juggler.git  \
+ && git clone -b ${JUGGLER_VERSION} --depth 1                                   \
+        https://eicweb.phy.anl.gov/EIC/juggler.git                              \
  && cmake -B build -S juggler                                                   \
           -DCMAKE_CXX_STANDARD=17 -DCMAKE_INSTALL_PREFIX=/usr/local             \
  && cmake --build build -j12 -- install                                         \
@@ -82,3 +85,19 @@ RUN cd /tmp                                                                     
  && echo "ADDING SETUP SCRIPT"                                                  \
  && echo "export LD_LIBRARY_PATH=/opt/detector/lib:\$LD_LIBRARY_PATH"           \
          > /opt/detector/setup.sh
+
+
+## Install benchmarks into the container
+
+ARG BENCHMARK_DET_VERSION="master"
+ARG BENCHMARK_REC_VERSION="master"
+ARG BENCHMARK_PHY_VERSION="master"
+
+RUN mkdir -p /opt/benchmarks                                                    \
+ && cd /opt/benchmarks                                                          \
+ && git clone -b ${BENCHMARK_DET_VERSION} --depth 1                             \
+        https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git       \
+ && git clone -b ${BENCHMARK_REC_VERSION} --depth 1                             \
+        https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git \
+ && git clone -b ${BENCHMARK_PHY_VERSION} --depth 1                             \
+        https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git
