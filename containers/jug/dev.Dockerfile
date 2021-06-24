@@ -200,6 +200,7 @@ COPY singularity.d /.singularity.d
 
 ## Add minio client into /usr/local/bin
 ADD https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin
+RUN chmod a+x /usr/local/bin/mc
 
 ## ========================================================================================
 ## STAGE 3
