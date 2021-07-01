@@ -86,7 +86,6 @@ RUN cd /tmp                                                                     
  && echo "export LD_LIBRARY_PATH=/opt/detector/lib:\$LD_LIBRARY_PATH"           \
          > /opt/detector/setup.sh
 
-
 ## Install benchmarks into the container
 
 ARG BENCHMARK_DET_VERSION="master"

@@ -16,10 +16,12 @@ Then use spack as you normally would.
     - `dawn`: A tool to visualize detector geometries.
     - `dawncut`: A tool to edit detector visualizations.
   * Package overrides
-    * `acts`: Add version 8.0 and 8.1
+    * `acts`: Patch bug for simple disk geometries
+    * `dd4hep`: Fix package hash which somehow is wrong in spack...
     * `fmt`: Modified compiler flags to build shared library version.
     * `madx`: Add madx package
     * `mesa`: fix issue in meson step
+    * `podio`: add v0.13.1, also patch issue in cmake setup to allow build under /tmp/root, as needed by spack
     * `qt`: Added gcc10.patch to fix issues compiling QT with gcc10
     * `root`: Re-enabled http module as this builds fine on modern Linux systems and we use this heavily.
 

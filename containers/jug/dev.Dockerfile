@@ -89,9 +89,10 @@ ARG CACHE_BUST="hash"
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     cd /opt/spack-environment                                           \
  && ls /var/cache/spack-mirror                                          \
+ && rm -r /usr/local                                                    \
  && spack env activate .                                                \
  && spack install -j64 --no-check-signature                             \
- && spack clean -a
+ && spack clean -a                                                  
 
 ## Update the local build cache if needed. Consists of 3 steps:
 ## 1. Remove the B010 network buildcache (silicon)
@@ -173,7 +174,7 @@ RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 RUN find -L /usr/local/*                                                \
          -type d -name site-packages -prune -false -o                   \
          -type f -not -name "zdll.lib"                                  \
-         -exec readlink -f '{}' \;                                      \
+         -exec realpath '{}' \;                                      \
       | xargs file -i                                                   \
       | grep 'charset=binary'                                           \
       | grep 'x-executable\|x-archive\|x-sharedlib'                     \
@@ -216,7 +217,12 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 RUN --mount=from=staging,target=/staging                                \
     rm -rf /usr/local                                                   \
  && cp -r /staging/opt/software /opt/software                           \
- && cp -r /staging/usr/local /usr/local                                 \
+ && cp -r /staging/usr/._local /usr/._local                             \
+ && cd /usr/._local                                                     \
+ && PREFIX_PATH=$(realpath $(ls | tail -n1))                            \
+ && echo "Found spack true prefix path to be $PREFIX_PATH"              \
+ && cd -                                                                \
+ && ln -s ${PREFIX_PATH} /usr/local                                     \
  && cp /staging/etc/profile.d/*.sh /etc/profile.d/                      \
  && cp /staging/etc/eic-env.sh /etc/eic-env.sh                          \
  && cp /staging/etc/jug_info /etc/jug_info                              \
