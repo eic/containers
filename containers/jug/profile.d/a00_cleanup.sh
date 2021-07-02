@@ -10,7 +10,7 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 [ ! -z "$CLING_STANDARD_PCH" ] && unset CLING_STANDARD_PCH
 [ ! -z "$USER_PATH" ] && unset USER_PATH
 [ ! -z "$SHLIB_PATH" ] && unset SHLIB_PATH
-[ ! -z "$LIBPATH" ] && unset $LIBPATH
+[ ! -z "$LIBPATH" ] && unset LIBPATH
 [ ! -z "$CMAKE_PREFIX_PATH" ] && unset CMAKE_PREFIX_PATH
 [ ! -z "$SOFTWARE_HOME" ] && unset SOFTWARE_HOME
 [ ! -z "$ROOTSYS" ] && unset ROOTSYS
