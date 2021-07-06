@@ -83,7 +83,7 @@ RUN cd /tmp                                                                     
  && popd                                                                        \
  && rm -rf build ip6                                                            \
  && echo "ADDING SETUP SCRIPT"                                                  \
- && echo "export LD_LIBRARY_PATH=/opt/detector/lib:\$LD_LIBRARY_PATH"           \
+ && echo "export \$LD_LIBRARY_PATH:LD_LIBRARY_PATH=/opt/detector/lib"           \
          > /opt/detector/setup.sh
 
 ## Install benchmarks into the container
