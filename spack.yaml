@@ -24,7 +24,7 @@ spack:
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - podio@0.13.1
     - geant4@10.7.1 cxxstd=17 +opengl +vecgeom +x11 +qt +threads ^qt +opengl
-    - dd4hep@1.17 +geant4 +assimp +hepmc3 +ipo
+    - dd4hep@1.17 +geant4 +assimp +hepmc3 +ipo +lcio
     - acts@8.03.0p1 +dd4hep +digitization +identification +json +tgeo +ipo
     - genfit@2.00.00
     - gaudi@34.0
