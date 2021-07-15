@@ -61,9 +61,6 @@ RUN cd /tmp                                                                     
  && cmake -B build -S athena -DCMAKE_CXX_STANDARD=17                            \
           -DCMAKE_INSTALL_PREFIX=${DETECTOR_PREFIX}                             \
  && cmake --build build -j12 -- install                                         \
- && cp -r athena/compact                                                        \
-          athena/athena.xml                                                     \
-          ${DETECTOR_DATA}                                                      \
  && pushd athena                                                                \
  && echo " - Athena: ${DETECTOR_VERSION}-$(git rev-parse HEAD)"                 \
           >> /etc/jug_info                                                      \
