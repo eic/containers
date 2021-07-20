@@ -31,5 +31,6 @@ spack:
     - dawn@3_91a
     - dawncut@1_54a
     - opencascade@7.4.0p1
+    - emacs@27.0:27.99 toolkit=athena
   concretization: together
   view: /usr/local
