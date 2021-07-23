@@ -33,5 +33,6 @@ spack:
     - opencascade@7.4.0p1
     - emacs@27.0:27.99 toolkit=athena
     - imagemagick@7.0.0:7.0.99
+    - igprof@5.9.16
   concretization: together
   view: /usr/local
