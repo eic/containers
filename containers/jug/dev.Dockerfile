@@ -150,7 +150,7 @@ RUN cd /opt/spack-environment                                           \
                 --trusted-host files.pythonhosted.org                   \
                 --no-cache-dir                                          \
         ipython matplotlib scipy yapf pandas pycairo pyyaml             \
-        jupyter jupyterlab uproot pyunfold seaborn                      \
+        jupyter jupyterlab uproot pyunfold seaborn stashcp              \
  && echo -n ""                                                          \
  && echo "Executing cmake patch for dd4hep 16.1"                        \                
  && sed -i "s/FIND_PACKAGE(Python/#&/" /usr/local/cmake/DD4hepBuild.cmake
