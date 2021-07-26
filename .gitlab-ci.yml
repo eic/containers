@@ -2,14 +2,14 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 
 variables:
   ## Application versions used for the main release ## note: nightly builds will always use the master branch
-  JUGGLER_VERSION: "v1.8.0"
-  NPDET_VERSION: "v0.5.0"
+  JUGGLER_VERSION: "v2.0.0"
+  NPDET_VERSION: "v0.6.0"
   EICD_VERSION: "v0.2.0"
-  DETECTOR_VERSION: "v0.1.0"
-  IP6_VERSION: "v0.2.0"
+  DETECTOR_VERSION: "v0.2.0"
+  IP6_VERSION: "v0.3.0"
 
   ## Spack github version
-  SPACK_VERSION: "175e6e8c1e9644c6a92db8b338b36dcc0bf88af0"
+  SPACK_VERSION: "a68abc15c5b1b8266130f765d1bee6290e71fa7c"
 
   ## We need to enable Docker Buildkit to use cache mounts and better
   ## build performance overal

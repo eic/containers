@@ -15,8 +15,8 @@ spack:
     - xrootd@5.1.0 cxxstd=17 +python
     - root@6.22.08 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
-          +root7 +tmva +vc +xrootd +ssl ^mesa+opengl 
-          -llvm -osmesa
+          +root7 +tmva +vc +xrootd +ssl 
+          ^mesa swr=none +opengl -llvm -osmesa
     - pythia8@8303 +fastjet
     - fastjet@3.3.3
     - hepmc3@3.2.2 +python +rootio 
@@ -27,7 +27,7 @@ spack:
     - dd4hep@1.17 +geant4 +assimp +hepmc3 +ipo +lcio
     - acts@8.03.0p1 +dd4hep +digitization +identification +json +tgeo +ipo
     - genfit@2.00.00
-    - gaudi@34.0
+    - gaudi@36.0
     - dawn@3_91a
     - dawncut@1_54a
     - opencascade@7.4.0p1
