@@ -156,7 +156,7 @@ RUN cd /opt/spack-environment                                           \
  && pip install --trusted-host pypi.org                                 \
                 --trusted-host files.pythonhosted.org                   \
                 --no-cache-dir                                          \
-        ipython matplotlib scipy yapf pandas pycairo pyyaml             \
+        ipython matplotlib scipy yapf pandas pycairo pyyaml lxml        \
         jupyter jupyterlab uproot pyunfold seaborn stashcp              \
  && echo -n ""                                                          \
  && echo "Executing cmake patch for dd4hep 16.1"                        \                
