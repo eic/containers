@@ -13,6 +13,7 @@ function print_the_help {
   echo "          -n,--n-attempts Number of attempts, default: 5"
   echo "          -h,--help       Print this message"
   echo "          --eicweb        Publish to $CI_REGISTRY only"
+  echo "          --dockerhub     Publish to DH only"
   echo "  positional              At least one export tag (e.g., v3.0-stable)"
   echo ""
   echo "  Execute docker push from image:input_tag to REGISTRY/image:export_tag for"
@@ -29,6 +30,7 @@ EXPORT_TAGS=()
 NTRIES=5
 TIME=5
 DO_DH=${DH_PUSH}
+DO_EICWEB=1
 
 while [ $# -gt 0 ]; do
   key=$1
@@ -55,6 +57,11 @@ while [ $# -gt 0 ]; do
       ;;
     --eicweb)
       DO_DH=0
+      shift
+      ;;
+    --dockerhub)
+      DO_EICWEB=0
+      DO_DH=1
       shift
       ;;
     -h|--help)
@@ -122,10 +129,13 @@ function retry_push () {
 #echo "EXPORT_TAGS: ${EXPORT_TAGS}"
 #echo "DH_PUSH: ${DH_PUSH}"
 #echo "DO_DH: ${DO_DH}"
+#echo "DO_EICWEB: ${DO_EICWEB}"
 
 export INPUT=$CI_REGISTRY_IMAGE/${IMAGE}:${INPUT_TAG}
 for TAG in ${EXPORT_TAGS[@]}; do
-  retry_push $INPUT $CI_REGISTRY_IMAGE/${IMAGE}:${TAG}
+  if [ ${DO_EICWEB} != 0 ]; then
+    retry_push $INPUT $CI_REGISTRY_IMAGE/${IMAGE}:${TAG}
+  fi
   if [ ${DO_DH} != 0 ]; then
     retry_push $INPUT $DH_REGISTRY/${IMAGE}:${TAG}
   fi

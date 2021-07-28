@@ -19,6 +19,9 @@ variables:
   DH_REGISTRY: eicweb
   DH_PUSH: 1
 
+  ## Also export the raw builder image, will be stored on DH only
+  EXPORT_BUILDER: 1
+
   ## TLS error resiliency: number of retries and second wait between tries 
   ## (wait time is doubled with each attempt)
   DOCKER_NTRIES: 5
@@ -175,6 +178,16 @@ jug_dev:default:
     ## move spacke directory and spack.yaml into the container build directory
     - cp -r spack containers/jug
     - cp -r spack.yaml containers/jug/spack/spack.yaml
+    ## Optionally build the raw builder image
+    - test ${EXPORT_BUILDER} = 1 && docker build 
+                   -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG} 
+                   --target=builder
+                   -f containers/jug/dev.Dockerfile
+                   --build-arg SPACK_VERSION=${SPACK_VERSION}
+                   --build-arg CACHE_BUST=${PACKAGE_HASH}
+                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   containers/jug
     ## now build our image
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
                    -f containers/jug/dev.Dockerfile
@@ -183,6 +196,12 @@ jug_dev:default:
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
+    ## push builder image do DH if desired
+    - test ${EXPORT_BUILDER} = 1 && ./gitlab-ci/docker_push.sh 
+                                 -i ${BUILD_IMAGE} -l builder-${INTERNAL_TAG}
+                                 -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
+                                 builder-${EXPORT_TAG} --dockerhub
+    ## standard exports
     - !reference [.build, script]
 
 jug_xl:default:

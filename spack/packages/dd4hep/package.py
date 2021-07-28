@@ -24,6 +24,7 @@ class Dd4hep(CMakePackage):
     tags = ['hep']
 
     version('master', branch='master')
+    version('1.17p1', sha256='036a9908aaf1e13eaf5f2f43b6f5f4a8bdda8183ddc5befa77a4448dbb485826')
     version('1.17', sha256='036a9908aaf1e13eaf5f2f43b6f5f4a8bdda8183ddc5befa77a4448dbb485826')
     version('1.16.1', sha256='c8b1312aa88283986f89cc008d317b3476027fd146fdb586f9f1fbbb47763f1a')
     version('1.16', sha256='ea9755cd255cf1b058e0e3cd743101ca9ca5ff79f4c60be89f9ba72b1ae5ec69')
@@ -47,7 +48,12 @@ class Dd4hep(CMakePackage):
     patch('tbb2.patch', when='@1.12.1')
     # Workaround for failing build file generation in some cases
     # See https://github.com/spack/spack/issues/24232
-    patch('cmake_language.patch', when='@:1.17')
+    patch('cmake_language.patch', when='@:1.16.1')
+
+    # custom hash for the 2021-07-27 version, needed to include
+    # https://github.com/AIDASoft/DD4hep/pull/849
+    # https://github.com/AIDASoft/DD4hep/pull/851
+    patch('2021-07-27.patch', when='@1.17p1')
 
     variant('xercesc', default=False, description="Enable 'Detector Builders' based on XercesC")
     variant('geant4', default=False, description="Enable the simulation part based on Geant4")
@@ -110,7 +116,11 @@ class Dd4hep(CMakePackage):
         env.set("DD4hep_ROOT", self.prefix)
 
     def url_for_version(self, version):
-        # dd4hep releases are dashes and padded with a leading zero
+        # remove extra patch qualifiers
+        if version[-2] == 'p':
+            version=version[:-2]
+
+	# dd4hep releases are dashes and padded with a leading zero
         # the patch version is omitted when 0
         # so for example v01-12-01, v01-12 ...
         base_url = self.url.rsplit('/', 1)[0]
