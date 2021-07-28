@@ -33,6 +33,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         git                                                             \
         gnupg2                                                          \
         iproute2                                                        \
+        iputils-ping                                                    \
         locales                                                         \
         lua-posix                                                       \
         make                                                            \
