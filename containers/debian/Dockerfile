@@ -20,7 +20,6 @@ ENV CLICOLOR_FORCE=1                                                    \
 ## We also install gitlab-runner, from the buster package (as bullseye is not available atm)
 RUN --mount=type=cache,target=/var/cache/apt                            \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
- && ls /var/cache/apt/*                                                 \
  && apt-get -yqq update                                                 \
  && apt-get -yqq install --no-install-recommends                        \
         ca-certificates                                                 \
