@@ -8,7 +8,9 @@ if [ ! -z ${ATHENA_PREFIX} ]; then
   fi
 fi
 
-set -uo pipefail
-trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
-IFS=$'\n\t'
-set -E
+## Disabled, as this causes issue with singularity which calls the script
+## through sh instead of bash.
+#set -uo pipefail
+#trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+#IFS=$'\n\t'
+#set -E
