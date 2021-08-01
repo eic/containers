@@ -97,3 +97,21 @@ RUN mkdir -p /opt/benchmarks                                                    
         https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git \
  && git clone -b ${BENCHMARK_PHY_VERSION} --depth 1                             \
         https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git
+
+## Install campaigns into the container
+
+ARG CAMPAIGNS_SINGLE_VERSION="main"
+ARG CAMPAIGNS_HEPMC3_VERSION="main"
+ARG CAMPAIGNS_CONDOR_VERSION="main"
+ARG CAMPAIGNS_SLURM_VERSION="main"
+
+RUN mkdir -p /opt/campaigns                                                     \
+ && cd /opt/campaigns                                                           \
+ && git clone -b ${CAMPAIGNS_SINGLE_VERSION} --depth 1                          \
+        https://eicweb.phy.anl.gov/EIC/campaigns/single.git                     \
+ && git clone -b ${CAMPAIGNS_HEPMC3_VERSION} --depth 1                          \
+        https://eicweb.phy.anl.gov/EIC/campaigns/hepmc3.git                     \
+ && git clone -b ${CAMPAIGNS_CONDOR_VERSION} --depth 1                          \
+        https://eicweb.phy.anl.gov/EIC/campaigns/condor.git                     \
+ && git clone -b ${CAMPAIGNS_SLURM_VERSION} --depth 1                           \
+        https://eicweb.phy.anl.gov/EIC/campaigns/slurm.git
