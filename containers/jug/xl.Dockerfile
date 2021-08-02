@@ -80,8 +80,14 @@ RUN cd /tmp                                                                     
  && popd                                                                        \
  && rm -rf build ip6                                                            \
  && echo "ADDING SETUP SCRIPT"                                                  \
- && echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/detector/lib'           \
-         > /opt/detector/setup.sh
+ && echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/detector/lib'            \
+         > /opt/detector/setup.sh                                               \
+ && echo 'export JUGGLER_DETECTOR=athena'                                       \
+         >> /opt/detector/setup.sh                                              \
+ && echo 'export DETECTOR_PATH=/opt/detector/share/athena'                      \
+         >> /opt/detector/setup.sh                                              \
+ && echo 'export JUGGLER_INSTALL_PREFIX=/usr/local'                             \
+         >> /opt/detector/setup.sh
 
 ## Install benchmarks into the container
 
