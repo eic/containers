@@ -152,6 +152,8 @@ version:
 debian_base:default:
   extends: .build
   stage: build:base
+  interruptible: true
+  resource_group: build
   needs:
     - version
   variables:
@@ -164,6 +166,8 @@ debian_base:default:
 jug_dev:default:
   extends: .build
   stage: build:dev
+  interruptible: true
+  resource_group: build
   needs:
     - version
     - debian_base:default
@@ -207,6 +211,7 @@ jug_dev:default:
 jug_xl:default:
   extends: .build
   stage: build:release
+  interruptible: true
   needs:
     - version
     - jug_dev:default
@@ -228,6 +233,8 @@ jug_xl:default:
 jug_xl:nightly:
   extends: .build
   stage: build:release
+  interruptible: true
+  resource_group: build
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
@@ -256,6 +263,7 @@ jug_xl:nightly:
 
 .singularity:
   stage: deploy
+  interruptible: true
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
@@ -286,6 +294,7 @@ jug_xl:singularity:default:
 
 jug_xl:singularity:nightly:
   stage: deploy
+  interruptible: true
   needs: 
     - version
     - jug_xl:nightly
