@@ -187,7 +187,7 @@ jug_dev:default:
     BUILD_IMAGE: "jug_dev"
   parallel:
     matrix:
-      - SPACK_ARCH: ["x86_64", "skylake"]
+      - SPACK_ARCH: ["x86_64"] #, "skylake"]
   script:
     ## calculate a hash based on the spack.yaml file and the spack directory
     ## and use this spack as a docker variable to force a rebuild when there
