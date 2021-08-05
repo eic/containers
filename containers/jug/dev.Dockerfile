@@ -25,6 +25,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
 ## Setup spack
 ## parts:
 ENV SPACK_ROOT=/opt/spack
+ARG SPACK_ARCH="x86_64"
 ARG SPACK_VERSION="develop"
 RUN echo "Part 1: regular spack install (as in containerize)"           \
  && git clone https://github.com/spack/spack.git /tmp/spack-staging     \
