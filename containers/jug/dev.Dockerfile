@@ -193,6 +193,15 @@ RUN find -L /usr/local/*                                                \
 ## and links therin for more info
 RUN strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
 
+## Address Issue #72
+## missing precompiled headers for cppyy due to missing symlink in root
+## install (should really be addressed by ROOT spack package)
+RUN cd /opt/spack-environment && spack env activate .                   \
+ && if [ ! -e $(spack location -i root)/lib/cppyy_backend/etc ]; then   \
+      ln -sf $(spack location -i root)/etc                              \
+             $(spack location -i root)/lib/cppyy_backend/etc;           \
+    fi
+
 RUN spack debug report                                                  \
       | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//"             \
     >> /etc/jug_info                                                    \
