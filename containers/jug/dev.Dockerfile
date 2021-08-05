@@ -45,10 +45,10 @@ RUN echo "Part 1: regular spack install (as in containerize)"           \
           /usr/sbin/interactive-shell                                   \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/spack-env                                           \
- && echo "Part 2: Set target to generic x86_64"                         \
+ && echo "Part 2: Set target to $SPACK_ARCH"                            \
  && echo "packages:" > $SPACK_ROOT/etc/spack/packages.yaml              \
  && echo "  all:" >> $SPACK_ROOT/etc/spack/packages.yaml                \
- && echo "    target: [x86_64]" >> $SPACK_ROOT/etc/spack/packages.yaml  \
+ && echo "    target: [$SPACK_ARCH]" >> $SPACK_ROOT/etc/spack/packages.yaml \
  && cat $SPACK_ROOT/etc/spack/packages.yaml                             \
  && echo "Part 3: Set config to allow use of more cores for builds"     \
  && echo "(and some other settings)"                                    \

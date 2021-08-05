@@ -185,6 +185,7 @@ jug_dev:default:
     - debian_base:default
   variables:
     BUILD_IMAGE: "jug_dev"
+    SPACK_ARCH: "x86_64" # to be matrixed
   script:
     ## calculate a hash based on the spack.yaml file and the spack directory
     ## and use this spack as a docker variable to force a rebuild when there
@@ -205,6 +206,7 @@ jug_dev:default:
                    --target=builder
                    -f containers/jug/dev.Dockerfile
                    --build-arg SPACK_VERSION=${SPACK_VERSION}
+                   --build-arg SPACK_ARCH=${SPACK_ARCH}
                    --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
