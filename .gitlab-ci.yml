@@ -326,6 +326,11 @@ juggler:master:
     - jug_xl:nightly
   variables:
     TRIGGERED_BY_NIGHTLY: 1
+    JUGGLER_VERSION: master
+    EICD_VERSION: master
+    NPDET_VERSION: master
+    DETECTOR_VERSION: master
+    IP6_VERSION: master
   trigger:
     project: EIC/juggler
   allow_failure: true
