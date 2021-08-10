@@ -86,6 +86,8 @@ RUN cd /tmp                                                                     
          >> /opt/detector/setup.sh                                              \
  && echo 'export DETECTOR_PATH=/opt/detector/share/athena'                      \
          >> /opt/detector/setup.sh                                              \
+ && echo 'export DETECTOR_VERSION=${DETECTOR_VERSION}'                          \
+         >> /opt/detector/setup.sh                                              \
  && echo 'export JUGGLER_INSTALL_PREFIX=/usr/local'                             \
          >> /opt/detector/setup.sh
 
