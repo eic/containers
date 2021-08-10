@@ -2,9 +2,9 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 
 variables:
   ## Application versions used for the main release ## note: nightly builds will always use the master branch
-  JUGGLER_VERSION: "v2.0.0"
+  JUGGLER_VERSION: "v3.0.0"
   NPDET_VERSION: "v0.6.0"
-  EICD_VERSION: "v0.2.0"
+  EICD_VERSION: "v0.5.0"
   DETECTOR_VERSION: "v0.2.0"
   IP6_VERSION: "v0.3.0"
 
