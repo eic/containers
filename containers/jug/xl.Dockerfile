@@ -82,13 +82,13 @@ RUN cd /tmp                                                                     
  && echo "ADDING SETUP SCRIPT"                                                  \
  && echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/detector/lib'            \
          > /opt/detector/setup.sh                                               \
- && echo 'export JUGGLER_DETECTOR=athena'                                       \
+ && echo "export JUGGLER_DETECTOR=athena"                                       \
          >> /opt/detector/setup.sh                                              \
- && echo 'export DETECTOR_PATH=/opt/detector/share/athena'                      \
+ && echo "export DETECTOR_PATH=/opt/detector/share/athena"                      \
          >> /opt/detector/setup.sh                                              \
- && echo 'export DETECTOR_VERSION=${DETECTOR_VERSION}'                          \
+ && echo "export DETECTOR_VERSION=${DETECTOR_VERSION}"                          \
          >> /opt/detector/setup.sh                                              \
- && echo 'export JUGGLER_INSTALL_PREFIX=/usr/local'                             \
+ && echo "export JUGGLER_INSTALL_PREFIX=/usr/local"                             \
          >> /opt/detector/setup.sh
 
 ## Install benchmarks into the container
