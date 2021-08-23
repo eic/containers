@@ -98,8 +98,8 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ## Nuke the buildcache
 ## This is useful when going to completely different containers,
 ## or intermittently to keep the buildcache step from taking too much time
-#RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-  #rm -rf /var/cache/spack-mirror/*
+RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
+  rm -rf /var/cache/spack-mirror/*
 
 ## Update the local build cache if needed. Consists of 3 steps:
 ## 1. Remove the B010 network buildcache (silicon)
