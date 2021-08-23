@@ -30,6 +30,9 @@ variables:
   ## is this nightly or not?
   NIGHTLY: 0
 
+  ## Force a rebuild without using cache
+  FORCE_NOCACHE: 0
+
 stages:
   - config
   - build:base      ## base OS image
@@ -191,6 +194,11 @@ jug_dev:default:
     ## move spacke directory and spack.yaml into the container build directory
     - cp -r spack containers/jug
     - cp -r spack.yaml containers/jug/spack/spack.yaml
+    - |
+      if [ $FORCE_NOCACHE = 1 ]; then
+        echo "FORCE_NOCACHE set"
+        export PACKAGE_HASH=`date +%s`
+      fi   
     ## Optionally build the raw builder image
     - test ${EXPORT_BUILDER} = 1 && docker build 
                    -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG} 
