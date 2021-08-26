@@ -2,7 +2,7 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 
 variables:
   ## Application versions used for the main release ## note: nightly builds will always use the master branch
-  JUGGLER_VERSION: "v3.3.0"
+  JUGGLER_VERSION: "v3.3.1"
   NPDET_VERSION: "v0.8.0"
   EICD_VERSION: "v0.7.0"
   DETECTOR_VERSION: "acadia-v1.0-alpha"
