@@ -28,6 +28,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         build-essential                                                 \
         g++-10                                                          \
         gcc-10                                                          \
+        gdb                                                             \
         gfortran-10                                                     \
         git                                                             \
         gnupg2                                                          \
