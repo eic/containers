@@ -1,7 +1,9 @@
 #!/bin/bash
 
 for i in /etc/profile.d/*.sh; do
-  . $i
+  if [ -r $i ]; then
+    . $i
+  fi
 done
 
 export PS1='eic-shell> \[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
