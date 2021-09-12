@@ -13,7 +13,7 @@ spack:
     - py-pip@20.2
     - pkg-config@0.29.2
     - xrootd@5.1.0 cxxstd=17 +python
-    - root@6.22.08 cxxstd=17 
+    - root@6.24.06 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc +xrootd +ssl 
           ^mesa swr=none +opengl -llvm -osmesa
