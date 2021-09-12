@@ -31,7 +31,7 @@ variables:
   NIGHTLY: 0
 
   ## Force a rebuild without using cache
-  FORCE_NOCACHE: 0
+  FORCE_NOCACHE: 1
 
 stages:
   - config
