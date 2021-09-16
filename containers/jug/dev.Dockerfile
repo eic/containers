@@ -213,7 +213,6 @@ COPY entrypoint.sh /usr/local/sbin/entrypoint.sh
 COPY eic-env.sh /etc/eic-env.sh
 COPY profile.d/a00_cleanup.sh /etc/profile.d
 COPY profile.d/z11_jug_env.sh /etc/profile.d
-COPY ld.so.preload /etc/ld.so.preload
 COPY singularity.d /.singularity.d
 
 ## Add minio client into /usr/local/bin
@@ -243,7 +242,6 @@ RUN --mount=from=staging,target=/staging                                \
  && cp /staging/etc/profile.d/*.sh /etc/profile.d/                      \
  && cp /staging/etc/eic-env.sh /etc/eic-env.sh                          \
  && cp /staging/etc/jug_info /etc/jug_info                              \
- && cp /staging/etc/ld.so.preload /etc/ld.so.preload                    \
  && cp -r /staging/.singularity.d /.singularity.d                        
 
 ARG JUG_VERSION=1
