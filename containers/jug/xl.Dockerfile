@@ -10,6 +10,9 @@ FROM eicweb.phy.anl.gov:4567/containers/eic_container/jug_dev:${INTERNAL_TAG}
 ARG JUGGLER_VERSION="master"
 ARG NPDET_VERSION="master"
 ARG EICD_VERSION="master"
+## afterburner
+## TODO move to spack build
+ARG AFTERBURNER_VERSION=main
 
 ## version will automatically bust cache for nightly, as it includes
 ## the date
@@ -44,7 +47,18 @@ RUN cd /tmp                                                                     
  && echo " - Juggler: ${JUGGLER_VERSION}-$(git rev-parse HEAD)"                 \
           >> /etc/jug_info                                                      \
  && popd                                                                        \
- && rm -rf build juggler
+ && rm -rf build juggler                                                        \
+ && echo "INSTALLING AFTERBURNER"                                               \
+ && git clone -b ${AFTERBURNER_VERSION} --depth 1                               \
+        https://eicweb.phy.anl.gov/monte_carlo/afterburner.git                  \
+ && cmake -B build -S afterburner/cpp -DCMAKE_INSTALL_PREFIX=/usr/local         \
+          -DCMAKE_CXX_STANDARD=17                                               \
+ && cmake --build build -j12 --target all -- install                            \
+ && pushd afterburner                                                           \
+ && echo " - afterburner: ${AFTERBURNER_VERSION}-$(git rev-parse HEAD)"         \
+          >> jug_info                                                           \
+ && popd                                                                        \
+ && rm -rf build afterburner
 
 ## also install detector/ip geometries into opt
 ## FIXME: need to add proper compact file install directly to the athena detector

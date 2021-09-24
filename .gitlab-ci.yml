@@ -1,12 +1,14 @@
 image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 
 variables:
-  ## Application versions used for the main release ## note: nightly builds will always use the master branch
+  ## Application versions used for the main release 
+  ## note: nightly builds will always use the master/main branch
   JUGGLER_VERSION: "v3.4.0"
   NPDET_VERSION: "v0.9.0"
   EICD_VERSION: "v0.8.0"
   DETECTOR_VERSION: "acadia-v1.0-alpha"
   IP6_VERSION: "v0.4.0"
+  AFTERBURNER_VERSION: "v0.0.1"
 
   ## Spack github version
   SPACK_VERSION: "a68abc15c5b1b8266130f765d1bee6290e71fa7c"
@@ -241,6 +243,7 @@ jug_xl:default:
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg NPDET_VERSION=${NPDET_VERSION}
                    --build-arg EICD_VERSION=${EICD_VERSION}
+                   --build-arg AFTERBURNER_VERSION=${AFTERBURNER_VERSION}
                    --build-arg DETECTOR_VERSION=${DETECTOR_VERSION}
                    --build-arg IP6_VERSION=${IP6_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
@@ -351,6 +354,18 @@ juggler:master:
   trigger:
     project: EIC/juggler
   allow_failure: true
+
+.test:
+  stage: test
+  needs:
+    - version
+    - jug_xl:singularity:nightly
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+    - when: never
 
 include:
   - local: 'tests/tutorial/config.yml'

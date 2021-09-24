@@ -244,7 +244,10 @@ RUN --mount=from=staging,target=/staging                                \
  && cp /staging/etc/jug_info /etc/jug_info                              \
  && cp -r /staging/.singularity.d /.singularity.d                        
 
+## set the jug_dev version and add the afterburner
+## TODO: move afterburner to spack when possible
 ARG JUG_VERSION=1
+ARG AFTERBURNER_VERSION=main
 RUN echo "" >> /etc/jug_info                                            \
  && echo " - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
 

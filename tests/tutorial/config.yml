@@ -3,16 +3,7 @@
 
 
 test:tutorial:
-  stage: test
-  needs:
-    - version
-    - jug_xl:singularity:nightly
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: on_success
-    - when: never
+  extends: .test
   script:
     - mkdir eic && cd eic
     - mkdir -p .gitlab-ci && mv ../build/jug_xl.sif .gitlab-ci/jug_xl-ci-test.sif

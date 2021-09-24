@@ -18,6 +18,8 @@ ENV CLICOLOR_FORCE=1                                                    \
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
 ## We also install gitlab-runner, from the buster package (as bullseye is not available atm)
+## TODO: libyaml-cpp-dev is a dependency for afterburner. We can probably remove
+##       this once afterburner is added to spack
 RUN --mount=type=cache,target=/var/cache/apt                            \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && apt-get -yqq update                                                 \
@@ -50,6 +52,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         parallel                                                        \
         time                                                            \
         valgrind                                                        \
+        libyaml-cpp-dev                                                 \
  && localedef -i en_US -f UTF-8 en_US.UTF-8                             \
  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100  \
  && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 100  \
