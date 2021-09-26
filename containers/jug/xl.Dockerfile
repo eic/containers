@@ -107,18 +107,24 @@ RUN cd /tmp                                                                     
 
 ## Install benchmarks into the container
 
+ARG BENCHMARK_COM_VERSION="master"
 ARG BENCHMARK_DET_VERSION="master"
 ARG BENCHMARK_REC_VERSION="master"
 ARG BENCHMARK_PHY_VERSION="master"
 
 RUN mkdir -p /opt/benchmarks                                                    \
  && cd /opt/benchmarks                                                          \
+ && git clone -b ${BENCHMARK_COM_VERSION} --depth 1                             \
+        https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git              \
  && git clone -b ${BENCHMARK_DET_VERSION} --depth 1                             \
         https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git       \
+ && ln -sf ../common_bench detector_benchmarks/.local                           \
  && git clone -b ${BENCHMARK_REC_VERSION} --depth 1                             \
         https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git \
+ && ln -sf ../common_bench reconstruction_benchmarks/.local                     \
  && git clone -b ${BENCHMARK_PHY_VERSION} --depth 1                             \
-        https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git
+        https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git        \
+ && ln -sf ../common_bench physics_benchmarks/.local
 
 ## Install campaigns into the container
 
