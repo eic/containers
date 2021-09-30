@@ -6,8 +6,37 @@ for i in /etc/profile.d/*.sh; do
   fi
 done
 
-export PS1='eic-shell> \[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+## default PS1 preamble in case we can't find better info
+PS1_PREAMBLE='eic-shell> '
+## try to guess who we are
+## note: we use sigils for the following cases:
+## - no sigil for nightly builds (jug_xl> )
+## - (*) for master builds     (jug_xl*> )
+## - (+) for stable (versioned) (jug_xl+> )
+## - (?) for unstable (MR)      (jug_xl?> )
+if [ -f /etc/jug_info ]; then
+  container=$(grep -e 'jug_' /etc/jug_info | tail -n 1 | awk '{print($2);}')
+  container=${container%:}              ## jug_xl
+  version=$(grep -e 'jug_' /etc/jug_info | tail -n 1 | awk '{print($3);}')
+  if [ ! -z ${container} ]; then
+    if [[ $version =~ 'unstable' ]]; then
+      sigil="?"
+    elif [[ $version =~ 'testing' ]]; then
+      sigil="*"
+    elif [[ $version =~ 'nightly' ]]; then
+      sigil=""
+    else # stable
+      sigil="+"
+    fi
+    PS1_PREAMBLE="${container}${sigil}> "
+    unset sigil
+  fi
+  unset version
+  unset container
+fi
+export PS1=${PS1_PREAMBLE}'\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33'
+unset PS1_PREAMBLE
 
 ## redefine ls and less as functions, as this is something we
 ## can import into our plain bash --norc --noprofile session

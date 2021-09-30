@@ -270,7 +270,7 @@ jug_xl:nightly:
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG} 
                    -f containers/jug/xl.Dockerfile
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-$(git rev-parse HEAD)
+                   --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
     - |
       PUSH_FLAG=""

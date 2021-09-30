@@ -143,3 +143,4 @@ RUN mkdir -p /opt/campaigns                                                     
         https://eicweb.phy.anl.gov/EIC/campaigns/condor.git                     \
  && git clone -b ${CAMPAIGNS_SLURM_VERSION} --depth 1                           \
         https://eicweb.phy.anl.gov/EIC/campaigns/slurm.git
+
