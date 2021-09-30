@@ -133,6 +133,12 @@ class Acts(CMakePackage, CudaPackage):
     variant('hepmc3', default=False, description='Build the HepMC3-based examples')
     variant('pythia8', default=False, description='Build the Pythia8-based examples')
 
+    ## Temporary patch for ACTS 
+    ## https://github.com/acts-project/acts/issues/1015
+    patch('https://patch-diff.githubusercontent.com/raw/acts-project/acts/pull/1015.patch',
+          sha256='52f6fe981d04daaeebb68579974b25766a32a3f149b851599ae7dc6b5be38a35',
+          when='@13.0.0')
+
     ## Temporary patch for ACTS to address
     ## https://github.com/acts-project/acts/issues/822
     patch('acts-822.patch', when='@8.02.0p1')
