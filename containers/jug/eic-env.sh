@@ -21,10 +21,10 @@ if [ -f /etc/jug_info ]; then
   if [ ! -z ${container} ]; then
     if [[ $version =~ 'unstable' ]]; then
       sigil="?"
-    elif [[ $version =~ 'testing' ]]; then
-      sigil="*"
     elif [[ $version =~ 'nightly' ]]; then
       sigil=""
+    elif [[ $version =~ 'testing' ]]; then
+      sigil="*"
     else # stable
       sigil="+"
     fi
