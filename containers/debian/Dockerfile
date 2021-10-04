@@ -50,6 +50,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         gv                                                              \
         poppler-utils                                                   \
         parallel                                                        \
+        bc                                                              \
         time                                                            \
         valgrind                                                        \
         libyaml-cpp-dev                                                 \
