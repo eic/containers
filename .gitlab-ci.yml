@@ -45,8 +45,6 @@ stages:
   - finalize
 
 default:
-  tags:
-    - silicon
   before_script:
     - ./gitlab-ci/docker_login.sh -u $DH_REGISTRY -p $DH_EICWEB_TOKEN
                                   -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
@@ -148,6 +146,10 @@ version:
 .build:
   rules:
     - when: on_success
+  resource_group: build
+  ## Use docker runner for docker builds
+  tags:
+    - docker
   ## cookie-cutter docker push code, to be included at the
   ## end of the regular job scripts
   script:
@@ -166,8 +168,6 @@ version:
 debian_base:default:
   extends: .build
   stage: build:base
-  interruptible: true
-  resource_group: build
   needs:
     - version
   variables:
@@ -180,8 +180,6 @@ debian_base:default:
 jug_dev:default:
   extends: .build
   stage: build:dev
-  interruptible: true
-  resource_group: build
   needs:
     - version
     - debian_base:default
@@ -230,7 +228,7 @@ jug_dev:default:
 jug_xl:default:
   extends: .build
   stage: build:release
-  interruptible: true
+  resource_group: build
   needs:
     - version
     - jug_dev:default
@@ -253,8 +251,6 @@ jug_xl:default:
 jug_xl:nightly:
   extends: .build
   stage: build:release
-  interruptible: true
-  resource_group: build
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
@@ -289,7 +285,7 @@ jug_xl:nightly:
       when: never
     - when: on_success
   artifacts:
-      expire_in: 2 days
+      expire_in: 1 days
       paths:
         - build/${BUILD_IMAGE}.sif
   script:
@@ -314,7 +310,7 @@ jug_xl:singularity:default:
 
 jug_xl:singularity:nightly:
   stage: deploy
-  interruptible: true
+  extends: .singularity
   needs: 
     - version
     - jug_xl:nightly
@@ -324,10 +320,6 @@ jug_xl:singularity:nightly:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: on_success
     - when: never
-  artifacts:
-      expire_in: 1 days
-      paths:
-        - build/${BUILD_IMAGE}.sif
   variables:
     BUILD_IMAGE: "jug_xl"
   script:
