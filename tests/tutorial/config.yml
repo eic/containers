@@ -5,15 +5,5 @@
 test:tutorial:
   extends: .test
   script:
-    - mkdir eic && cd eic
-    - mkdir -p .gitlab-ci && mv ../build/jug_xl.sif .gitlab-ci/jug_xl-ci-test.sif
-    # setup our environment to be weird
-    - |
-      echo ROOTSYS=/invalid-path >> ~/.bashrc
-      echo CC=`which gfortran` >> ~/.bashrc
-      echo CXX=`which gfortran` >> ~/.bashrc
-    # setup tutorial starting position
-    - bash ../install.sh -v ci-test
-    # now attempt the tutorial
-    - ./eic-shell -- ../tests/tutorial/quick-start.sh
-    - ./eic-shell -- ../tests/tutorial/part1.sh
+    - tests/tutorial/quick-start.sh
+    - tests/tutorial/part1.sh

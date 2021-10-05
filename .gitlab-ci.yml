@@ -283,7 +283,7 @@ jug_xl:nightly:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
-    - when: on_success
+    - when: manual
   artifacts:
       expire_in: 1 days
       paths:
@@ -314,12 +314,6 @@ jug_xl:singularity:nightly:
   needs: 
     - version
     - jug_xl:nightly
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: on_success
-    - when: never
   variables:
     BUILD_IMAGE: "jug_xl"
   script:
@@ -348,16 +342,21 @@ juggler:master:
   allow_failure: true
 
 .test:
+  image: eicweb.phy.anl.gov:4567/containers/eic_container/jug_xl:${NIGHTLY_TAG}
   stage: test
   needs:
     - version
-    - jug_xl:singularity:nightly
+    - jug_xl:nightly
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: on_success
     - when: never
+  before_script:
+    - echo "Testing the new container setup"
+  after_script:
+    - echo "Testing completed"
 
 include:
   - local: 'tests/tutorial/config.yml'
