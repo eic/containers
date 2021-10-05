@@ -283,7 +283,7 @@ jug_xl:nightly:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
-    - when: manual
+    - when: on_success
   artifacts:
       expire_in: 1 days
       paths:
