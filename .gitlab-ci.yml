@@ -7,7 +7,7 @@ variables:
   NPDET_VERSION: "v1.0.0"
   EICD_VERSION: "v0.9.0"
   DETECTOR_VERSION: "acadia-v1.0"
-  IP6_VERSION: "v0.5.0"
+  IP6_VERSION: "v0.5.1"
   AFTERBURNER_VERSION: "v0.0.2"
 
   ## Spack github version
