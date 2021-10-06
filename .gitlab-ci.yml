@@ -3,11 +3,11 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 variables:
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
-  JUGGLER_VERSION: "v3.6.0"
+  JUGGLER_VERSION: "v4.0.0"
   NPDET_VERSION: "v1.0.0"
-  EICD_VERSION: "v0.9.0"
+  EICD_VERSION: "v1.0.0"
   DETECTOR_VERSION: "acadia-v1.0"
-  IP6_VERSION: "v0.5.1"
+  IP6_VERSION: "v0.5.2"
   AFTERBURNER_VERSION: "v0.0.2"
 
   ## Spack github version
