@@ -308,18 +308,6 @@ jug_xl:singularity:default:
   variables:
     BUILD_IMAGE: "jug_xl"
 
-jug_xl:singularity:nightly:
-  stage: deploy
-  extends: .singularity
-  needs: 
-    - version
-    - jug_xl:nightly
-  variables:
-    BUILD_IMAGE: "jug_xl"
-  script:
-    - mkdir build
-    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
-
 ## trigger juggler rebuild on nightly schedule to ensure both images remain in sync
 juggler:master:
   stage: deploy
@@ -340,26 +328,6 @@ juggler:master:
   trigger:
     project: EIC/juggler
   allow_failure: true
-
-.test:
-  image: eicweb.phy.anl.gov:4567/containers/eic_container/jug_xl:${NIGHTLY_TAG}
-  stage: test
-  needs:
-    - version
-    - jug_xl:nightly
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: on_success
-    - when: never
-  before_script:
-    - echo "Testing the new container setup"
-  after_script:
-    - echo "Testing completed"
-
-include:
-  - local: 'tests/tutorial/config.yml'
 
 cleanup:
   stage: finalize
