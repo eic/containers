@@ -7,12 +7,18 @@ ARG INTERNAL_TAG="testing"
 ## ========================================================================================
 FROM eicweb.phy.anl.gov:4567/containers/eic_container/jug_dev:${INTERNAL_TAG}
 
+ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
 ARG JUGGLER_VERSION="master"
 ARG NPDET_VERSION="master"
 ARG EICD_VERSION="master"
 ## afterburner
 ## TODO move to spack build
 ARG AFTERBURNER_VERSION=main
+
+ADD ${EICWEB}/18/repository/branches/${NPDET_VERSION} /tmp/18.json
+ADD ${EICWEB}/373/repository/branches/${EICD_VERSION} /tmp/373.json
+ADD ${EICWEB}/369/repository/branches/${JUGGLER_VERSION} /tmp/369.json
+ADD ${EICWEB}/492/repository/branches/${AFTERBURNER_VERSION} /tmp/492.json
 
 ## version will automatically bust cache for nightly, as it includes
 ## the date
@@ -65,6 +71,8 @@ RUN cd /tmp                                                                     
 ##        build
 ARG DETECTOR_VERSION="master"
 ARG IP6_VERSION="master"
+ADD ${EICWEB}/473/repository/branches/${DETECTOR_VERSION} /tmp/473.json
+ADD ${EICWEB}/452/repository/branches/${IP6_VERSION} /tmp/452.json
 RUN cd /tmp                                                                     \
  && DETECTOR_PREFIX=/opt/detector                                               \
  && DETECTOR_DATA=$DETECTOR_PREFIX/share/athena                                 \
@@ -111,6 +119,10 @@ ARG BENCHMARK_COM_VERSION="master"
 ARG BENCHMARK_DET_VERSION="master"
 ARG BENCHMARK_REC_VERSION="master"
 ARG BENCHMARK_PHY_VERSION="master"
+ADD ${EICWEB}/458/repository/branches/${BENCHMARK_COM_VERSION} /tmp/485.json
+ADD ${EICWEB}/399/repository/branches/${BENCHMARK_DET_VERSION} /tmp/399.json
+ADD ${EICWEB}/408/repository/branches/${BENCHMARK_REC_VERSION} /tmp/408.json
+ADD ${EICWEB}/400/repository/branches/${BENCHMARK_PHY_VERSION} /tmp/400.json
 
 RUN mkdir -p /opt/benchmarks                                                    \
  && cd /opt/benchmarks                                                          \
@@ -132,6 +144,10 @@ ARG CAMPAIGNS_SINGLE_VERSION="main"
 ARG CAMPAIGNS_HEPMC3_VERSION="main"
 ARG CAMPAIGNS_CONDOR_VERSION="main"
 ARG CAMPAIGNS_SLURM_VERSION="main"
+ADD ${EICWEB}/482/repository/branches/${CAMPAIGNS_SINGLE_VERSION} /tmp/482.json
+ADD ${EICWEB}/483/repository/branches/${CAMPAIGNS_HEPMC3_VERSION} /tmp/483.json
+ADD ${EICWEB}/484/repository/branches/${CAMPAIGNS_CONDOR_VERSION} /tmp/484.json
+ADD ${EICWEB}/485/repository/branches/${CAMPAIGNS_SLURM_VERSION} /tmp/485.json
 
 RUN mkdir -p /opt/campaigns                                                     \
  && cd /opt/campaigns                                                           \
