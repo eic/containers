@@ -245,6 +245,7 @@ jug_xl:default:
                    --build-arg DETECTOR_VERSION=${DETECTOR_VERSION}
                    --build-arg IP6_VERSION=${IP6_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   --no-cache
                    containers/jug
     - !reference [.build, script]
 
@@ -267,6 +268,7 @@ jug_xl:nightly:
                    -f containers/jug/xl.Dockerfile
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   --no-cache
                    containers/jug
     - |
       PUSH_FLAG=""
