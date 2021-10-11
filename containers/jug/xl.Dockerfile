@@ -137,14 +137,14 @@ RUN mkdir -p /opt/benchmarks                                                    
  && cd /opt/benchmarks                                                          \
  && git clone -b ${BENCHMARK_DET_VERSION} --depth 1                             \
         https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git       \
- && ln -sf ../common_bench detector_benchmarks/.local                           \
+ && ln -sf ../common_bench detector_benchmarks/.local
 
 ADD ${EICWEB}/408/repository/tree?ref=${BENCHMARK_REC_VERSION} /tmp/408.json 
 RUN mkdir -p /opt/benchmarks                                                    \
  && cd /opt/benchmarks                                                          \
  && git clone -b ${BENCHMARK_REC_VERSION} --depth 1                             \
         https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git \
- && ln -sf ../common_bench reconstruction_benchmarks/.local                     \
+ && ln -sf ../common_bench reconstruction_benchmarks/.local
 
 ADD ${EICWEB}/400/repository/tree?ref=${BENCHMARK_PHY_VERSION} /tmp/400.json
 RUN mkdir -p /opt/benchmarks                                                    \
