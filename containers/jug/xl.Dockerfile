@@ -15,14 +15,11 @@ ARG EICD_VERSION="master"
 ## TODO move to spack build
 ARG AFTERBURNER_VERSION=main
 
-ADD ${EICWEB}/18/repository/tree?ref=${NPDET_VERSION} /tmp/18.json
-ADD ${EICWEB}/373/repository/tree?ref=${EICD_VERSION} /tmp/373.json
-ADD ${EICWEB}/369/repository/tree?ref=${JUGGLER_VERSION} /tmp/369.json
-ADD ${EICWEB}/492/repository/tree?ref=${AFTERBURNER_VERSION} /tmp/492.json
-
 ## version will automatically bust cache for nightly, as it includes
 ## the date
 ARG JUG_VERSION=1
+
+ADD ${EICWEB}/18/repository/tree?ref=${NPDET_VERSION} /tmp/18.json
 RUN cd /tmp                                                                     \
  && echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info                           \
  && echo "INSTALLING NPDET"                                                     \
@@ -33,7 +30,10 @@ RUN cd /tmp                                                                     
  && pushd NPDet                                                                 \
  && echo " - NPDet: ${NPDET_VERSION}-$(git rev-parse HEAD)">> /etc/jug_info     \
  && popd                                                                        \
- && rm -rf build NPDet                                                          \
+ && rm -rf build NPDet
+
+ADD ${EICWEB}/373/repository/tree?ref=${EICD_VERSION} /tmp/373.json
+RUN cd /tmp                                                                     \
  && echo "INSTALLING EICD"                                                      \
  && git clone -b ${EICD_VERSION} --depth 1                                      \
         https://eicweb.phy.anl.gov/EIC/eicd.git                                 \
@@ -42,7 +42,10 @@ RUN cd /tmp                                                                     
  && pushd eicd                                                                  \
  && echo " - EICD: ${EICD_VERSION}-$(git rev-parse HEAD)">> /etc/jug_info       \
  && popd                                                                        \
- && rm -rf build eicd                                                           \
+ && rm -rf build eicd
+
+ADD ${EICWEB}/369/repository/tree?ref=${JUGGLER_VERSION} /tmp/369.json
+RUN cd /tmp                                                                     \
  && echo "INSTALLING JUGGLER"                                                   \
  && git clone -b ${JUGGLER_VERSION} --depth 1                                   \
         https://eicweb.phy.anl.gov/EIC/juggler.git                              \
@@ -53,7 +56,10 @@ RUN cd /tmp                                                                     
  && echo " - Juggler: ${JUGGLER_VERSION}-$(git rev-parse HEAD)"                 \
           >> /etc/jug_info                                                      \
  && popd                                                                        \
- && rm -rf build juggler                                                        \
+ && rm -rf build juggler
+
+ADD ${EICWEB}/492/repository/tree?ref=${AFTERBURNER_VERSION} /tmp/492.json
+RUN cd /tmp                                                                     \
  && echo "INSTALLING AFTERBURNER"                                               \
  && git clone -b ${AFTERBURNER_VERSION} --depth 1                               \
         https://eicweb.phy.anl.gov/monte_carlo/afterburner.git                  \
@@ -119,21 +125,30 @@ ARG BENCHMARK_COM_VERSION="master"
 ARG BENCHMARK_DET_VERSION="master"
 ARG BENCHMARK_REC_VERSION="master"
 ARG BENCHMARK_PHY_VERSION="master"
-ADD ${EICWEB}/458/repository/tree?ref=${BENCHMARK_COM_VERSION} /tmp/485.json
-ADD ${EICWEB}/399/repository/tree?ref=${BENCHMARK_DET_VERSION} /tmp/399.json
-ADD ${EICWEB}/408/repository/tree?ref=${BENCHMARK_REC_VERSION} /tmp/408.json
-ADD ${EICWEB}/400/repository/tree?ref=${BENCHMARK_PHY_VERSION} /tmp/400.json
 
+ADD ${EICWEB}/458/repository/tree?ref=${BENCHMARK_COM_VERSION} /tmp/485.json
 RUN mkdir -p /opt/benchmarks                                                    \
  && cd /opt/benchmarks                                                          \
  && git clone -b ${BENCHMARK_COM_VERSION} --depth 1                             \
-        https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git              \
+        https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git
+
+ADD ${EICWEB}/399/repository/tree?ref=${BENCHMARK_DET_VERSION} /tmp/399.json
+RUN mkdir -p /opt/benchmarks                                                    \
+ && cd /opt/benchmarks                                                          \
  && git clone -b ${BENCHMARK_DET_VERSION} --depth 1                             \
         https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git       \
  && ln -sf ../common_bench detector_benchmarks/.local                           \
+
+ADD ${EICWEB}/408/repository/tree?ref=${BENCHMARK_REC_VERSION} /tmp/408.json 
+RUN mkdir -p /opt/benchmarks                                                    \
+ && cd /opt/benchmarks                                                          \
  && git clone -b ${BENCHMARK_REC_VERSION} --depth 1                             \
         https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git \
  && ln -sf ../common_bench reconstruction_benchmarks/.local                     \
+
+ADD ${EICWEB}/400/repository/tree?ref=${BENCHMARK_PHY_VERSION} /tmp/400.json
+RUN mkdir -p /opt/benchmarks                                                    \
+ && cd /opt/benchmarks                                                          \
  && git clone -b ${BENCHMARK_PHY_VERSION} --depth 1                             \
         https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git        \
  && ln -sf ../common_bench physics_benchmarks/.local
@@ -144,19 +159,27 @@ ARG CAMPAIGNS_SINGLE_VERSION="main"
 ARG CAMPAIGNS_HEPMC3_VERSION="main"
 ARG CAMPAIGNS_CONDOR_VERSION="main"
 ARG CAMPAIGNS_SLURM_VERSION="main"
-ADD ${EICWEB}/482/repository/tree?ref=${CAMPAIGNS_SINGLE_VERSION} /tmp/482.json
-ADD ${EICWEB}/483/repository/tree?ref=${CAMPAIGNS_HEPMC3_VERSION} /tmp/483.json
-ADD ${EICWEB}/484/repository/tree?ref=${CAMPAIGNS_CONDOR_VERSION} /tmp/484.json
-ADD ${EICWEB}/485/repository/tree?ref=${CAMPAIGNS_SLURM_VERSION} /tmp/485.json
 
+ADD ${EICWEB}/482/repository/tree?ref=${CAMPAIGNS_SINGLE_VERSION} /tmp/482.json
 RUN mkdir -p /opt/campaigns                                                     \
  && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_SINGLE_VERSION} --depth 1                          \
-        https://eicweb.phy.anl.gov/EIC/campaigns/single.git                     \
+        https://eicweb.phy.anl.gov/EIC/campaigns/single.git
+
+ADD ${EICWEB}/483/repository/tree?ref=${CAMPAIGNS_HEPMC3_VERSION} /tmp/483.json
+RUN mkdir -p /opt/campaigns                                                     \
+ && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_HEPMC3_VERSION} --depth 1                          \
-        https://eicweb.phy.anl.gov/EIC/campaigns/hepmc3.git                     \
+        https://eicweb.phy.anl.gov/EIC/campaigns/hepmc3.git
+
+ADD ${EICWEB}/484/repository/tree?ref=${CAMPAIGNS_CONDOR_VERSION} /tmp/484.json
+RUN mkdir -p /opt/campaigns                                                     \
+ && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_CONDOR_VERSION} --depth 1                          \
-        https://eicweb.phy.anl.gov/EIC/campaigns/condor.git                     \
+        https://eicweb.phy.anl.gov/EIC/campaigns/condor.git
+
+ADD ${EICWEB}/485/repository/tree?ref=${CAMPAIGNS_SLURM_VERSION} /tmp/485.json
+RUN mkdir -p /opt/campaigns                                                     \
+ && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_SLURM_VERSION} --depth 1                           \
         https://eicweb.phy.anl.gov/EIC/campaigns/slurm.git
-
