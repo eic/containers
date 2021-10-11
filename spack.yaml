@@ -8,7 +8,7 @@ spack:
     - heppdt@3.04.01
     - clhep@2.4.4.0 cxxstd=17
     - eigen@3.3.9
-    - python@3.7.8
+    - python@3.9.6
     - py-numpy@1.20.1
     - py-pip@20.2
     - pkg-config@0.29.2
