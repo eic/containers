@@ -158,6 +158,7 @@ RUN cd /opt/spack-environment                                           \
                 --no-cache-dir                                          \
         ipython matplotlib scipy yapf pandas pycairo pyyaml lxml        \
         jupyter jupyterlab uproot pyunfold seaborn stashcp awkward      \
+        lmfit                                                           \
  && echo -n ""                                                          \
  && echo "Executing cmake patch for dd4hep 16.1"                        \                
  && sed -i "s/FIND_PACKAGE(Python/#&/" /usr/local/cmake/DD4hepBuild.cmake
