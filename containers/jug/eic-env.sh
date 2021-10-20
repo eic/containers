@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
 for i in /etc/profile.d/*.sh; do
-  if [ -r $i ]; then
-    . $i
+  if [ -r "$i" ]; then
+    . "$i"
   fi
 done
 
@@ -18,16 +18,13 @@ if [ -f /etc/jug_info ]; then
   container=$(grep -e 'jug_' /etc/jug_info | tail -n 1 | awk '{print($2);}')
   container=${container%:}              ## jug_xl
   version=$(grep -e 'jug_' /etc/jug_info | tail -n 1 | awk '{print($3);}')
-  if [ ! -z ${container} ]; then
-    if [[ $version =~ 'unstable' ]]; then
-      sigil="?"
-    elif [[ $version =~ 'nightly' ]]; then
-      sigil=""
-    elif [[ $version =~ 'testing' ]]; then
-      sigil="*"
-    else # stable
-      sigil="+"
-    fi
+  if [ -n "${container}" ]; then
+    case "${version}" in
+      *unstable*) sigil="?" ;;
+      *nightly*)  sigil="" ;;
+      *testing*)  sigil="*" ;;
+      *) sigil="+" ;;
+    esac
     PS1_PREAMBLE="${container}${sigil}> "
     unset sigil
   fi
@@ -42,13 +39,13 @@ unset PS1_PREAMBLE
 ## can import into our plain bash --norc --noprofile session
 ## (aliases cannot be transferred to a child shell)
 ls () {
-  /bin/ls --color=auto $@
+  /bin/ls --color=auto "$@"
 }
 less () {
-  /usr/bin/less -R $@
+  /usr/bin/less -R "$@"
 }
 grep () {
-  /bin/grep --color=auto $@
+  /bin/grep --color=auto "$@"
 }
 MYSHELL=$(ps -p $$ | awk '{print($4);}' | tail -n1)
 ## only export the functions for bash, as this does not work
