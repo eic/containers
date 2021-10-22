@@ -6,7 +6,7 @@ variables:
   JUGGLER_VERSION: "v4.1.0"
   NPDET_VERSION: "v1.1.0"
   EICD_VERSION: "v1.1.0"
-  DETECTOR_VERSION: "acadia-v2.0"
+  DETECTOR_VERSION: "acadia-v2.1"
   IP6_VERSION: "v0.5.2"
   AFTERBURNER_VERSION: "v0.1.0"
 
