@@ -6,8 +6,8 @@ variables:
   JUGGLER_VERSION: "v4.1.0"
   NPDET_VERSION: "v1.1.0"
   EICD_VERSION: "v1.1.0"
-  DETECTOR_VERSION: "acadia-v2.0"
-  IP6_VERSION: "v0.5.2"
+  DETECTOR_VERSION: "canyonlands-v1.0"
+  IP6_VERSION: "v0.6.0"
   AFTERBURNER_VERSION: "v0.1.0"
 
   ## Spack github version
