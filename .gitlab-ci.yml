@@ -6,8 +6,6 @@ variables:
   JUGGLER_VERSION: "v4.1.0"
   NPDET_VERSION: "v1.1.0"
   EICD_VERSION: "v1.1.0"
-  DETECTOR_VERSION: "canyonlands-v1.1"
-  IP6_VERSION: "v0.6.0"
   AFTERBURNER_VERSION: "v0.1.0"
 
   ## Spack github version
@@ -235,6 +233,7 @@ jug_xl:default:
   variables:
     BUILD_IMAGE: "jug_xl"
   script:
+    - cp detectors.yaml containers/jug
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
                    -f containers/jug/xl.Dockerfile
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
@@ -242,8 +241,6 @@ jug_xl:default:
                    --build-arg NPDET_VERSION=${NPDET_VERSION}
                    --build-arg EICD_VERSION=${EICD_VERSION}
                    --build-arg AFTERBURNER_VERSION=${AFTERBURNER_VERSION}
-                   --build-arg DETECTOR_VERSION=${DETECTOR_VERSION}
-                   --build-arg IP6_VERSION=${IP6_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
     - !reference [.build, script]
@@ -263,10 +260,12 @@ jug_xl:nightly:
   variables:
     BUILD_IMAGE: "jug_xl"
   script:
+    - cp detectors.yaml containers/jug
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG} 
                    -f containers/jug/xl.Dockerfile
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   --build-arg NIGHTLY=1
                    containers/jug
     - |
       PUSH_FLAG=""
