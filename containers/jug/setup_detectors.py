@@ -21,6 +21,7 @@ export JUGGLER_BEAMLINE_CONFIG_VERSION=$BEAMLINE_CONFIG_VERSION
 export JUGGLER_INSTALL_PREFIX=/usr/local
 
 ## modify PS1 for this detector version
+export PS1="${{PS1}}"
 export PS1="{branch}${{PS1_SIGIL}}>${{PS1#*>}}"
 unset branch
 '''
