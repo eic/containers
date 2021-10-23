@@ -20,6 +20,9 @@ export JUGGLER_BEAMLINE_CONFIG=$BEAMLINE_CONFIG
 export JUGGLER_BEAMLINE_CONFIG_VERSION=$BEAMLINE_CONFIG_VERSION
 export JUGGLER_INSTALL_PREFIX=/usr/local
 
+## Export detector libraries
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{prefix}/lib
+
 ## modify PS1 for this detector version
 export PS1="${{PS1}}"
 export PS1="{branch}${{PS1_SIGIL}}>${{PS1#*>}}"
@@ -137,6 +140,7 @@ if __name__ == '__main__':
                 ## write an environment file for this detector
                 with open('{prefix}/setup.sh'.format(prefix=prefix), 'w') as f:
                     print(DETECTOR_ENV.format(
+                            prefix=prefix,
                             detector=det,
                             data_prefix=data_dir,
                             version=cfg['version'],
