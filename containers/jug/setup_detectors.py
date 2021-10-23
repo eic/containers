@@ -18,7 +18,12 @@ export JUGGLER_DETECTOR_VERSION=$DETECTOR_VERSION
 export JUGGLER_DETECTOR_PATH=$DETECTOR_PATH
 export JUGGLER_BEAMLINE_CONFIG=$BEAMLINE_CONFIG
 export JUGGLER_BEAMLINE_CONFIG_VERSION=$BEAMLINE_CONFIG_VERSION
-export JUGGLER_INSTALL_PREFIX=/usr/local'''
+export JUGGLER_INSTALL_PREFIX=/usr/local
+
+## modify PS1 for this detector version
+export PS1="{branch}${{PS1_SIGIL}}>${{PS1#*>}}"
+unset branch
+'''
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -135,7 +140,8 @@ if __name__ == '__main__':
                             data_prefix=data_dir,
                             version=cfg['version'],
                             ip=ip['config'],
-                            ip_version=ip['version']),
+                            ip_version=ip['version'],
+                            branch=branch),
                           file=f)
     print(' --> Symlinking default detector for backward compatibility')
     full_prefix='{}/{}-{}'.format(args.prefix, default_detector, default_version)

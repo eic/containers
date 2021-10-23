@@ -25,15 +25,16 @@ if [ -f /etc/jug_info ]; then
       *testing*)  sigil="*" ;;
       *) sigil="+" ;;
     esac
-    PS1_PREAMBLE="${container}${sigil}> "
-    unset sigil
+    ps1_preamble="${container}${sigil}> "
+    export PS1_SIGIL=${sigil}
+    unset ${sigil}
   fi
   unset version
   unset container
 fi
-export PS1=${PS1_PREAMBLE}'\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+export PS1=${ps1_preamble}'\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33'
-unset PS1_PREAMBLE
+unset ps1_preamble
 
 ## redefine ls and less as functions, as this is something we
 ## can import into our plain bash --norc --noprofile session
