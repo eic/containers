@@ -36,6 +36,8 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         gnupg2                                                          \
         iproute2                                                        \
         iputils-ping                                                    \
+        libcbor-xs-perl                                                 \
+        libjson-xs-perl                                                 \
         locales                                                         \
         lua-posix                                                       \
         make                                                            \
