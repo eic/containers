@@ -62,7 +62,7 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-stable/'          ## main stable branch: vX.Y-stable
-    - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-stable/'   ## special stable branch: vX.Y-acadia-stable (etc)
+#    - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-stable/'   ## special stable branch: vX.Y-acadia-stable (etc)
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'            ## commit tags start with vX.Y.Z with optional suffix
 
 ## plan:
