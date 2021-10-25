@@ -36,8 +36,7 @@ variables:
 stages:
   - config
   - build:base      ## base OS image
-  - build:dev       ## naked dev container image
-  - build:release   ## dressed release container image
+  - build:jug       ## jug container images
   - deploy          ## build/deploy singularity images
   - test            
   - finalize
@@ -66,7 +65,7 @@ workflow:
 ## plan:
 ##  Workflows:
 ##  - master      --> config + all build stages + singularity
-#                            + nightly build:release + nightly singularity
+#                            + nightly build:jug + nightly singularity
 ##  - v3.0-stable --> config + all build stages + singularity
 ##  - v3.0.0      --> config + all build stages + singularity
 ##  - MR          --> config + all build stages
@@ -127,6 +126,8 @@ version:
         EXPORT_TAG=${VERSION_FULL}
         EXPORT_TAG2=
       fi
+      echo "VERSION_FULL=$VERSION_FULL" >> build.env
+      echo "VERSION_SHORT=$VERSION_SHORT" >> build.env
       echo "INTERNAL_TAG=$INTERNAL_TAG" >> build.env
       echo "NIGHTLY_TAG=$NIGHTLY_TAG" >> build.env
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
@@ -177,7 +178,7 @@ debian_base:default:
 
 jug_dev:default:
   extends: .build
-  stage: build:dev
+  stage: build:jug
   needs:
     - version
     - debian_base:default
@@ -225,7 +226,7 @@ jug_dev:default:
 
 jug_xl:default:
   extends: .build
-  stage: build:release
+  stage: build:jug
   resource_group: build
   needs:
     - version
@@ -247,7 +248,7 @@ jug_xl:default:
 
 jug_xl:nightly:
   extends: .build
-  stage: build:release
+  stage: build:jug
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
@@ -275,6 +276,40 @@ jug_xl:nightly:
     - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
                                  ${NIGHTLY_TAG} ${PUSH_FLAG}
+
+jug_xl:feature:
+  extends: .build
+  stage: build:jug
+  rules: 
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - when: never
+  needs: 
+    - version
+    - jug_xl:default
+  variables:
+    BUILD_IMAGE: "jug_xl"
+  parallel:
+    matrix:
+      - DETECTOR: athena
+        DETECTOR_BRANCH:
+          - acadia
+          - canyonlands
+  script:
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
+                   -f containers/jug/feature.Dockerfile
+                   --build-arg DETECTOR=${DETECTOR}
+                   --build-arg DETECTOR_BRANCH=${DETECTOR_BRANCH}
+                   containers/jug
+    - |
+      PUSH_FLAG=""
+      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
+        PUSH_FLAG="--eicweb"
+      fi
+      FEATURE_EXPORT_TAG="${VERSION_SHORT}-${DETECTOR_BRANCH}-stable"
+    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
+                                 -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
+                                 ${FEATURE_EXPORT_TAG} ${PUSH_FLAG}
 
 .singularity:
   stage: deploy
