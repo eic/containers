@@ -56,7 +56,7 @@ class Dd4hep(CMakePackage):
     # https://github.com/AIDASoft/DD4hep/pull/851
     patch('2021-07-27.patch', when='@1.17p1')
     # patch for https://github.com/AIDASoft/DD4hep/issues/862
-    patch('0001-do-not-change-momentum-in-getParticleDirection.patch', when='@1.17p1')
+    patch('0001-do-not-change-momentum-in-getParticleDirection.patch', when='@1.17p1:1.18')
 
     variant('xercesc', default=False, description="Enable 'Detector Builders' based on XercesC")
     variant('geant4', default=False, description="Enable the simulation part based on Geant4")
