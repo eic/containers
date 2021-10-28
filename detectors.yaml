@@ -10,7 +10,7 @@ detectors:
       version: canyonlands-v1.1
       ip:
         config: ip6
-        version: v0.6.0
+        version: v0.6.1
     nightly:
       version: master
       ip:
