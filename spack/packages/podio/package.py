@@ -38,7 +38,7 @@ class Podio(CMakePackage):
 
     # issue with build braking for spack as the search-and-replace for "root" 
     # erroneously selects the all files as the build happens under /tmp/root
-    patch('cmake.patch', when="@0.13.1")
+    patch('cmake.patch', when="@0.13.1:0.14")
 
     depends_on('root@6.08.06: cxxstd=17')
 
