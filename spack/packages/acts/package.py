@@ -138,6 +138,11 @@ class Acts(CMakePackage, CudaPackage):
     patch('https://patch-diff.githubusercontent.com/raw/acts-project/acts/pull/1015.patch',
           sha256='52f6fe981d04daaeebb68579974b25766a32a3f149b851599ae7dc6b5be38a35',
           when='@13.0.0')
+    ## Another temporary patch for ACTS to fix issue with vertexing API
+    ## https://github.com/acts-project/acts/pull/1058
+    patch('https://patch-diff.githubusercontent.com/raw/acts-project/acts/pull/1058.patch',
+          sha256='edad00c3712d34cdce3cbc70e96365861076504023d3f9b7c3c4a240ff0d4c89',
+          when='@13.0.0')
 
     ## Temporary patch for ACTS to address
     ## https://github.com/acts-project/acts/issues/822
