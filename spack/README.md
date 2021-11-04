@@ -18,6 +18,7 @@ Then use spack as you normally would.
   * Package overrides
     * `acts`: Patch bug for simple disk geometries
     * `dd4hep`: Fix package hash which somehow is wrong in spack...
+    * `Geant4`: Add extra hardcoded materials with Birks constant
     * `fmt`: Modified compiler flags to build shared library version.
     * `madx`: Add madx package
     * `mesa`: fix issue in meson step
