@@ -16,7 +16,7 @@ spack:
     - root@6.24.06 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc +xrootd +ssl 
-          ^mesa swr=none +opengl -llvm -osmesa
+          ^mesa swr=none +opengl -llvm +osmesa
     - pythia8@8303 +fastjet
     - fastjet@3.3.3
     - hepmc3@3.2.2 +python +rootio 
