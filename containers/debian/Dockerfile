@@ -47,6 +47,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         vim-nox                                                         \
         less                                                            \
         clang-format                                                    \
+        clang-tidy                                                      \
         openssh-client                                                  \
         wget                                                            \
         ghostscript                                                     \
