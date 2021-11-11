@@ -1,0 +1,14 @@
+diff --git a/DDG4/src/Geant4Particle.cpp b/DDG4/src/Geant4Particle.cpp
+index 1db6105c..7f8d7482 100644
+--- a/DDG4/src/Geant4Particle.cpp
++++ b/DDG4/src/Geant4Particle.cpp
+@@ -57,7 +57,9 @@ Geant4Particle::~Geant4Particle()  {
+ void Geant4Particle::release()  {
+   //::printf("************ Release Geant4Particle[%p]: ID:%d pdgID %d ref:%d\n",(void*)this,id,pdgID,ref-1);
+   if ( --ref <= 0 )  {
++    if( (ref > -1) ) { 
+     delete this;
++    }
+   }
+ }
+ 

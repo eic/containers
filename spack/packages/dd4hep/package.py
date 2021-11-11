@@ -51,6 +51,9 @@ class Dd4hep(CMakePackage):
     # See https://github.com/spack/spack/issues/24232
     patch('cmake_language.patch', when='@:1.16.1')
 
+    # hack to fix refcount underflow
+    patch('refcount_underflow.patch', when='@1.17:')
+    
     # custom hash for the 2021-07-27 version, needed to include
     # https://github.com/AIDASoft/DD4hep/pull/849
     # https://github.com/AIDASoft/DD4hep/pull/851
