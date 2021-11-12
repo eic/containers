@@ -35,4 +35,7 @@ spack:
     - imagemagick@7.0.0:7.0.99
     - igprof@5.9.16
   concretization: together
+  packages:
+    all:
+      compiler: [gcc@10.3.0]
   view: /usr/local
