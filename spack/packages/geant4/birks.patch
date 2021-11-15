@@ -15,14 +15,14 @@ index 9fb850dd7..ee09b39f7 100644
    g4MatNames.push_back("G4_PbWO4");
    g4MatData.push_back(0.0333333*mm/MeV);
  
-+  g4MatNames.push_back("polystyrene");
-+  g4MatData.push_back(0.07943*mm/MeV);
-+  g4MatNames.push_back("Polystyrene");
-+  g4MatData.push_back(0.07943*mm/MeV);
 +  g4MatNames.push_back("PlasticScint079");
 +  g4MatData.push_back(0.07943*mm/MeV);
 +
 +
++  g4MatNames.push_back("polystyrene");
++  g4MatData.push_back(0.126*mm/MeV);
++  g4MatNames.push_back("Polystyrene");
++  g4MatData.push_back(0.126*mm/MeV);
 +  g4MatNames.push_back("PlasticScint");
 +  g4MatData.push_back(0.126*mm/MeV);
 +  g4MatNames.push_back("PlasticScint126");
