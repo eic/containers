@@ -1,5 +1,5 @@
 diff --git a/source/processes/electromagnetic/utils/src/G4EmSaturation.cc b/source/processes/electromagnetic/utils/src/G4EmSaturation.cc
-index 9fb850dd7..ee09b39f7 100644
+index 9fb850dd7..ab1c99669 100644
 --- a/source/processes/electromagnetic/utils/src/G4EmSaturation.cc
 +++ b/source/processes/electromagnetic/utils/src/G4EmSaturation.cc
 @@ -269,7 +269,7 @@ void G4EmSaturation::DumpG4BirksCoefficients()
@@ -7,17 +7,16 @@ index 9fb850dd7..ee09b39f7 100644
  void G4EmSaturation::InitialiseG4materials()
  {
 -  nG4Birks = 4;
-+  nG4Birks = 11;
++  nG4Birks = 12;
    g4MatData.reserve(nG4Birks);
  
    // M.Hirschberg et al., IEEE Trans. Nuc. Sci. 39 (1992) 511
-@@ -306,6 +306,24 @@ void G4EmSaturation::InitialiseG4materials()
+@@ -306,6 +306,27 @@ void G4EmSaturation::InitialiseG4materials()
    g4MatNames.push_back("G4_PbWO4");
    g4MatData.push_back(0.0333333*mm/MeV);
  
 +  g4MatNames.push_back("PlasticScint079");
 +  g4MatData.push_back(0.07943*mm/MeV);
-+
 +
 +  g4MatNames.push_back("polystyrene");
 +  g4MatData.push_back(0.126*mm/MeV);
@@ -28,6 +27,10 @@ index 9fb850dd7..ee09b39f7 100644
 +  g4MatNames.push_back("PlasticScint126");
 +  g4MatData.push_back(0.126*mm/MeV);
 +  g4MatNames.push_back("PlasticScintillator");
++  g4MatData.push_back(0.126*mm/MeV);
++  // This is for a homogenous WScFi implementation
++  // to replace a detector with Polystyrene and W
++  g4MatNames.push_back("AvgTungstenScFi");
 +  g4MatData.push_back(0.126*mm/MeV);
 +
 +  g4MatNames.push_back("PlasticScint153");
