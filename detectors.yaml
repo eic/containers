@@ -7,7 +7,7 @@ detectors:
         version: v0.5.2
     canyonlands:
       default: true
-      version: canyonlands-v2.0
+      version: canyonlands-v2.1
       ip:
         config: ip6
         version: v0.6.2
