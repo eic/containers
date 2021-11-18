@@ -1,5 +1,5 @@
 diff --git a/source/processes/electromagnetic/utils/src/G4EmSaturation.cc b/source/processes/electromagnetic/utils/src/G4EmSaturation.cc
-index 9fb850dd7..ab1c99669 100644
+index 9fb850dd7..982fafc0d 100644
 --- a/source/processes/electromagnetic/utils/src/G4EmSaturation.cc
 +++ b/source/processes/electromagnetic/utils/src/G4EmSaturation.cc
 @@ -269,7 +269,7 @@ void G4EmSaturation::DumpG4BirksCoefficients()
@@ -7,14 +7,22 @@ index 9fb850dd7..ab1c99669 100644
  void G4EmSaturation::InitialiseG4materials()
  {
 -  nG4Birks = 4;
-+  nG4Birks = 12;
++  nG4Birks = 14;
    g4MatData.reserve(nG4Birks);
  
    // M.Hirschberg et al., IEEE Trans. Nuc. Sci. 39 (1992) 511
-@@ -306,6 +306,27 @@ void G4EmSaturation::InitialiseG4materials()
+@@ -305,6 +305,34 @@ void G4EmSaturation::InitialiseG4materials()
+   //G4_PbWO4 - CMS value
    g4MatNames.push_back("G4_PbWO4");
    g4MatData.push_back(0.0333333*mm/MeV);
- 
++  // PbWO4 used in HybdriCalorimeter
++  g4MatNames.push_back("PbWO4");
++  g4MatData.push_back(0.0333333*mm/MeV);
++  // Estimate SciGlass to be similar to PbWO4 as it still has to be measured
++  g4MatNames.push_back("SciGlass");
++  g4MatData.push_back(0.0333333*mm/MeV);
++
++  // Various plastic scintillator materials
 +  g4MatNames.push_back("PlasticScint079");
 +  g4MatData.push_back(0.07943*mm/MeV);
 +
@@ -35,7 +43,6 @@ index 9fb850dd7..ab1c99669 100644
 +
 +  g4MatNames.push_back("PlasticScint153");
 +  g4MatData.push_back(0.153*mm/MeV);
-+
+ 
    //G4_Lucite
  
- }
