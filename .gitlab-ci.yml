@@ -193,13 +193,14 @@ jug_dev:default:
     ## move spacke directory and spack.yaml into the container build directory
     - cp -r spack containers/jug
     - cp -r spack.yaml containers/jug/spack/spack.yaml
+    - CACHE_FLAG=""
     - |
       if [ $FORCE_NOCACHE = 1 ]; then
         echo "FORCE_NOCACHE set"
-        export PACKAGE_HASH=`date +%s`
+        export CACHE_FLAG="--no-cache"
       fi   
     ## Optionally build the raw builder image
-    - test ${EXPORT_BUILDER} = 1 && docker build 
+    - test ${EXPORT_BUILDER} = 1 && docker build ${CACHE_FLAG}
                    -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG} 
                    --target=builder
                    -f containers/jug/dev.Dockerfile
@@ -209,7 +210,7 @@ jug_dev:default:
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
     ## now build our image
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
                    -f containers/jug/dev.Dockerfile
                    --build-arg SPACK_VERSION=${SPACK_VERSION}
                    --build-arg CACHE_BUST=${PACKAGE_HASH}
