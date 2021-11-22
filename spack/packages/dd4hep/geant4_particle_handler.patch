@@ -1,0 +1,27 @@
+diff --git a/DDG4/src/Geant4ParticleHandler.cpp b/DDG4/src/Geant4ParticleHandler.cpp
+index 82a4b702..779dd044 100644
+--- a/DDG4/src/Geant4ParticleHandler.cpp
++++ b/DDG4/src/Geant4ParticleHandler.cpp
+@@ -436,11 +436,8 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
+   for(count = 0, iend=pm.end(), i=pm.begin(); i!=iend; ++i)  {
+     Particle* p = (*i).second;
+     orgParticles[p->id] = p->id;
+-    finalParticles[p->id] = p;
++    finalParticles[p->id] = p->addRef();
+     if ( p->id > count ) count = p->id;
+-    if ( (p->reason&G4PARTICLE_PRIMARY) != G4PARTICLE_PRIMARY )  {
+-      p->addRef();
+-    }
+   }
+   // (1.1) Define the new particle mapping for the simulated tracks
+   for(++count, iend=m_particleMap.end(), i=m_particleMap.begin(); i!=iend; ++i)  {
+@@ -448,7 +445,8 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
+     if ( (p->reason&G4PARTICLE_PRIMARY) != G4PARTICLE_PRIMARY )  {
+       //if ( orgParticles.find(p->id) == orgParticles.end() )  {
+       orgParticles[p->id] = count;
+-      finalParticles[count] = p;
++      finalParticles[count]->release();
++      finalParticles[count] = p->addRef();
+       p->id = count;
+       ++count;
+     }
