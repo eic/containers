@@ -53,7 +53,6 @@ class Dd4hep(CMakePackage):
 
     # hack to fix refcount underflow
     patch('refcount_underflow.patch', when='@1.17:')
-    patch('geant4_particle_handler.patch', when='@1.17:')
     patch('pdg.patch', when='@1.17:')
     
     # custom hash for the 2021-07-27 version, needed to include
