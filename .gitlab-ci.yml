@@ -297,6 +297,7 @@ jug_xl:feature:
         DETECTOR_BRANCH:
           - acadia
           - canyonlands
+          - deathvalley
   script:
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                    -f containers/jug/feature.Dockerfile

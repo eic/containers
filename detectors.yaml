@@ -6,16 +6,13 @@ detectors:
         config: ip6
         version: v0.5.2
     canyonlands:
-      default: true
-      version: canyonlands-v2.1
+      version: canyonlands-v2.2
       ip:
         config: ip6
-        version: v0.6.2
-    ## this is the newer version of canyonlands. For now we give it a different name
-    ## to not override the ongoing production with v2.1, which could cause confusion
-    ## (in particular because both versions are virtually identical).
-    canyonlands_new:
-      version: canyonlands-v2.2
+        version: v1.0.0
+    deathvalley:
+      default: true
+      version: deathvalley-v1.0
       ip:
         config: ip6
         version: v1.0.0
