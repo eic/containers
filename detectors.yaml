@@ -5,6 +5,11 @@ detectors:
       ip:
         config: ip6
         version: v0.5.2
+    canyonlands_old:
+      version: canyonlands-v2.1
+      ip:
+        config: ip6
+        version: v0.6.2
     canyonlands:
       version: canyonlands-v2.2
       ip:
