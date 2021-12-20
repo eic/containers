@@ -10,7 +10,7 @@ spack:
     - eigen@3.3.9
     - emacs@27.0:27.99 toolkit=athena
     - fastjet@3.3.3
-    - fmt@7.1.2 cxxstd=17
+    - fmt@7.1.2 +shared cxxstd=17
     - gaudi@36.0
     - geant4@10.7.1 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
     - genfit@2.00.00
