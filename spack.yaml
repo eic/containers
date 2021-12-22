@@ -1,39 +1,40 @@
 spack:
   specs:
-    - madx@5.06.1
-    - cmake@3.20.0
-    - fmt@7.1.2 cxxstd=17
-    - spdlog@1.8.1
-    - nlohmann-json@3.9.1
-    - heppdt@3.04.01
+    - acts@14.1.0 +dd4hep +digitization +identification +json +tgeo +ipo +examples +fatras +geant4
+    - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - clhep@2.4.4.0 cxxstd=17
+    - cmake@3.20.0
+    - dawn@3_91a
+    - dawncut@1_54a
+    - dd4hep@1.18 +geant4 +assimp +hepmc3 +ipo +lcio
     - eigen@3.3.9
+    - emacs@27.0:27.99 toolkit=athena
+    - fastjet@3.3.3
+    - fmt@7.1.2 cxxstd=17
+    - gaudi@36.0
+    - geant4@10.7.1 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
+    - genfit@2.00.00
+    - hepmc3@3.2.4 +python +rootio 
+    - heppdt@3.04.01
+    - igprof@5.9.16
+    - imagemagick@7.0.0:7.0.99
+    - madx@5.06.1
+    - mesa swr=none +opengl -llvm +osmesa
+    - nlohmann-json@3.9.1
+    - opencascade@7.4.0p1
+    - pkg-config@0.29.2
+    - podio@0.14 build_type=RelWithDebInfo
+    - pythia8@8303 +fastjet
     - python@3.9.6
     - py-numpy@1.20.1
     - py-pip@20.2
-    - pkg-config@0.29.2
-    - xrootd@5.1.0 cxxstd=17 +python
+    - qt +opengl
     - root@6.24.06 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc +xrootd +ssl 
-          ^mesa swr=none +opengl -llvm +osmesa
-    - pythia8@8303 +fastjet
-    - fastjet@3.3.3
-    - hepmc3@3.2.4 +python +rootio 
+    - spdlog@1.8.1
     - stow@2.3.1
-    - cairo@1.16.0 +fc+ft+X+pdf+gobject
-    - podio@0.14 build_type=RelWithDebInfo
-    - geant4@10.7.1 cxxstd=17 +opengl +vecgeom +x11 +qt +threads ^qt +opengl
-    - dd4hep@1.18 +geant4 +assimp +hepmc3 +ipo +lcio
-    - acts@14.1.0 +dd4hep +digitization +identification +json +tgeo +ipo +examples +fatras +geant4
-    - genfit@2.00.00
-    - gaudi@36.0
-    - dawn@3_91a
-    - dawncut@1_54a
-    - opencascade@7.4.0p1
-    - emacs@27.0:27.99 toolkit=athena
-    - imagemagick@7.0.0:7.0.99
-    - igprof@5.9.16
+    - xrootd@5.1.0 cxxstd=17 +python
   concretization: together
   packages:
     all:
