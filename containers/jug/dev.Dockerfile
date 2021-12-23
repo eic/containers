@@ -108,6 +108,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ## 3. Add packages that need to be added to buildcache if any
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     spack mirror remove silicon                                         \
+ && spack buildcache update-index -d /var/cache/spack-mirror            \
  && spack buildcache list --allarch --long                              \
      | grep -v -e '---'                                                 \
      | sed "s/@.\+//"                                                   \
