@@ -277,10 +277,11 @@ jug_xl:nightly:
     - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
                                  ${NIGHTLY_TAG} ${PUSH_FLAG}
-    - test -z "${PUSH_FLAG}" && ./gitlab-ci/docker_push.sh
-                                 -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
+    - if [ -z "${PUSH_FLAG}" ] ; then 
+      ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
-                                 ${NIGHTLY_TAG}-$(date +%Y-%m-%d) --dockerhub
+                                 ${NIGHTLY_TAG}-$(date +%Y-%m-%d) --dockerhub ;
+      fi
 
 jug_xl:feature:
   extends: .build
@@ -318,10 +319,11 @@ jug_xl:feature:
     - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                                  -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
                                  ${FEATURE_EXPORT_TAG} ${PUSH_FLAG}
-    - test -z "${PUSH_FLAG}" && ./gitlab-ci/docker_push.sh
-                                 -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
+    - if [ test -z "${PUSH_FLAG}" ] ; then 
+      ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}-${DETECTiOR}-${DETECTOR_BRANCH}
                                  -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                 ${FEATURE_EXPORT_TAG}-$(date +%Y-%m-%d) --dockerhub
+                                 ${FEATURE_EXPORT_TAG}-$(date +%Y-%m-%d) --dockerhub ;
+      if
 
 .singularity:
   stage: deploy
