@@ -15,20 +15,22 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         python3                                                         \
         python3-pip                                                     \
         python3-setuptools                                              \
-        tcl                                                             \
-        uuid-dev                                                        \
-        libfcgi-dev                                                     \
-        x11proto-xext-dev                                               \
- && pip3 install boto3                                                  \ 
+        python-is-python3                                               \
  && rm -rf /var/lib/apt/lists/*
 
 ## Setup spack
 ## parts:
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_VERSION="develop"
+ARG SPACK_CHERRYPICKS=""
 RUN echo "Part 1: regular spack install (as in containerize)"           \
  && git clone https://github.com/spack/spack.git /tmp/spack-staging     \
- && cd /tmp/spack-staging && git checkout $SPACK_VERSION && cd -        \
+ && cd /tmp/spack-staging                                               \
+ && git checkout $SPACK_VERSION                                         \
+ && if [ -n "$SPACK_CHERRYPICKS" ] ; then                               \
+      git cherry-pick -n $SPACK_CHERRYPICKS ;                           \
+    fi                                                                  \
+ && cd -                                                                \
  && mkdir -p $SPACK_ROOT/opt/spack                                      \
  && cp -r /tmp/spack-staging/bin $SPACK_ROOT/bin                        \
  && cp -r /tmp/spack-staging/etc $SPACK_ROOT/etc                        \
@@ -75,10 +77,13 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 
 ## Setup our custom environment and package overrides
 COPY spack $SPACK_ROOT/eic-spack
-RUN echo "repos:" > $SPACK_ROOT/etc/spack/repos.yaml                    \
- && echo " - $SPACK_ROOT/eic-spack" >> $SPACK_ROOT/etc/spack/repos.yaml \
+RUN spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
  && mkdir /opt/spack-environment                                        \
- && mv $SPACK_ROOT/eic-spack/spack.yaml /opt/spack-environment/spack.yaml
+ && cd /opt/spack-environment                                           \
+ && mv $SPACK_ROOT/eic-spack/spack.yaml .                               \
+ && rm -r /usr/local                                                    \
+ && spack env activate .                                                \
+ && spack concretize
 
 ## This variable will change whenevery either spack.yaml or our spack package
 ## overrides change, triggering a rebuild
@@ -89,10 +94,17 @@ ARG CACHE_BUST="hash"
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     cd /opt/spack-environment                                           \
  && ls /var/cache/spack-mirror                                          \
- && rm -r /usr/local                                                    \
  && spack env activate .                                                \
+ && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
- && spack clean -a                                                  
+    || spack install -j64 --no-check-signature                          \
+    || ( status=$?                                                      \
+       && spack buildcache create -ua -d /var/cache/spack-mirror        \
+                       $(spack find --format {name}/{hash})             \
+       && spack buildcache update-index -d /var/cache/spack-mirror      \
+       && exit $status                                                  \
+    )                                                                   \
+ && spack clean -a
 
 ## Optional, normally commented out:
 ## Nuke the buildcache
@@ -142,24 +154,33 @@ RUN cd /opt/spack-environment                                           \
         | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
         | sed '/MANPATH/ s/;$/:;/'                                      \
     > /etc/profile.d/z10_spack_environment.sh                           \
- && cd /opt/spack-environment                                           \
+ && cd /opt/spack-environment && spack env activate .                   \
  && echo -n ""                                                          \
  && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
- && spack env activate .                                                \
- && export PODIO=`spack find -p podio                                   \
-        | grep software                                                 \
-        | awk '{print $2}'`                                             \
- && echo "export PODIO=${PODIO};"                                       \
+ && echo "export PODIO=$(spack location -i podio);"                     \
         >> /etc/profile.d/z10_spack_environment.sh                      \
- && cd /opt/spack-environment && spack env activate .                   \
  && echo -n ""                                                          \
  && echo "Installing additional python packages"                        \
  && pip install --trusted-host pypi.org                                 \
                 --trusted-host files.pythonhosted.org                   \
                 --no-cache-dir                                          \
-        ipython matplotlib scipy yapf pandas pycairo pyyaml lxml        \
-        jupyter jupyterlab uproot pyunfold seaborn stashcp awkward      \
+        awkward                                                         \
+        boto3                                                           \
+        ipython                                                         \
+        jupyter                                                         \
+        jupyterlab                                                      \
         lmfit                                                           \
+        lxml                                                            \
+        matplotlib                                                      \
+        pandas                                                          \
+        pycairo                                                         \
+        pyunfold                                                        \
+        pyyaml                                                          \
+        scipy                                                           \
+        seaborn                                                         \
+        stashcp                                                         \
+        uproot                                                          \
+        yapf                                                            \
  && echo -n ""                                                          \
  && echo "Executing cmake patch for dd4hep 16.1"                        \                
  && sed -i "s/FIND_PACKAGE(Python/#&/" /usr/local/cmake/DD4hepBuild.cmake

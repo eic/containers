@@ -9,7 +9,9 @@ variables:
   AFTERBURNER_VERSION: "v0.1.2"
 
   ## Spack github version
-  SPACK_VERSION: "a68abc15c5b1b8266130f765d1bee6290e71fa7c"
+  SPACK_VERSION: "e974b44e8673ded449ce4a3ed5844398b68e81a2"
+  ## Space-separated list of spack cherry-picks
+  SPACK_CHERRYPICKS: "0ab5828d0dfe2182ad108b7e7c56772303065f6e a294acfb73839c9782aff976953a969fb44e161e f181b6fef6da3b576b267799d9c47fa5c8ade67a"
 
   ## We need to enable Docker Buildkit to use cache mounts and better
   ## build performance overal
@@ -204,7 +206,8 @@ jug_dev:default:
                    -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG} 
                    --target=builder
                    -f containers/jug/dev.Dockerfile
-                   --build-arg SPACK_VERSION=${SPACK_VERSION}
+                   --build-arg SPACK_VERSION="${SPACK_VERSION}"
+                   --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
                    --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
@@ -212,7 +215,8 @@ jug_dev:default:
     ## now build our image
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
                    -f containers/jug/dev.Dockerfile
-                   --build-arg SPACK_VERSION=${SPACK_VERSION}
+                   --build-arg SPACK_VERSION="${SPACK_VERSION}"
+                   --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
                    --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
