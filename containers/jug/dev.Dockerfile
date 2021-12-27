@@ -88,9 +88,21 @@ RUN spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
 ## This variable will change whenevery either spack.yaml or our spack package
 ## overrides change, triggering a rebuild
 ARG CACHE_BUST="hash"
+ARG CACHE_NUKE=""
+
 ## Now execute the main build (or fetch from cache if possible)
 ## note, no-check-signature is needed to allow the quicker signature-less
 ## packages from the internal (docker) buildcache
+##
+## Optional, nuke the buildcache after install, before (re)caching
+## This is useful when going to completely different containers,
+## or intermittently to keep the buildcache step from taking too much time
+##
+## Update the local build cache if needed. Consists of 3 steps:
+## 1. Remove the B010 network buildcache (silicon)
+## 2. Get a list of all packages, and compare with what is already on
+##    the buildcache (using package hash)
+## 3. Add packages that need to be added to buildcache if any
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     cd /opt/spack-environment                                           \
  && ls /var/cache/spack-mirror                                          \
@@ -98,50 +110,22 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
     || spack install -j64 --no-check-signature                          \
-    || ( status=$?                                                      \
-       && spack buildcache create -ua -d /var/cache/spack-mirror        \
-                       $(spack find --format {name}/{hash})             \
-       && spack buildcache update-index -d /var/cache/spack-mirror      \
-       && exit $status                                                  \
-    )                                                                   \
- && spack clean -a
-
-## Optional, normally commented out:
-## Nuke the buildcache
-## This is useful when going to completely different containers,
-## or intermittently to keep the buildcache step from taking too much time
-#RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-  #rm -rf /var/cache/spack-mirror/*
-
-## Update the local build cache if needed. Consists of 3 steps:
-## 1. Remove the B010 network buildcache (silicon)
-## 2. Get a list of all packages, and compare with what is already on
-##    the buildcache (using package hash)
-## 3. Add packages that need to be added to buildcache if any
-RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    spack mirror remove silicon                                         \
+    || spack install -j64 --no-check-signature                          \
+    || status=$?                                                        \
+ && [ -z "${CACHE_NUKE}" ]                                              \
+    || rm -rf /var/cache/spack-mirror/build_cache/*                     \
  && spack buildcache update-index -d /var/cache/spack-mirror            \
- && spack buildcache list --allarch --long                              \
-     | grep -v -e '---'                                                 \
-     | sed "s/@.\+//"                                                   \
-     | sort > tmp.buildcache.txt                                        \
- && spack find --no-groups --long                                       \
-     | tail -n +2                                                       \
-     | grep -v "==>"                                                    \
-     | sed "s/@.\+//"                                                   \
-     | sort > tmp.manifest.txt                                          \
- && comm -23 tmp.manifest.txt tmp.buildcache.txt                        \
-     > tmp.needsupdating.txt                                            \
- && if [ $(wc -l < tmp.needsupdating.txt) -ge 1 ]; then                 \
-     cat tmp.needsupdating.txt                                          \
-        | awk '{print($2);}'                                            \
-        | tr '\n' ' '                                                   \
-        | xargs spack buildcache create -uaf -d /var/cache/spack-mirror \
-     && spack buildcache update-index -d /var/cache/spack-mirror;       \
-    fi                                                                  \
- && rm tmp.manifest.txt                                                 \
- && rm tmp.buildcache.txt                                               \
- && rm tmp.needsupdating.txt
+ && spack buildcache list --allarch --very-long                         \
+    | sed '/^$/d;/^--/d;s/@.\+//;s/\([a-z0-9]*\) \(.*\)/\2\/\1/'        \
+    | sort > tmp.buildcache.txt                                         \
+ && spack find --format {name}/{hash} | sort                            \
+    | comm -23 - tmp.buildcache.txt                                     \
+    | xargs --no-run-if-empty                                           \
+      spack buildcache create --allow-root --only package --unsigned    \
+                              --directory /var/cache/spack-mirror       \
+                              --rebuild-index                           \
+ && spack clean -a                                                      \
+ && exit $status
 
 ## extra post-spack steps
 ## Including some small fixes:
