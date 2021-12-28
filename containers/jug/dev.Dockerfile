@@ -13,8 +13,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
  && apt-get -yqq update                                                 \
  && apt-get -yqq install --no-install-recommends                        \
         python3                                                         \
-        python3-pip                                                     \
-        python3-setuptools                                              \
+        python3-distutils                                               \
         python-is-python3                                               \
  && rm -rf /var/lib/apt/lists/*
 
@@ -127,7 +126,17 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
  && spack clean -a                                                      \
  && exit $status
 
-## extra post-spack steps
+## Extra post-spack steps:
+##   - Python packages
+COPY requirements.txt /usr/local/etc/requirements.txt
+RUN --mount=type=cache,target=/var/cache/pip                            \
+    echo "Installing additional python packages"                        \
+ && cd /opt/spack-environment && spack env activate .                   \
+ && pip install --trusted-host pypi.org                                 \
+                --trusted-host files.pythonhosted.org                   \
+                --cache-dir /var/cache/pip                              \
+                --requirement /usr/local/etc/requirements.txt
+
 ## Including some small fixes:
 ##   - Somehow PODIO env isn't automatically set, 
 ##   - and Gaudi likes BINARY_TAG to be set
@@ -144,31 +153,8 @@ RUN cd /opt/spack-environment                                           \
  && echo "export PODIO=$(spack location -i podio);"                     \
         >> /etc/profile.d/z10_spack_environment.sh                      \
  && echo -n ""                                                          \
- && echo "Installing additional python packages"                        \
- && pip install --trusted-host pypi.org                                 \
-                --trusted-host files.pythonhosted.org                   \
-                --no-cache-dir                                          \
-        awkward                                                         \
-        boto3                                                           \
-        ipython                                                         \
-        jupyter                                                         \
-        jupyterlab                                                      \
-        lmfit                                                           \
-        lxml                                                            \
-        matplotlib                                                      \
-        pandas                                                          \
-        pycairo                                                         \
-        pyunfold                                                        \
-        pyyaml                                                          \
-        scipy                                                           \
-        seaborn                                                         \
-        stashcp                                                         \
-        uproot                                                          \
-        yapf                                                            \
- && echo -n ""                                                          \
  && echo "Executing cmake patch for dd4hep 16.1"                        \                
  && sed -i "s/FIND_PACKAGE(Python/#&/" /usr/local/cmake/DD4hepBuild.cmake
-
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []

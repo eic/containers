@@ -1,0 +1,17 @@
+awkward
+boto3
+ipython
+jupyter
+jupyterlab
+lmfit
+lxml
+matplotlib
+pandas
+pycairo
+pyunfold
+pyyaml
+scipy
+seaborn
+stashcp
+uproot
+yapf

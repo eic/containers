@@ -28,6 +28,8 @@ spack:
     - python@3.9.6
     - py-numpy@1.20.1
     - py-pip@20.2
+    - py-setuptools@58.2.0
+    - py-wheel@0.36.2
     - qt +opengl
     - root@6.24.06 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
