@@ -21,6 +21,12 @@ detectors:
       ip:
         config: ip6
         version: v1.0.0
+    deathvalley-1.5T:
+      default: true
+      version: deathvalley-v1.0-1.5T
+      ip:
+        config: ip6
+        version: v1.0.0
     nightly:
       version: master
       ip:
