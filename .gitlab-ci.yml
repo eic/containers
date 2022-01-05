@@ -307,6 +307,7 @@ jug_xl:feature:
           - acadia
           - canyonlands
           - deathvalley
+          - deathvalley-1.5T
   script:
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                    -f containers/jug/feature.Dockerfile
