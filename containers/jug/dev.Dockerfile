@@ -225,6 +225,7 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 ## copy over everything we need from staging in a single layer :-)
 RUN --mount=from=staging,target=/staging                                \
     rm -rf /usr/local                                                   \
+ && cp -r /staging/opt/spack-environment /opt/spack-environment         \
  && cp -r /staging/opt/software /opt/software                           \
  && cp -r /staging/usr/._local /usr/._local                             \
  && cd /usr/._local                                                     \
