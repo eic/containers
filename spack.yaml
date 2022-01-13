@@ -3,39 +3,39 @@ spack:
     - acts@14.1.0 +dd4hep +digitization +identification +json +tgeo +ipo +examples +fatras +geant4
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - clhep@2.4.4.0 cxxstd=17
-    - cmake@3.20.0
+    - cmake@3.21.4
     - dawn@3_91a
     - dawncut@1_54a
-    - dd4hep@1.18 +geant4 +assimp +hepmc3 +ipo +lcio
-    - eigen@3.3.9
-    - emacs@27.0:27.99 toolkit=athena
+    - dd4hep@1.18 +geant4 -assimp +hepmc3 +ipo +lcio
+    - eigen@3.4.0
+    - emacs@27.2 toolkit=athena
     - fastjet@3.3.3
-    - fmt@7.1.2 +shared cxxstd=17
+    - fmt@8.0.1 +shared cxxstd=17
     - gaudi@36.0
-    - geant4@10.7.1 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
+    - geant4@10.7.3 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
     - genfit@2.00.00
     - hepmc3@3.2.4 +python +rootio 
     - heppdt@3.04.01
     - igprof@5.9.16
-    - imagemagick@7.0.0:7.0.99
-    - madx@5.06.1
-    - mesa swr=none +opengl -llvm +osmesa
+    - imagemagick@7.0.8-7
+    - madx@5.07.00
+    - mesa@21.2.3 swr=none +opengl -llvm +osmesa
     - mesa-demos
-    - nlohmann-json@3.9.1
-    - opencascade@7.4.0p1
+    - nlohmann-json@3.10.4
+    - opencascade@7.5.3
     - pkg-config@0.29.2
     - podio@0.14 build_type=RelWithDebInfo
     - pythia8@8.306 +fastjet
-    - python@3.9.6
-    - py-numpy@1.20.1
-    - py-pip@20.2
+    - python@3.9.7
+    - py-numpy@1.21.3
+    - py-pip@21.1.2
     - py-setuptools@58.2.0
     - py-wheel@0.36.2
-    - qt +opengl
+    - qt@5.15.2 +opengl
     - root@6.24.06 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc +xrootd +ssl 
-    - spdlog@1.8.1
+    - spdlog@1.9.2
     - stow@2.3.1
     - xrootd@5.1.0 cxxstd=17 +python
   concretization: together

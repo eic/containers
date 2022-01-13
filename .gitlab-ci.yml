@@ -11,7 +11,12 @@ variables:
   ## Spack github version
   SPACK_VERSION: "e974b44e8673ded449ce4a3ed5844398b68e81a2"
   ## Space-separated list of spack cherry-picks
-  SPACK_CHERRYPICKS: "0ab5828d0dfe2182ad108b7e7c56772303065f6e a294acfb73839c9782aff976953a969fb44e161e f181b6fef6da3b576b267799d9c47fa5c8ade67a"
+  SPACK_CHERRYPICKS: "0ab5828d0dfe2182ad108b7e7c56772303065f6e a294acfb73839c9782aff976953a969fb44e161e f181b6fef6da3b576b267799d9c47fa5c8ade67a 5f10562ad13c803bf5d22552a9f07c8c379fdd23"
+  ## Ref: https://github.com/spack/spack/commit/[hash]
+  ## 0ab5828d0dfe2182ad108b7e7c56772303065f6e: gdk-pixbuf: Fix 2.42.2 and add 2.42.6
+  ## a294acfb73839c9782aff976953a969fb44e161e: pythia8: bugfix for pythia8 +fastjet
+  ## f181b6fef6da3b576b267799d9c47fa5c8ade67a: root: depends_on fcgi and re-enabled +http support
+  ## 5f10562ad13c803bf5d22552a9f07c8c379fdd23: [geant4] new version geant4@10.7.3
 
   ## We need to enable Docker Buildkit to use cache mounts and better
   ## build performance overal
