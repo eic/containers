@@ -98,7 +98,7 @@ gpuinfo:
     - gpu
   script:
     - |
-      lspci -v
+      ls -al /sys/devices/
 
 version:
   stage: config
