@@ -101,8 +101,7 @@ gpuinfo:
     - ls
   script:
     - |
-      ls -al /sys/devices/
-      glxinfo
+      lshw -c display
   after_script:
     - ls
 
