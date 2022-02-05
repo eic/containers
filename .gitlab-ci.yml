@@ -94,7 +94,8 @@ workflow:
 
 gpuinfo:
   stage: gpu
-  tag: gpu
+  tags:
+    - gpu
   script:
     - |
       lspci -v
