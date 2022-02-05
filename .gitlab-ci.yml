@@ -97,10 +97,14 @@ gpuinfo:
   stage: gpu
   tags:
     - gpu
+  before_script:
+    - ls
   script:
     - |
       ls -al /sys/devices/
       glxinfo
+  after_script:
+    - ls
 
 version:
   stage: config
