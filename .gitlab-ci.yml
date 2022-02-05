@@ -93,6 +93,7 @@ workflow:
 ##  (first try with buildx didn't pan out, let's try again later)
 
 gpuinfo:
+  image: eicweb.phy.anl.gov:4567/containers/eic_container/jug_xl:nightly
   stage: gpu
   tags:
     - gpu
