@@ -99,6 +99,7 @@ gpuinfo:
   script:
     - |
       ls -al /sys/devices/
+      glxinfo
 
 version:
   stage: config
