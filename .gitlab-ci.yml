@@ -41,7 +41,6 @@ variables:
   FORCE_NOCACHE: 0
 
 stages:
-  - gpu
   - config
   - build:base      ## base OS image
   - build:jug       ## jug container images
@@ -91,19 +90,6 @@ workflow:
 ## caching strategy for dispatch to multiple nodes and to avoid
 ##  --> try this strategy: https://medium.com/titansoft-engineering/docker-build-cache-sharing-on-multi-hosts-with-buildkit-and-buildx-eb8f7005918e
 ##  (first try with buildx didn't pan out, let's try again later)
-
-gpuinfo:
-  image: eicweb.phy.anl.gov:4567/containers/eic_container/jug_xl:nightly
-  stage: gpu
-  tags:
-    - gpu
-  before_script:
-    - ls
-  script:
-    - |
-      lshw -c display
-  after_script:
-    - ls
 
 version:
   stage: config
