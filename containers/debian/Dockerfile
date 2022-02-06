@@ -23,7 +23,7 @@ ENV CLICOLOR_FORCE=1                                                    \
 RUN --mount=type=cache,target=/var/cache/apt                            \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && echo "deb https://ppa.launchpadcontent.net/ubuntu-toolchain-r/ppa/ubuntu focal main" > /etc/apt/sources.list.d/ubuntu-toolchain.list \
- && apt-key adv --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
+ && apt-key adv --keyserver hkps://keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
  && apt-get -yqq update                                                 \
  && apt-get -yqq upgrade                                                \
  && apt-get -yqq install --no-install-recommends                        \
