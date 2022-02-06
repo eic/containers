@@ -42,4 +42,6 @@ spack:
   packages:
     all:
       compiler: [gcc]
-  view: /usr/local
+  view:
+    root: /usr/local
+    link: roots
