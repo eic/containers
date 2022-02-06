@@ -37,6 +37,7 @@ spack:
           +root7 +tmva +vc +xrootd +ssl 
     - spdlog@1.9.2
     - stow@2.3.1
+    - tensorflow-lite@2.8.0
     - xrootd@5.1.0 cxxstd=17 +python
   concretization: together
   packages:
