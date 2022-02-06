@@ -3,7 +3,7 @@
 # Minimal container based on Debian Testing for up-to-date packages. 
 # Very lightweight container with a minimal build environment
 
-FROM  nvidia/cuda:11.6.0-base-ubuntu20.04
+FROM  nvidia/cuda:11.6.0-runtime-ubuntu20.04
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="debian_base" \
       march="amd64"
