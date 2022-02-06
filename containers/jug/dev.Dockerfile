@@ -2,6 +2,8 @@
 ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
 ARG INTERNAL_TAG="testing" 
 
+ARG VIEW="/usr/local"
+
 ## ========================================================================================
 ## STAGE1: spack builder image
 ## EIC builder image with spack
@@ -81,8 +83,9 @@ RUN spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
  && mkdir /opt/spack-environment                                        \
  && cd /opt/spack-environment                                           \
  && mv $SPACK_ROOT/eic-spack/spack.yaml .                               \
- && rm -r /usr/local                                                    \
+ && rm -r $VIEW                                                         \
  && spack env activate .                                                \
+ && spack env view $VIEW                                                \
  && spack concretize
 
 ## This variable will change whenevery either spack.yaml or our spack package
@@ -129,14 +132,14 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 
 ## Extra post-spack steps:
 ##   - Python packages
-COPY requirements.txt /usr/local/etc/requirements.txt
+COPY requirements.txt $VIEW/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip                            \
     echo "Installing additional python packages"                        \
  && cd /opt/spack-environment && spack env activate .                   \
  && pip install --trusted-host pypi.org                                 \
                 --trusted-host files.pythonhosted.org                   \
                 --cache-dir /var/cache/pip                              \
-                --requirement /usr/local/etc/requirements.txt
+                --requirement $VIEW/etc/requirements.txt
 
 ## Including some small fixes:
 ##   - Somehow PODIO env isn't automatically set, 
@@ -155,7 +158,7 @@ RUN cd /opt/spack-environment                                           \
         >> /etc/profile.d/z10_spack_environment.sh                      \
  && echo -n ""                                                          \
  && echo "Executing cmake patch for dd4hep 16.1"                        \                
- && sed -i "s/FIND_PACKAGE(Python/#&/" /usr/local/cmake/DD4hepBuild.cmake
+ && sed -i "s/FIND_PACKAGE(Python/#&/" $VIEW/cmake/DD4hepBuild.cmake
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
@@ -172,7 +175,7 @@ RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 # Strip all the binaries
 # This reduces the image by factor of x2, so worth the effort
 # note that we do not strip python libraries as can cause issues in some cases
-RUN find -L /usr/local/*                                                \
+RUN find -L $VIEW/*                                                     \
          -type d -name site-packages -prune -false -o                   \
          -type f -not -name "zdll.lib" -not -name libtensorflow-lite.a  \
          -exec realpath '{}' \;                                      \
@@ -185,7 +188,7 @@ RUN find -L /usr/local/*                                                \
 ## See
 #https://askubuntu.com/questions/1034313/ubuntu-18-4-libqt5core-so-5-cannot-open-shared-object-file-no-such-file-or-dir
 ## and links therin for more info
-RUN strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
+RUN strip --remove-section=.note.ABI-tag $VIEW/lib/libQt5Core.so
 
 ## Address Issue #72
 ## missing precompiled headers for cppyy due to missing symlink in root
@@ -201,17 +204,17 @@ RUN spack debug report                                                  \
     >> /etc/jug_info                                                    \
  && spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
 
-COPY eic-shell /usr/local/bin/eic-shell
-COPY eic-info /usr/local/bin/eic-info
-COPY entrypoint.sh /usr/local/sbin/entrypoint.sh
+COPY eic-shell $VIEW/bin/eic-shell
+COPY eic-info $VIEW/bin/eic-info
+COPY entrypoint.sh $VIEW/sbin/entrypoint.sh
 COPY eic-env.sh /etc/eic-env.sh
 COPY profile.d/a00_cleanup.sh /etc/profile.d
 COPY profile.d/z11_jug_env.sh /etc/profile.d
 COPY singularity.d /.singularity.d
 
-## Add minio client into /usr/local/bin
-ADD https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin
-RUN chmod a+x /usr/local/bin/mc
+## Add minio client into $VIEW/bin
+ADD https://dl.min.io/client/mc/release/linux-amd64/mc $VIEW/bin
+RUN chmod a+x $VIEW/bin/mc
 
 ## ========================================================================================
 ## STAGE 3
@@ -225,7 +228,7 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 
 ## copy over everything we need from staging in a single layer :-)
 RUN --mount=from=staging,target=/staging                                \
-    rm -rf /usr/local                                                   \
+    rm -rf $VIEW                                                        \
  && cp -r /staging/opt/spack-environment /opt/spack-environment         \
  && cp -r /staging/opt/software /opt/software                           \
  && cp -r /staging/usr/._local /usr/._local                             \
@@ -233,7 +236,7 @@ RUN --mount=from=staging,target=/staging                                \
  && PREFIX_PATH=$(realpath $(ls | tail -n1))                            \
  && echo "Found spack true prefix path to be $PREFIX_PATH"              \
  && cd -                                                                \
- && ln -s ${PREFIX_PATH} /usr/local                                     \
+ && ln -s ${PREFIX_PATH} $VIEW                                          \
  && cp /staging/etc/profile.d/*.sh /etc/profile.d/                      \
  && cp /staging/etc/eic-env.sh /etc/eic-env.sh                          \
  && cp /staging/etc/jug_info /etc/jug_info                              \
@@ -247,8 +250,8 @@ RUN echo "" >> /etc/jug_info                                            \
  && echo " - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
 
 ## make sure we have the entrypoints setup correctly
-ENTRYPOINT ["/usr/local/sbin/entrypoint.sh"]
+ENTRYPOINT ["$VIEW/sbin/entrypoint.sh"]
 CMD ["bash", "--rcfile", "/etc/profile", "-l"]
 USER 0
 WORKDIR /
-SHELL ["/usr/local/bin/eic-shell"]
+SHELL ["$VIEW/bin/eic-shell"]
