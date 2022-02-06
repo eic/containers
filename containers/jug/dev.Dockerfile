@@ -81,7 +81,7 @@ RUN spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
  && mkdir /opt/spack-environment                                        \
  && cd /opt/spack-environment                                           \
  && mv $SPACK_ROOT/eic-spack/spack.yaml .                               \
- && rm -r /usr/local                                                    \
+ && rm -r /opt/local                                                    \
  && spack env activate .                                                \
  && spack concretize
 
