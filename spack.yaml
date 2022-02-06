@@ -43,4 +43,9 @@ spack:
   packages:
     all:
       compiler: [gcc]
+    cuda:
+      buildable: False
+      externals:
+      - spec: cuda%gcc
+        prefix: /usr/local/cuda
   view: /opt/local
