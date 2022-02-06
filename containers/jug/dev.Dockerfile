@@ -11,26 +11,36 @@ ARG VIEWDOT "/opt/._local"
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}debian_base:${INTERNAL_TAG} as builder
 
-ENV NV_CUDA_LIB_VERSION "11.6.0-1"
+ENV NV_CUDA_LIB_VERSION 11.3.1-1
 
-ENV NV_CUDA_CUDART_DEV_VERSION 11.6.55-1
-ENV NV_NVML_DEV_VERSION 11.6.55-1
-ENV NV_LIBCUSPARSE_DEV_VERSION 11.7.1.55-1
-ENV NV_LIBNPP_DEV_VERSION 11.6.0.55-1
-ENV NV_LIBNPP_DEV_PACKAGE libnpp-dev-11-6=${NV_LIBNPP_DEV_VERSION}
+ENV NV_NVTX_VERSION 11.3.109-1
+ENV NV_LIBNPP_VERSION 11.3.3.95-1
+ENV NV_LIBNPP_PACKAGE libnpp-11-3=${NV_LIBNPP_VERSION}
+ENV NV_LIBCUSPARSE_VERSION 11.6.0.109-1
 
-ENV NV_LIBCUBLAS_DEV_VERSION 11.8.1.74-1
-ENV NV_LIBCUBLAS_DEV_PACKAGE_NAME libcublas-dev-11-6
+ENV NV_LIBCUBLAS_PACKAGE_NAME libcublas-11-3
+ENV NV_LIBCUBLAS_VERSION 11.5.1.109-1
+ENV NV_LIBCUBLAS_PACKAGE ${NV_LIBCUBLAS_PACKAGE_NAME}=${NV_LIBCUBLAS_VERSION}
+
+ENV NV_LIBNCCL_PACKAGE_NAME libnccl2
+ENV NV_LIBNCCL_PACKAGE_VERSION 2.9.9-1
+ENV NCCL_VERSION 2.9.9-1
+ENV NV_LIBNCCL_PACKAGE ${NV_LIBNCCL_PACKAGE_NAME}=${NV_LIBNCCL_PACKAGE_VERSION}+cuda11.3
+
+ENV NV_CUDA_CUDART_DEV_VERSION 11.3.109-1
+ENV NV_NVML_DEV_VERSION 11.3.58-1
+ENV NV_LIBCUSPARSE_DEV_VERSION 11.6.0.109-1
+ENV NV_LIBNPP_DEV_VERSION 11.3.3.95-1
+ENV NV_LIBNPP_DEV_PACKAGE libnpp-dev-11-3=${NV_LIBNPP_DEV_VERSION}
+
+ENV NV_LIBCUBLAS_DEV_VERSION 11.5.1.109-1
+ENV NV_LIBCUBLAS_DEV_PACKAGE_NAME libcublas-dev-11-3
 ENV NV_LIBCUBLAS_DEV_PACKAGE ${NV_LIBCUBLAS_DEV_PACKAGE_NAME}=${NV_LIBCUBLAS_DEV_VERSION}
 
 ENV NV_LIBNCCL_DEV_PACKAGE_NAME libnccl-dev
-ENV NV_LIBNCCL_DEV_PACKAGE_VERSION 2.11.4-1
-ENV NCCL_VERSION 2.11.4-1
-ENV NV_LIBNCCL_DEV_PACKAGE ${NV_LIBNCCL_DEV_PACKAGE_NAME}=${NV_LIBNCCL_DEV_PACKAGE_VERSION}+cuda11.6
-
-## Clean spack build cache of files not accessed for specified time
-RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    find /var/cache/spack-mirror/build_cache -type f -atime +7 -delete
+ENV NV_LIBNCCL_DEV_PACKAGE_VERSION 2.9.9-1
+ENV NCCL_VERSION 2.9.9-1
+ENV NV_LIBNCCL_DEV_PACKAGE ${NV_LIBNCCL_DEV_PACKAGE_NAME}=${NV_LIBNCCL_DEV_PACKAGE_VERSION}+cuda11.3
 
 ## instal some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt                            \
@@ -40,17 +50,26 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         python3                                                         \
         python3-distutils                                               \
         python-is-python3                                               \
-        libtinfo5 libncursesw5                                          \
-        cuda-cudart-dev-11-6=${NV_CUDA_CUDART_DEV_VERSION}              \
-        cuda-command-line-tools-11-6=${NV_CUDA_LIB_VERSION}             \
-        cuda-minimal-build-11-6=${NV_CUDA_LIB_VERSION}                  \
-        cuda-libraries-dev-11-6=${NV_CUDA_LIB_VERSION}                  \
-        cuda-nvml-dev-11-6=${NV_NVML_DEV_VERSION}                       \
-        ${NV_LIBNPP_DEV_PACKAGE}                                        \
-        libcusparse-dev-11-6=${NV_LIBCUSPARSE_DEV_VERSION}              \
-        ${NV_LIBCUBLAS_DEV_PACKAGE}                                     \
-        ${NV_LIBNCCL_DEV_PACKAGE}                                       \
+        cuda-libraries-11-3=${NV_CUDA_LIB_VERSION} \
+        ${NV_LIBNPP_PACKAGE} \
+        cuda-nvtx-11-3=${NV_NVTX_VERSION} \
+        libcusparse-11-3=${NV_LIBCUSPARSE_VERSION} \
+        ${NV_LIBCUBLAS_PACKAGE} \
+        ${NV_LIBNCCL_PACKAGE} \
+        libtinfo5 libncursesw5 \
+        cuda-cudart-dev-11-3=${NV_CUDA_CUDART_DEV_VERSION} \
+        cuda-command-line-tools-11-3=${NV_CUDA_LIB_VERSION} \
+        cuda-minimal-build-11-3=${NV_CUDA_LIB_VERSION} \
+        cuda-libraries-dev-11-3=${NV_CUDA_LIB_VERSION} \
+        cuda-nvml-dev-11-3=${NV_NVML_DEV_VERSION} \
+        ${NV_LIBNPP_DEV_PACKAGE} \
+        libcusparse-dev-11-3=${NV_LIBCUSPARSE_DEV_VERSION} \
+        ${NV_LIBCUBLAS_DEV_PACKAGE} \
+        ${NV_LIBNCCL_DEV_PACKAGE} \
  && rm -rf /var/lib/apt/lists/*
+
+RUN apt-mark hold ${NV_LIBCUBLAS_PACKAGE_NAME} ${NV_LIBNCCL_PACKAGE_NAME}
+RUN apt-mark hold ${NV_LIBCUBLAS_DEV_PACKAGE_NAME} ${NV_LIBNCCL_DEV_PACKAGE_NAME}
 
 ## Setup spack
 ## parts:

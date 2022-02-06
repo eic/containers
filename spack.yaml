@@ -46,6 +46,6 @@ spack:
     cuda:
       buildable: False
       externals:
-      - spec: cuda@11.6.0
+      - spec: cuda@11.3.1
         prefix: /usr/local/cuda
   view: /opt/local
