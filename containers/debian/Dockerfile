@@ -15,8 +15,6 @@ ENV CLICOLOR_FORCE=1                                                    \
     LANG=en_US.UTF-8                                                    \
     LC_ALL=en_US.UTF-8
 
-RUN echo "deb https://ppa.launchpadcontent.net/ubuntu-toolchain-r/ppa/ubuntu focal main" > /etc/apt/sources.list.d/ubuntu-toolchain.list
-
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
 ## We also install gitlab-runner, from the buster package (as bullseye is not available atm)
@@ -24,6 +22,8 @@ RUN echo "deb https://ppa.launchpadcontent.net/ubuntu-toolchain-r/ppa/ubuntu foc
 ##       this once afterburner is added to spack
 RUN --mount=type=cache,target=/var/cache/apt                            \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
+ && echo "deb https://ppa.launchpadcontent.net/ubuntu-toolchain-r/ppa/ubuntu focal main" > /etc/apt/sources.list.d/ubuntu-toolchain.list \
+ && apt-key adv --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
  && apt-get -yqq update                                                 \
  && apt-get -yqq upgrade                                                \
  && apt-get -yqq install --no-install-recommends                        \
