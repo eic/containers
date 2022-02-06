@@ -43,4 +43,4 @@ spack:
   packages:
     all:
       compiler: [gcc]
-  view: /usr/local
+  view: /opt/local
