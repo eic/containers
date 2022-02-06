@@ -84,8 +84,8 @@ RUN spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
  && cd /opt/spack-environment                                           \
  && mv $SPACK_ROOT/eic-spack/spack.yaml .                               \
  && rm -rf $VIEW                                                        \
- && spack env activate .                                                \
- && spack env view $VIEW                                                \
+ && spack env activate --without-view .                                 \
+ && spack env view enable $VIEW                                         \
  && spack concretize
 
 ## This variable will change whenevery either spack.yaml or our spack package
