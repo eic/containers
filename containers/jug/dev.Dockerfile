@@ -8,6 +8,25 @@ ARG INTERNAL_TAG="testing"
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}debian_base:${INTERNAL_TAG} as builder
 
+ENV NV_CUDA_LIB_VERSION "11.6.0-1"
+
+FROM base as base-amd64
+
+ENV NV_CUDA_CUDART_DEV_VERSION 11.6.55-1
+ENV NV_NVML_DEV_VERSION 11.6.55-1
+ENV NV_LIBCUSPARSE_DEV_VERSION 11.7.1.55-1
+ENV NV_LIBNPP_DEV_VERSION 11.6.0.55-1
+ENV NV_LIBNPP_DEV_PACKAGE libnpp-dev-11-6=${NV_LIBNPP_DEV_VERSION}
+
+ENV NV_LIBCUBLAS_DEV_VERSION 11.8.1.74-1
+ENV NV_LIBCUBLAS_DEV_PACKAGE_NAME libcublas-dev-11-6
+ENV NV_LIBCUBLAS_DEV_PACKAGE ${NV_LIBCUBLAS_DEV_PACKAGE_NAME}=${NV_LIBCUBLAS_DEV_VERSION}
+
+ENV NV_LIBNCCL_DEV_PACKAGE_NAME libnccl-dev
+ENV NV_LIBNCCL_DEV_PACKAGE_VERSION 2.11.4-1
+ENV NCCL_VERSION 2.11.4-1
+ENV NV_LIBNCCL_DEV_PACKAGE ${NV_LIBNCCL_DEV_PACKAGE_NAME}=${NV_LIBNCCL_DEV_PACKAGE_VERSION}+cuda11.6
+
 ## instal some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt                            \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
