@@ -10,7 +10,7 @@ FROM eicweb.phy.anl.gov:4567/containers/eic_container/debian_base:${INTERNAL_TAG
 ## instal some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt                            \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
- && sed -i 's/main/main contrib non-free' /etc/apt/sources.list \
+ && sed -i 's/main/main contrib non-free/' /etc/apt/sources.list \
  && apt-get -yqq update                                                 \
  && apt-get -yqq install --no-install-recommends                        \
         python3                                                         \
