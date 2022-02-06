@@ -10,6 +10,7 @@ spack:
     - dd4hep@1.18 +geant4 -assimp +hepmc3 +ipo +lcio
     - eigen@3.4.0
     - emacs@27.2 toolkit=athena
+    - expat
     - fastjet@3.3.3
     - fmt@8.0.1 +shared cxxstd=17
     - gaudi@36.0
