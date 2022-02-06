@@ -43,5 +43,6 @@ spack:
     all:
       compiler: [gcc]
   view:
-    root: /usr/local
-    link: roots
+    default:
+      root: /usr/local
+      link: roots
