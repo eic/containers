@@ -3,7 +3,7 @@
 # Minimal container based on Debian Testing for up-to-date packages. 
 # Very lightweight container with a minimal build environment
 
-FROM  amd64/debian:testing-20211220-slim
+FROM  nvidia/cuda:11.6.0-base-ubuntu20.04
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="debian_base" \
       march="amd64"
@@ -14,6 +14,8 @@ ENV CLICOLOR_FORCE=1                                                    \
     LANGUAGE=en_US.UTF-8                                                \
     LANG=en_US.UTF-8                                                    \
     LC_ALL=en_US.UTF-8
+
+RUN echo "deb https://ppa.launchpadcontent.net/ubuntu-toolchain-r/ppa/ubuntu focal main" > /etc/apt/sources.list.d/ubuntu-toolchain.list
 
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
