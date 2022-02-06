@@ -16,6 +16,16 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         python3                                                         \
         python3-distutils                                               \
         python-is-python3                                               \
+        libtinfo5 libncursesw5 \
+        cuda-cudart-dev-11-6=${NV_CUDA_CUDART_DEV_VERSION} \
+        cuda-command-line-tools-11-6=${NV_CUDA_LIB_VERSION} \
+        cuda-minimal-build-11-6=${NV_CUDA_LIB_VERSION} \
+        cuda-libraries-dev-11-6=${NV_CUDA_LIB_VERSION} \
+        cuda-nvml-dev-11-6=${NV_NVML_DEV_VERSION} \
+        ${NV_LIBNPP_DEV_PACKAGE} \
+        libcusparse-dev-11-6=${NV_LIBCUSPARSE_DEV_VERSION} \
+        ${NV_LIBCUBLAS_DEV_PACKAGE} \
+        ${NV_LIBNCCL_DEV_PACKAGE} \
  && rm -rf /var/lib/apt/lists/*
 
 ## Setup spack
