@@ -1,7 +1,7 @@
 spack:
   specs:
     - acts@16.0.0 +cuda cuda_arch=75 +dd4hep +digitization +identification +json +tgeo +ipo +examples +fatras +geant4
-    - boost@1.77.0
+    - boost@1.77.0 cxxstd=17
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - clhep@2.4.4.0 cxxstd=17
     - cmake@3.21.4
