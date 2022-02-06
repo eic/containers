@@ -27,6 +27,10 @@ ENV NV_LIBNCCL_DEV_PACKAGE_NAME libnccl-dev
 ENV NV_LIBNCCL_DEV_PACKAGE_VERSION 2.11.4-1
 ENV NCCL_VERSION 2.11.4-1
 ENV NV_LIBNCCL_DEV_PACKAGE ${NV_LIBNCCL_DEV_PACKAGE_NAME}=${NV_LIBNCCL_DEV_PACKAGE_VERSION}+cuda11.6
+days
+## Clean spack build cache of files not accessed for specified time
+RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
+    find /var/cache/spack-mirror/build_cache -type f -atime +7 -delete
 
 ## instal some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt                            \
