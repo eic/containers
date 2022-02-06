@@ -48,7 +48,6 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         libjson-xs-perl                                                 \
         libyaml-cpp-dev                                                 \
         locales                                                         \
-        lshw                                                            \
         lua-posix                                                       \
         make                                                            \
         nano                                                            \
