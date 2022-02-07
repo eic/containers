@@ -23,7 +23,7 @@ ENV CLICOLOR_FORCE=1                                                    \
 RUN --mount=type=cache,target=/var/cache/apt                            \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime          \
- && echo "US/Eastern" > /etcn/timezone                                   \
+ && echo "US/Eastern" > /etc/timezone                                   \
  && echo "deb https://ppa.launchpadcontent.net/ubuntu-toolchain-r/test/ubuntu focal main" \
     > /etc/apt/sources.list.d/ubuntu-toolchain.list                     \
  && apt-key adv --keyserver hkps://keyserver.ubuntu.com                 \
