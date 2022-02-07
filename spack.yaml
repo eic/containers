@@ -1,5 +1,8 @@
 spack:
-  specs:
+  definitions:
+  - compiler:
+    - gcc@11.2.0
+  - packages:
     - acts@17.0.0 +dd4hep +digitization +identification +json +tgeo +ipo +examples +fatras +geant4
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - clhep@2.4.4.0 cxxstd=17
@@ -39,13 +42,12 @@ spack:
     - stow@2.3.1
     - tensorflow-lite@2.8.0 -xnnpack
     - xrootd@5.1.0 cxxstd=17 +python
+  specs:
+  - $compiler
+  - matrix:
+    - [$packages]
+    - [$%compiler]
   concretization: together
   config:
     install_missing_compilers: true
-  compilers:
-  - compiler:
-    spec: gcc@11.2.0
-  packages:
-    all:
-      compiler: [gcc]
   view: /usr/local
