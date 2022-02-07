@@ -42,7 +42,7 @@ spack:
   concretization: together
   packages:
     all:
-      compiler: [gcc]
+      compiler: [gcc@11.1.0]
     cuda:
       buildable: False
       externals:
