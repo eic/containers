@@ -40,6 +40,11 @@ spack:
     - tensorflow-lite@2.8.0 -xnnpack
     - xrootd@5.1.0 cxxstd=17 +python
   concretization: together
+  config:
+    install_missing_compilers: true
+  compilers:
+  - compiler:
+    spec: gcc@11.2.0
   packages:
     all:
       compiler: [gcc]

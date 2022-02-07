@@ -32,10 +32,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         curl                                                            \
         file                                                            \
         build-essential                                                 \
-        g++-11                                                          \
-        gcc-11                                                          \
         gdb                                                             \
-        gfortran-11                                                     \
         ghostscript                                                     \
         git                                                             \
         gnupg2                                                          \
@@ -60,10 +57,6 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         vim-nox                                                         \
         wget                                                            \
  && localedef -i en_US -f UTF-8 en_US.UTF-8                             \
- && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100  \
- && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100  \
- && update-alternatives --install /usr/bin/gfortran gfortran            \
-                                  /usr/bin/gfortran-11 100              \
  && cc --version                                                        \
  && curl -L                                                             \
     "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" \
