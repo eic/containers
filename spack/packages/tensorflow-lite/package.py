@@ -32,7 +32,6 @@ class TensorflowLite(CMakePackage):
     depends_on('eigen')
     depends_on('flatbuffers')
     depends_on('fp16')
-    depends_on('fxdiv')
     depends_on('gemmlowp')
     depends_on('psimd')
     depends_on('pthreadpool')
