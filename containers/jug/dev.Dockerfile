@@ -173,7 +173,7 @@ RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 # note that we do not strip python libraries as can cause issues in some cases
 RUN find -L /usr/local/*                                                \
          -type d -name site-packages -prune -false -o                   \
-         -type f -not -name "zdll.lib"                                  \
+         -type f -not -name "zdll.lib" -not -name libtensorflow-lite.a  \
          -exec realpath '{}' \;                                      \
       | xargs file -i                                                   \
       | grep 'charset=binary'                                           \
