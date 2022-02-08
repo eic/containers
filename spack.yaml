@@ -1,7 +1,7 @@
 spack:
   definitions:
   - compiler:
-    - gcc@11.2.0
+    - gcc@11.1.0
   - packages:
     - acts@17.0.0 +dd4hep +digitization +identification +json +tgeo +ipo +examples +fatras +geant4
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
