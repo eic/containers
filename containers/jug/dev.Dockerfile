@@ -2,7 +2,7 @@
 ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
 ARG INTERNAL_TAG="testing" 
 
-ARG VIEW="/usr/local"
+ARG SPACK_VIEW="/usr/local"
 
 ## ========================================================================================
 ## STAGE1: spack builder image
@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
 ## Setup spack
 ## parts:
 ENV SPACK_ROOT=/opt/spack
-ENV SPACK_VIEW=$VIEW
+ENV SPACK_VIEW=$SPACK_VIEW
 ARG SPACK_VERSION="develop"
 ARG SPACK_CHERRYPICKS=""
 RUN echo "Part 1: regular spack install (as in containerize)"           \
@@ -172,7 +172,7 @@ WORKDIR /
 ## ========================================================================================
 FROM builder as staging
 
-ENV SPACK_VIEW=$VIEW
+ENV SPACK_VIEW=$SPACK_VIEW
 RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 # Strip all the binaries
 # This reduces the image by factor of x2, so worth the effort
@@ -224,7 +224,7 @@ RUN chmod a+x $SPACK_VIEW/bin/mc
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}debian_base:${INTERNAL_TAG}
 
-ENV $SPACK_VIEW=$VIEW
+ENV $SPACK_VIEW=$SPACK_VIEW
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="jug_xl" \
