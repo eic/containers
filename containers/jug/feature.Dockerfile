@@ -1,4 +1,5 @@
 #syntax=docker/dockerfile:1.2
+ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
 ARG INTERNAL_TAG="testing" 
 
 ## Make a specific "feature" image, identical to jug_xl except for the detector
@@ -6,7 +7,7 @@ ARG INTERNAL_TAG="testing"
 ## in the future once we move the detectors already installed in the main
 ## image.
 
-FROM eicweb.phy.anl.gov:4567/containers/eic_container/jug_xl:${INTERNAL_TAG}
+FROM {DOCKER_REGISTRY}jug_xl:${INTERNAL_TAG}
 
 ## also install detector/ip geometries into opt
 ARG DETECTOR=athena

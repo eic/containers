@@ -1,11 +1,12 @@
 #syntax=docker/dockerfile:1.2
+ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
 ARG INTERNAL_TAG="testing" 
 
 ## ========================================================================================
 ## STAGE1: spack builder image
 ## EIC builder image with spack
 ## ========================================================================================
-FROM eicweb.phy.anl.gov:4567/containers/eic_container/debian_base:${INTERNAL_TAG} as builder
+FROM ${DOCKER_REGISTRY}debian_base:${INTERNAL_TAG} as builder
 
 ## instal some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt                            \
@@ -216,7 +217,7 @@ RUN chmod a+x /usr/local/bin/mc
 ## STAGE 3
 ## Lean target image
 ## ========================================================================================
-FROM eicweb.phy.anl.gov:4567/containers/eic_container/debian_base:${INTERNAL_TAG}
+FROM ${DOCKER_REGISTRY}debian_base:${INTERNAL_TAG}
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="jug_xl" \

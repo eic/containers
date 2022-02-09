@@ -1,11 +1,12 @@
 #syntax=docker/dockerfile:1.2
+ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
 ARG INTERNAL_TAG="testing" 
 
 ## ========================================================================================
 ## STAGE1: spack builder image
 ## EIC builder image with spack
 ## ========================================================================================
-FROM eicweb.phy.anl.gov:4567/containers/eic_container/jug_dev:${INTERNAL_TAG}
+FROM ${DOCKER_REGISTRY}jug_dev:${INTERNAL_TAG}
 
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
 ARG JUGGLER_VERSION="master"
