@@ -104,6 +104,7 @@ ARG CACHE_NUKE=""
 ##    the buildcache (using package hash)
 ## 3. Add packages that need to be added to buildcache if any
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
+    --mount=type=cache,target=/opt/software                             \
     cd /opt/spack-environment                                           \
  && ls /var/cache/spack-mirror                                          \
  && spack env activate .                                                \
