@@ -83,7 +83,7 @@ RUN --mount=type=cache,target=/opt/software                             \
  && cd /opt/spack-environment                                           \
  && mv $SPACK_ROOT/eic-spack/spack.yaml .                               \
  && rm -r /usr/local                                                    \
- && spack env activate --without-view .                                 \
+ && spack env activate .                                                \
  && spack concretize
 
 ## This variable will change whenevery either spack.yaml or our spack package
@@ -108,7 +108,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     --mount=type=cache,target=/opt/software                             \
     cd /opt/spack-environment                                           \
  && ls /var/cache/spack-mirror                                          \
- && spack env activate --without-view .                                 \
+ && spack env activate .                                                \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
     || spack install -j64 --no-check-signature                          \
@@ -129,37 +129,13 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
  && spack clean -a                                                      \
  && exit $status
 
-## Extra post-spack steps:
-##   - Python packages
-COPY requirements.txt /usr/local/etc/requirements.txt
-RUN --mount=type=cache,target=/var/cache/pip                            \
-    --mount=type=cache,target=/opt/software                             \
-    echo "Installing additional python packages"                        \
- && cd /opt/spack-environment && spack env activate --without-view .    \
- && pip install --trusted-host pypi.org                                 \
-                --trusted-host files.pythonhosted.org                   \
-                --cache-dir /var/cache/pip                              \
-                --requirement /usr/local/etc/requirements.txt
-
-## Including some small fixes:
-##   - Somehow PODIO env isn't automatically set, 
-##   - and Gaudi likes BINARY_TAG to be set
+## Setup environment
 RUN --mount=type=cache,target=/opt/software                             \
     cd /opt/spack-environment                                           \
- && echo -n ""                                                          \
- && echo "Grabbing environment info"                                    \
  && spack env activate --sh -d .                                        \
         | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
         | sed '/MANPATH/ s/;$/:;/'                                      \
-    > /etc/profile.d/z10_spack_environment.sh                           \
- && cd /opt/spack-environment && spack env activate .                   \
- && echo -n ""                                                          \
- && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
- && echo "export PODIO=$(spack location -i podio);"                     \
-        >> /etc/profile.d/z10_spack_environment.sh                      \
- && echo -n ""                                                          \
- && echo "Executing cmake patch for dd4hep 16.1"                        \                
- && sed -i "s/FIND_PACKAGE(Python/#&/" /usr/local/cmake/DD4hepBuild.cmake
+    > /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
@@ -172,7 +148,16 @@ WORKDIR /
 ## ========================================================================================
 FROM builder as staging
 
-RUN cd /opt/spack-environment && spack env activate . && spack gc -y
+## Extra post-spack steps:
+##   - Python packages
+COPY requirements.txt /usr/local/etc/requirements.txt
+RUN --mount=type=cache,target=/var/cache/pip                            \
+    echo "Installing additional python packages"                        \
+ && pip install --trusted-host pypi.org                                 \
+                --trusted-host files.pythonhosted.org                   \
+                --cache-dir /var/cache/pip                              \
+                --requirement /usr/local/etc/requirements.txt
+
 # Strip all the binaries
 # This reduces the image by factor of x2, so worth the effort
 # note that we do not strip python libraries as can cause issues in some cases
