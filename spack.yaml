@@ -43,8 +43,3 @@ spack:
   packages:
     all:
       compiler: [gcc]
-  view:
-    default:
-      root: /usr/local
-      link: all
-      link_type: copy
