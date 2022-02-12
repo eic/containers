@@ -77,12 +77,13 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 
 ## Setup our custom environment and package overrides
 COPY spack $SPACK_ROOT/eic-spack
-RUN spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
+RUN --mount=type=cache,target=/opt/software                             \
+    spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
  && mkdir /opt/spack-environment                                        \
  && cd /opt/spack-environment                                           \
  && mv $SPACK_ROOT/eic-spack/spack.yaml .                               \
  && rm -r /usr/local                                                    \
- && spack env activate .                                                \
+ && spack env activate --without-view .                                 \
  && spack concretize
 
 ## This variable will change whenevery either spack.yaml or our spack package
@@ -107,7 +108,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     --mount=type=cache,target=/opt/software                             \
     cd /opt/spack-environment                                           \
  && ls /var/cache/spack-mirror                                          \
- && spack env activate .                                                \
+ && spack env activate --without-view .                                 \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
     || spack install -j64 --no-check-signature                          \
@@ -132,8 +133,9 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ##   - Python packages
 COPY requirements.txt /usr/local/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip                            \
+    --mount=type=cache,target=/opt/software                             \
     echo "Installing additional python packages"                        \
- && cd /opt/spack-environment && spack env activate .                   \
+ && cd /opt/spack-environment && spack env activate --without-view .    \
  && pip install --trusted-host pypi.org                                 \
                 --trusted-host files.pythonhosted.org                   \
                 --cache-dir /var/cache/pip                              \
@@ -142,7 +144,8 @@ RUN --mount=type=cache,target=/var/cache/pip                            \
 ## Including some small fixes:
 ##   - Somehow PODIO env isn't automatically set, 
 ##   - and Gaudi likes BINARY_TAG to be set
-RUN cd /opt/spack-environment                                           \
+RUN --mount=type=cache,target=/opt/software                             \
+    cd /opt/spack-environment                                           \
  && echo -n ""                                                          \
  && echo "Grabbing environment info"                                    \
  && spack env activate --sh -d .                                        \
