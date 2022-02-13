@@ -17,10 +17,10 @@ detectors:
         version: v1.0.0
     deathvalley:
       default: true
-      version: deathvalley-v1.0
+      version: deathvalley-v1.1
       ip:
         config: ip6
-        version: v1.0.0
+        version: v1.0.1
     deathvalley-1.5T:
       default: true
       version: deathvalley-v1.0-1.5T
