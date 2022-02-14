@@ -113,8 +113,8 @@ version:
       if [ "x${CI_PIPELINE_SOURCE}" = "xmerge_request_event" ]; then
         INTERNAL_TAG="unstable-mr-${CI_MERGE_REQUEST_ID}"
         NIGHTLY_TAG="${INTERNAL_TAG}-nightly"
-        EXPORT_TAG=${VERSION_SHORT}-unstable
-        EXPORT_TAG2=
+        EXPORT_TAG="${VERSION_SHORT}-unstable"
+        EXPORT_TAG2="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
       elif [[ "$CI_COMMIT_TAG" =~ ^v${VERSION} ]]; then
         VERSION_FULL="${CI_COMMIT_TAG:1}"
         INTERNAL_TAG="stable-tag-${VERSION_FULL}"
