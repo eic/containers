@@ -324,11 +324,6 @@ jug_xl:feature:
     - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                                  -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
                                  ${FEATURE_EXPORT_TAG} ${PUSH_FLAG}
-    - if [ test -z "${PUSH_FLAG}" ] ; then 
-      ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}-${DETECTiOR}-${DETECTOR_BRANCH}
-                                 -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                 ${FEATURE_EXPORT_TAG}-$(date +%Y-%m-%d) --dockerhub ;
-      fi
 
 .singularity:
   stage: deploy
