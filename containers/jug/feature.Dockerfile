@@ -7,7 +7,7 @@ ARG INTERNAL_TAG="testing"
 ## in the future once we move the detectors already installed in the main
 ## image.
 
-FROM {DOCKER_REGISTRY}jug_xl:${INTERNAL_TAG}
+FROM ${DOCKER_REGISTRY}jug_xl:${INTERNAL_TAG}
 
 ## also install detector/ip geometries into opt
 ARG DETECTOR=athena
