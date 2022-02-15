@@ -5,7 +5,7 @@ ARG INTERNAL_TAG="testing"
 ARG SPACK_ROOT="/opt/spack"
 ARG SPACK_SOFT="/opt/software"
 ARG SPACK_VIEW="/usr/local"
-ARG SPACK_ENV="/opt/spack-environment"
+ARG SPACK_ENVT="/opt/spack-environment"
 
 ## ========================================================================================
 ## STAGE1: spack builder image
@@ -15,7 +15,7 @@ FROM ${DOCKER_REGISTRY}debian_base:${INTERNAL_TAG} as builder
 ARG SPACK_ROOT
 ARG SPACK_SOFT
 ARG SPACK_VIEW
-ARG SPACK_ENV
+ARG SPACK_ENVT
 
 ## instal some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt                            \
@@ -75,11 +75,11 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ## Setup our custom environment and package overrides
 COPY spack ${SPACK_ROOT}/eic-spack
 RUN spack repo add --scope site "${SPACK_ROOT}/eic-spack"               \
- && mkdir -p ${SPACK_ENV}                                               \
- && mv ${SPACK_ROOT}/eic-spack/spack.yaml ${SPACK_ENV}                  \
+ && mkdir -p ${SPACK_ENVT}                                               \
+ && mv ${SPACK_ROOT}/eic-spack/spack.yaml ${SPACK_ENVT}                  \
  && rm -rf ${SPACK_VIEW}                                                \
- && spack env create --with-view ${SPACK_VIEW} --dir ${SPACK_ENV}       \
- && spack env activate ${SPACK_ENV}                                     \
+ && spack env create --with-view ${SPACK_VIEW} --dir ${SPACK_ENVT}       \
+ && spack env activate ${SPACK_ENVT}                                     \
  && spack concretize
 
 ## This variable will change whenevery either spack.yaml or our spack package
@@ -101,7 +101,7 @@ ARG CACHE_NUKE=""
 ##    the buildcache (using package hash)
 ## 3. Add packages that need to be added to buildcache if any
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    spack env activate ${SPACK_ENV}                                     \
+    spack env activate ${SPACK_ENVT}                                     \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
     || spack install -j64 --no-check-signature                          \
@@ -127,14 +127,14 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 COPY requirements.txt ${SPACK_VIEW}/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip                            \
 
-    spack env activate ${SPACK_ENV}                                     \
+    spack env activate ${SPACK_ENVT}                                     \
  && pip install --trusted-host pypi.org                                 \
                 --trusted-host files.pythonhosted.org                   \
                 --cache-dir /var/cache/pip                              \
                 --requirement ${SPACK_VIEW}/etc/requirements.txt
 
 ## Set environment
-RUN spack env activate --sh -d ${SPACK_ENV}                             \
+RUN spack env activate --sh -d ${SPACK_ENVT}                             \
         | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
         | sed '/MANPATH/ s/;$/:;/'                                      \
     > /etc/profile.d/z10_spack_environment.sh
@@ -152,10 +152,10 @@ FROM builder as staging
 ARG SPACK_ROOT
 ARG SPACK_SOFT
 ARG SPACK_VIEW
-ARG SPACK_ENV
+ARG SPACK_ENVT
 
 # Garbage collect
-RUN spack env activate ${SPACK_ENV} && spack gc -y
+RUN spack env activate ${SPACK_ENVT} && spack gc -y
 
 # Strip all the binaries
 # This reduces the image by factor of x2, so worth the effort
@@ -178,7 +178,7 @@ RUN strip --remove-section=.note.ABI-tag ${SPACK_VIEW}/lib/libQt5Core.so
 ## Address Issue #72
 ## missing precompiled headers for cppyy due to missing symlink in root
 ## install (should really be addressed by ROOT spack package)
-RUN spack env activate ${SPACK_ENV}                                     \
+RUN spack env activate ${SPACK_ENVT}                                     \
  && if [ ! -e $(spack location -i root)/lib/cppyy_backend/etc ]; then   \
       ln -sf $(spack location -i root)/etc                              \
              $(spack location -i root)/lib/cppyy_backend/etc;           \
@@ -209,7 +209,7 @@ FROM ${DOCKER_REGISTRY}debian_base:${INTERNAL_TAG}
 ARG SPACK_ROOT
 ARG SPACK_SOFT
 ARG SPACK_VIEW
-ARG SPACK_ENV
+ARG SPACK_ENVT
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="jug_xl" \
@@ -218,7 +218,7 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 ## copy over everything we need from staging in a single layer :-)
 RUN --mount=from=staging,target=/staging                                \
     rm -rf ${SPACK_VIEW}                                                \
- && cp -r /staging${SPACK_ENV} ${SPACK_ENV}                             \
+ && cp -r /staging${SPACK_ENVT} ${SPACK_ENVT}                             \
  && cp -r /staging${SPACK_SOFT} ${SPACK_SOFT}                           \
  && cp -r /staging/usr/._local /usr/._local                             \
  && cd /usr/._local                                                     \
