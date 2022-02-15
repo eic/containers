@@ -2,13 +2,20 @@
 ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
 ARG INTERNAL_TAG="testing" 
 
+ARG SPACK_ROOT="/opt/spack"
+ARG SPACK_SOFT="/opt/software"
 ARG SPACK_VIEW="/usr/local"
+ARG SPACK_ENV="/opt/spack-environment"
 
 ## ========================================================================================
 ## STAGE1: spack builder image
 ## EIC builder image with spack
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}debian_base:${INTERNAL_TAG} as builder
+ARG SPACK_ROOT
+ARG SPACK_SOFT
+ARG SPACK_VIEW
+ARG SPACK_ENV
 
 ## instal some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt                            \
@@ -22,48 +29,35 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
 
 ## Setup spack
 ## parts:
-ENV SPACK_ROOT=/opt/spack
-ENV SPACK_VIEW=${SPACK_VIEW}
 ARG SPACK_VERSION="develop"
 ARG SPACK_CHERRYPICKS=""
 RUN echo "Part 1: regular spack install (as in containerize)"           \
- && git clone https://github.com/spack/spack.git /tmp/spack-staging     \
- && cd /tmp/spack-staging                                               \
- && git checkout $SPACK_VERSION                                         \
+ && mkdir -p ${SPACK_ROOT}                                              \
+ && git clone https://github.com/spack/spack.git ${SPACK_ROOT}          \
+ && git -C ${SPACK_ROOT} checkout $SPACK_VERSION                        \
  && if [ -n "$SPACK_CHERRYPICKS" ] ; then                               \
-      git cherry-pick -n $SPACK_CHERRYPICKS ;                           \
+      git -C ${SPACK_ROOT} cherry-pick -n $SPACK_CHERRYPICKS ;          \
     fi                                                                  \
- && cd -                                                                \
- && mkdir -p $SPACK_ROOT/opt/spack                                      \
- && cp -r /tmp/spack-staging/bin $SPACK_ROOT/bin                        \
- && cp -r /tmp/spack-staging/etc $SPACK_ROOT/etc                        \
- && cp -r /tmp/spack-staging/lib $SPACK_ROOT/lib                        \
- && cp -r /tmp/spack-staging/share $SPACK_ROOT/share                    \
- && cp -r /tmp/spack-staging/var $SPACK_ROOT/var                        \
- && cp -r /tmp/spack-staging/.git $SPACK_ROOT/.git                      \
- && rm -rf /tmp/spack-staging                                           \
- && echo 'export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH'\ 
-        >> $SPACK_ROOT/share/setup-env.sh                               \
- && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
+ && ln -s ${SPACK_ROOT}/share/spack/docker/entrypoint.bash              \
           /usr/sbin/docker-shell                                        \
- && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
+ && ln -s ${SPACK_ROOT}/share/spack/docker/entrypoint.bash              \
           /usr/sbin/interactive-shell                                   \
- && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
+ && ln -s ${SPACK_ROOT}/share/spack/docker/entrypoint.bash              \
           /usr/sbin/spack-env                                           \
  && echo "Part 2: Set target to generic x86_64"                         \
- && echo "packages:" > $SPACK_ROOT/etc/spack/packages.yaml              \
- && echo "  all:" >> $SPACK_ROOT/etc/spack/packages.yaml                \
- && echo "    target: [x86_64]" >> $SPACK_ROOT/etc/spack/packages.yaml  \
- && cat $SPACK_ROOT/etc/spack/packages.yaml                             \
+ && echo "packages:" > ${SPACK_ROOT}/etc/spack/packages.yaml            \
+ && echo "  all:" >> ${SPACK_ROOT}/etc/spack/packages.yaml              \
+ && echo "    target: [x86_64]" >> ${SPACK_ROOT}/etc/spack/packages.yaml \
+ && cat ${SPACK_ROOT}/etc/spack/packages.yaml                           \
  && echo "Part 3: Set config to allow use of more cores for builds"     \
  && echo "(and some other settings)"                                    \
- && echo "config:" > $SPACK_ROOT/etc/spack/config.yaml                  \
+ && echo "config:" > ${SPACK_ROOT}/etc/spack/config.yaml                \
  && echo "  suppress_gpg_warnings: true"                                \
-        >> $SPACK_ROOT/etc/spack/config.yaml                            \
- && echo "  build_jobs: 64" >> $SPACK_ROOT/etc/spack/config.yaml        \
- && echo "  install_tree:" >> $SPACK_ROOT/etc/spack/config.yaml         \
- && echo "    root: /opt/software" >> $SPACK_ROOT/etc/spack/config.yaml \
- && cat $SPACK_ROOT/etc/spack/config.yaml
+        >> ${SPACK_ROOT}/etc/spack/config.yaml                          \
+ && echo "  build_jobs: 64" >> ${SPACK_ROOT}/etc/spack/config.yaml      \
+ && echo "  install_tree:" >> ${SPACK_ROOT}/etc/spack/config.yaml       \
+ && echo "    root: ${SPACK_SOFT}" >> ${SPACK_ROOT}/etc/spack/config.yaml \
+ && cat ${SPACK_ROOT}/etc/spack/config.yaml
 
 SHELL ["docker-shell"]
 
@@ -71,7 +65,7 @@ SHELL ["docker-shell"]
 ## spack mirror using the docker build cache, and
 ## a backup mirror on the internal B010 network
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    export PATH=$PATH:$SPACK_ROOT/bin                                   \
+    export PATH=$PATH:${SPACK_ROOT}/bin                                 \
  && wget 10.10.241.24/spack-mirror/sodium.pub --no-check-certificate    \
  && spack gpg trust sodium.pub                                          \
  && spack mirror add silicon http://10.10.241.24/spack-mirror           \
@@ -79,14 +73,13 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
  && spack mirror list
 
 ## Setup our custom environment and package overrides
-COPY spack $SPACK_ROOT/eic-spack
-RUN spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
- && mkdir /opt/spack-environment                                        \
- && cd /opt/spack-environment                                           \
- && mv $SPACK_ROOT/eic-spack/spack.yaml .                               \
+COPY spack ${SPACK_ROOT}/eic-spack
+RUN spack repo add --scope site "${SPACK_ROOT}/eic-spack"               \
+ && mkdir -p ${SPACK_ENV}                                               \
+ && mv ${SPACK_ROOT}/eic-spack/spack.yaml ${SPACK_ENV}                  \
  && rm -rf ${SPACK_VIEW}                                                \
- && spack env activate --without-view .                                 \
- && spack env view enable ${SPACK_VIEW}                                 \
+ && spack env create --with-view ${SPACK_VIEW} --dir ${SPACK_ENV}       \
+ && spack env activate ${SPACK_ENV}                                     \
  && spack concretize
 
 ## This variable will change whenevery either spack.yaml or our spack package
@@ -108,9 +101,7 @@ ARG CACHE_NUKE=""
 ##    the buildcache (using package hash)
 ## 3. Add packages that need to be added to buildcache if any
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    cd /opt/spack-environment                                           \
- && ls /var/cache/spack-mirror                                          \
- && spack env activate .                                                \
+    spack env activate ${SPACK_ENV}                                     \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
     || spack install -j64 --no-check-signature                          \
@@ -135,31 +126,18 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ##   - Python packages
 COPY requirements.txt ${SPACK_VIEW}/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip                            \
-    echo "Installing additional python packages"                        \
- && cd /opt/spack-environment && spack env activate .                   \
+
+    spack env activate ${SPACK_ENV}                                     \
  && pip install --trusted-host pypi.org                                 \
                 --trusted-host files.pythonhosted.org                   \
                 --cache-dir /var/cache/pip                              \
                 --requirement ${SPACK_VIEW}/etc/requirements.txt
 
-## Including some small fixes:
-##   - Somehow PODIO env isn't automatically set, 
-##   - and Gaudi likes BINARY_TAG to be set
-RUN cd /opt/spack-environment                                           \
- && echo -n ""                                                          \
- && echo "Grabbing environment info"                                    \
- && spack env activate --sh -d .                                        \
+## Set environment
+RUN spack env activate --sh -d ${SPACK_ENV}                             \
         | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
         | sed '/MANPATH/ s/;$/:;/'                                      \
-    > /etc/profile.d/z10_spack_environment.sh                           \
- && cd /opt/spack-environment && spack env activate .                   \
- && echo -n ""                                                          \
- && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
- && echo "export PODIO=$(spack location -i podio);"                     \
-        >> /etc/profile.d/z10_spack_environment.sh                      \
- && echo -n ""                                                          \
- && echo "Executing cmake patch for dd4hep 16.1"                        \
- && sed -i "s/FIND_PACKAGE(Python/#&/" ${SPACK_VIEW}/cmake/DD4hepBuild.cmake
+    > /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
@@ -171,9 +149,14 @@ WORKDIR /
 ## STAGE 2: staging image with unnecessariy packages removed and stripped binaries
 ## ========================================================================================
 FROM builder as staging
+ARG SPACK_ROOT
+ARG SPACK_SOFT
+ARG SPACK_VIEW
+ARG SPACK_ENV
 
-ENV SPACK_VIEW=${SPACK_VIEW}
-RUN cd /opt/spack-environment && spack env activate . && spack gc -y
+# Garbage collect
+RUN spack env activate ${SPACK_ENV} && spack gc -y
+
 # Strip all the binaries
 # This reduces the image by factor of x2, so worth the effort
 # note that we do not strip python libraries as can cause issues in some cases
@@ -195,7 +178,7 @@ RUN strip --remove-section=.note.ABI-tag ${SPACK_VIEW}/lib/libQt5Core.so
 ## Address Issue #72
 ## missing precompiled headers for cppyy due to missing symlink in root
 ## install (should really be addressed by ROOT spack package)
-RUN cd /opt/spack-environment && spack env activate .                   \
+RUN spack env activate ${SPACK_ENV}                                     \
  && if [ ! -e $(spack location -i root)/lib/cppyy_backend/etc ]; then   \
       ln -sf $(spack location -i root)/etc                              \
              $(spack location -i root)/lib/cppyy_backend/etc;           \
@@ -223,8 +206,10 @@ RUN chmod a+x ${SPACK_VIEW}/bin/mc
 ## Lean target image
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}debian_base:${INTERNAL_TAG}
-
-ENV SPACK_VIEW=${SPACK_VIEW}
+ARG SPACK_ROOT
+ARG SPACK_SOFT
+ARG SPACK_VIEW
+ARG SPACK_ENV
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="jug_xl" \
@@ -233,8 +218,8 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 ## copy over everything we need from staging in a single layer :-)
 RUN --mount=from=staging,target=/staging                                \
     rm -rf ${SPACK_VIEW}                                                \
- && cp -r /staging/opt/spack-environment /opt/spack-environment         \
- && cp -r /staging/opt/software /opt/software                           \
+ && cp -r /staging${SPACK_ENV} ${SPACK_ENV}                             \
+ && cp -r /staging${SPACK_SOFT} ${SPACK_SOFT}                           \
  && cp -r /staging/usr/._local /usr/._local                             \
  && cd /usr/._local                                                     \
  && PREFIX_PATH=$(realpath $(ls | tail -n1))                            \
