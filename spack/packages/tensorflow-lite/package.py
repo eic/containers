@@ -35,11 +35,10 @@ class TensorflowLite(CMakePackage):
     depends_on('gemmlowp')
     depends_on('psimd')
     depends_on('pthreadpool')
-    #depends_on(farmhash REQUIRED)
+    depends_on('farmhash')
     #depends_on(fft2d REQUIRED)
     #depends_on(neon2sse REQUIRED)
-    #depends_on(clog REQUIRED)
-    #depends_on(cpuinfo REQUIRED)
+    depends_on('cpuinfo')
     #depends_on(ruy REQUIRED)
 
     # GPU variant dependencies
