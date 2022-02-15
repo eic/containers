@@ -239,6 +239,7 @@ RUN echo "" >> /etc/jug_info                                            \
  && echo " - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
 
 ## make sure we have the entrypoints setup correctly
+ENV SPACK_VIEW=${SPACK_VIEW}
 ENTRYPOINT ["${SPACK_VIEW}/sbin/entrypoint.sh"]
 CMD ["bash", "--rcfile", "/etc/profile", "-l"]
 USER 0
