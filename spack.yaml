@@ -7,6 +7,7 @@ spack:
     - dawn@3_91a
     - dawncut@1_54a
     - dd4hep@1.20 +geant4 -assimp +hepmc3 +ipo +lcio
+    - edm4hep@0.4 cxxstd=17 -ipo
     - eigen@3.4.0
     - emacs@27.2 toolkit=athena
     - fastjet@3.3.3
