@@ -335,7 +335,6 @@ jug_xl:feature:
     matrix:
       - DETECTOR: athena
         DETECTOR_BRANCH:
-          - acadia
           - canyonlands
           - deathvalley
           - deathvalley-1.5T
