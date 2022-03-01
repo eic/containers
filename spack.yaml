@@ -20,7 +20,7 @@ spack:
     - igprof@5.9.16
     - imagemagick@7.0.8-7
     - madx@5.07.00
-    - mesa@21.2.3 swr=none +opengl -llvm +osmesa
+    - mesa@21.2.3 swr=none +glx -llvm +opengl +opengles +osmesa
     - mesa-demos
     - nlohmann-json@3.10.4
     - opencascade@7.5.3
