@@ -1,6 +1,6 @@
 spack:
   specs:
-    - acts@17.0.0 +dd4hep +digitization +identification +json +tgeo +ipo +examples +fatras +geant4
+    - acts@17.1.0 +dd4hep +digitization +identification +json +tgeo +ipo +examples +fatras +geant4
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - clhep@2.4.4.0 cxxstd=17
     - cmake@3.21.4
