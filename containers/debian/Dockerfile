@@ -64,7 +64,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
  && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100  \
  && update-alternatives --install /usr/bin/gfortran gfortran            \
                                   /usr/bin/gfortran-11 100              \
- && cc --version                                                        \
+ && gcc --version                                                       \
  && curl -L                                                             \
     "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" \
     | bash                                                              \
