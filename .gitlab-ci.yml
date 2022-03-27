@@ -184,6 +184,30 @@ debian_base:default:
                    containers/debian
     - !reference [.build, script]
 
+oneapi_base:default:
+  extends: .build
+  stage: build:base
+  needs:
+    - version
+  variables:
+    BUILD_IMAGE: "oneapi_base"
+  script:
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+                   containers/oneapi
+    - !reference [.build, script]
+
+cuda_base:default:
+  extends: .build
+  stage: build:base
+  needs:
+    - version
+  variables:
+    BUILD_IMAGE: "cuda_base"
+  script:
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+                   containers/oneapi
+    - !reference [.build, script]
+
 jug_dev:default:
   extends: .build
   stage: build:jug

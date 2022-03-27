@@ -1,11 +1,11 @@
 #syntax=docker/dockerfile:1.2
 
-# Minimal container based on Debian Testing for up-to-date packages. 
-# Very lightweight container with a minimal build environment
+# Minimal container based on Intel oneAPI for up-to-date packages. 
+# Very lightweight container with a minimal build environment (LOL)
 
-FROM  amd64/debian:testing-20211220-slim
-LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
-      name="debian_base" \
+FROM  intel/oneapi-hpckit:2022.1.2-devel-ubuntu18.04
+LABEL maintainer="Wouter Deconinck <wouter.deconinck@umanitoba.ca"      \
+      name="oneapi_base"                                                \
       march="amd64"
 
 COPY bashrc /root/.bashrc
@@ -34,10 +34,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         curl                                                            \
         file                                                            \
         build-essential                                                 \
-        g++-11                                                          \
-        gcc-11                                                          \
         gdb                                                             \
-        gfortran-11                                                     \
         ghostscript                                                     \
         git                                                             \
         gnupg2                                                          \
@@ -62,10 +59,6 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         vim-nox                                                         \
         wget                                                            \
  && localedef -i en_US -f UTF-8 en_US.UTF-8                             \
- && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100  \
- && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100  \
- && update-alternatives --install /usr/bin/gfortran gfortran            \
-                                  /usr/bin/gfortran-11 100              \
  && gcc --version                                                       \
  && curl -L                                                             \
     "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" \
@@ -77,4 +70,3 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         gitlab-runner                                                   \
  && apt-get -yqq autoremove                                             \
  && rm -rf /var/lib/apt/lists/*                                         
-
