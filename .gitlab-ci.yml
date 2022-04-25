@@ -156,7 +156,7 @@ version:
   resource_group: build
   ## Use docker runner for docker builds
   tags:
-    - docker
+    - docker-new
   ## cookie-cutter docker push code, to be included at the
   ## end of the regular job scripts
   script:

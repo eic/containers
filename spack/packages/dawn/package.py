@@ -32,8 +32,7 @@ class Dawn(MakefilePackage):
 
     # Note: Dawn homepage not available anymore...
     homepage = "https://geant4.kek.jp/~tanaka"
-    #url      = "http://geant4.kek.jp/~tanaka/src/dawn_3_91a.tgz"
-    url      = "http://10.10.241.24/software/dawn_3_91a.tgz"
+    url      = "http://geant4.kek.jp/~tanaka/src/dawn_3_91a.tgz"
 
     maintainers = ['sly2j']
 

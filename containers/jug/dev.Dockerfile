@@ -14,6 +14,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
  && apt-get -yqq update                                                 \
  && apt-get -yqq install --no-install-recommends                        \
         python3                                                         \
+        python3-dev                                                     \
         python3-distutils                                               \
         python-is-python3                                               \
  && rm -rf /var/lib/apt/lists/*
@@ -69,9 +70,6 @@ SHELL ["docker-shell"]
 ## a backup mirror on the internal B010 network
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     export PATH=$PATH:$SPACK_ROOT/bin                                   \
- && wget 10.10.241.24/spack-mirror/sodium.pub --no-check-certificate    \
- && spack gpg trust sodium.pub                                          \
- && spack mirror add silicon http://10.10.241.24/spack-mirror           \
  && spack mirror add docker /var/cache/spack-mirror                     \
  && spack mirror list
 
@@ -114,6 +112,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     || status=$?                                                        \
  && [ -z "${CACHE_NUKE}" ]                                              \
     || rm -rf /var/cache/spack-mirror/build_cache/*                     \
+ && mkdir -p /var/cache/spack-mirror/build_cache                        \
  && spack buildcache update-index -d /var/cache/spack-mirror            \
  && spack buildcache list --allarch --very-long                         \
     | sed '/^$/d;/^--/d;s/@.\+//;s/\([a-z0-9]*\) \(.*\)/\2\/\1/'        \
