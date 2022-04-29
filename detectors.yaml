@@ -20,13 +20,13 @@ detectors:
       version: deathvalley-v1.1
       ip:
         config: ip6
-        version: v1.0.1
+        version: v1.1.0
     deathvalley-1.5T:
       default: true
       version: deathvalley-v1.0-1.5T
       ip:
         config: ip6
-        version: v1.0.0
+        version: v1.1.0
     nightly:
       version: master
       ip:
