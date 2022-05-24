@@ -148,6 +148,16 @@ if __name__ == '__main__':
                             ip_version=ip['version'],
                             branch=branch),
                           file=f)
+                ## run once inside global prefix to initialize artifacts in /opt/detectors
+                os.environ['DETECTOR_PATH'] = args.prefix
+                cmd = f'bash -c \'cd {args.prefix} && source {prefix}/setup.sh && npdet_info print world_z {prefix}/share/{det}/{det}.xml\''
+                print(cmd)
+                os.system(cmd)
+                ## run once inside specific prefix to initialize artifacts in $DETECTOR_PATH
+                os.environ['DETECTOR_PATH'] = args.prefix
+                cmd = f'bash -c \'cd {prefix} && source {prefix}/setup.sh && npdet_info print world_z {prefix}/share/{det}/{det}.xml\''
+                print(cmd)
+                os.system(cmd)
     print(' --> Symlinking default detector for backward compatibility')
     full_prefix='{}/{}-{}'.format(args.prefix, default_detector, default_version)
     cmd = ['ln -sf {full_prefix}/share {short_prefix}',
