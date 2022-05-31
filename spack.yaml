@@ -1,19 +1,19 @@
 spack:
   specs:
-    - acts@19.0.0 +dd4hep +digitization +identification +json +tgeo +ipo +examples +fatras +geant4
+    - acts@19.1.0 +dd4hep +identification +json +tgeo +ipo +examples +fatras +geant4
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - clhep@2.4.4.0 cxxstd=17
-    - cmake@3.21.4
+    - cmake@3.23.1
     - cnpy@master
     - dawn@3_91a
     - dawncut@1_54a
-    - dd4hep@1.20.1 +geant4 -assimp +hepmc3 +ipo +lcio
+    - dd4hep@1.20.2 +ddg4 -ddcad +hepmc3 +ipo +lcio
     - edm4hep@0.4.1 cxxstd=17 -ipo
     - eigen@3.4.0
     - emacs@27.2 toolkit=athena
-    - fastjet@3.3.3
-    - fmt@8.0.1 +shared cxxstd=17
-    - gaudi@36.4
+    - fastjet@3.3.4
+    - fmt@8.1.1 +shared cxxstd=17
+    - gaudi@36.5
     - geant4@10.7.3 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
     - genfit@2.00.00
     - hepmc3@3.2.4 +python +rootio 
@@ -21,27 +21,27 @@ spack:
     - igprof@5.9.16
     - imagemagick@7.0.8-7
     - madx@5.08.01
-    - mesa@21.2.3 swr=none +glx -llvm +opengl +opengles +osmesa
-    - mesa-demos
-    - nlohmann-json@3.10.4
-    - opencascade@7.5.3
+    - mesa@22.0.2 +glx -llvm +opengl +opengles +osmesa
+    - nlohmann-json@3.10.5
+    - opencascade@7.6.0
     - pkg-config@0.29.2
     - podio@0.14.1 build_type=RelWithDebInfo
     - pythia8@8.306 +fastjet
-    - python@3.9.7
-    - py-numpy@1.21.3
-    - py-pip@21.1.2
-    - py-setuptools@58.2.0
-    - py-wheel@0.36.2
-    - qt@5.15.2 +opengl
-    - root@6.24.06 cxxstd=17 
+    - python@3.9.12
+    - py-numpy@1.22.3
+    - py-pip@21.3.1
+    - py-setuptools@59.4.0
+    - py-wheel@0.37.0
+    - qt@5.15.4 +opengl
+    - root@6.26.02 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc +xrootd +ssl 
     - spdlog@1.9.2
     - stow@2.3.1
     - tensorflow-lite@2.8.0 -xnnpack
-    - xrootd@5.1.0 cxxstd=17 +python
-  concretization: together
+    - xrootd@5.3.2 cxxstd=17 +python
+  concretizer: 
+    unify: true
   packages:
     all:
       compiler: [gcc]
