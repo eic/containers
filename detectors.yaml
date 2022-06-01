@@ -33,7 +33,7 @@ detectors:
   ecce:
     nightly:
       default: true
-      version: master
+      version: main
       ip:
         config: ip6
         version: master
