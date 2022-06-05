@@ -132,10 +132,11 @@ COPY requirements.txt /usr/local/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip                            \
     echo "Installing additional python packages"                        \
  && cd /opt/spack-environment && spack env activate .                   \
- && pip install --trusted-host pypi.org                                 \
-                --trusted-host files.pythonhosted.org                   \
-                --cache-dir /var/cache/pip                              \
-                --requirement /usr/local/etc/requirements.txt
+ && python -m pip install                                               \
+    --trusted-host pypi.org                                             \
+    --trusted-host files.pythonhosted.org                               \
+    --cache-dir /var/cache/pip                                          \
+    --requirement /usr/local/etc/requirements.txt
 
 ## Including some small fixes:
 ##   - Somehow PODIO env isn't automatically set, 
