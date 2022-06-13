@@ -30,3 +30,6 @@ detectors:
       ip:
         config: ip6
         version: master
+  compton:
+    nightly:
+      version: main
