@@ -1,6 +1,8 @@
 awkward
 boto3
 ipython
+jinja2
+jinja2-cli
 jupyter
 jupyterlab
 lmfit
