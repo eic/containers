@@ -27,7 +27,7 @@ spack:
     - pkg-config@0.29.2
     - podio@0.14.1 build_type=RelWithDebInfo
     - pythia8@8.306 +fastjet
-    - python@3.9.12
+    - python@3.10.4
     - py-numpy@1.22.3
     - py-pip@21.3.1
     - py-setuptools@59.4.0
