@@ -9,11 +9,13 @@ DETECTOR_ENV ='''
 #!/bin/sh
 export DETECTOR={detector}
 export DETECTOR_PATH={data_prefix}
+export DETECTOR_CONFIG={detector}
 export DETECTOR_VERSION={version}
 export BEAMLINE_CONFIG={ip}
 export BEAMLINE_CONFIG_VERSION={ip_version}
 ## note: we will phase out the JUGGLER_* flavor of variables in the future
 export JUGGLER_DETECTOR=$DETECTOR
+export JUGGLER_DETECTOR_CONFIG=$DETECTOR_CONFIG
 export JUGGLER_DETECTOR_VERSION=$DETECTOR_VERSION
 export JUGGLER_DETECTOR_PATH=$DETECTOR_PATH
 export JUGGLER_BEAMLINE_CONFIG=$BEAMLINE_CONFIG
