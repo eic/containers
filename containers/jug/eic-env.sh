@@ -36,12 +36,15 @@ export PS1=${ps1_preamble}'\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\
 export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33'
 unset ps1_preamble
 
-## unset CURL_CA_BUNDLE if not accessible inside container
-## this addresses certain HPC systems where CURL_CA_BUNDLE
-## is customized to point to paths that do not exist inside
-## this container
+## unset CURL_CA_BUNDLE and SSL_CERT_FILE if not accessible
+## inside container: this addresses certain HPC systems where
+## CURL_CA_BUNDLE and SSL_CERT_FILE are customized to point
+## to paths that do not exist inside this container
 if [ ! -r ${CURL_CA_BUNDLE:-/} ]; then
   unset CURL_CA_BUNDLE
+fi
+if [ ! -r ${SSL_CERT_FILE:-/} ]; then
+  unset SSL_CERT_FILE
 fi
 
 ## redefine ls and less as functions, as this is something we
