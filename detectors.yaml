@@ -1,30 +1,5 @@
 detectors:
   athena:
-    acadia:
-      version: acadia-v2.1
-      ip:
-        config: ip6
-        version: v0.5.2
-    canyonlands_old:
-      version: canyonlands-v2.1
-      ip:
-        config: ip6
-        version: v0.6.2
-    canyonlands:
-      version: canyonlands-v2.2
-      ip:
-        config: ip6
-        version: v1.0.0
-    deathvalley:
-      version: deathvalley-v1.1
-      ip:
-        config: ip6
-        version: v1.1.0
-    deathvalley-1.5T:
-      version: deathvalley-v1.0-1.5T
-      ip:
-        config: ip6
-        version: v1.1.0
     nightly:
       version: master
       ip:
