@@ -27,7 +27,7 @@ if [ -f /etc/jug_info ]; then
     esac
     ps1_preamble="${container}${sigil}> "
     export PS1_SIGIL=${sigil}
-    unset ${sigil}
+    unset sigil
   fi
   unset version
   unset container

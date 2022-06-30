@@ -70,23 +70,23 @@ workflow:
 ##  Workflows:
 ##  - master      --> config + all build stages + singularity
 #                            + nightly build:jug + nightly singularity
-##  - v3.0-stable --> config + all build stages + singularity
-##  - v3.0.0      --> config + all build stages + singularity
+##  - v4.0-stable --> config + all build stages + singularity
+##  - v4.0.0      --> config + all build stages + singularity
 ##  - MR          --> config + all build stages
 ##
 ##  Container images tags
 ##  - master      --> testing
 ##  - <nightly>   --> nightly (run as part of master)
-##  - v3.0-stable --> 3.0-stable
-##  - v3.0.0      --> 3.0-stable, 3.0.0
+##  - v4.0-stable --> 4.0-stable
+##  - v4.0.0      --> 4.0-stable, 4.0.0
 ##  - acadia     
-##  - MR          --> 3.0-unstable (on all registries)
+##  - MR          --> 4.0-unstable (on all registries)
 ##                --> unstable-mr-XXX (on eicweb only, untag at end of pipeline)
 ##  - all other   --> do nothing
 ##
 ## caching strategy for dispatch to multiple nodes and to avoid
 ##  --> try this strategy: https://medium.com/titansoft-engineering/docker-build-cache-sharing-on-multi-hosts-with-buildkit-and-buildx-eb8f7005918e
-##  (first try with buildx didn't pan out, let's try again later)
+
 
 version:
   stage: config
@@ -201,7 +201,7 @@ cuda_base:default:
     BUILD_IMAGE: "cuda_base"
   script:
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
-                   containers/oneapi
+                   containers/cuda
     - !reference [.build, script]
 
 jug_dev:default:

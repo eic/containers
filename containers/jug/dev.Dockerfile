@@ -8,7 +8,7 @@ ARG INTERNAL_TAG="testing"
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}debian_base:${INTERNAL_TAG} as builder
 
-## instal some extra spack dependencies
+## install some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt                            \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && apt-get -yqq update                                                 \
@@ -32,7 +32,7 @@ RUN echo "Part 1: regular spack install (as in containerize)"           \
       git cherry-pick -n $SPACK_CHERRYPICKS ;                           \
     fi                                                                  \
  && cd -                                                                \
- && mkdir -p $SPACK_ROOT/opt/spack                                      \
+ && mkdir -p $SPACK_ROOT                                                \
  && cp -r /tmp/spack-staging/bin $SPACK_ROOT/bin                        \
  && cp -r /tmp/spack-staging/etc $SPACK_ROOT/etc                        \
  && cp -r /tmp/spack-staging/lib $SPACK_ROOT/lib                        \
@@ -73,6 +73,11 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
  && spack mirror add docker /var/cache/spack-mirror                     \
  && spack mirror list
 
+## This variable will change whenevery either spack.yaml or our spack package
+## overrides change, triggering a rebuild
+ARG CACHE_BUST="hash"
+ARG CACHE_NUKE=""
+
 ## Setup our custom environment and package overrides
 COPY spack $SPACK_ROOT/eic-spack
 RUN spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
@@ -83,10 +88,6 @@ RUN spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
  && spack env activate .                                                \
  && spack concretize
 
-## This variable will change whenevery either spack.yaml or our spack package
-## overrides change, triggering a rebuild
-ARG CACHE_BUST="hash"
-ARG CACHE_NUKE=""
 
 ## Now execute the main build (or fetch from cache if possible)
 ## note, no-check-signature is needed to allow the quicker signature-less
@@ -136,7 +137,9 @@ RUN --mount=type=cache,target=/var/cache/pip                            \
     --trusted-host pypi.org                                             \
     --trusted-host files.pythonhosted.org                               \
     --cache-dir /var/cache/pip                                          \
-    --requirement /usr/local/etc/requirements.txt
+    --requirement /usr/local/etc/requirements.txt                       \
+    --no-warn-script-location
+    # ^ Supress not on PATH Warnings
 
 ## Including some small fixes:
 ##   - Somehow PODIO env isn't automatically set, 
@@ -171,7 +174,7 @@ FROM builder as staging
 RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 # Strip all the binaries
 # This reduces the image by factor of x2, so worth the effort
-# note that we do not strip python libraries as can cause issues in some cases
+# note that we do not strip python libraries as it can cause issues in some cases
 RUN find -L /usr/local/*                                                \
          -type d -name site-packages -prune -false -o                   \
          -type f -not -name "zdll.lib" -not -name libtensorflow-lite.a  \

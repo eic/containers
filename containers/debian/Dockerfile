@@ -17,7 +17,7 @@ ENV CLICOLOR_FORCE=1                                                    \
 
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
-## We also install gitlab-runner, from the buster package (as bullseye is not available atm)
+## We also install gitlab-runner, from the bullseye package (as bookworm is not available atm)
 ## TODO: libyaml-cpp-dev is a dependency for afterburner. We can probably remove
 ##       this once afterburner is added to spack
 RUN --mount=type=cache,target=/var/cache/apt                            \
@@ -70,7 +70,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
  && curl -L                                                             \
     "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" \
     | bash                                                              \
- && sed -i "s/bookworm/buster/"                                         \
+ && sed -i "s/bookworm/bullseye/"                                       \
            /etc/apt/sources.list.d/runner_gitlab-runner.list            \
  && apt-get -yqq update                                                 \
  && apt-get -yqq install --no-install-recommends                        \
