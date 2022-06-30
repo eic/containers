@@ -104,7 +104,7 @@ if __name__ == '__main__':
                        'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
                        '-DCMAKE_INSTALL_PREFIX={prefix}'.format(prefix=prefix),
                        '&&',
-                       'cmake --build /tmp/build -j$((($(nproc)/4)+1)) -- install']
+                       'cmake --build /tmp/build -j$(($(($(nproc)/4))+1)) -- install']
                 print(' '.join(cmd))
                 os.system(' '.join(cmd))
                 ## write version info to jug_info if available
@@ -160,25 +160,19 @@ if __name__ == '__main__':
                 cmd = f'bash -c \'cd {prefix} && source {prefix}/setup.sh && npdet_info print world_z {prefix}/share/{det}/{det}.xml\''
                 print(cmd)
                 os.system(cmd)
-    print(' --> Symlinking default detector for backward compatibility')
-    full_prefix='{}/{}-{}'.format(args.prefix, default_detector, default_version)
-    cmd = ['ln -sf {full_prefix}/share {short_prefix}',
-           '&&',
-           'ln -sf {full_prefix}/lib {short_prefix}',
-           '&&',
-           'ln -sf {full_prefix}/setup.sh {short_prefix}']
-    print(' '.join(cmd))
-    os.system(' '.join(cmd).format(full_prefix=full_prefix, short_prefix=args.prefix))
+    
+    if not default_found and not args.nightly:
+        # Skip symlinking if no defaults present and its not a nightly build
+        pass
+    else:
+        print(' --> Symlinking default detector for backward compatibility')
+        full_prefix='{}/{}-{}'.format(args.prefix, default_detector, default_version)
+        cmd = ['ln -sf {full_prefix}/share {short_prefix}',
+            '&&',
+            'ln -sf {full_prefix}/lib {short_prefix}',
+            '&&',
+            'ln -sf {full_prefix}/setup.sh {short_prefix}']
+        print(' '.join(cmd))
+        os.system(' '.join(cmd).format(full_prefix=full_prefix, short_prefix=args.prefix))
 
     print('All done!')
-
-
-
-
-
-
-
-
-
-
-            
