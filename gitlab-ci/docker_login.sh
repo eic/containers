@@ -89,7 +89,8 @@ fi
 
 while [ $NTRIES != 0 ]; do
   if [ -z $CI ]; then
-    echo $REG_PASSWORD | docker login -u $REG_USER --password-stdin \
+    echo $REG_PASSWORD | docker login -u $REG_USER \
+                                     --password-stdin $REGISTRY \
       && break \
       || echo "Login failed, retrying in $TIME seconds..."
   else

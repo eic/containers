@@ -12,6 +12,7 @@ function print_the_help {
   echo "                          (doubled each time), default: 5"
   echo "          -n,--n-attempts Number of attempts, default: 5"
   echo "          -h,--help       Print this message"
+  echo "          --ghcr          Publish to ghcr.io only"
   echo "          --eicweb        Publish to $CI_REGISTRY only"
   echo "          --dockerhub     Publish to DH only"
   echo "  positional              At least one export tag (e.g., v3.0-stable)"
@@ -30,6 +31,7 @@ EXPORT_TAGS=()
 NTRIES=5
 TIME=5
 DO_DH=${DH_PUSH}
+DO_GH=${GH_PUSH}
 DO_EICWEB=1
 
 while [ $# -gt 0 ]; do
@@ -55,13 +57,22 @@ while [ $# -gt 0 ]; do
       shift
       shift
       ;;
-    --eicweb)
+    --ghcr)
+      DO_EICWEB=-
       DO_DH=0
+      DO_GH=1
+      shift
+      ;;
+    --eicweb)
+      DO_EICWEB=1
+      DO_DH=0
+      DO_GH=0
       shift
       ;;
     --dockerhub)
       DO_EICWEB=0
       DO_DH=1
+      DO_GH=0
       shift
       ;;
     -h|--help)
@@ -129,14 +140,18 @@ function retry_push () {
 #echo "EXPORT_TAGS: ${EXPORT_TAGS}"
 #echo "DH_PUSH: ${DH_PUSH}"
 #echo "DO_DH: ${DO_DH}"
+#echo "DO_GH: ${DO_GH}"
 #echo "DO_EICWEB: ${DO_EICWEB}"
 
 export INPUT=$CI_REGISTRY_IMAGE/${IMAGE}:${INPUT_TAG}
 for TAG in ${EXPORT_TAGS[@]}; do
   if [ ${DO_EICWEB} != 0 ]; then
-    retry_push $INPUT $CI_REGISTRY_IMAGE/${IMAGE}:${TAG}
+    retry_push $INPUT ${CI_REGISTRY_IMAGE}/${IMAGE}:${TAG}
   fi
   if [ ${DO_DH} != 0 ]; then
-    retry_push $INPUT $DH_REGISTRY/${IMAGE}:${TAG}
+    retry_push $INPUT ${DH_REGISTRY_USER}/${IMAGE}:${TAG}
+  fi
+  if [ ${DO_GH} != 0 ]; then
+    retry_push $INPUT ${GH_REGISTRY}/eic/${IMAGE}:${TAG}
   fi
 done
