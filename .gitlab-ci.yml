@@ -8,8 +8,8 @@ variables:
   EICD_VERSION: "v2.0.0"
   AFTERBURNER_VERSION: "v0.1.2"
 
-  ## Spack github version, v0.18.0
-  SPACK_VERSION: "4c6564f10aa516bc00c1d7dbfdeafe35128985fe"
+  ## Spack github version, v0.18.1
+  SPACK_VERSION: "13e6f87ef6527954b152eaea303841978e83b992"
   ## Space-separated list of spack cherry-picks
   SPACK_CHERRYPICKS: "adc9f887eac78a81bb8189d603f4dc45ed3509c1"
   ## Ref: https://github.com/spack/spack/commit/[hash]
