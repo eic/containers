@@ -7,6 +7,12 @@ detectors:
         version: master
   ecce:
     nightly:
+      version: main
+      ip:
+        config: ip6
+        version: master
+  epic:
+    nightly:
       default: true
       version: main
       ip:

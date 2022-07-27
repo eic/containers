@@ -4,7 +4,7 @@ import os
 import yaml
 import argparse
 
-DETECTOR_REPO_GROUP = 'https://eicweb.phy.anl.gov/EIC/detectors'
+DETECTOR_REPO_GROUP = 'https://github.com/eic'
 DETECTOR_ENV ='''
 #!/bin/sh
 export DETECTOR={detector}
