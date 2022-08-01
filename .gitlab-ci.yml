@@ -11,9 +11,10 @@ variables:
   ## Spack github version, v0.18.1
   SPACK_VERSION: "13e6f87ef6527954b152eaea303841978e83b992"
   ## Space-separated list of spack cherry-picks
-  SPACK_CHERRYPICKS: "adc9f887eac78a81bb8189d603f4dc45ed3509c1"
+  SPACK_CHERRYPICKS: "adc9f887eac78a81bb8189d603f4dc45ed3509c1 5bd44a795c76a61f0f9fbfeedcf7e917a0bf40b0"
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## adc9f887eac78a81bb8189d603f4dc45ed3509c1: acts-dd4hep: new package; acts: new version
+  ## 5bd44a795c76a61f0f9fbfeedcf7e917a0bf40b0: lcio, podio, edm4hep: add latest versions
 
   ## We need to enable Docker Buildkit to use cache mounts and better
   ## build performance overall
