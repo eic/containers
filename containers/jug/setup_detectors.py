@@ -152,12 +152,12 @@ if __name__ == '__main__':
                           file=f)
                 ## run once inside global prefix to initialize artifacts in /opt/detectors
                 os.environ['DETECTOR_PATH'] = args.prefix
-                cmd = f'bash -c \'cd {args.prefix} && source {prefix}/setup.sh && npdet_info print world_z {prefix}/share/{det}/{det}.xml\''
+                cmd = f'bash -c \'cd {args.prefix} && source {prefix}/setup.sh && checkGeometry -c {prefix}/share/{det}/{det}.xml\''
                 print(cmd)
                 os.system(cmd)
                 ## run once inside specific prefix to initialize artifacts in $DETECTOR_PATH
                 os.environ['DETECTOR_PATH'] = args.prefix
-                cmd = f'bash -c \'cd {prefix} && source {prefix}/setup.sh && npdet_info print world_z {prefix}/share/{det}/{det}.xml\''
+                cmd = f'bash -c \'cd {prefix}/share/{det} && source {prefix}/setup.sh && checkGeometry -c {prefix}/share/{det}/{det}.xml\''
                 print(cmd)
                 os.system(cmd)
     
