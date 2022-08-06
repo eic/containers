@@ -9,6 +9,7 @@ spack:
     - dawncut@1_54a
     - dd4hep@1.20.2 +ddg4 -ddcad +hepmc3 +ipo +lcio
     - edm4hep@0.4.1 cxxstd=17 -ipo
+    - eicrecon@main
     - eigen@3.4.0
     - emacs@27.2 toolkit=athena
     - fastjet@3.3.4
