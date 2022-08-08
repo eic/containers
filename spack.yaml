@@ -20,7 +20,7 @@ spack:
     - heppdt@2.06.01
     - igprof@5.9.16
     - imagemagick@7.0.8-7
-    - jana2@2.0.5 +root +zmq
+    - jana2@2.0.6 +root +zmq
     - madx@5.08.01
     - mesa@22.0.2 +glx -llvm +opengl +opengles +osmesa
     - nlohmann-json@3.10.5
