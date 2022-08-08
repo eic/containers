@@ -176,12 +176,15 @@ RUN cd /opt/spack-environment && spack env activate . && spack gc -y
 # This reduces the image by factor of x2, so worth the effort
 # note that we do not strip python libraries as it can cause issues in some cases
 RUN find -L /usr/local/*                                                \
-         -type d -name site-packages -prune -false -o                   \
-         -type f -not -name "zdll.lib" -not -name libtensorflow-lite.a  \
-         -exec realpath '{}' \;                                      \
+         -type d -name site-packages -prune -false                      \
+         -o                                                             \
+         -type d -name lib-dynload -prune -false                        \
+         -o                                                             \
+         -type f                                                        \
+         -exec realpath '{}' \;                                         \
       | xargs file -i                                                   \
       | grep 'charset=binary'                                           \
-      | grep 'x-executable\|x-archive\|x-sharedlib'                     \
+      | grep 'x-executable\|x-sharedlib'                                \
       | awk -F: '{print $1}' | xargs strip -s
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
