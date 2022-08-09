@@ -78,14 +78,20 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ARG CACHE_BUST="hash"
 ARG CACHE_NUKE=""
 
-## Setup our custom environment and package overrides
-COPY spack $SPACK_ROOT/eic-spack
-RUN spack repo add --scope site "$SPACK_ROOT/eic-spack"                 \
- && mkdir /opt/spack-environment                                        \
- && cd /opt/spack-environment                                           \
- && mv $SPACK_ROOT/eic-spack/spack.yaml .                               \
- && rm -r /usr/local                                                    \
- && spack env activate .                                                \
+## Setup our custom package overrides
+ENV EICSPACK_ROOT=$SPACK_ROOT/var/spack/repos/eic-spack
+ARG EICSPACK_VERSION="$SPACK_VERSION"
+RUN git clone https://github.com/eic/eic-spack.git ${EICSPACK_ROOT}     \
+ && git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}                \
+ && if [ -n "${EICSPACK_CHERRYPICKS}" ] ; then                          \
+      git -C ${EICSPACK_ROOT} cherry-pick -n ${EICSPACK_CHERRYPICKS} ;  \
+    fi                                                                  \
+ && spack repo add --scope site "${EICSPACK_ROOT}"
+
+## Setup our custom environment
+COPY spack.yaml /opt/spack-environment/
+RUN rm -r /usr/local                                                    \
+ && spack env activate /opt/spack-environment/                          \
  && spack concretize
 
 

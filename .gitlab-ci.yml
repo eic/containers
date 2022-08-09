@@ -8,13 +8,18 @@ variables:
   EICD_VERSION: "v2.0.0"
   AFTERBURNER_VERSION: "v0.1.2"
 
-  ## Spack github version, v0.18.1
-  SPACK_VERSION: "13e6f87ef6527954b152eaea303841978e83b992"
+  ## Spack github version, e.g. v0.18.1 or commit hash
+  SPACK_VERSION: "v0.18.1"
   ## Space-separated list of spack cherry-picks
   SPACK_CHERRYPICKS: "adc9f887eac78a81bb8189d603f4dc45ed3509c1 5bd44a795c76a61f0f9fbfeedcf7e917a0bf40b0"
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## adc9f887eac78a81bb8189d603f4dc45ed3509c1: acts-dd4hep: new package; acts: new version
   ## 5bd44a795c76a61f0f9fbfeedcf7e917a0bf40b0: lcio, podio, edm4hep: add latest versions
+
+  ## Spack github version, e.g. v0.18 or commit hash
+  EICSPACK_VERSION: "d7606f67a36708dcc0c045a269621f4189345aad"
+  ## Space-separated list of eic=spack cherry-picks
+  EICSPACK_CHERRYPICKS: "" 
 
   ## We need to enable Docker Buildkit to use cache mounts and better
   ## build performance overall
@@ -232,11 +237,10 @@ oneapi_jug_dev:default:
     ## calculate a hash based on the spack.yaml file and the spack directory
     ## and use this spack as a docker variable to force a rebuild when there
     ## is a change (versus rerun from cache)
-    - PACKAGE_HASH=$(tar cf - spack* | sha1sum | head -c40)
+    - PACKAGE_HASH=$(sha1sum spack.yaml | head -c40)
     - echo "PACKAGE_HASH= ${PACKAGE_HASH}"
-    ## Copy spack directory and spack.yaml into build context
-    - cp -r spack containers/oneapi/
-    - cp spack.yaml containers/oneapi/spack/spack.yaml
+    ## Copy spack.yaml into build context
+    - cp spack.yaml containers/oneapi/spack.yaml
     - CACHE_FLAG=""
     - |
       if [ $FORCE_NOCACHE = 1 ]; then
@@ -249,6 +253,8 @@ oneapi_jug_dev:default:
                    -f containers/oneapi/onedev.Dockerfile
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
+                   --build-arg EICSPACK_VERSION="${EICSPACK_VERSION}"
+                   --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
                    --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
@@ -333,11 +339,10 @@ jug_dev:default:
     ## calculate a hash based on the spack.yaml file and the spack directory
     ## and use this spack as a docker variable to force a rebuild when there
     ## is a change (versus rerun from cache)
-    - PACKAGE_HASH=$(tar cf - spack* | sha1sum | head -c40)
-    - echo "PACKAGE_HASH= ${PACKAGE_HASH}"
-    ## move spack directory and spack.yaml into the container build directory
-    - cp -r spack containers/jug
-    - cp -r spack.yaml containers/jug/spack/spack.yaml
+    - PACKAGE_HASH=$(sha1sum spack.yaml | head -c40)
+    - echo "PACKAGE_HASH=${PACKAGE_HASH}"
+    ## move spack.yaml into the container build directory
+    - cp -r spack.yaml containers/jug
     - CACHE_FLAG=""
     - |
       if [ $FORCE_NOCACHE = 1 ]; then
@@ -351,6 +356,8 @@ jug_dev:default:
                    -f containers/jug/dev.Dockerfile
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
+                   --build-arg EICSPACK_VERSION="${EICSPACK_VERSION}"
+                   --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
                    --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
@@ -360,6 +367,8 @@ jug_dev:default:
                    -f containers/jug/dev.Dockerfile
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
+                   --build-arg EICSPACK_VERSION="${EICSPACK_VERSION}"
+                   --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
                    --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
