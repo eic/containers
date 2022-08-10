@@ -11,6 +11,7 @@ export DETECTOR={detector}
 export DETECTOR_PATH={data_prefix}
 export DETECTOR_CONFIG={detector}
 export DETECTOR_VERSION={version}
+export BEAMLINE_PATH={data_prefix}
 export BEAMLINE_CONFIG={ip}
 export BEAMLINE_CONFIG_VERSION={ip_version}
 ## note: we will phase out the JUGGLER_* flavor of variables in the future
