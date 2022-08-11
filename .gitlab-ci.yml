@@ -16,9 +16,9 @@ variables:
   ## adc9f887eac78a81bb8189d603f4dc45ed3509c1: acts-dd4hep: new package; acts: new version
   ## 5bd44a795c76a61f0f9fbfeedcf7e917a0bf40b0: lcio, podio, edm4hep: add latest versions
 
-  ## Spack github version, e.g. v0.18 or commit hash
-  EICSPACK_VERSION: "d7606f67a36708dcc0c045a269621f4189345aad"
-  ## Space-separated list of eic=spack cherry-picks
+  ## Spack github version, e.g. v0.18 branch, v0.18.1 tag, or commit hash
+  EICSPACK_VERSION: "v0.18.3"
+  ## Space-separated list of eic-spack cherry-picks
   EICSPACK_CHERRYPICKS: "" 
 
   ## We need to enable Docker Buildkit to use cache mounts and better
