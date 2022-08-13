@@ -55,25 +55,12 @@ RUN cd /tmp                                                                     
  && popd                                                                        \
  && rm -rf build juggler
 
-## also install detector/ip geometries into opt
-ARG NIGHTLY=''
-ADD ${EICWEB}/473/repository/tree?ref=master /tmp/473.json
-ADD ${EICWEB}/452/repository/tree?ref=master /tmp/452.json
-COPY setup_detectors.py /tmp
-COPY detectors.yaml /tmp
-RUN cd /tmp                                                                     \
- && [ "z$NIGHTLY" = "z1" ] && NIGHTLY_FLAG="--nightly" || NIGHTLY_FLAG=""       \
- && /tmp/setup_detectors.py --prefix /opt/detector --config /tmp/detectors.yaml \
-                         $NIGHTLY_FLAG                                          \
- && rm /tmp/setup_detectors.py
-
 ## Install benchmarks into the container
-
 ARG BENCHMARK_COM_VERSION="master"
 ARG BENCHMARK_DET_VERSION="master"
 ARG BENCHMARK_REC_VERSION="master"
 ARG BENCHMARK_PHY_VERSION="master"
-
+## cache bust when updated repositories
 ADD ${EICWEB}/458/repository/tree?ref=${BENCHMARK_COM_VERSION} /tmp/485.json
 ADD ${EICWEB}/399/repository/tree?ref=${BENCHMARK_DET_VERSION} /tmp/399.json
 ADD ${EICWEB}/408/repository/tree?ref=${BENCHMARK_REC_VERSION} /tmp/408.json 
@@ -99,12 +86,11 @@ RUN mkdir -p /opt/benchmarks                                                    
  && ln -sf ../common_bench physics_benchmarks/.local
 
 ## Install campaigns into the container
-
 ARG CAMPAIGNS_SINGLE_VERSION="main"
 ARG CAMPAIGNS_HEPMC3_VERSION="main"
 ARG CAMPAIGNS_CONDOR_VERSION="main"
 ARG CAMPAIGNS_SLURM_VERSION="main"
-
+## cache bust when updated repositories
 ADD ${EICWEB}/482/repository/tree?ref=${CAMPAIGNS_SINGLE_VERSION} /tmp/482.json
 ADD ${EICWEB}/483/repository/tree?ref=${CAMPAIGNS_HEPMC3_VERSION} /tmp/483.json
 ADD ${EICWEB}/484/repository/tree?ref=${CAMPAIGNS_CONDOR_VERSION} /tmp/484.json
@@ -125,3 +111,20 @@ RUN mkdir -p /opt/campaigns                                                     
  && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_SLURM_VERSION} --depth 1                           \
         https://eicweb.phy.anl.gov/EIC/campaigns/slurm.git
+
+## also install detector/ip geometries into opt
+ARG NIGHTLY=''
+## cache bust when updated repositories
+# - just master on eicweb (FIXME too narrow)
+ADD ${EICWEB}/473/repository/tree?ref=master /tmp/473.json
+ADD ${EICWEB}/452/repository/tree?ref=master /tmp/452.json
+# - all branches for ip6 and epic on github
+ADD https://api.github.com/repos/eic/ip6 /tmp/ip6.json
+ADD https://api.github.com/repos/eic/epic /tmp/epic.json
+COPY setup_detectors.py /tmp
+COPY detectors.yaml /tmp
+RUN cd /tmp                                                                     \
+ && [ "z$NIGHTLY" = "z1" ] && NIGHTLY_FLAG="--nightly" || NIGHTLY_FLAG=""       \
+ && /tmp/setup_detectors.py --prefix /opt/detector --config /tmp/detectors.yaml \
+                         $NIGHTLY_FLAG                                          \
+ && rm /tmp/setup_detectors.py
