@@ -499,6 +499,7 @@ oneapi_jug_dev:singularity:default:
     - oneapi_jug_dev:default
   variables:
     BUILD_IMAGE: "oneapi_jug_dev"
+  when: manual
 
 oneapi_jug_xl:singularity:default:
   extends: .singularity
@@ -507,6 +508,7 @@ oneapi_jug_xl:singularity:default:
     - oneapi_jug_xl:default
   variables:
     BUILD_IMAGE: "oneapi_jug_xl"
+  when: manual
 
 oneapi_jug_xl:singularity:nightly:
   stage: deploy
@@ -516,6 +518,7 @@ oneapi_jug_xl:singularity:nightly:
     - oneapi_jug_xl:nightly
   variables:
     BUILD_IMAGE: "oneapi_jug_xl"
+  when: manual
   script:
     - mkdir build
     - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
