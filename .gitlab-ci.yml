@@ -286,6 +286,12 @@ oneapi_jug_xl:default:
 oneapi_jug_xl:nightly:
   extends: .build
   stage: build:oneapi_jug
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+    - when: never
   needs:
     - version
     - oneapi_jug_dev:default
@@ -313,7 +319,6 @@ oneapi_jug_xl:nightly:
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
                                  ${NIGHTLY_TAG}-$(date +%Y-%m-%d) --dockerhub ;
       fi
-    - !reference [.build, script]
 
 cuda_base:default:
   extends: .build
