@@ -47,6 +47,10 @@ if [ ! -r ${SSL_CERT_FILE:-/} ]; then
   unset SSL_CERT_FILE
 fi
 
+## set CLING_STANDARD_PCH and CPPYY_API_PATH to `none` for cppyy
+export CLING_STANDARD_PCH='none'
+export CPPYY_API_PATH='none'
+
 ## redefine ls and less as functions, as this is something we
 ## can import into our plain bash --norc --noprofile session
 ## (aliases cannot be transferred to a child shell)
