@@ -602,6 +602,8 @@ cleanup:
   stage: finalize
   dependencies:
     - version
+  rules:
+    - when: always
   script:
     ## remove the pipeline specific export from eicweb if needed
     - echo "Cleaning up pipeline specific docker tags if needed"
