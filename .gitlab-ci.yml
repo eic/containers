@@ -17,7 +17,7 @@ variables:
   ## 5bd44a795c76a61f0f9fbfeedcf7e917a0bf40b0: lcio, podio, edm4hep: add latest versions
 
   ## Spack github version, e.g. v0.18 branch, v0.18.1 tag, or commit hash
-  EICSPACK_VERSION: "v0.18.3"
+  EICSPACK_VERSION: "v0.18.5"
   ## Space-separated list of eic-spack cherry-picks
   EICSPACK_CHERRYPICKS: "" 
 
