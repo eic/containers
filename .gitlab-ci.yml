@@ -505,7 +505,10 @@ oneapi_jug_dev:singularity:default:
   variables:
     BUILD_IMAGE: "oneapi_jug_dev"
   rules: 
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
     - when: manual
+      allow_failure: true
 
 oneapi_jug_xl:singularity:default:
   extends: .singularity
@@ -515,7 +518,10 @@ oneapi_jug_xl:singularity:default:
   variables:
     BUILD_IMAGE: "oneapi_jug_xl"
   rules: 
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
     - when: manual
+      allow_failure: true
 
 oneapi_jug_xl:singularity:nightly:
   extends: .singularity
@@ -524,8 +530,11 @@ oneapi_jug_xl:singularity:nightly:
     - oneapi_jug_xl:nightly
   variables:
     BUILD_IMAGE: "oneapi_jug_xl"
-  rules: 
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
     - when: manual
+      allow_failure: true
   script:
     - mkdir build
     - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
