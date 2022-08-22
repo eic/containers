@@ -4,17 +4,18 @@ variables:
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
   JUGGLER_VERSION: "v7.0.0"
-  NPDET_VERSION: "v1.3.1"
+  NPDET_VERSION: "v1.3.2"
   EICD_VERSION: "v2.0.0"
   AFTERBURNER_VERSION: "v0.1.2"
 
   ## Spack github version, e.g. v0.18.1 or commit hash
   SPACK_VERSION: "v0.18.1"
   ## Space-separated list of spack cherry-picks
-  SPACK_CHERRYPICKS: "adc9f887eac78a81bb8189d603f4dc45ed3509c1 5bd44a795c76a61f0f9fbfeedcf7e917a0bf40b0"
+  SPACK_CHERRYPICKS: "adc9f887eac78a81bb8189d603f4dc45ed3509c1 5bd44a795c76a61f0f9fbfeedcf7e917a0bf40b0 afc044cbad5eb8c5ffd6efe364fb740a08623842"
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## adc9f887eac78a81bb8189d603f4dc45ed3509c1: acts-dd4hep: new package; acts: new version
   ## 5bd44a795c76a61f0f9fbfeedcf7e917a0bf40b0: lcio, podio, edm4hep: add latest versions
+  ## afc044cbad5eb8c5ffd6efe364fb740a08623842: dd4hep: add v1.21
 
   ## Spack github version, e.g. v0.18 branch, v0.18.1 tag, or commit hash
   EICSPACK_VERSION: "v0.18.5"
