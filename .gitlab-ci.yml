@@ -18,7 +18,7 @@ variables:
   ## afc044cbad5eb8c5ffd6efe364fb740a08623842: dd4hep: add v1.21
 
   ## Spack github version, e.g. v0.18 branch, v0.18.1 tag, or commit hash
-  EICSPACK_VERSION: "v0.18.5"
+  EICSPACK_VERSION: "v0.18.7"
   ## Space-separated list of eic-spack cherry-picks
   EICSPACK_CHERRYPICKS: "" 
 
