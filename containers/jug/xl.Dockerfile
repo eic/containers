@@ -11,6 +11,7 @@ FROM ${DOCKER_REGISTRY}jug_dev:${INTERNAL_TAG}
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
 ARG JUGGLER_VERSION="master"
 ARG NPDET_VERSION="master"
+ARG EICD_REPOSITORYURL="https://github.com/eic/eicd.git"
 ARG EICD_VERSION="master"
 
 ## version will automatically bust cache for nightly, as it includes
@@ -18,7 +19,6 @@ ARG EICD_VERSION="master"
 ARG JUG_VERSION=1
 
 ADD ${EICWEB}/18/repository/tree?ref=${NPDET_VERSION} /tmp/18.json
-ADD ${EICWEB}/373/repository/tree?ref=${EICD_VERSION} /tmp/373.json
 RUN cd /tmp                                                                     \
  && echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info                           \
  && echo "INSTALLING NPDET"                                                     \
@@ -32,8 +32,7 @@ RUN cd /tmp                                                                     
  && rm -rf build NPDet                                                          \
  && cd /tmp                                                                     \
  && echo "INSTALLING EICD"                                                      \
- && git clone -b ${EICD_VERSION} --depth 1                                      \
-        https://eicweb.phy.anl.gov/EIC/eicd.git                                 \
+ && git clone -b ${EICD_VERSION} --depth 1 ${EICD_REPOSITORYURL}                \
  && cmake -B build -S eicd -DCMAKE_CXX_STANDARD=17                              \
  && cmake --build build -j12 -- install                                         \
  && pushd eicd                                                                  \
