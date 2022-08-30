@@ -24,7 +24,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime          \
  && echo "US/Eastern" > /etc/timezone                                   \
- && apt-mark hold glibc                                                 \
+ && apt-mark hold libc6                                                 \
  && apt-get -yqq update                                                 \
  && apt-get -yqq upgrade                                                \
  && apt-get -yqq install --no-install-recommends                        \
