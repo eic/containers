@@ -26,7 +26,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
  && echo "US/Eastern" > /etc/timezone                                   \
  && apt-mark hold libc6 libc-bin                                        \
  && apt-get -yqq update                                                 \
- && apt-get -yqq install --no-install-recommends                        \
+ && apt-get -y install --no-install-recommends                        \
         bc                                                              \
         ca-certificates                                                 \
         clang-format                                                    \
