@@ -59,6 +59,7 @@ stages:
 
 default:
   before_script:
+    - docker version
     - ./gitlab-ci/docker_login.sh -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN}
                                   -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
     - ./gitlab-ci/docker_login.sh -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN}
@@ -355,7 +356,7 @@ jug_dev:default:
       if [ $FORCE_NOCACHE = 1 ]; then
         echo "FORCE_NOCACHE set"
         export CACHE_FLAG="--no-cache"
-      fi   
+      fi
     ## Optionally build the raw builder image
     - test ${EXPORT_BUILDER} = 1 && docker build ${CACHE_FLAG}
                    -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG} 
