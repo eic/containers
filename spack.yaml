@@ -3,7 +3,7 @@ spack:
     - acts@19.7.0 +dd4hep +identification +json +tgeo +ipo +examples +fatras +geant4 +python
     - afterburner@0.1.2 +root +zlib
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
-    - clhep@2.4.4.0 cxxstd=17
+    - clhep@2.4.5.1 cxxstd=17
     - cmake@3.23.1
     - cnpy@master
     - dawn@3_91a
@@ -16,7 +16,7 @@ spack:
     - fastjet@3.3.4
     - fmt@8.1.1 +shared cxxstd=17
     - gaudi@36.7 +optional
-    - geant4@10.7.3 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
+    - geant4@11.0.2 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
     - genfit@2.00.00
     - hepmc3@3.2.4 +python +rootio 
     - heppdt@2.06.01
