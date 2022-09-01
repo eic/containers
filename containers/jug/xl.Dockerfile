@@ -22,6 +22,7 @@ ADD ${EICWEB}/18/repository/tree?ref=${NPDET_VERSION} /tmp/18.json
 RUN cd /tmp                                                                     \
  && echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info                           \
  && echo "INSTALLING NPDET"                                                     \
+ && git config --global http.version HTTP/1.1                                   \
  && git clone -b ${NPDET_VERSION} --depth 1                                     \
         https://eicweb.phy.anl.gov/EIC/NPDet.git                                \
  && cmake -B build -S NPDet -DCMAKE_CXX_STANDARD=17                             \

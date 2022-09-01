@@ -11,16 +11,16 @@ spack:
     - dd4hep@1.21 +ddg4 -ddcad +hepmc3 +ipo +lcio
     - edm4hep@0.6 cxxstd=17 -ipo
     - eigen@3.4.0
-    - emacs@27.2 toolkit=athena
+    - emacs@28.1
     - fastjet@3.3.4
     - fmt@8.1.1 +shared cxxstd=17
-    - gaudi@36.5 +optional
+    - gaudi@36.7 +optional
     - geant4@10.7.3 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
     - genfit@2.00.00
     - hepmc3@3.2.4 +python +rootio 
     - heppdt@2.06.01
     - igprof@5.9.16
-    - imagemagick@7.0.8-7
+    #- imagemagick@7.0.8-7
     - jana2@2.0.7 +root +zmq
     - madx@5.08.01
     - mesa@22.0.2 +glx -llvm +opengl +opengles +osmesa
@@ -33,7 +33,7 @@ spack:
     - py-numpy@1.22.3
     - py-pip@21.3.1
     - qt@5.15.4 +opengl
-    - root@6.26.02 cxxstd=17 
+    - root@6.26.06 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc +xrootd +ssl 
     - spdlog@1.9.2
