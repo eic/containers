@@ -59,7 +59,6 @@ stages:
 
 default:
   before_script:
-    - docker version
     - ./gitlab-ci/docker_login.sh -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN}
                                   -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
     - ./gitlab-ci/docker_login.sh -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN}
