@@ -4,6 +4,7 @@ spack:
     - afterburner@0.1.2 +root +zlib
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - clhep@2.4.5.1 cxxstd=17
+    - cli11@2.1.1
     - cmake@3.23.1
     - cnpy@master
     - dawn@3_91a
