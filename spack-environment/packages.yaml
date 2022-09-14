@@ -18,7 +18,7 @@ packages:
   acts:
     require:
     - '@30.3.2'
-    - +binaries +dd4hep +examples +fatras +geant4 +identification +json +python +tgeo
+    - cxxstd=20 +binaries +dd4hep +examples +fatras +geant4 +identification +json +python +tgeo
   actsvg:
     require:
     - '@0.4.26'
@@ -81,11 +81,11 @@ packages:
   edm4eic:
     require:
     - '@4.0.0'
-    - cxxstd=17
+    - cxxstd=20
   edm4hep:
     require:
     - '@0.10'
-    - cxxstd=17
+    - cxxstd=20
   eic-smear:
     require:
     - '@1.1.12'
@@ -191,6 +191,7 @@ packages:
   podio:
     require:
     - '@0.16.7'
+    - cxxstd=20
   prmon:
     require:
     - '@3.0.2'
@@ -293,7 +294,7 @@ packages:
   root:
     require:
     - '@6.28.06'
-    - cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc +xrootd +ssl
+    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc +xrootd +ssl
     - any_of: [+opengl +webgui +x, -opengl -webgui -x]
   snakemake:
     require:
