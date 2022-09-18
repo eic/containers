@@ -19,7 +19,7 @@ variables:
   ## 8bdc5065792c185be9934ab0c2a5b087b8845bd1: emacs: Add option to install version 28.1
 
   ## Spack github version, e.g. v0.18 branch, v0.18.1 tag, or commit hash
-  EICSPACK_VERSION: "v0.18.11"
+  EICSPACK_VERSION: "v0.18.12"
   ## Space-separated list of eic-spack cherry-picks
   EICSPACK_CHERRYPICKS: "" 
 
