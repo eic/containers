@@ -12,18 +12,12 @@ FROM ${DOCKER_REGISTRY}oneapi_jug_dev:${INTERNAL_TAG}
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
 ARG JUGGLER_VERSION="master"
 ARG NPDET_VERSION="master"
-ARG EICD_VERSION="master"
-## afterburner
-## TODO move to spack build
-ARG AFTERBURNER_VERSION=main
 
 ## version will automatically bust cache for nightly, as it includes
 ## the date
 ARG JUG_VERSION=1
 
 ADD ${EICWEB}/18/repository/tree?ref=${NPDET_VERSION} /tmp/18.json
-ADD ${EICWEB}/373/repository/tree?ref=${EICD_VERSION} /tmp/373.json
-ADD ${EICWEB}/492/repository/tree?ref=${AFTERBURNER_VERSION} /tmp/492.json
 RUN cd /tmp                                                                     \
  && echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info                           \
  && echo "INSTALLING NPDET"                                                     \
@@ -34,29 +28,7 @@ RUN cd /tmp                                                                     
  && pushd NPDet                                                                 \
  && echo " - NPDet: ${NPDET_VERSION}-$(git rev-parse HEAD)">> /etc/jug_info     \
  && popd                                                                        \
- && rm -rf build NPDet                                                          \
- && cd /tmp                                                                     \
- && echo "INSTALLING EICD"                                                      \
- && git clone -b ${EICD_VERSION} --depth 1                                      \
-        https://eicweb.phy.anl.gov/EIC/eicd.git                                 \
- && cmake -B build -S eicd -DCMAKE_CXX_STANDARD=17                              \
- && cmake --build build -j12 -- install                                         \
- && pushd eicd                                                                  \
- && echo " - EICD: ${EICD_VERSION}-$(git rev-parse HEAD)">> /etc/jug_info       \
- && popd                                                                        \
- && rm -rf build eicd                                                           \
- && cd /tmp                                                                     \
- && echo "INSTALLING AFTERBURNER"                                               \
- && git clone -b ${AFTERBURNER_VERSION} --depth 1                               \
-        https://eicweb.phy.anl.gov/monte_carlo/afterburner.git                  \
- && cmake -B build -S afterburner/cpp -DCMAKE_INSTALL_PREFIX=/usr/local         \
-          -DCMAKE_CXX_STANDARD=17                                               \
- && cmake --build build -j12 --target all -- install                            \
- && pushd afterburner                                                           \
- && echo " - afterburner: ${AFTERBURNER_VERSION}-$(git rev-parse HEAD)"         \
-          >> jug_info                                                           \
- && popd                                                                        \
- && rm -rf build afterburner
+ && rm -rf build NPDet
 
 ADD ${EICWEB}/369/repository/tree?ref=${JUGGLER_VERSION} /tmp/369.json
 RUN cd /tmp                                                                     \
