@@ -3,9 +3,8 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 variables:
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
-  JUGGLER_VERSION: "v7.0.0"
+  JUGGLER_VERSION: "v8.0.1"
   NPDET_VERSION: "v1.3.2"
-  EICD_VERSION: "v2.0.0"
   AFTERBURNER_VERSION: "v0.1.2"
 
   ## Spack github version, e.g. v0.18.1 or commit hash
@@ -279,7 +278,6 @@ oneapi_jug_xl:default:
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg NPDET_VERSION=${NPDET_VERSION}
-                   --build-arg EICD_VERSION=${EICD_VERSION}
                    --build-arg AFTERBURNER_VERSION=${AFTERBURNER_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                     containers/oneapi
@@ -404,7 +402,6 @@ jug_xl:default:
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg NPDET_VERSION=${NPDET_VERSION}
-                   --build-arg EICD_VERSION=${EICD_VERSION}
                    --build-arg AFTERBURNER_VERSION=${AFTERBURNER_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
@@ -581,7 +578,6 @@ juggler:master:
   variables:
     TRIGGERED_BY_NIGHTLY: 1
     JUGGLER_VERSION: master
-    EICD_VERSION: master
     NPDET_VERSION: master
     DETECTOR_VERSION: master
     IP6_VERSION: master
