@@ -3,7 +3,7 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 variables:
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
-  JUGGLER_VERSION: "v8.0.1"
+  JUGGLER_VERSION: "v8.0.2"
   NPDET_VERSION: "v1.3.2"
 
   ## Spack github version, e.g. v0.18.1 or commit hash

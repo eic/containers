@@ -18,7 +18,6 @@ spack:
     - fmt@8.1.1 +shared cxxstd=17
     - gaudi@36.7 +optional
     - geant4@11.0.3 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
-    - genfit@2.00.00
     - hepmc3@3.2.4 +python +rootio 
     - heppdt@2.06.01
     - igprof@5.9.16
