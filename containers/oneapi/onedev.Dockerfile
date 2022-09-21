@@ -237,7 +237,7 @@ RUN chmod a+x /usr/local/bin/mc
 ## Use Intel's HPC-kit and Create Lean image from staging
 ## ========================================================================================
 
-FROM intel/oneapi-basekit:2022.2-devel-ubuntu20.04 AS oneapi
+FROM intel/oneapi-hpckit:2022.2-devel-ubuntu20.04 AS oneapi
 
 
 COPY bashrc /root/.bashrc
@@ -250,7 +250,7 @@ ENV CLICOLOR_FORCE=1                                                    \
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
 ## We install gcc-10 and g++-10 as they are not installed by default in
-## Ubuntu 20.04
+## Ubuntu 20.04.
 ## TODO: libyaml-cpp-dev is a dependency for afterburner. We can probably remove
 ##       this once afterburner is added to spack
 RUN --mount=type=cache,target=/var/cache/apt                            \

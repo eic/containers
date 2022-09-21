@@ -249,7 +249,7 @@ oneapi_jug_dev:default:
       fi   
     ## Copy jug_dev files into build context
     - cp -r containers/jug/* containers/oneapi
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
                    -f containers/oneapi/onedev.Dockerfile
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
@@ -273,8 +273,9 @@ oneapi_jug_xl:default:
     - cp containers/jug/setup_detectors.py containers/oneapi
     - cp detectors.yaml containers/oneapi
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
-                   -f containers/oneapi/onexl.Dockerfile
+                   -f containers/jug/xl.Dockerfile 
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg BASEIMAGE="oneapi_jug_dev"
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg NPDET_VERSION=${NPDET_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
@@ -297,10 +298,11 @@ oneapi_jug_xl:nightly:
     BUILD_IMAGE: "oneapi_jug_xl"
   script:
     - cp containers/jug/setup_detectors.py containers/oneapi
-    - cp detectors.yaml containers/oneapi
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG} 
-                   -f containers/oneapi/onexl.Dockerfile
+    - cp detectors.yaml containers/oneapi 
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
+                   -f containers/jug/xl.Dockerfile 
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg BASEIMAGE="oneapi_jug_dev"
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
                    --build-arg NIGHTLY=1
                     containers/oneapi
@@ -606,8 +608,7 @@ cleanup:
   stage: finalize
   dependencies:
     - version
-  rules:
-    - when: always
+  when: always
   script:
     ## remove the pipeline specific export from eicweb if needed
     - echo "Cleaning up pipeline specific docker tags if needed"
