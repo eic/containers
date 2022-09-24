@@ -10,7 +10,7 @@ ARG BASEIMAGE="jug_dev"
 FROM ${DOCKER_REGISTRY}${BASEIMAGE}:${INTERNAL_TAG}
 
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
-ARG JUGGLER_VERSION="master"
+ARG JUGGLER_VERSION="main"
 ARG NPDET_VERSION="master"
 
 ## version will automatically bust cache for nightly, as it includes
