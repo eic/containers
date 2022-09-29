@@ -9,7 +9,7 @@ spack:
     - cnpy@master
     - dawn@3_91a
     - dawncut@1_54a
-    - dd4hep@1.21 +ddg4 -ddcad +hepmc3 +ipo +lcio
+    - dd4hep@1.22 +ddg4 -ddcad +hepmc3 +ipo +lcio
     - edm4eic@1.0.0 cxxstd=17 -ipo
     - edm4hep@0.6 cxxstd=17 -ipo
     - eigen@3.4.0
