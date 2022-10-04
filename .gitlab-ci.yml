@@ -3,7 +3,7 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 variables:
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
-  JUGGLER_VERSION: "v8.0.2"
+  JUGGLER_VERSION: "v9.0.0"
   NPDET_VERSION: "v1.3.2"
 
   ## Spack github version, e.g. v0.18.1 or commit hash
@@ -17,7 +17,7 @@ variables:
   ## 8bdc5065792c185be9934ab0c2a5b087b8845bd1: emacs: Add option to install version 28.1
 
   ## Spack github version, e.g. v0.18 branch, v0.18.1 tag, or commit hash
-  EICSPACK_VERSION: "v0.18.14"
+  EICSPACK_VERSION: "v0.18.15"
   ## Space-separated list of eic-spack cherry-picks
   EICSPACK_CHERRYPICKS: "" 
 
