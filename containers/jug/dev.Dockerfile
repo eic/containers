@@ -24,6 +24,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_VERSION="develop"
 ARG SPACK_CHERRYPICKS=""
+ADD https://api.github.com/repos/spack/spack/commits/$SPACK_VERSION /tmp/spack.json
 RUN echo "Part 1: regular spack install (as in containerize)"           \
  && git clone https://github.com/spack/spack.git /tmp/spack-staging     \
  && cd /tmp/spack-staging                                               \
@@ -81,6 +82,7 @@ ARG CACHE_NUKE=""
 ## Setup our custom package overrides
 ENV EICSPACK_ROOT=$SPACK_ROOT/var/spack/repos/eic-spack
 ARG EICSPACK_VERSION="$SPACK_VERSION"
+ADD https://api.github.com/repos/eic/eic-spack/commits/$EICSPACK_VERSION /tmp/eic-spack.json
 RUN git clone https://github.com/eic/eic-spack.git ${EICSPACK_ROOT}     \
  && git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}                \
  && if [ -n "${EICSPACK_CHERRYPICKS}" ] ; then                          \
