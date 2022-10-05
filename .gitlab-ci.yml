@@ -19,7 +19,7 @@ variables:
   ## Spack github version, e.g. v0.18 branch, v0.18.1 tag, or commit hash
   EICSPACK_VERSION: "v0.18"
   ## Space-separated list of eic-spack cherry-picks
-  EICSPACK_CHERRYPICKS: "" 
+  EICSPACK_CHERRYPICKS: ""
 
   ## We need to enable Docker Buildkit to use cache mounts and better
   ## build performance overall
