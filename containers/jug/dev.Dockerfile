@@ -179,11 +179,14 @@ WORKDIR /
 ## ========================================================================================
 FROM builder as staging
 
+# Garbage collect in environment
 RUN cd /opt/spack-environment && spack env activate . && spack gc -y
+
 # Strip all the binaries
 # This reduces the image by factor of x2, so worth the effort
 # note that we do not strip python libraries as it can cause issues in some cases
-RUN find -L /usr/local/*                                                \
+RUN du -sh /opt/software/linux-*/gcc-*/* | sort -h                      \
+ && find -L /opt/software/*                                             \
          -type d -name site-packages -prune -false                      \
          -o                                                             \
          -type d -name lib-dynload -prune -false                        \
@@ -193,7 +196,8 @@ RUN find -L /usr/local/*                                                \
       | xargs file -i                                                   \
       | grep 'charset=binary'                                           \
       | grep 'x-executable\|x-sharedlib'                                \
-      | awk -F: '{print $1}' | xargs strip -s
+      | awk -F: '{print $1}' | xargs strip -s                           \
+ && du -sh /opt/software/linux-*/gcc-*/* | sort -h
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
 ## See
