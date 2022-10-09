@@ -16,6 +16,7 @@ spack:
     - eicrecon@0.1.0
     - eigen@3.4.0
     - emacs@28.1
+    - expat@2.4.8
     - fastjet@3.3.4
     - fmt@8.1.1 +shared cxxstd=17
     - gaudi@36.7 +optional
