@@ -19,7 +19,7 @@ spack:
     - eic-smear@1.1.10
     - eicrecon@0.4.1
     - eigen@3.4.0
-    - emacs
+    - emacs@28.1
     - fastjet@3.4.0
     - fmt@8.1.1 +shared cxxstd=17
     - gaudi@36.7 +aida
