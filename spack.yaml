@@ -58,4 +58,8 @@ spack:
       compiler: [gcc]
       variants:
         +ipo build_type=Release
-  view: /usr/local
+  view:
+    default:
+      root: /usr/local
+      link_type: symlink
+      link: run
