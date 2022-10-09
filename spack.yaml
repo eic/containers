@@ -2,6 +2,7 @@ spack:
   specs:
     - acts@19.9.0 +dd4hep +identification +json +tgeo +ipo +examples +fatras +geant4 +python
     - afterburner@0.1.2 +root +zlib
+    - boost@1.79.0
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - clhep@2.4.5.1 cxxstd=17
     - cli11@2.1.1
