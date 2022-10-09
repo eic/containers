@@ -47,4 +47,8 @@ spack:
   packages:
     all:
       compiler: [gcc]
-  view: /usr/local
+view:
+  default:
+    root: /usr/local
+    link_type: symlink
+    link: roots
