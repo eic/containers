@@ -1,9 +1,0 @@
-## Ensure the container still works for the new container
-## even with a strange environment setup
-
-
-test:tutorial:
-  extends: .test
-  script:
-    - tests/tutorial/quick-start.sh
-    - tests/tutorial/part1.sh
