@@ -29,13 +29,14 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         bc                                                              \
         ca-certificates                                                 \
         ccache                                                          \
+        clang                                                           \
         clang-format                                                    \
         clang-tidy                                                      \
         curl                                                            \
         file                                                            \
         build-essential                                                 \
-        g++-12                                                          \
-        gcc-12                                                          \
+        g++                                                             \
+        gcc                                                             \
         gdb                                                             \
         gfortran-12                                                     \
         ghostscript                                                     \
