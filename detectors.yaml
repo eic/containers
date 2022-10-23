@@ -6,6 +6,11 @@ detectors:
       ip:
         config: ip6
         version: master
+    22.10_rc1:
+      version: 22.10_rc1
+      ip:
+        config: ip6
+        version: 22.10_rc1
   athena:
     nightly:
       version: master
