@@ -55,4 +55,7 @@ spack:
       compiler: [gcc]
       variants:
         build_type=Release
-  view: /usr/local
+  view:
+    default:
+      root: /usr/local
+      link_type: hardlink
