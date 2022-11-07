@@ -9,9 +9,9 @@ spack:
     - cnpy@master
     - dawn@3_91a
     - dawncut@1_54a
-    - dd4hep@1.23 +ddg4 +ddcad +hepmc3 +ipo +lcio
-    - edm4eic@1.0.0 cxxstd=17 -ipo
-    - edm4hep@0.6 cxxstd=17 -ipo
+    - dd4hep@1.23 +ddg4 +ddcad +hepmc3 +ipo +lcio build_type=Debug
+    - edm4eic@1.0.0 cxxstd=17 -ipo build_type=Debug
+    - edm4hep@0.6 cxxstd=17 -ipo build_type=Debug
     - eicrecon@0.3.4
     - eigen@3.4.0
     - emacs@28.1
@@ -24,19 +24,19 @@ spack:
     - igprof@5.9.16
     #- imagemagick@7.0.8-7
     - irt@1.0.0
-    - jana2@2.0.7 +root +zmq
+    - jana2@git.1a6cc6e350ba7cae0f9c01c417629530b7b67c60 +root +zmq
     - madx@5.08.01
     - mesa@22.0.2 +glx -llvm +opengl +opengles +osmesa
     - nlohmann-json@3.10.5
     - opencascade@7.6.0
     - pkg-config@0.29.2
-    - podio@0.15
+    - podio@0.16 build_type=Debug
     - pythia8@8.306 +fastjet
     - python@3.10.4
     - py-numpy@1.22.3
     - py-pip@21.3.1
     - qt@5.15.4 +opengl
-    - root@6.26.06 cxxstd=17 
+    - root@6.26.06 cxxstd=17 build_type=Debug
           +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc +xrootd +ssl 
     - spdlog@1.9.2
