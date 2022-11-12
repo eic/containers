@@ -10,7 +10,7 @@ spack:
     - dawn@3_91a
     - dawncut@1_54a
     - dd4hep@1.23 +ddg4 +ddcad +hepmc3 +ipo +lcio
-    - edm4eic@1.0.0 cxxstd=17 -ipo
+    - edm4eic@1.2.1 cxxstd=17 -ipo
     - edm4hep@0.6 cxxstd=17 -ipo
     - eicrecon@0.3.5
     - eigen@3.4.0
