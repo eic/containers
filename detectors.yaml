@@ -3,9 +3,6 @@ detectors:
     nightly:
       default: true
       version: main
-      ip:
-        config: ip6
-        version: master
     22.10.0:
       version: 22.10.0
       ip:
@@ -13,6 +10,11 @@ detectors:
         version: 22.10.0
     22.11.0:
       version: 22.11.0
+      ip:
+        config: ip6
+        version: 22.11.0
+    22.11.1:
+      version: 22.11.1
       ip:
         config: ip6
         version: 22.11.0

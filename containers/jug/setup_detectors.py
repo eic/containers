@@ -5,7 +5,7 @@ import yaml
 import argparse
 
 DETECTOR_REPO_GROUP = 'https://github.com/eic'
-DETECTOR_ENV ='''
+DETECTOR_BEAMLINE_ENV ='''
 #!/bin/sh
 export DETECTOR={detector}
 export DETECTOR_PATH={data_prefix}
@@ -22,6 +22,22 @@ export JUGGLER_DETECTOR_PATH=$DETECTOR_PATH
 export JUGGLER_BEAMLINE_CONFIG=$BEAMLINE_CONFIG
 export JUGGLER_BEAMLINE_CONFIG_VERSION=$BEAMLINE_CONFIG_VERSION
 export JUGGLER_INSTALL_PREFIX=/usr/local
+
+## Export detector libraries
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{prefix}/lib
+
+## modify PS1 for this detector version
+export PS1="${{PS1:-}}"
+export PS1="{branch}${{PS1_SIGIL}}>${{PS1#*>}}"
+unset branch
+'''
+
+DETECTOR_ENV ='''
+#!/bin/sh
+export DETECTOR={detector}
+export DETECTOR_PATH={data_prefix}
+export DETECTOR_CONFIG={detector}
+export DETECTOR_VERSION={version}
 
 ## Export detector libraries
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{prefix}/lib
@@ -86,14 +102,17 @@ if __name__ == '__main__':
             del detectors[det]['nightly']    
         for branch in detectors[det]:
             cfg = detectors[det][branch]
-            ip = cfg['ip']
             version = cfg['version'] if branch != 'nightly' else 'nightly'
-            print('    - {}-{} and {}-{}'.format(
-            det, cfg['version'], ip['config'], ip['version']))
             prefix = '{}/{}-{}'.format(args.prefix, det, version)
             data_dir = '{}/share/{}'.format(prefix, det)
-            ## build and install detector and IP code
-            for (proj, vers) in [(det, cfg['version']), (ip['config'], ip['version'])]:
+            ## build list of projects to install
+            proj_vers_list = [(det, cfg['version'])]
+            if 'ip' in cfg:
+                ip = cfg['ip']
+                proj_vers_list.append((ip['config'], ip['version']))
+            ## build and install projects
+            for (proj, vers) in proj_vers_list:
+                print('    - {}-{}'.format(proj, vers))
                 ## clone/build/install detector libraries
                 cmd = ['rm -rf /tmp/build /tmp/det',
                        '&&',
@@ -122,7 +141,7 @@ if __name__ == '__main__':
                     print(' '.join(cmd))
                     os.system(' '.join(cmd))
                 ## also copy over IP configuration to the detector
-                if os.path.exists('/tmp/det/{ip}'.format(ip=ip['config'])):
+                if 'ip' in cfg and os.path.exists('/tmp/det/{ip}'.format(ip=cfg['ip']['config'])):
                     cmd = 'cp -r /tmp/det/{ip} {data_dir}'.format(
                                     ip=ip['config'], data_dir=data_dir)
                     print(cmd)
@@ -142,7 +161,8 @@ if __name__ == '__main__':
                     os.system(cmd)
                 ## write an environment file for this detector
                 with open('{prefix}/setup.sh'.format(prefix=prefix), 'w') as f:
-                    print(DETECTOR_ENV.format(
+                    if 'ip' in cfg:
+                        print(DETECTOR_BEAMLINE_ENV.format(
                             prefix=prefix,
                             detector=det,
                             data_prefix=data_dir,
@@ -150,7 +170,15 @@ if __name__ == '__main__':
                             ip=ip['config'],
                             ip_version=ip['version'],
                             branch=branch),
-                          file=f)
+                            file=f)
+                    else:
+                        print(DETECTOR_ENV.format(
+                            prefix=prefix,
+                            detector=det,
+                            data_prefix=data_dir,
+                            version=cfg['version'],
+                            branch=branch),
+                            file=f)
                 ## run once inside global prefix to initialize artifacts in /opt/detectors
                 os.environ['DETECTOR_PATH'] = args.prefix
                 cmd = f'bash -c \'cd {args.prefix} && source {prefix}/setup.sh && checkGeometry -c {prefix}/share/{det}/{det}.xml\''
