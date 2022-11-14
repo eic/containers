@@ -10,10 +10,11 @@
 ## ========================================================================================
 
 ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
+ARG BASEIMAGE="debian_base"
 # Internal Tag will be set by GitLab CI
 ARG INTERNAL_TAG="testing"
 
-FROM ${DOCKER_REGISTRY}debian_stable_base:${INTERNAL_TAG} as builder
+FROM ${DOCKER_REGISTRY}${BASEIMAGE}:${INTERNAL_TAG} as builder
 
 ## Install some extra spack dependencies
 ## Do not use Cache mount as it conflicts with oneapi stage
@@ -205,15 +206,6 @@ RUN find -L /usr/local/*                                                \
 #https://askubuntu.com/questions/1034313/ubuntu-18-4-libqt5core-so-5-cannot-open-shared-object-file-no-such-file-or-dir
 ## and links therin for more info
 RUN strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
-
-## Address Issue #72
-## missing precompiled headers for cppyy due to missing symlink in root
-## install (should really be addressed by ROOT spack package)
-RUN cd /opt/spack-environment && spack env activate .                   \
- && if [ ! -e $(spack location -i root)/lib/cppyy_backend/etc ]; then   \
-      ln -sf $(spack location -i root)/etc                              \
-             $(spack location -i root)/lib/cppyy_backend/etc;           \
-    fi
 
 RUN spack debug report                                                  \
       | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//"             \

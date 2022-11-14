@@ -1,9 +1,10 @@
 #syntax=docker/dockerfile:1.2
+ARG BASEIMAGE="amd64/debian:testing-20220822-slim"
 
 # Minimal container based on Debian Testing for up-to-date packages. 
 # Very lightweight container with a minimal build environment
 
-FROM  amd64/debian:testing-20220822-slim
+FROM  ${BASEIMAGE}
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="debian_base" \
       march="amd64"

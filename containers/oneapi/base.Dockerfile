@@ -1,9 +1,10 @@
 #syntax=docker/dockerfile:1.2
+ARG BASEIMAGE="intel/oneapi-hpckit:2022.2-devel-ubuntu20.04"
 
 # Minimal container based on Intel oneAPI for up-to-date packages. 
 # Very lightweight container with a minimal build environment (LOL)
 
-FROM  intel/oneapi-hpckit:2022.1.2-devel-ubuntu18.04
+FROM  ${BASEIMAGE}
 LABEL maintainer="Wouter Deconinck <wouter.deconinck@umanitoba.ca"      \
       name="oneapi_base"                                                \
       march="amd64"
@@ -18,8 +19,6 @@ ENV CLICOLOR_FORCE=1                                                    \
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
 ## We also install gitlab-runner, from the buster package (as bullseye is not available atm)
-## TODO: libyaml-cpp-dev is a dependency for afterburner. We can probably remove
-##       this once afterburner is added to spack
 RUN --mount=type=cache,target=/var/cache/apt                            \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime          \
@@ -45,7 +44,6 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         less                                                            \
         libcbor-xs-perl                                                 \
         libjson-xs-perl                                                 \
-        libyaml-cpp-dev                                                 \
         locales                                                         \
         lua-posix                                                       \
         make                                                            \
