@@ -37,6 +37,7 @@ while [ $# -gt 0 ]; do
       ;;
     -t|--tmpdir)
       export TMPDIR=$2
+      export APPTAINER_TMPDIR=$2
       export SINGULARITY_TMPDIR=$2
       shift
       shift
@@ -83,14 +84,22 @@ mkdir -p $PREFIX/local/lib || exit 1
 
 function install_singularity() {
   SINGULARITY=
-  ## check for a singularity install
-  ## default singularity if new enough
-  if [ $(type -P singularity ) ]; then
-    SINGULARITY=$(which singularity)
+  ## check for an apptainer install
+  ## default to apptainer if found
+  if [ $(type -P apptainer ) ]; then
+    SINGULARITY=$(which apptainer)
     SINGULARITY_VERSION=`$SINGULARITY --version`
-    if [ ${SINGULARITY_VERSION:0:1} = 2 ]; then
-      ## too old, look for something else
-      SINGULARITY=
+  fi
+  if [ -z $SINGULARITY ]; then
+    ## check for a singularity install
+    ## default to singularity if new enough
+    if [ $(type -P singularity ) ]; then
+      SINGULARITY=$(which singularity)
+      SINGULARITY_VERSION=`$SINGULARITY --version`
+      if [ ${SINGULARITY_VERSION:0:1} = 2 ]; then
+        ## too old, look for something else
+        SINGULARITY=
+      fi
     fi
   fi
   if [ -z $SINGULARITY ]; then
@@ -100,16 +109,19 @@ function install_singularity() {
     ## whatever is in the path is next
     elif [ $(type -P singularity ) ]; then
       SINGULARITY=$(which singularity)
+    ## cvmfs apptainer is last resort (sandbox mode can cause issues)
+    elif [ -f "/cvmfs/oasis.opensciencegrid.org/mis/apptainer/bin/apptainer" ]; then
+      SINGULARITY="/cvmfs/oasis.opensciencegrid.org/mis/apptainer/bin/apptainer"
     ## cvmfs singularity is last resort (sandbox mode can cause issues)
     elif [ -f "/cvmfs/oasis.opensciencegrid.org/mis/singularity/bin/singularity" ]; then
       SINGULARITY="/cvmfs/oasis.opensciencegrid.org/mis/singularity/bin/singularity"
     ## not good...
     else
-      echo "ERROR: no singularity found, please make sure you have singularity in your \$PATH"
+      echo "ERROR: no apptainer or singularity found, please make sure you have apptainer or singularity in your \$PATH"
       exit 1
     fi
   fi
-  echo " - Found singularity at $SINGULARITY"
+  echo " - Found apptainer/singularity at $SINGULARITY"
 
   ## get singularity version
   ## we only care if is 2.x or not, so we can use singularity --version 
@@ -170,7 +182,7 @@ function install_singularity() {
   echo $SIF
   ls $SIF 2>&1 > /dev/null && GOOD_SIF=1 
   if [ -z "$SIF" -o -z "$GOOD_SIF" ]; then
-    echo "ERROR: no singularity image found"
+    echo "ERROR: no apptainer/singularity image found"
     exit 1
   else
     echo " - Deployed ${CONTAINER} image: $SIF"
@@ -195,7 +207,7 @@ function install_singularity() {
   done
 
   ## create a new top-level eic-shell launcher script
-  ## that sets the EIC_SHELL_PREFIX and then starts singularity
+  ## that sets the EIC_SHELL_PREFIX and then starts apptainer/singularity
 cat << EOF > eic-shell
 #!/bin/bash
 
@@ -213,7 +225,7 @@ function print_the_help {
   echo "          -n,--no-cvmfs   Disable check for local CVMFS when updating. (D: enabled)"
   echo "          -h,--help       Print this message"
   echo ""
-  echo "  Start the eic-shell containerized software environment (Singularity version)."
+  echo "  Start the eic-shell containerized software environment (Apptainer/Singularity version)."
   echo ""
   echo "EXAMPLES: "
   echo "  - Start an interactive shell: ./eic-shell" 
@@ -326,7 +338,7 @@ function install_docker() {
   fi
 
   ## create a new top-level eic-shell launcher script
-  ## that sets the EIC_SHELL_PREFIX and then starts singularity
+  ## that sets the EIC_SHELL_PREFIX and then starts apptainer/singularity
 cat << EOF > eic-shell
 #!/bin/bash
 
