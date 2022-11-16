@@ -568,7 +568,7 @@ jug_xl:singularity:nightly:
     - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
 
 ## trigger juggler rebuild on nightly schedule to ensure both images remain in sync
-juggler:master:
+juggler:main:
   stage: deploy
   rules:
     - if: '$NIGHTLY != "0" && $CI_COMMIT_BRANCH == "master"'
@@ -579,7 +579,7 @@ juggler:master:
     - jug_xl:nightly
   variables:
     TRIGGERED_BY_NIGHTLY: 1
-    JUGGLER_VERSION: master
+    JUGGLER_VERSION: main
     NPDET_VERSION: master
     DETECTOR_VERSION: master
     IP6_VERSION: master
