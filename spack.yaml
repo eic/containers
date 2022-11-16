@@ -39,7 +39,7 @@ spack:
     - qt@5.15.5 +opengl
     - root@6.26.06 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
-          +root7 +tmva +vc +xrootd +ssl 
+          +root7 +tmva +vc -webgui +xrootd +ssl 
     - spdlog@1.10.0
     - stow@2.3.1
     - tensorflow-lite@2.8.0 -xnnpack
