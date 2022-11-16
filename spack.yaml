@@ -36,6 +36,7 @@ spack:
     - python@3.10.8
     - py-numpy@1.23.4
     - py-pip@22.2.2
+    - py-toml@0.10.2
     - qt@5.15.5 +opengl
     - root@6.26.06 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
