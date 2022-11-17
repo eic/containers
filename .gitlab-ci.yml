@@ -45,11 +45,10 @@ variables:
 
 stages:
   - config
-  - build:base            ## base OS image
-  - build:jug             ## jug container images
-  - build:oneapi_jug      ## jug containers with Intel oneAPI support 
-  - deploy                ## build/deploy singularity images
-  - test            
+  - base            ## base OS image
+  - jug             ## jug container images
+  - deploy          ## build/deploy singularity images
+  - test
   - finalize
 
 default:
@@ -80,7 +79,7 @@ workflow:
 ## plan:
 ##  Workflows:
 ##  - master      --> config + all build stages + singularity
-#                            + nightly build:jug + nightly singularity
+#                            + nightly jug + nightly singularity
 ##  - v4.0-stable --> config + all build stages + singularity
 ##  - v4.0.0      --> config + all build stages + singularity
 ##  - MR          --> config + all build stages
@@ -166,15 +165,15 @@ version:
   ## cookie-cutter docker push code, to be included at the
   ## end of the regular job scripts
   script:
-    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG} 
+    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
                                  ${EXPORT_TAG} ${EXPORT_TAG2}
-    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG} 
+    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
                                  ${INTERNAL_TAG} --eicweb
 
 ## Images:
-## debian_base --> jug_dev  --> jug_xl
+## debian_testing_base --> jug_dev  --> jug_xl
 ##             ---------------> jug_sim
 ##             ---------------> jug_ml
 ## debian_stable_base --> oneapi_jug_dev
@@ -183,166 +182,45 @@ version:
 ## TODO
 ## oneapi_runtime + jug_xl --> oneapi_prod 
 
-debian_base:default:
+base:
+  parallel:
+    matrix:
+      - BASE_IMAGE: amd64/debian:testing-20220822-slim
+        BUILD_IMAGE: debian_testing_base
+      - BASE_IMAGE: amd64/debian:stable-20220527-slim
+        BUILD_IMAGE: debian_stable_base_new
+      - BASE_IMAGE: ubuntu:20.04
+        BUILD_IMAGE: ubuntu_base
+      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
+        BUILD_IMAGE: oneapi_base
+      - BASE_IMAGE: nvidia/cuda:11.8.0-devel-ubuntu20.04
+        BUILD_IMAGE: cuda_base
   extends: .build
-  stage: build:base
+  stage: base
   needs:
     - version
-  variables:
-    BUILD_IMAGE: "debian_base"
   script:
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/debian/base.Dockerfile
+                   --build-arg BASE_IMAGE=${BASE_IMAGE}
+                   --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    containers/debian
-    - !reference [.build, script]
-
-debian_stable_base:default:
-  extends: .build
-  stage: build:base
-  needs:
-    - version
-  variables:
-    BUILD_IMAGE: "debian_stable_base"
-  script:
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
-                   -f containers/debian/stable.Dockerfile
-                   containers/debian
-    - !reference [.build, script]
-
-oneapi_base:default:
-  extends: .build
-  stage: build:base
-  needs:
-    - version
-  variables:
-    BUILD_IMAGE: "oneapi_base"
-  script:
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
-                   -f containers/oneapi/base.Dockerfile
-                   containers/oneapi
-    - !reference [.build, script]
-
-oneapi_jug_dev:default:
-  extends: .build
-  stage: build:oneapi_jug
-  needs:
-    - version
-    - debian_stable_base:default
-  variables:
-    BUILD_IMAGE: "oneapi_jug_dev"
-  script:
-    ## calculate a hash based on the spack.yaml file and the spack directory
-    ## and use this spack as a docker variable to force a rebuild when there
-    ## is a change (versus rerun from cache)
-    - PACKAGE_HASH=$(sha1sum spack.yaml | head -c40)
-    - echo "PACKAGE_HASH= ${PACKAGE_HASH}"
-    ## Copy spack.yaml into build context
-    - cp spack.yaml containers/oneapi/spack.yaml
-    - CACHE_FLAG=""
-    - |
-      if [ $FORCE_NOCACHE = 1 ]; then
-        echo "FORCE_NOCACHE set"
-        export CACHE_FLAG="--no-cache"
-      fi   
-    ## Copy jug_dev files into build context
-    - cp -r containers/jug/* containers/oneapi
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
-                   -f containers/oneapi/onedev.Dockerfile
-                   --build-arg SPACK_VERSION="${SPACK_VERSION}"
-                   --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
-                   --build-arg EICSPACK_VERSION="${EICSPACK_VERSION}"
-                   --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
-                   --build-arg CACHE_BUST=${PACKAGE_HASH}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
-                    containers/oneapi
-    - !reference [.build, script]
-
-oneapi_jug_xl:default:
-  extends: .build
-  stage: build:oneapi_jug
-  needs:
-    - version
-    - oneapi_jug_dev:default
-  variables:
-    BUILD_IMAGE: "oneapi_jug_xl"
-  script:
-    - cp containers/jug/setup_detectors.py containers/oneapi
-    - cp detectors.yaml containers/oneapi
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
-                   -f containers/jug/xl.Dockerfile 
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg BASEIMAGE="oneapi_jug_dev"
-                   --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
-                   --build-arg NPDET_VERSION=${NPDET_VERSION}
-                   --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
-                    containers/oneapi
-    - !reference [.build, script]
-  rules: 
-    - when: manual
-      allow_failure: true
-
-oneapi_jug_xl:nightly:
-  extends: .build
-  stage: build:oneapi_jug
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: on_success
-    - when: never
-  needs:
-    - version
-    - oneapi_jug_dev:default
-  variables:
-    BUILD_IMAGE: "oneapi_jug_xl"
-  script:
-    - cp containers/jug/setup_detectors.py containers/oneapi
-    - cp detectors.yaml containers/oneapi 
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
-                   -f containers/jug/xl.Dockerfile 
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg BASEIMAGE="oneapi_jug_dev"
-                   --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
-                   --build-arg NIGHTLY=1
-                    containers/oneapi
-    - |
-      PUSH_FLAG=""
-      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
-        PUSH_FLAG="--eicweb"
-      fi
-    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
-                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
-                                 ${NIGHTLY_TAG} ${PUSH_FLAG}
-    - if [ -z "${PUSH_FLAG}" ] ; then 
-      ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
-                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
-                                 ${NIGHTLY_TAG}-$(date +%Y-%m-%d) --dockerhub ;
-      fi
-  rules: 
-    - when: manual
-      allow_failure: true
-
-cuda_base:default:
-  extends: .build
-  stage: build:base
-  needs:
-    - version
-  variables:
-    BUILD_IMAGE: "cuda_base"
-  script:
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
-                   containers/cuda
     - !reference [.build, script]
 
 jug_dev:default:
+  parallel:
+    matrix:
+      - BASE_IMAGE: debian_testing_base
+        BUILD_IMAGE: jug_dev
+#      - BASE_IMAGE: oneapi_base
+#        BUILD_IMAGE: jug_dev_oneapi
+#      - BASE_IMAGE: cuda_base_new
+#        BUILD_IMAGE: jug_dev_cuda
   extends: .build
-  stage: build:jug
+  stage: jug
   needs:
     - version
-    - debian_base:default
-  variables:
-    BUILD_IMAGE: "jug_dev"
+    - base
   script:
     ## calculate a hash based on the spack.yaml file and the spack directory
     ## and use this spack as a docker variable to force a rebuild when there
@@ -359,9 +237,10 @@ jug_dev:default:
       fi
     ## Optionally build the raw builder image
     - test ${EXPORT_BUILDER} = 1 && docker build ${CACHE_FLAG}
-                   -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG} 
+                   -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
                    --target=builder
                    -f containers/jug/dev.Dockerfile
+                   --build-arg BASE_IMAGE="${BASE_IMAGE}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
                    --build-arg EICSPACK_VERSION="${EICSPACK_VERSION}"
@@ -373,6 +252,7 @@ jug_dev:default:
     ## now build our image
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
                    -f containers/jug/dev.Dockerfile
+                   --build-arg BASE_IMAGE="${BASE_IMAGE}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
                    --build-arg EICSPACK_VERSION="${EICSPACK_VERSION}"
@@ -382,7 +262,7 @@ jug_dev:default:
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
     ## push builder image do DH if desired
-    - test ${EXPORT_BUILDER} = 1 && ./gitlab-ci/docker_push.sh 
+    - test ${EXPORT_BUILDER} = 1 && ./gitlab-ci/docker_push.sh
                                  -i ${BUILD_IMAGE} -l builder-${INTERNAL_TAG}
                                  -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
                                  builder-${EXPORT_TAG} --dockerhub
@@ -390,18 +270,23 @@ jug_dev:default:
     - !reference [.build, script]
 
 jug_xl:default:
+  parallel:
+    matrix:
+      - BASE_IMAGE: jug_dev
+        BUILD_IMAGE: jug_xl
+#      - BASE_IMAGE: jug_dev_oneapi
+#        BUILD_IMAGE: jug_xl_oneapi
   extends: .build
-  stage: build:jug
+  stage: jug
   resource_group: build
   needs:
     - version
     - jug_dev:default
-  variables:
-    BUILD_IMAGE: "jug_xl"
   script:
     - cp detectors.yaml containers/jug
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} 
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/jug/xl.Dockerfile
+                   --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg NPDET_VERSION=${NPDET_VERSION}
@@ -410,8 +295,14 @@ jug_xl:default:
     - !reference [.build, script]
 
 jug_xl:nightly:
+  parallel:
+    matrix:
+      - BASE_IMAGE: jug_dev
+        BUILD_IMAGE: jug_xl
+#      - BASE_IMAGE: jug_dev_oneapi
+#        BUILD_IMAGE: jug_xl_oneapi
   extends: .build
-  stage: build:jug
+  stage: jug
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
@@ -421,12 +312,11 @@ jug_xl:nightly:
   needs:
     - version
     - jug_dev:default
-  variables:
-    BUILD_IMAGE: "jug_xl"
   script:
     - cp detectors.yaml containers/jug
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG} 
+    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
                    -f containers/jug/xl.Dockerfile
+                   --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
                    --build-arg NIGHTLY=1
@@ -436,28 +326,27 @@ jug_xl:nightly:
       if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
         PUSH_FLAG="--eicweb"
       fi
-    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
+    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG}
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
                                  ${NIGHTLY_TAG} ${PUSH_FLAG}
-    - if [ -z "${PUSH_FLAG}" ] ; then 
-      ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
+    - if [ -z "${PUSH_FLAG}" ] ; then
+      ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG}
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
                                  ${NIGHTLY_TAG}-$(date +%Y-%m-%d) --ghcr ;
-      ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG} 
+      ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG}
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
                                  ${NIGHTLY_TAG}-$(date +%Y-%m-%d) --dockerhub ;
       fi
 
 jug_xl:feature:
   extends: .build
-  stage: build:jug
-  rules: 
+  stage: jug
+  rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
     - when: never
-  needs: 
+  needs:
     - version
-    #- jug_xl:default
     - jug_xl:nightly
   variables:
     BUILD_IMAGE: "jug_xl"
@@ -498,51 +387,9 @@ jug_xl:feature:
     - mkdir build
     - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
 
-oneapi_jug_dev:singularity:default:
-  extends: .singularity
-  needs:
-    - version
-    - oneapi_jug_dev:default
-  variables:
-    BUILD_IMAGE: "oneapi_jug_dev"
-  rules: 
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - when: manual
-      allow_failure: true
-
-oneapi_jug_xl:singularity:default:
-  extends: .singularity
-  needs:
-    - version
-    - oneapi_jug_xl:default
-  variables:
-    BUILD_IMAGE: "oneapi_jug_xl"
-  rules: 
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - when: manual
-      allow_failure: true
-
-oneapi_jug_xl:singularity:nightly:
-  extends: .singularity
-  needs:
-    - version
-    - oneapi_jug_xl:nightly
-  variables:
-    BUILD_IMAGE: "oneapi_jug_xl"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - when: manual
-      allow_failure: true
-  script:
-    - mkdir build
-    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
-
 jug_dev:singularity:default:
   extends: .singularity
-  needs: 
+  needs:
     - version
     - jug_dev:default
   variables:
@@ -550,7 +397,7 @@ jug_dev:singularity:default:
 
 jug_xl:singularity:default:
   extends: .singularity
-  needs: 
+  needs:
     - version
     - jug_xl:default
   variables:
@@ -558,7 +405,7 @@ jug_xl:singularity:default:
 
 jug_xl:singularity:nightly:
   extends: .singularity
-  needs: 
+  needs:
     - version
     - jug_xl:nightly
   variables:
@@ -595,11 +442,10 @@ cleanup:
   script:
     ## remove the pipeline specific export from eicweb if needed
     - echo "Cleaning up pipeline specific docker tags if needed"
-    - ./gitlab-ci/cleanup_registry.sh -i debian_base -r 66 ${INTERNAL_TAG}
+    - ./gitlab-ci/cleanup_registry.sh -i debian_testing_base -r 66 ${INTERNAL_TAG}
     - ./gitlab-ci/cleanup_registry.sh -i jug_dev -r 68 ${INTERNAL_TAG}
     - ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${INTERNAL_TAG}
     - |
       if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
         ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${NIGHTLY_TAG}
       fi
-

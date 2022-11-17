@@ -1,12 +1,11 @@
 #syntax=docker/dockerfile:1.2
-ARG BASEIMAGE="amd64/debian:testing-20220822-slim"
+ARG BASE_IMAGE="amd64/debian:testing-20220822-slim"
+ARG BUILD_IMAGE="debian_base"
 
-# Minimal container based on Debian Testing for up-to-date packages. 
-# Very lightweight container with a minimal build environment
-
-FROM  ${BASEIMAGE}
+# Minimal container based on Debian base systems for up-to-date packages. 
+FROM  ${BASE_IMAGE}
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
-      name="debian_base" \
+      name="${BUILD_IMAGE}" \
       march="amd64"
 
 COPY bashrc /root/.bashrc
@@ -18,8 +17,6 @@ ENV CLICOLOR_FORCE=1                                                    \
 
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
-## We also install gitlab-runner for most recent supported debian:
-## bullseye per https://docs.gitlab.com/runner/install/linux-repository.html
 RUN --mount=type=cache,target=/var/cache/apt                            \
     --mount=type=cache,target=/var/lib/apt/lists                        \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
@@ -30,16 +27,9 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         bc                                                              \
         ca-certificates                                                 \
         ccache                                                          \
-        clang                                                           \
-        clang-format                                                    \
-        clang-tidy                                                      \
         curl                                                            \
         file                                                            \
-        build-essential                                                 \
-        g++                                                             \
-        gcc                                                             \
         gdb                                                             \
-        gfortran-12                                                     \
         ghostscript                                                     \
         git                                                             \
         gnupg2                                                          \
@@ -50,7 +40,6 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         less                                                            \
         libcbor-xs-perl                                                 \
         libjson-xs-perl                                                 \
-        libyaml-cpp-dev                                                 \
         locales                                                         \
         lua-posix                                                       \
         make                                                            \
@@ -63,19 +52,47 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         valgrind                                                        \
         vim-nox                                                         \
         wget                                                            \
- && localedef -i en_US -f UTF-8 en_US.UTF-8                             \
- && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100  \
- && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100  \
- && update-alternatives --install /usr/bin/gfortran gfortran            \
-                                  /usr/bin/gfortran-12 100              \
+ && apt-get -yqq autoremove                                             \
+ && localedef -i en_US -f UTF-8 en_US.UTF-8
+
+# Install updated compilers, with support for multiple base images
+## Ubuntu: latest gcc from toolchain ppa, latest stable clang
+## Debian: default gcc with distribution, latest stable clang
+RUN --mount=type=cache,target=/var/cache/apt                            \
+    --mount=type=cache,target=/var/lib/apt/lists                        \
+    . /etc/os-release                                                   \
+ && mkdir -p /etc/apt/source.list.d                                     \
+ && if [ "${ID}" = "ubuntu" ] ; then                                    \
+      echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/ppa/ubuntu/ \
+            ${VERSION_CODENAME} main"                                   \
+      > /etc/apt/source.list.d/ubuntu-toolchain.list                    \
+   && if [ "${VERSION_ID}" = "20.04" ] ; then GCC="-10" CLANG="-12" ; fi\
+   && if [ "${VERSION_ID}" = "22.04" ] ; then GCC="-12" CLANG="-14" ; fi\
+   && curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -\
+   && echo "deb http://apt.llvm.org/${VERSION_CODENAME}                 \
+            llvm-toolchain-${VERSION_CODENAME}${CLANG} main"            \
+      > /etc/apt/source.list.d/llvm.list                                \
+   && apt-get -yqq update                                               \
+   && apt-get -yqq install                                              \
+          gcc${GCC} g++${GCC} gfortran${GCC}                            \
+   && apt-get -yqq install                                              \
+          clang${CLANG} clang-tidy${CLANG} clang-format${CLANG}         \
+   && update-alternatives --install /usr/bin/gcc gcc                    \
+                                    /usr/bin/gcc${GCC} 100              \
+   && update-alternatives --install /usr/bin/g++ g++                    \
+                                    /usr/bin/g++${GCC} 100              \
+   && update-alternatives --install /usr/bin/gfortran gfortran          \
+                                    /usr/bin/gfortran${GCC} 100         \
+   && update-alternatives --install /usr/bin/clang clang                \
+                                    /usr/bin/clang${CLANG} 100          \
+   && update-alternatives --install /usr/bin/clang++ clang++            \
+                                    /usr/bin/clang++${CLANG} 100        \
+ ; else                                                                 \
+      apt-get -yqq update                                               \
+   && apt-get -yqq install                                              \
+          gcc g++ gfortran                                              \
+          clang clang-tidy clang-format                                 \
+ ; fi                                                                   \
+ && apt-get -yqq autoremove                                             \
  && gcc --version                                                       \
- && export VERSION_ID=11                                                \
- && curl -L                                                             \
-    "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" \
-    | bash                                                              \
- && sed -i "s/bookworm/bullseye/"                                       \
-           /etc/apt/sources.list.d/runner_gitlab-runner.list            \
- && apt-get -yqq update                                                 \
- && apt-get -yqq install --no-install-recommends                        \
-        gitlab-runner                                                   \
- && apt-get -yqq autoremove
+ && clang --version
