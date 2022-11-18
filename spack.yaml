@@ -32,6 +32,7 @@ spack:
     - opencascade@7.6.3
     - pkg-config@0.29.2
     - podio@0.15
+    - prmon@3.0.2 +plot
     - pythia8@8.306 +fastjet
     - python@3.10.8
     - py-numpy@1.23.4

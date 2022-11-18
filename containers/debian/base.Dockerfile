@@ -46,6 +46,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         nano                                                            \
         openssh-client                                                  \
         parallel                                                        \
+        patch                                                           \
         poppler-utils                                                   \
         time                                                            \
         unzip                                                           \
