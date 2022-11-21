@@ -11,25 +11,13 @@ FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG}
 
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
 ARG JUGGLER_VERSION="main"
-ARG NPDET_VERSION="master"
 
 ## version will automatically bust cache for nightly, as it includes
 ## the date
 ARG JUG_VERSION=1
 
-ADD ${EICWEB}/18/repository/tree?ref=${NPDET_VERSION} /tmp/18.json
 RUN cd /tmp                                                                     \
- && echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info                           \
- && echo "INSTALLING NPDET"                                                     \
- && git config --global http.version HTTP/1.1                                   \
- && git clone -b ${NPDET_VERSION} --depth 1                                     \
-        https://eicweb.phy.anl.gov/EIC/NPDet.git                                \
- && cmake -B build -S NPDet -DCMAKE_CXX_STANDARD=17                             \
- && cmake --build build -j12 -- install                                         \
- && pushd NPDet                                                                 \
- && echo " - NPDet: ${NPDET_VERSION}-$(git rev-parse HEAD)">> /etc/jug_info     \
- && popd                                                                        \
- && rm -rf build NPDet
+ && echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info
 
 ADD ${EICWEB}/369/repository/tree?ref=${JUGGLER_VERSION} /tmp/369.json
 RUN cd /tmp                                                                     \

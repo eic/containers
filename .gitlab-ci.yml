@@ -4,7 +4,6 @@ variables:
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
   JUGGLER_VERSION: "v9.0.0"
-  NPDET_VERSION: "v1.4.1"
 
   ## Spack github version, e.g. v0.18.1 or commit hash
   SPACK_VERSION: "v0.19.0"
@@ -289,7 +288,6 @@ jug_xl:default:
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
-                   --build-arg NPDET_VERSION=${NPDET_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
     - !reference [.build, script]
@@ -427,7 +425,6 @@ juggler:main:
   variables:
     TRIGGERED_BY_NIGHTLY: 1
     JUGGLER_VERSION: main
-    NPDET_VERSION: master
     DETECTOR_VERSION: master
     IP6_VERSION: master
   trigger:

@@ -30,6 +30,7 @@ spack:
     - madx@5.08.01
     - mesa@22.1.2 +glx -llvm +opengl +opengles +osmesa
     - nlohmann-json@3.11.2
+    - npsim@1.1.0 +geocad +http
     - opencascade@7.6.3
     - pkg-config@0.29.2
     - podio@0.15
