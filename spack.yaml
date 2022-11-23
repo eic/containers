@@ -10,9 +10,9 @@ spack:
     - cnpy@master
     - dawn@3_91a
     - dawncut@1_54a
-    - dd4hep@1.23 +ddg4 +ddcad +hepmc3 +ipo +lcio
-    - edm4eic@1.2.1 cxxstd=17 -ipo
-    - edm4hep@0.7 cxxstd=17 -ipo
+    - dd4hep@1.23 +ddg4 +ddcad +hepmc3 +ipo +lcio build_type=Debug
+    - edm4eic@1.2.1 cxxstd=17 -ipo build_type=Debug
+    - edm4hep@0.7 cxxstd=17 -ipo build_type=Debug
     - eicrecon@0.3.6
     - eigen@3.4.0
     - emacs
@@ -33,7 +33,7 @@ spack:
     - npsim@1.1.0 +geocad +http
     - opencascade@7.6.3
     - pkg-config@0.29.2
-    - podio@0.15
+    - podio@0.16 build_type=Debug
     - prmon@3.0.2 +plot
     - pythia8@8.306 +fastjet
     - python@3.10.8
@@ -41,7 +41,7 @@ spack:
     - py-pip@22.2.2
     - py-toml@0.10.2
     - qt@5.15.5 +opengl
-    - root@6.26.06 cxxstd=17 
+    - root@6.26.06 cxxstd=17 build_type=Debug
           +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc -webgui +xrootd +ssl 
     - spdlog@1.10.0
