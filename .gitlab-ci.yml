@@ -238,14 +238,8 @@ generate-pipeline:
     - git -C ${SPACK_ROOT}/var/spack/repos/eic-spack checkout ${EICSPACK_VERSION}
   script:
     - spack env activate --without-view .
-    - spack mirror add --scope site
-      --s3-endpoint-url ${S3_ENDPOINT_URL}
-      --s3-access-key-id ${AWS_ACCESS_KEY_ID}
-      --s3-access-key-secret ${AWS_SECRET_ACCESS_KEY}
-      eic-spack s3://eictest/EPIC/spack
     - spack mirror list
     - spack -d ci generate
-      --buildcache-destination eic-spack
       --artifacts-root "${CI_PROJECT_DIR}/jobs_scratch_dir"
       --output-file "${CI_PROJECT_DIR}/jobs_scratch_dir/pipeline.yml"
       --check-index-only
