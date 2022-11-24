@@ -64,18 +64,10 @@ spack:
 
   view: False # /usr/local
 
-  mirrors: { "eic-spack": "s3://eictest/EPIC/spack" }
+  mirrors:
+    eic-spack: s3://eictest/EPIC/spack
 
   gitlab-ci:
-    before_script:
-      - git clone https://github.com/${SPACK_ORGREPO}.git spack
-      - git -C spack checkout ${SPACK_VERSION}
-      - . "./spack/share/spack/setup-env.sh"
-      - git clone https://github.com/${EICSPACK_ORGREPO}.git spack/var/spack/repos/eic-spack
-      - git -C spack/var/spack/repos/eic-spack checkout ${EICSPACK_VERSION}
-    script:
-      - pushd ${SPACK_CONCRETE_ENV_DIR} && spack env activate --without-view . && popd
-      - spack -d ci rebuild
     mappings:
       - match: ["os=ubuntu20.04"]
         runner-attributes:
