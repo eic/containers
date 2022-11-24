@@ -51,6 +51,7 @@ variables:
 stages:
   - config
   - base            ## base OS image
+  - generate        ## spack ci generate
   - jug             ## jug container images
   - deploy          ## build/deploy singularity images
   - test
@@ -211,6 +212,28 @@ base:
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    containers/debian
     - !reference [.build, script]
+
+generate-pipeline:
+  stage: generate
+  tags:
+    - docker-new
+  image:
+    name: eicweb.phy.anl.gov:4567/containers/eic_container/debian_testing_base
+    entrypoint: [""]
+  before_script:
+    - git clone ${SPACK_REPO} spack
+    - git -C spack checkout ${SPACK_VERSION}
+    - . "./spack/share/spack/setup-env.sh"
+    - git clone ${EICSPACK_REPO} ${SPACK_ROOT}/var/spack/repos/eic-spack
+    - git -C ${SPACK_ROOT}/var/spack/repos/eic-spack checkout ${EICSPACK_VERSION}
+  script:
+    - spack env activate --without-view .
+    - spack -d ci generate
+      --artifacts-root "${CI_PROJECT_DIR}/jobs_scratch_dir"
+      --output-file "${CI_PROJECT_DIR}/jobs_scratch_dir/pipeline.yml"
+  artifacts:
+    paths:
+      - "${CI_PROJECT_DIR}/jobs_scratch_dir"
 
 jug_dev:default:
   parallel:

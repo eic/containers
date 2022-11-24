@@ -1,4 +1,7 @@
 spack:
+  repos:
+  - $spack/var/spack/repos/eic-spack
+
   specs:
     - acts@19.10.0 +dd4hep +identification +json +tgeo +ipo +examples +fatras +geant4 +python
     - actsvg@0.4.26 +examples
@@ -48,11 +51,30 @@ spack:
     - stow@2.3.1
     - tensorflow-lite@2.8.0 -xnnpack
     - xrootd@5.3.2 cxxstd=17 +python
+
   concretizer: 
     unify: true
+
   packages:
     all:
       compiler: [gcc]
+      target: [x86_64]
       variants:
         build_type=Release
+
   view: /usr/local
+
+  mirrors: { "eic-spack": "s3://eictest/EPIC/spack" }
+
+  gitlab-ci:
+    before_script:
+      - git clone ${SPACK_REPO} spack
+      - git -C spack checkout ${SPACK_VERSION}
+      - . "./spack/share/spack/setup-env.sh"
+      - git clone ${EICSPACK_REPO} ${SPACK_ROOT}/var/spack/repos/eic-spack
+      - git -C ${SPACK_ROOT}/var/spack/repos/eic-spack checkout ${EICSPACK_VERSION}
+    script:
+      - pushd ${SPACK_CONCRETE_ENV_DIR} && spack env activate --without-view . && popd
+      - spack -d ci rebuild
+    enable-artifacts-buildcache: False
+    rebuild-index: True
