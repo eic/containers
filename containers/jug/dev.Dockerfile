@@ -17,6 +17,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
         python3                                                         \
         python3-dev                                                     \
         python3-distutils                                               \
+        python3-boto3                                                   \
         python-is-python3                                               \
  && rm -rf /var/lib/apt/lists/*
 
