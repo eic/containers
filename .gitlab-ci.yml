@@ -230,6 +230,7 @@ generate-pipeline:
     name: ${CI_REGISTRY_IMAGE}/${BASE_IMAGE}:${INTERNAL_TAG}
     entrypoint: [""]
   before_script:
+    - apt-get install -yqq python3-boto3
     - git clone https://github.com/${SPACK_ORGREPO}.git spack
     - git -C spack checkout ${SPACK_VERSION}
     - . "./spack/share/spack/setup-env.sh"
