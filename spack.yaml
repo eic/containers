@@ -13,7 +13,6 @@ spack:
     - dd4hep@1.23 +ddg4 +ddcad +hepmc3 +ipo +lcio build_type=Debug
     - edm4eic@1.2.1 cxxstd=17 -ipo build_type=Debug
     - edm4hep@0.7 cxxstd=17 -ipo build_type=Debug
-    - eicrecon@0.3.6
     - eigen@3.4.0
     - emacs
     - fastjet@3.4.0
