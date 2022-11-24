@@ -62,7 +62,7 @@ spack:
       variants:
         build_type=Release
 
-  view: /usr/local
+  view: False # /usr/local
 
   mirrors: { "eic-spack": "s3://eictest/EPIC/spack" }
 
