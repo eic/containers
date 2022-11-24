@@ -77,7 +77,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
       --s3-endpoint-url https://dtn01.sdcc.bnl.gov:9000                 \
       --s3-access-key-id ${S3_ACCESS_KEY}                               \
       --s3-access-key-secret ${S3_SECRET_KEY}                           \
-      eic-spack s3://eictest/EPIC                                       \
+      eic-spack s3://eictest/EPIC/spack                                 \
     ; fi                                                                \
  && spack mirror list
 
