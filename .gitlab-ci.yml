@@ -241,7 +241,7 @@ generate-pipeline:
     - spack mirror add --scope site
       --s3-endpoint-url ${S3_ENDPOINT_URL}
       --s3-access-key-id ${AWS_ACCESS_KEY_ID}
-      --s3-access-key-secret ${AWS_SECRET_ACCES_KEY}
+      --s3-access-key-secret ${AWS_SECRET_ACCESS_KEY}
       eic-spack s3://eictest/EPIC/spack
     - spack mirror list
     - spack -d ci generate
