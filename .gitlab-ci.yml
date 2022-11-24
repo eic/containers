@@ -230,10 +230,10 @@ generate-pipeline:
     name: ${CI_REGISTRY_IMAGE}/${BASE_IMAGE}:${INTERNAL_TAG}
     entrypoint: [""]
   before_script:
-    - git clone ${SPACK_REPO} spack
+    - git clone https://github.com/${SPACK_ORGREPO}.git spack
     - git -C spack checkout ${SPACK_VERSION}
     - . "./spack/share/spack/setup-env.sh"
-    - git clone ${EICSPACK_REPO} ${SPACK_ROOT}/var/spack/repos/eic-spack
+    - git clone https://github.com/${EICSPACK_ORGREPO}.git ${SPACK_ROOT}/var/spack/repos/eic-spack
     - git -C ${SPACK_ROOT}/var/spack/repos/eic-spack checkout ${EICSPACK_VERSION}
   script:
     - spack env activate --without-view .
