@@ -236,7 +236,7 @@ generate-pipeline:
     - git clone https://github.com/${EICSPACK_ORGREPO}.git ${SPACK_ROOT}/var/spack/repos/eic-spack
     - git -C ${SPACK_ROOT}/var/spack/repos/eic-spack checkout ${EICSPACK_VERSION}
   script:
-    - spack env activate --without-view .
+    - spack -d env activate --without-view .
     - spack -d ci generate
       --artifacts-root "${CI_PROJECT_DIR}/jobs_scratch_dir"
       --output-file "${CI_PROJECT_DIR}/jobs_scratch_dir/pipeline.yml"

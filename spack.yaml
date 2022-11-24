@@ -68,22 +68,24 @@ spack:
 
   gitlab-ci:
     before_script:
-      - git clone ${SPACK_REPO} spack
+      - git clone https://github.com/${SPACK_ORGREPO}.git spack
       - git -C spack checkout ${SPACK_VERSION}
       - . "./spack/share/spack/setup-env.sh"
-      - git clone ${EICSPACK_REPO} ${SPACK_ROOT}/var/spack/repos/eic-spack
-      - git -C ${SPACK_ROOT}/var/spack/repos/eic-spack checkout ${EICSPACK_VERSION}
+      - git clone https://github.com/${EICSPACK_ORGREPO}.git spack/var/spack/repos/eic-spack
+      - git -C spack/var/spack/repos/eic-spack checkout ${EICSPACK_VERSION}
     script:
       - pushd ${SPACK_CONCRETE_ENV_DIR} && spack env activate --without-view . && popd
       - spack -d ci rebuild
     mappings:
-      - match:
-          - os=ubuntu20.04
+      - match: ["os=ubuntu20.04"]
         runner-attributes:
           image: spack/ubuntu-focal
-      - match:
-          - os=ubuntu22.04
+          tags:
+            - docker-new
+      - match: ["os=ubuntu22.04"]
         runner-attributes:
           image: spack/ubuntu-jammy
+          tags:
+            - docker-new
     enable-artifacts-buildcache: False
     rebuild-index: True
