@@ -56,8 +56,8 @@ variables:
 
 stages:
   - config
-  - base            ## base OS image
   - generate        ## spack ci generate
+  - base            ## base OS image
   - jug             ## jug container images
   - deploy          ## build/deploy singularity images
   - test
