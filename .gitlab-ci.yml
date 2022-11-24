@@ -217,8 +217,11 @@ generate-pipeline:
   stage: generate
   tags:
     - docker-new
+  parallel:
+    matrix:
+      - BASE_IMAGE: debian_testing_base      
   image:
-    name: eicweb.phy.anl.gov:4567/containers/eic_container/debian_testing_base
+    name: ${CI_REGISTRY_IMAGE}/${BASE_IMAGE}:${INTERNAL_TAG}
     entrypoint: [""]
   before_script:
     - git clone ${SPACK_REPO} spack
