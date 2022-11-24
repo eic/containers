@@ -66,6 +66,20 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
  && spack mirror add docker /var/cache/spack-mirror                     \
  && spack mirror list
 
+## Setup eic-spack buildcache mirrors (FIXME: leaks credentials into layer)
+ARG S3_ACCESS_KEY=""
+ARG S3_SECRET_KEY=""
+RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
+    export PATH=$PATH:$SPACK_ROOT/bin                                   \
+ && if [ -n $S3_ACCESS_KEY ] ; then                                     \
+    spack mirror add --scope site                                       \
+      --s3-endpoint-url https://dtn01.sdcc.bnl.gov:9000                 \
+      --s3-access-key-id ${S3_ACCESS_KEY}                               \
+      --s3-access-key-secret ${S3_SECRET_KEY}                           \
+      eic-spack s3://eictest/EPIC                                       \
+    ; fi                                                                \
+ && spack mirror list
+
 ## This variable will change whenevery either spack.yaml or our spack package
 ## overrides change, triggering a rebuild
 ARG CACHE_BUST="hash"
