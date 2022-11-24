@@ -76,5 +76,14 @@ spack:
     script:
       - pushd ${SPACK_CONCRETE_ENV_DIR} && spack env activate --without-view . && popd
       - spack -d ci rebuild
+    mappings:
+      - match:
+          - os=ubuntu20.04
+        runner-attributes:
+          image: spack/ubuntu-focal
+      - match:
+          - os=ubuntu22.04
+        runner-attributes:
+          image: spack/ubuntu-jammy
     enable-artifacts-buildcache: False
     rebuild-index: True
