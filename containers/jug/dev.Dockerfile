@@ -23,25 +23,16 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
 ## Setup spack
 ## parts:
 ENV SPACK_ROOT=/opt/spack
+ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="develop"
 ARG SPACK_CHERRYPICKS=""
-ADD https://api.github.com/repos/spack/spack/commits/$SPACK_VERSION /tmp/spack.json
+ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
 RUN echo "Part 1: regular spack install (as in containerize)"           \
- && git clone https://github.com/spack/spack.git /tmp/spack-staging     \
- && cd /tmp/spack-staging                                               \
- && git checkout $SPACK_VERSION                                         \
+ && git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}        \
+ && git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}                      \
  && if [ -n "$SPACK_CHERRYPICKS" ] ; then                               \
-      git cherry-pick -n $SPACK_CHERRYPICKS ;                           \
+      git -C ${SPACK_ROOT} cherry-pick -n $SPACK_CHERRYPICKS ;          \
     fi                                                                  \
- && cd -                                                                \
- && mkdir -p $SPACK_ROOT                                                \
- && cp -r /tmp/spack-staging/bin $SPACK_ROOT/bin                        \
- && cp -r /tmp/spack-staging/etc $SPACK_ROOT/etc                        \
- && cp -r /tmp/spack-staging/lib $SPACK_ROOT/lib                        \
- && cp -r /tmp/spack-staging/share $SPACK_ROOT/share                    \
- && cp -r /tmp/spack-staging/var $SPACK_ROOT/var                        \
- && cp -r /tmp/spack-staging/.git $SPACK_ROOT/.git                      \
- && rm -rf /tmp/spack-staging                                           \
  && echo 'export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH'\ 
         >> $SPACK_ROOT/share/setup-env.sh                               \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
@@ -81,10 +72,12 @@ ARG CACHE_BUST="hash"
 ARG CACHE_NUKE=""
 
 ## Setup our custom package overrides
-ENV EICSPACK_ROOT=$SPACK_ROOT/var/spack/repos/eic-spack
+ENV EICSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/eic-spack
+ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="$SPACK_VERSION"
-ADD https://api.github.com/repos/eic/eic-spack/commits/$EICSPACK_VERSION /tmp/eic-spack.json
-RUN git clone https://github.com/eic/eic-spack.git ${EICSPACK_ROOT}     \
+ARG EICSPACK_CHERRYPICKS=""
+ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
+RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
  && git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}                \
  && if [ -n "${EICSPACK_CHERRYPICKS}" ] ; then                          \
       git -C ${EICSPACK_ROOT} cherry-pick -n ${EICSPACK_CHERRYPICKS} ;  \
