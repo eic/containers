@@ -33,6 +33,7 @@ RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && if [ -n "$SPACK_CHERRYPICKS" ] ; then                               \
       git -C ${SPACK_ROOT} cherry-pick -n $SPACK_CHERRYPICKS ;          \
     fi                                                                  \
+ && export PATH=${PATH}:${SPACK_ROOT}/bin                               \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/docker-shell                                        \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
@@ -53,16 +54,14 @@ SHELL ["docker-shell"]
 ## spack mirror using the docker build cache, and
 ## a backup mirror on the internal B010 network
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    export PATH=$PATH:$SPACK_ROOT/bin                                   \
- && spack mirror add docker /var/cache/spack-mirror                     \
+    spack mirror add docker /var/cache/spack-mirror                     \
  && spack mirror list
 
 ## Setup eic-spack buildcache mirrors (FIXME: leaks credentials into layer)
 ARG S3_ACCESS_KEY=""
 ARG S3_SECRET_KEY=""
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    export PATH=$PATH:$SPACK_ROOT/bin                                   \
- && if [ -n $S3_ACCESS_KEY ] ; then                                     \
+    if [ -n $S3_ACCESS_KEY ] ; then                                     \
     spack mirror add --scope site                                       \
       --s3-endpoint-url https://dtn01.sdcc.bnl.gov:9000                 \
       --s3-access-key-id ${S3_ACCESS_KEY}                               \
