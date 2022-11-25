@@ -245,14 +245,14 @@ base:
       --dependencies
       --optimize
   after_script: [ ]
+  artifacts:
+    paths:
+      - "jobs_scratch_dir/pipeline.yml"
 
 generate-pipeline-debian-testing:
   extends: .generate
   variables:
     BASE_IMAGE: debian_testing_base
-  artifacts:
-    paths:
-      - "jobs_scratch_dir/pipeline.yml"
 
 build-jobs:
   stage: build
