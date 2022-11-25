@@ -243,6 +243,7 @@ generate-pipeline:
     - spack ci generate
       --artifacts-root "jobs_scratch_dir/"
       --output-file "jobs_scratch_dir/pipeline.yml"
+      --optimize
   after_script: [ ]
   artifacts:
     paths:
