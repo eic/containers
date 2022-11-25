@@ -220,12 +220,10 @@ base:
                    containers/debian
     - !reference [.build, script]
 
-generate-pipeline:
+.generate:
   stage: generate
   tags:
     - docker-new
-  variables:
-    BASE_IMAGE: debian_testing_base      
   image:
     name: ${CI_REGISTRY_IMAGE}/${BASE_IMAGE}:${INTERNAL_TAG}
     entrypoint: [""]
@@ -250,14 +248,17 @@ generate-pipeline:
     paths:
       - "jobs_scratch_dir/pipeline.yml"
 
+generate-pipeline-debian-testing:
+  extends: .generate
+  variables:
+    BASE_IMAGE: debian_testing_base
+
 build-jobs:
   stage: build
-  needs: 
-    - generate-pipeline
   trigger:
     include:
       - artifact: "jobs_scratch_dir/pipeline.yml"
-        job: generate-pipeline
+        job: generate-pipeline-debian-testing
 
 jug_dev:default:
   parallel:
