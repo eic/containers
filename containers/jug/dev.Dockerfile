@@ -34,8 +34,6 @@ RUN echo "Part 1: regular spack install (as in containerize)"           \
  && if [ -n "$SPACK_CHERRYPICKS" ] ; then                               \
       git -C ${SPACK_ROOT} cherry-pick -n $SPACK_CHERRYPICKS ;          \
     fi                                                                  \
- && echo 'export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH'\ 
-        >> $SPACK_ROOT/share/setup-env.sh                               \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/docker-shell                                        \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
