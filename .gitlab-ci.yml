@@ -257,7 +257,6 @@ build-jobs:
     include:
       - artifact: "jobs_scratch_dir/pipeline.yml"
         job: generate-pipeline
-    strategy: depend
 
 jug_dev:default:
   parallel:
