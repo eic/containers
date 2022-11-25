@@ -69,6 +69,11 @@ spack:
 
   gitlab-ci:
     mappings:
+      - match: [”os=debian"]
+        runner-attributes:
+          image: debian_testing_base
+          tags:
+            - docker-new
       - match: ["os=ubuntu20.04"]
         runner-attributes:
           image: spack/ubuntu-focal
