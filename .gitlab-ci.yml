@@ -247,7 +247,7 @@ generate-pipeline:
   after_script: [ ]
   artifacts:
     paths:
-      - "jobs_scratch_dir/pipeline.ym"
+      - "jobs_scratch_dir/pipeline.yml"
 
 build-jobs:
   stage: build
