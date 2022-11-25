@@ -241,7 +241,7 @@ generate-pipeline:
     - spack env activate --without-view .
     - spack mirror list
     - spack mirror rm --scope defaults spack-public
-    - spack -d ci generate
+    - spack ci generate
       --artifacts-root "${CI_PROJECT_DIR}/jobs_scratch_dir"
       --output-file "${CI_PROJECT_DIR}/jobs_scratch_dir/pipeline.yml"
       --check-index-only
