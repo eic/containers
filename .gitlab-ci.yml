@@ -241,6 +241,7 @@ base:
     - spack ci generate
       --artifacts-root "jobs_scratch_dir/"
       --output-file "jobs_scratch_dir/pipeline.yml"
+      --check-index-only
       --dependencies
       --optimize
   after_script: [ ]
