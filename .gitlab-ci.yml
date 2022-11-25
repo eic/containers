@@ -57,6 +57,7 @@ variables:
 stages:
   - config
   - generate        ## spack ci generate
+  - build           ## spack build jobs
   - base            ## base OS image
   - jug             ## jug container images
   - deploy          ## build/deploy singularity images
@@ -248,6 +249,14 @@ generate-pipeline:
   artifacts:
     paths:
       - "${CI_PROJECT_DIR}/jobs_scratch_dir"
+
+build-jobs:
+  stage: build
+  trigger:
+    include:
+      - artifact: "jobs_scratch_dir/pipeline.yml"
+        job: generate-pipeline
+    strategy: depend
 
 jug_dev:default:
   parallel:
