@@ -252,10 +252,11 @@ generate-pipeline:
 
 build-jobs:
   stage: build
+  needs: 
+    - generate-pipeline
   trigger:
     include:
-      - artifact: "jobs_scratch_dir/pipeline.yml"
-        job: generate-pipeline
+      - local: "jobs_scratch_dir/pipeline.yml"
     strategy: depend
 
 jug_dev:default:
