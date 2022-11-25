@@ -28,34 +28,24 @@ ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="develop"
 ARG SPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
-RUN echo "Part 1: regular spack install (as in containerize)"           \
- && git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}        \
+RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}                      \
  && if [ -n "$SPACK_CHERRYPICKS" ] ; then                               \
       git -C ${SPACK_ROOT} cherry-pick -n $SPACK_CHERRYPICKS ;          \
     fi                                                                  \
- && echo 'export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH'\ 
-        >> $SPACK_ROOT/share/setup-env.sh                               \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/docker-shell                                        \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/interactive-shell                                   \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/spack-env                                           \
- && echo "Part 2: Set target to generic x86_64"                         \
- && echo "packages:" > $SPACK_ROOT/etc/spack/packages.yaml              \
- && echo "  all:" >> $SPACK_ROOT/etc/spack/packages.yaml                \
- && echo "    target: [x86_64]" >> $SPACK_ROOT/etc/spack/packages.yaml  \
- && cat $SPACK_ROOT/etc/spack/packages.yaml                             \
- && echo "Part 3: Set config to allow use of more cores for builds"     \
- && echo "(and some other settings)"                                    \
- && echo "config:" > $SPACK_ROOT/etc/spack/config.yaml                  \
- && echo "  suppress_gpg_warnings: true"                                \
-        >> $SPACK_ROOT/etc/spack/config.yaml                            \
- && echo "  build_jobs: 64" >> $SPACK_ROOT/etc/spack/config.yaml        \
- && echo "  install_tree:" >> $SPACK_ROOT/etc/spack/config.yaml         \
- && echo "    root: /opt/software" >> $SPACK_ROOT/etc/spack/config.yaml \
- && cat $SPACK_ROOT/etc/spack/config.yaml
+ && export PATH=${PATH}:${SPACK_ROOT}/bin                               \
+ && spack config --scope site add "packages:all:target:[x86_64]"        \
+ && spack config blame packages                                         \
+ && spack config --scope site add "config:suppress_gpg_warnings:true"   \
+ && spack config --scope site add "config:build_jobs:64"                \
+ && spack config --scope site add "config:install_tree:root:/opt/software" \
+ && spack config blame config
 
 SHELL ["docker-shell"]
 
