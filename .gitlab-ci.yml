@@ -242,13 +242,12 @@ generate-pipeline:
     - spack mirror list
     - spack mirror rm --scope defaults spack-public
     - spack ci generate
-      --artifacts-root "${CI_PROJECT_DIR}/jobs_scratch_dir"
-      --output-file "${CI_PROJECT_DIR}/jobs_scratch_dir/pipeline.yml"
-      --check-index-only
+      --artifacts-root "jobs_scratch_dir/"
+      --output-file "jobs_scratch_dir/pipeline.yml"
   after_script: [ ]
   artifacts:
     paths:
-      - "${CI_PROJECT_DIR}/jobs_scratch_dir"
+      - "jobs_scratch_dir/pipeline.ym"
 
 build-jobs:
   stage: build
@@ -256,7 +255,8 @@ build-jobs:
     - generate-pipeline
   trigger:
     include:
-      - local: "jobs_scratch_dir/pipeline.yml"
+      - artifact: "jobs_scratch_dir/pipeline.yml"
+        job: generate-pipeline
     strategy: depend
 
 jug_dev:default:
