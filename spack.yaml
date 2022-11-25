@@ -69,7 +69,7 @@ spack:
 
   gitlab-ci:
     mappings:
-      - match: [”os=debian"]
+      - match: ["os=debian"]
         runner-attributes:
           image: debian_testing_base
           tags:
