@@ -33,23 +33,23 @@ spack:
     # - madx@5.08.01
     # - mesa@22.1.2 +glx -llvm +opengl +opengles +osmesa
     - nlohmann-json@3.11.2
-    - npsim@1.1.0 +geocad +http
-    - opencascade@7.6.3
+    #- npsim@1.1.0 +geocad +http
+    #- opencascade@7.6.3
     - pkg-config@0.29.2
-    - podio@0.15
-    - prmon@3.0.2 +plot
-    - pythia8@8.306 +fastjet
+    #- podio@0.15
+    #- prmon@3.0.2 +plot
+    #- pythia8@8.306 +fastjet
     - python@3.10.8
-    - py-numpy@1.23.4
-    - py-pip@22.2.2
-    - py-toml@0.10.2
+    #- py-numpy@1.23.4
+    #- py-pip@22.2.2
+    #- py-toml@0.10.2
     - qt@5.15.5 +opengl
     - root@6.26.06 cxxstd=17 
           +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc -webgui +xrootd +ssl 
-    - spdlog@1.10.0
-    - stow@2.3.1
-    - tensorflow-lite@2.8.0 -xnnpack
+    #- spdlog@1.10.0
+    #- stow@2.3.1
+    #- tensorflow-lite@2.8.0 -xnnpack
     - xrootd@5.3.2 cxxstd=17 +python
 
   concretizer: 
