@@ -242,7 +242,7 @@ base:
       --artifacts-root "${CI_PROJECT_DIR}/jobs_scratch_dir/"
       --output-file "${CI_PROJECT_DIR}/jobs_scratch_dir/pipeline.yml"
       --check-index-only
-      --dependencies
+      --prune-dag
       --optimize
   after_script: [ ]
   artifacts:
