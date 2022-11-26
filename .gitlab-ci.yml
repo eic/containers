@@ -247,7 +247,7 @@ base:
   after_script: [ ]
   artifacts:
     paths:
-      - "${CI_PROJECT_DIR}/jobs_scratch_dir/"
+      - "${CI_PROJECT_DIR}/jobs_scratch_dir"
 
 generate-pipeline-debian-testing:
   extends: .generate
@@ -256,14 +256,14 @@ generate-pipeline-debian-testing:
 
 build-jobs:
   stage: build
-  needs:
-    - artifacts: True
-      job: generate-pipeline-debian-testing
   trigger:
     include:
       - artifact: jobs_scratch_dir/pipeline.yml
         job: generate-pipeline-debian-testing
     strategy: depend
+  needs:
+    - artifacts: True
+      job: generate-pipeline-debian-testing
 
 jug_dev:default:
   parallel:
