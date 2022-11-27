@@ -241,7 +241,6 @@ base:
     - spack ci generate
       --artifacts-root "${CI_PROJECT_DIR}/jobs_scratch_dir/"
       --output-file "${CI_PROJECT_DIR}/jobs_scratch_dir/pipeline.yml"
-      --enable-artifacts-buildcache
       --check-index-only
       --prune-dag
       --optimize
