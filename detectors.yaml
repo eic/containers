@@ -3,6 +3,8 @@ detectors:
     nightly:
       default: true
       version: main
+    main:
+      version: main
     22.10.0:
       version: 22.10.0
       ip:
