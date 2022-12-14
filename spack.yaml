@@ -16,7 +16,8 @@ spack:
     - dd4hep@1.23 +ddg4 +ddcad +hepmc3 +ipo +lcio
     - edm4eic@1.2.1 cxxstd=17 -ipo
     - edm4hep@0.7 cxxstd=17 -ipo
-    - eicrecon@0.3.6
+    - eic-smear@1.1.10
+    - eicrecon@0.3.6.1
     - eigen@3.4.0
     - emacs
     - fastjet@3.4.0

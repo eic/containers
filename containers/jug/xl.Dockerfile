@@ -106,3 +106,6 @@ RUN cd /tmp                                                                     
  && /tmp/setup_detectors.py --prefix /opt/detector --config /tmp/detectors.yaml \
                          $NIGHTLY_FLAG                                          \
  && rm /tmp/setup_detectors.py
+
+## Hotfix for misbehaving OSG nodes
+RUN mkdir /hadoop

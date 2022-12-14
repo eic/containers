@@ -24,7 +24,7 @@ export JUGGLER_BEAMLINE_CONFIG_VERSION=$BEAMLINE_CONFIG_VERSION
 export JUGGLER_INSTALL_PREFIX=/usr/local
 
 ## Export detector libraries
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{prefix}/lib
+export LD_LIBRARY_PATH={prefix}/lib${{LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}}
 
 ## modify PS1 for this detector version
 export PS1="${{PS1:-}}"
@@ -40,7 +40,7 @@ export DETECTOR_CONFIG={detector}
 export DETECTOR_VERSION={version}
 
 ## Export detector libraries
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{prefix}/lib
+export LD_LIBRARY_PATH={prefix}/lib${{LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}}
 
 ## modify PS1 for this detector version
 export PS1="${{PS1:-}}"
