@@ -419,7 +419,7 @@ jug_xl:singularity:nightly:
   extends: .singularity
   rules:
     - !reference ['.singularity', rules]
-    - if: '$NIGHTLY != "0" && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
     - when: never
   needs:
