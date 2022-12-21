@@ -20,7 +20,7 @@ spack:
     - fastjet@3.4.0
     - fmt@8.1.1 +shared cxxstd=17
     - gaudi@36.7 +aida
-    - geant4@11.0.3 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
+    - geant4@11.1.0 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
     - hepmc3@3.2.5 +python +rootio
     - heppdt@2.06.01
     - igprof@5.9.16
