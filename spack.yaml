@@ -49,7 +49,7 @@ spack:
     - stow@2.3.1
     - tensorflow-lite@2.8.0 -xnnpack
     - xrootd@5.3.2 cxxstd=17 +python
-    - cppcoro@2021-01-13
+    - cppcoro@git.10bbcdbf2be3ad3aa56febcf4c7662d771460a99
   concretizer: 
     unify: true
   packages:
