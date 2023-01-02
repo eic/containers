@@ -97,7 +97,7 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
  && spack repo add --scope site "${EICSPACK_ROOT}"
 
 ## Setup our custom environment
-COPY spack.yaml /opt/spack-environment/
+COPY spack/ /opt/spack-environment/
 RUN rm -r /usr/local                                                    \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate /opt/spack-environment/                          \
