@@ -1,4 +1,7 @@
 spack:
+  include: 
+  - concretizer.yaml
+  - packages.yaml
   specs:
     - acts@21.1.0 +dd4hep +identification +json +tgeo +examples +fatras +geant4 +python
     - actsvg@0.4.26 +examples
