@@ -91,8 +91,10 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 
 ## Setup our custom environment
 COPY spack/ /opt/spack-environment/
+ARG SPACK_ENV=de
 RUN rm -r /usr/local                                                    \
- && spack env activate /opt/spack-environment/dev/                      \
+ && cd /opt/spack-environment                                           \
+ && spack env activate ${SPACK_ENV}                                     \
  && spack concretize
 
 
@@ -112,7 +114,7 @@ RUN rm -r /usr/local                                                    \
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     cd /opt/spack-environment                                           \
  && ls /var/cache/spack-mirror                                          \
- && spack env activate .                                                \
+ && spack env activate ${SPACK_ENV}                                     \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
     || spack install -j64 --no-check-signature                          \
@@ -139,7 +141,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 COPY requirements.txt /usr/local/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip                            \
     echo "Installing additional python packages"                        \
- && cd /opt/spack-environment && spack env activate .                   \
+ && cd /opt/spack-environment && spack env activate ${SPACK_ENV}        \
  && python -m pip install                                               \
     --trusted-host pypi.org                                             \
     --trusted-host files.pythonhosted.org                               \
@@ -154,11 +156,11 @@ RUN --mount=type=cache,target=/var/cache/pip                            \
 RUN cd /opt/spack-environment                                           \
  && echo -n ""                                                          \
  && echo "Grabbing environment info"                                    \
- && spack env activate --sh -d .                                        \
+ && spack env activate --sh -d ${SPACK_ENV}                             \
         | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
         | sed '/MANPATH/ s/;$/:;/'                                      \
     > /etc/profile.d/z10_spack_environment.sh                           \
- && cd /opt/spack-environment && spack env activate .                   \
+ && cd /opt/spack-environment && spack env activate ${SPACK_ENV}        \
  && echo -n ""                                                          \
  && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
  && echo "export PODIO=$(spack location -i podio);"                     \
@@ -179,7 +181,9 @@ WORKDIR /
 FROM builder as staging
 
 # Garbage collect in environment
-RUN cd /opt/spack-environment && spack env activate . && spack gc -y
+RUN cd /opt/spack-environment \
+ && spack env activate ${SPACK_ENV} \
+ && spack gc -y
 
 # Strip all the binaries
 # This reduces the image by factor of x2, so worth the effort
