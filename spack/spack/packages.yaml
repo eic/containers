@@ -1,0 +1,5 @@
+packages:
+  all:
+    compiler: [gcc]
+    variants:
+      build_type=Release
