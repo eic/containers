@@ -1,0 +1,18 @@
+spack:
+  include: 
+  - ../concretizer.yaml
+  - ../packages.yaml
+  packages:
+    geant:
+      variants: -opengl
+    dd4hep:
+      variants: -ddeve -examples -utilityapps
+    root:
+      variants: -x -opengl
+  specs:
+    - dd4hep
+    - eicrecon
+    - npsim
+    - prmon
+    - xrootd
+  view: /usr/local
