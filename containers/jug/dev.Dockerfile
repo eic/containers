@@ -98,7 +98,7 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 
 ## Setup our custom environment
 COPY spack/ /opt/spack-environment/
-ARG SPACK_ENV=de
+ARG SPACK_ENV=dev
 RUN rm -r /usr/local                                                    \
  && cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
