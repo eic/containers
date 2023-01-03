@@ -1,7 +1,7 @@
 spack:
   include: 
-  - concretizer.yaml
-  - packages.yaml
+  - ../concretizer.yaml
+  - ../packages.yaml
   specs:
     - acts
     - actsvg
