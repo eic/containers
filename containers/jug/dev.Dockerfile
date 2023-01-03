@@ -100,7 +100,7 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 COPY spack/ /opt/spack-environment/
 RUN rm -r /usr/local                                                    \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate /opt/spack-environment/                          \
+ && spack env activate /opt/spack-environment/dev/                      \
  && spack concretize --fresh
 
 
