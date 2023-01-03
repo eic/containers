@@ -3,55 +3,52 @@ spack:
   - concretizer.yaml
   - packages.yaml
   specs:
-    - acts@21.1.0 +dd4hep +identification +json +tgeo +examples +fatras +geant4 +python
-    - actsvg@0.4.26 +examples
-    - acts-dd4hep@1.0.1
-    - afterburner@0.1.2 +root +zlib
-    - cairo@1.16.0 +fc+ft+X+pdf+gobject
-    - clhep@2.4.6.0 cxxstd=17
-    - cli11@2.1.1
-    - cmake@3.24.3
-    - cnpy@master
-    - cppcoro@git.10bbcdbf2be3ad3aa56febcf4c7662d771460a99
-    - dawn@3_91a
-    - dawncut@1_54a
-    - dd4hep@1.23 +ddg4 +ddcad +hepmc3 +lcio
-    - edm4eic@1.2.2 cxxstd=17
-    - edm4hep@0.7 cxxstd=17
-    - eic-smear@1.1.10
-    - eicrecon@0.4.2
-    - eigen@3.4.0
+    - acts
+    - actsvg
+    - afterburner
+    - cairo
+    - clhep
+    - cli11
+    - cmake
+    - cnpy
+    - cppcoro
+    - dawn
+    - dawncut
+    - dd4hep
+    - edm4eic
+    - edm4hep
+    - eic-smear
+    - eicrecon
+    - eigen
     - emacs
-    - fastjet@3.4.0
-    - fmt@8.1.1 +shared cxxstd=17
-    - gaudi@36.7 +aida
-    - geant4@11.1.0 cxxstd=17 +opengl +vecgeom +x11 +qt +threads
-    - hepmc3@3.2.5 +python +rootio
-    - heppdt@2.06.01
-    - imagemagick@7.0.8-7
-    - intel-tbb@2020.3
-    - irt@1.0.0
-    - jana2@2.0.8 -ipo +root +zmq
-    - madx@5.08.01
-    - mesa@22.1.2 +glx -llvm +opengl +opengles +osmesa
-    - nlohmann-json@3.11.2
-    - npsim@1.1.0 +geocad +http
-    - opencascade@7.6.3
-    - pkg-config@0.29.2
-    - podio@0.15
-    - prmon@3.0.2 +plot
-    - pythia8@8.306 +fastjet
-    - python@3.10.8
-    - py-boto3@1.18.12
-    - py-numpy@1.23.4
-    - py-pip@22.2.2
-    - py-toml@0.10.2
-    - qt@5.15.5 +opengl
-    - root@6.26.06 cxxstd=17 
-          +fftw +fortran +gdml +http -ipo +mlp +pythia8 
-          +root7 +tmva +vc -webgui +xrootd +ssl 
-    - spdlog@1.10.0 +fmt_external
-    - stow@2.3.1
-    - tensorflow-lite@2.8.0 -xnnpack
-    - xrootd@5.3.2 cxxstd=17 +python
+    - fastjet
+    - fmt
+    - gaudi
+    - geant4
+    - hepmc3
+    - heppdt
+    - igprof
+    - imagemagick
+    - intel-tbb
+    - irt
+    - jana2
+    - madx
+    - mesa
+    - nlohmann-json
+    - npsim
+    - opencascade
+    - pkg-config
+    - podio
+    - prmon
+    - pythia8
+    - python
+    - py-numpy
+    - py-pip
+    - py-toml
+    - qt
+    - root
+    - spdlog
+    - stow
+    - tensorflow-lite
+    - xrootd
   view: /usr/local

@@ -5,7 +5,7 @@ packages:
       +ipo build_type=Release
   acts:
     version: [20.3.0]
-    variants: +dd4hep +identification +json +tgeo +ipo +examples +fatras +geant4 +python
+    variants: +dd4hep +identification +json +tgeo +examples +fatras +geant4 +python
   actsvg:
     version: [0.4.26]
     variants: +examples
@@ -42,7 +42,7 @@ packages:
   eic-smear:
     version: [1.1.10]
   eicrecon:
-    version: [0.4.0]
+    version: [0.4.2]
   eigen:
     version: [3.4.0]
   emacs:
@@ -73,7 +73,7 @@ packages:
     version: [1.0.0]
   jana2:
     version: [2.0.8]
-    variants: +root +zmq
+    variants: -ipo +root +zmq
   madx:
     version: [5.08.01]
   mesa:
@@ -98,6 +98,8 @@ packages:
     variants: +fastjet
   python:
     version: [3.10.8]
+  py-boto3:
+    version: [1.18.12]
   py-numpy:
     version: [1.23.4]
   py-pip:
@@ -109,7 +111,7 @@ packages:
     variants: +opengl
   root:
     version: [6.26.06]
-    variants: cxxstd=17 +fftw +fortran +gdml +http +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl 
+    variants: cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl 
   spdlog:
     version: [1.10.0]
     variants: +fmt_external
