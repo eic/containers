@@ -253,7 +253,7 @@ jug_dev:default:
     - PACKAGE_HASH=$(sha1sum spack.yaml | head -c40)
     - echo "PACKAGE_HASH=${PACKAGE_HASH}"
     ## move spack.yaml into the container build directory
-    - cp -r spack containers/jug/spack
+    - cp -r spack containers/jug
     - CACHE_FLAG=""
     - |
       if [ $FORCE_NOCACHE = 1 ]; then
