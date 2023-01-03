@@ -13,7 +13,7 @@ packages:
     version: [0.1.2]
     variants: +root +zlib
   cairo:
-    version: [@1.16.0]
+    version: [1.16.0]
     variants: +fc+ft+X+pdf+gobject
   clhep:
     version: [2.4.6.0]
