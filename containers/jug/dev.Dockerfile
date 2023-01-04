@@ -95,7 +95,6 @@ RUN rm -r /usr/local                                                    \
  && spack env activate /opt/spack-environment/                          \
  && spack concretize
 
-
 ## Now execute the main build (or fetch from cache if possible)
 ## note, no-check-signature is needed to allow the quicker signature-less
 ## packages from the internal (docker) buildcache
@@ -207,7 +206,9 @@ RUN strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
 RUN spack debug report                                                  \
       | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//"             \
     >> /etc/jug_info                                                    \
- && spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
+ && spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info \
+ && spack graph --dot --color --installed > /opt/spack-environment/env.dot
+
 
 COPY eic-shell /usr/local/bin/eic-shell
 COPY eic-info /usr/local/bin/eic-info
