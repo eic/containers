@@ -1,6 +1,6 @@
 spack:
   specs:
-    - acts@20.3.0 +dd4hep +identification +json +tgeo +ipo +examples +fatras +geant4 +python
+    - acts@21.1.0 +dd4hep +identification +json +tgeo +ipo +examples +fatras +geant4 +python
     - actsvg@0.4.26 +examples
     - afterburner@0.1.2 +root +zlib
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
