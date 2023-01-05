@@ -207,7 +207,9 @@ RUN strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
 RUN spack debug report                                                  \
       | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//"             \
     >> /etc/jug_info                                                    \
- && spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
+ && spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info \
+ && spack graph --dot --installed > /opt/spack-environment/env.dot
+
 
 COPY eic-shell /usr/local/bin/eic-shell
 COPY eic-info /usr/local/bin/eic-info
