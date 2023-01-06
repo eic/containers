@@ -44,7 +44,7 @@ spack:
     - py-toml@0.10.2
     - qt@5.15.5 +opengl
     - root@6.26.06 cxxstd=17 
-          +fftw +fortran +gdml +http +mlp +pythia8 
+          +fftw +fortran +gdml +http -ipo +mlp +pythia8 
           +root7 +tmva +vc -webgui +xrootd +ssl 
     - spdlog@1.10.0 +fmt_external
     - stow@2.3.1
