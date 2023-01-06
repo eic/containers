@@ -25,6 +25,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
  && apt-get -yqq update                                                 \
  && apt-get -yqq install --no-install-recommends                        \
         bc                                                              \
+        bzip2                                                           \
         ca-certificates                                                 \
         ccache                                                          \
         curl                                                            \
