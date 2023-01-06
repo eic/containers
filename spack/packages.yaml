@@ -1,6 +1,6 @@
 packages:
   all:
-    compiler: [gcc]
+    require: "%gcc"
     variants:
       build_type=Release
   acts:
