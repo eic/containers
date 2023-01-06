@@ -4,122 +4,122 @@ packages:
     variants:
       +ipo build_type=Release
   acts:
-    version: [20.3.0]
+    require: "@20.3.0"
     variants: +dd4hep +identification +json +tgeo +examples +fatras +geant4 +python
   actsvg:
-    version: [0.4.26]
+    require: "@0.4.26"
     variants: +examples
   afterburner:
-    version: [0.1.2]
+    require: "@0.1.2"
     variants: +root +zlib
   cairo:
-    version: [1.16.0]
+    require: "@1.16.0"
     variants: +fc+ft+X+pdf+gobject
   clhep:
-    version: [2.4.6.0]
+    require: "@2.4.6.0"
     variants: cxxstd=17
   cli11:
-    version: [2.1.1]
+    require: "@2.1.1"
   cmake:
-    version: [3.24.3]
+    require: "@3.24.3"
   cnpy:
-    version: [master]
+    require: "@master"
   cppcoro:
-    version: [git.10bbcdbf2be3ad3aa56febcf4c7662d771460a99]
+    require: "@git.10bbcdbf2be3ad3aa56febcf4c7662d771460a99"
   dawn:
-    version: [3_91a]
+    require: "@3_91a"
   dawncut:
-    version: [1_54a]
+    require: "@1_54a"
   dd4hep:
-    version: [1.23]
+    require: "@1.23"
     variants: +ddg4 +ddcad +hepmc3 +ipo +lcio
   edm4eic:
-    version: [1.2.1]
+    require: "@1.2.1"
     variants: cxxstd=17 -ipo
   edm4hep:
-    version: [0.7]
+    require: "@0.7"
     variants: cxxstd=17 -ipo
   eic-smear:
-    version: [1.1.10]
+    require: "@1.1.10"
   eicrecon:
-    version: [0.4.2]
+    require: "@0.4.2"
   eigen:
-    version: [3.4.0]
+    require: "@3.4.0"
   emacs:
-    version: [28.1]
+    require: "@28.1"
   fastjet:
-    version: [3.4.0]
+    require: "@3.4.0"
   fmt:
-    version: [8.1.1]
+    require: "@8.1.1"
     variants: +shared cxxstd=17
   gaudi:
-    version: [36.7]
+    require: "@36.7"
     variants: +aida
   geant4:
-    version: [11.1.0]
+    require: "@11.1.0"
     variants: cxxstd=17 +opengl +vecgeom +x11 +qt +threads
   hepmc3:
-    version: [3.2.5]
+    require: "@3.2.5"
     variants: +python +rootio
   heppdt:
-    version: [2.06.01]
+    require: "@2.06.01"
   igprof:
-    version: [5.9.16]
+    require: "@5.9.16"
   imagemagick:
-    version: [7.0.8-7]
+    require: "@7.0.8-7"
   intel-tbb:
-    version: [2020.3]
+    require: "@2020.3"
   irt:
-    version: [1.0.0]
+    require: "@1.0.0"
   jana2:
-    version: [2.0.8]
+    require: "@2.0.8"
     variants: -ipo +root +zmq
   madx:
-    version: [5.08.01]
+    require: "@5.08.01"
   mesa:
-    version: [22.1.2]
+    require: "@22.1.2"
     variants: +glx -llvm +opengl +opengles +osmesa
   nlohmann-json:
-    version: [3.11.2]
+    require: "@3.11.2"
   npsim:
-    version: [1.1.0]
+    require: "@1.1.0"
     variants: +geocad +http
   opencascade:
-    version: [7.6.3]
+    require: "@7.6.3"
   pkg-config:
-    version: [0.29.2]
+    require: "@0.29.2"
   podio:
-    version: [0.15]
+    require: "@0.15"
   prmon:
-    version: [3.0.2]
+    require: "@3.0.2"
     variants: +plot
   pythia8:
-    version: [8.306]
+    require: "@8.306"
     variants: +fastjet
   python:
-    version: [3.10.8]
+    require: "@3.10.8"
   py-boto3:
-    version: [1.18.12]
+    require: "@1.18.12"
   py-numpy:
-    version: [1.23.4]
+    require: "@1.23.4"
   py-pip:
-    version: [22.2.2]
+    require: "@22.2.2"
   py-toml:
-    version: [0.10.2]
+    require: "@0.10.2"
   qt:
-    version: [5.15.5]
+    require: "@5.15.5"
     variants: +opengl
   root:
-    version: [6.26.06]
-    variants: cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl 
+    require: "@6.26.06"
+    variants: cxxstd=17 +fftw +fortran +gdml +http +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl 
   spdlog:
-    version: [1.10.0]
+    require: "@1.10.0"
     variants: +fmt_external
   stow:
-    version: [2.3.1]
+    require: "@2.3.1"
   tensorflow-lite:
-    version: [2.8.0]
+    require: "@2.8.0"
     variants: -xnnpack
   xrootd:
-    version: [5.3.2]
+    require: "@5.3.2"
     variants: cxxstd=17 +python
