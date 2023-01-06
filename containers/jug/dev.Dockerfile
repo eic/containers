@@ -70,14 +70,14 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     export PATH=$PATH:$SPACK_ROOT/bin                                   \
  && if [ -n $S3_ACCESS_KEY ] ; then                                     \
     spack mirror add --scope site                                       \
-      --s3-endpoint-url https://dtn01.sdcc.bnl.gov:9000                 \
+      --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
       --s3-access-key-id ${S3_ACCESS_KEY}                               \
       --s3-access-key-secret ${S3_SECRET_KEY}                           \
       eic-spack s3://eictest/EPIC/spack                                 \
     ; fi                                                                \
  && spack mirror list
 
-## This variable will change whenevery either spack.yaml or our spack package
+## This variable will change whenever either spack.yaml or our spack package
 ## overrides change, triggering a rebuild
 ARG CACHE_BUST="hash"
 ARG CACHE_NUKE=""
@@ -131,15 +131,29 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
  && spack buildcache update-index -d /var/cache/spack-mirror            \
  && spack buildcache list --allarch --very-long                         \
     | sed '/^$/d;/^--/d;s/@.\+//;s/\([a-z0-9]*\) \(.*\)/\2\/\1/'        \
-    | sort > tmp.buildcache.txt                                         \
+    | sort > buildcache.local.txt                                         \
  && spack find --format {name}/{hash} | sort                            \
-    | comm -23 - tmp.buildcache.txt                                     \
+    | comm -23 - buildcache.local.txt                                     \
     | xargs --no-run-if-empty                                           \
       spack buildcache create --allow-root --only package --unsigned    \
                               --directory /var/cache/spack-mirror       \
                               --rebuild-index                           \
  && spack clean -a                                                      \
  && exit $status
+
+## Update the S3 build cache (without local cache mount)
+RUN cd /opt/spack-environment                                           \
+ && ls /var/cache/spack-mirror                                          \
+ && spack buildcache update-index -mirror-name eic-spack                \
+ && spack buildcache list --allarch --very-long                         \
+    | sed '/^$/d;/^--/d;s/@.\+//;s/\([a-z0-9]*\) \(.*\)/\2\/\1/'        \
+    | sort > buildcache.eic-spack.txt                                   \
+ && spack find --format {name}/{hash} | sort                            \
+    | comm -23 - buildcache.eic-spack.txt                               \
+    | xargs --no-run-if-empty                                           \
+      spack buildcache create --allow-root --only package --unsigned    \
+                              --mirror-name eic-spack                   \
+                              --rebuild-index
 
 ## Extra post-spack steps:
 ##   - Python packages
