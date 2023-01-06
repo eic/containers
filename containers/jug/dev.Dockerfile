@@ -61,6 +61,7 @@ RUN declare -A arch=(                                                   \
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     export PATH=$PATH:$SPACK_ROOT/bin                                   \
  && spack mirror add docker /var/cache/spack-mirror                     \
+ && spack buildcache update-index -d /var/cache/spack-mirror            \
  && spack mirror list
 
 ## Setup eic-spack buildcache mirrors (FIXME: leaks credentials into layer)
