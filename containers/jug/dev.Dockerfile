@@ -146,14 +146,14 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ARG S3RW_ACCESS_KEY=""
 ARG S3RW_SECRET_KEY=""
 RUN cd /opt/spack-environment                                           \
- && if [ -n ${S3RW_ACCESS_KEY} ] ; then                                 \
+ && if [ -n "${S3RW_ACCESS_KEY}" ] ; then                               \
     spack mirror add --scope site                                       \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
-      --s3-access-key-id ${S3RW_ACCESS_KEY}                             \
-      --s3-access-key-secret ${S3RW_SECRET_KEY}                         \
+      --s3-access-key-id "${S3RW_ACCESS_KEY}"                           \
+      --s3-access-key-secret "${S3RW_SECRET_KEY}"                       \
       eic-spack s3://eictest/EPIC/spack                                 \
  && spack mirror list                                                   \
- && spack buildcache update-index -mirror-name eic-spack                \
+ && spack buildcache update-index --mirror-name eic-spack               \
  && spack buildcache list --allarch --very-long                         \
     | sed '/^$/d;/^--/d;s/@.\+//;s/\([a-z0-9]*\) \(.*\)/\2\/\1/'        \
     | sort > buildcache.eic-spack.txt                                   \
