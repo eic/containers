@@ -1,6 +1,6 @@
 packages:
   all:
-    compiler: [gcc]
+    require: "%gcc"
     variants:
       +ipo build_type=Release
   acts:
