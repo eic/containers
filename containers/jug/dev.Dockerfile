@@ -147,6 +147,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ARG S3RW_ACCESS_KEY=""
 ARG S3RW_SECRET_KEY=""
 RUN cd /opt/spack-environment                                           \
+ && spack env activate .                                                \
  && if [ -n "${S3RW_ACCESS_KEY}" ] ; then                               \
     spack mirror add --scope site                                       \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
