@@ -79,6 +79,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
           gcc${GCC} g++${GCC} gfortran${GCC}                            \
    && apt-get -yqq install                                              \
           clang${CLANG} clang-tidy${CLANG} clang-format${CLANG}         \
+          llvm-${CLANG}-linker-tools                                    \
    && update-alternatives --install /usr/bin/gcc gcc                    \
                                     /usr/bin/gcc${GCC} 100              \
    && update-alternatives --install /usr/bin/g++ g++                    \
@@ -94,6 +95,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
    && apt-get -yqq install                                              \
           gcc g++ gfortran                                              \
           clang clang-tidy clang-format                                 \
+          llvm-dev                                                      \
  ; fi                                                                   \
  && apt-get -yqq autoremove                                             \
  && gcc --version                                                       \
