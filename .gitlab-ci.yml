@@ -10,10 +10,11 @@ variables:
   ## Spack github version, e.g. v0.18.1 or commit hash
   SPACK_VERSION: "v0.19.0"
   ## Space-separated list of spack cherry-picks
-  SPACK_CHERRYPICKS: "b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e 99056e03bd3e903b222e300636ec484d85d4b3fb"
+  SPACK_CHERRYPICKS: "b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e e055dc0e64693782e5d98ffa90780ad57c855aa2 99056e03bd3e903b222e300636ec484d85d4b3fb"
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## [hash]: [description]
   ## b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e: geant4: version bumps for Geant4 11.1.0
+  ## e055dc0e64693782e5d98ffa90780ad57c855aa2: spack: use file paths/urls correctly
   ## 99056e03bd3e903b222e300636ec484d85d4b3fb: acts: new versions 19.11.0, 21.0.0, 21.1.0
 
   ## EIC spack organization and repository, e.g. eic/eic-spack
