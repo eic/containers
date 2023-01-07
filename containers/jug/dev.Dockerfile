@@ -154,7 +154,6 @@ RUN cd /opt/spack-environment                                           \
       --s3-access-key-secret "${S3RW_SECRET_KEY}"                       \
       eic-spack s3://eictest/EPIC/spack                                 \
  && spack mirror list                                                   \
- && spack buildcache update-index --mirror-name eic-spack               \
  && spack buildcache list --allarch --very-long                         \
     | sed '/^$/d;/^--/d;s/@.\+//;s/\([a-z0-9]*\) \(.*\)/\2\/\1/'        \
     | sort > buildcache.eic-spack.txt                                   \
@@ -164,7 +163,7 @@ RUN cd /opt/spack-environment                                           \
       spack buildcache create --allow-root --only package --unsigned    \
                               --mirror-name eic-spack                   \
                               --rebuild-index                           \
- && spack mirror rm eic-spack                                           \
+ && spack mirror rm --scope site eic-spack                              \
     ; fi                                                                \
  && spack mirror list
 
