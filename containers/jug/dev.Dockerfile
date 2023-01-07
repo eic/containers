@@ -69,11 +69,11 @@ ARG S3_ACCESS_KEY=""
 ARG S3_SECRET_KEY=""
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     export PATH=$PATH:$SPACK_ROOT/bin                                   \
- && if [ -n $S3_ACCESS_KEY ] ; then                                     \
+ && if [ -n "${S3_ACCESS_KEY}" ] ; then                                 \
     spack mirror add --scope site                                       \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
-      --s3-access-key-id ${S3_ACCESS_KEY}                               \
-      --s3-access-key-secret ${S3_SECRET_KEY}                           \
+      --s3-access-key-id "${S3_ACCESS_KEY}"                             \
+      --s3-access-key-secret "${S3_SECRET_KEY}"                         \
       eic-spack s3://eictest/EPIC/spack                                 \
     ; fi                                                                \
  && spack mirror list
@@ -126,7 +126,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     || spack install -j64 --no-check-signature                          \
     || spack install -j64 --no-check-signature                          \
     || status=$?                                                        \
- && spack mirror rm eic-spack                                           \
+ && spack mirror rm --scope site eic-spack                              \
  && [ -z "${CACHE_NUKE}" ]                                              \
     || rm -rf /var/cache/spack-mirror/build_cache/*                     \
  && mkdir -p /var/cache/spack-mirror/build_cache                        \
