@@ -79,7 +79,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
           gcc${GCC} g++${GCC} gfortran${GCC}                            \
    && apt-get -yqq install                                              \
           clang${CLANG} clang-tidy${CLANG} clang-format${CLANG}         \
-          llvm-${CLANG}-linker-tools                                    \
+          llvm${CLANG}-linker-tools                                     \
    && update-alternatives --install /usr/bin/gcc gcc                    \
                                     /usr/bin/gcc${GCC} 100              \
    && update-alternatives --install /usr/bin/g++ g++                    \
