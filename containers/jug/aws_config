@@ -1,3 +1,3 @@
 [default]
 s3 =
-  multipart_threshold = 1GB
+  multipart_threshold = 8GB
