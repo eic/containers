@@ -162,7 +162,7 @@ RUN cd /opt/spack-environment                                           \
     | sort > buildcache.eic-spack.txt                                   \
  && spack find --format {name}/{hash} | sort                            \
     | comm -23 - buildcache.eic-spack.txt                               \
-    | shuf | xargs --no-run-if-empty                                    \
+    | shuf | xargs --no-run-if-empty --max-args 1 --max-procs 1         \
       spack buildcache create --allow-root --only package --unsigned    \
                               --mirror-name eic-spack                   \
                               --rebuild-index                           \
