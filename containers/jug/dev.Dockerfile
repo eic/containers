@@ -147,6 +147,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ARG S3RW_ACCESS_KEY=""
 ARG S3RW_SECRET_KEY=""
 ADD aws_config /root/.aws/config
+ENV AWS_CONFIG_FILE=/root/.aws/config
 RUN cd /opt/spack-environment                                           \
  && spack env activate .                                                \
  && if [ -n "${S3RW_ACCESS_KEY}" ] ; then                               \
