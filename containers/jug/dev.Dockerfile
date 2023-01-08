@@ -146,6 +146,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ## Update the S3 build cache (without local cache mount)
 ARG S3RW_ACCESS_KEY=""
 ARG S3RW_SECRET_KEY=""
+ADD aws_config /root/.aws/config
 RUN cd /opt/spack-environment                                           \
  && spack env activate .                                                \
  && if [ -n "${S3RW_ACCESS_KEY}" ] ; then                               \
