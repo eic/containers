@@ -165,7 +165,7 @@ version:
 .build:
   rules:
     - when: on_success
-  resource_group: build
+  resource_group: ${CI_PIPELINE_ID}
   ## Use docker runner for docker builds
   tags:
     - docker-new
