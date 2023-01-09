@@ -204,6 +204,7 @@ base:
         BUILD_IMAGE: cuda_base
   extends: .build
   stage: base
+  when: manual
   needs:
     - version
   script:
@@ -219,6 +220,8 @@ base_qemu:
     matrix:
       - BASE_IMAGE: arm64v8/debian:testing-20220822-slim
         BUILD_IMAGE: arm64v8_testing_base
+      - BASE_IMAGE: amd64/debian:testing-20220822-slim
+        BUILD_IMAGE: debian_testing_base
   extends: .build
   stage: base
   needs:
@@ -230,12 +233,6 @@ base_qemu:
                    -f containers/debian/base.Dockerfile
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
-                   containers/debian
-    ## debug
-    - docker build -t ${CI_REGISTRY_IMAGE}/debian_testing_base:${INTERNAL_TAG}
-                   -f containers/debian/base.Dockerfile
-                   --build-arg BASE_IMAGE=amd64/debian:testing-202208022-slim
-                   --build-arg BUILD_IMAGE=debian_testing_base
                    containers/debian
     - !reference [.build, script]
 
