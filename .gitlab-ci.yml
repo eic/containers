@@ -196,32 +196,18 @@ base:
         BUILD_IMAGE: debian_testing_base
       - BASE_IMAGE: amd64/debian:stable-20220527-slim
         BUILD_IMAGE: debian_stable_base_new
+        when: manual
       - BASE_IMAGE: ubuntu:20.04
         BUILD_IMAGE: ubuntu_base
+        when: manual
       - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
         BUILD_IMAGE: oneapi_base
+        when: manual
       - BASE_IMAGE: nvidia/cuda:11.8.0-devel-ubuntu20.04
         BUILD_IMAGE: cuda_base
-  extends: .build
-  stage: base
-  when: manual
-  needs:
-    - version
-  script:
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
-                   -f containers/debian/base.Dockerfile
-                   --build-arg BASE_IMAGE=${BASE_IMAGE}
-                   --build-arg BUILD_IMAGE=${BUILD_IMAGE}
-                   containers/debian
-    - !reference [.build, script]
-
-base_qemu:
-  parallel:
-    matrix:
+        when: manual
       - BASE_IMAGE: arm64v8/debian:testing-20220822-slim
         BUILD_IMAGE: arm64v8_testing_base
-      - BASE_IMAGE: amd64/debian:testing-20220822-slim
-        BUILD_IMAGE: debian_testing_base
   extends: .build
   stage: base
   needs:
