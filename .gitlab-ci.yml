@@ -293,7 +293,6 @@ jug_xl:default:
 #        BUILD_IMAGE: jug_xl_oneapi
   extends: .build
   stage: jug
-  resource_group: build
   needs:
     - version
     - jug_dev:default
@@ -389,6 +388,7 @@ jug_xl:feature:
 .singularity:
   stage: deploy
   interruptible: true
+  resource_group: ${CI_PIPELINE_ID}
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
