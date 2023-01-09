@@ -29,7 +29,7 @@ spack:
     - imagemagick@7.0.8-7
     - intel-tbb@2020.3
     - irt@1.0.0
-    - jana2@2.0.8 -ipo +root +zmq
+    - jana2@2.0.8 +root +zmq
     - madx@5.08.01
     - mesa@22.1.2 +glx -llvm +opengl +opengles +osmesa
     - nlohmann-json@3.11.2
@@ -45,7 +45,7 @@ spack:
     - py-toml@0.10.2
     - qt@5.15.5 +opengl
     - root@6.26.06 cxxstd=17 
-          +fftw +fortran +gdml +http -ipo +mlp +pythia8 
+          +fftw +fortran +gdml +http +mlp +pythia8 
           +root7 +tmva +vc -webgui +xrootd +ssl 
     - spdlog@1.10.0 +fmt_external
     - stow@2.3.1
@@ -57,5 +57,5 @@ spack:
     all:
       compiler: [gcc]
       variants:
-        +ipo build_type=Release
+        -ipo build_type=Release
   view: /usr/local
