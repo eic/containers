@@ -93,6 +93,7 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 ## Setup our custom environment
 COPY spack.yaml /opt/spack-environment/
 RUN rm -r /usr/local                                                    \
+ && export PATH=$PATH:$SPACK_ROOT/bin                                   \
  && spack env activate /opt/spack-environment/                          \
  && spack concretize --fresh
 
