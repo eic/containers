@@ -227,8 +227,10 @@ jug_dev:default:
     matrix:
       - BASE_IMAGE: debian_testing_base
         BUILD_IMAGE: jug_dev
+        ARCH: x86_64_v3
       - BASE_IMAGE: arm64v8_testing_base
         BUILD_IMAGE: jug_dev_arm64v8
+        ARCH: aarch64
 #      - BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE: jug_dev_oneapi
 #      - BASE_IMAGE: cuda_base_new
@@ -259,6 +261,7 @@ jug_dev:default:
                    -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
                    --target=builder
                    -f containers/jug/dev.Dockerfile
+                   --build-arg ARCH="${ARCH}"
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
@@ -275,6 +278,7 @@ jug_dev:default:
     ## now build our image
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
                    -f containers/jug/dev.Dockerfile
+                   --build-arg ARCH="${ARCH}"
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
