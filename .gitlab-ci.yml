@@ -227,6 +227,8 @@ jug_dev:default:
     matrix:
       - BASE_IMAGE: debian_testing_base
         BUILD_IMAGE: jug_dev
+      - BASE_IMAGE: arm64v8_testing_base
+        BUILD_IMAGE: jug_dev_arm64v8
 #      - BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE: jug_dev_oneapi
 #      - BASE_IMAGE: cuda_base_new
@@ -237,6 +239,8 @@ jug_dev:default:
     - version
     - base
   script:
+    - apt-get update -y && apt-get install -y qemu binfmt-support qemu-user-static
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     ## calculate a hash based on the spack.yaml file and the spack directory
     ## and use this spack as a docker variable to force a rebuild when there
     ## is a change (versus rerun from cache)
