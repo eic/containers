@@ -113,7 +113,7 @@ RUN rm -r /usr/local                                                    \
 ## 3. Add packages that need to be added to buildcache if any
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     cd /opt/spack-environment                                           \
- && ls /var/cache/spack-mirror                                          \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate .                                                \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
@@ -141,7 +141,9 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 COPY requirements.txt /usr/local/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip                            \
     echo "Installing additional python packages"                        \
- && cd /opt/spack-environment && spack env activate .                   \
+ && cd /opt/spack-environment                                           \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
+ && spack env activate .                                                \
  && python -m pip install                                               \
     --trusted-host pypi.org                                             \
     --trusted-host files.pythonhosted.org                               \
@@ -154,6 +156,7 @@ RUN --mount=type=cache,target=/var/cache/pip                            \
 ##   - Somehow PODIO env isn't automatically set, 
 ##   - and Gaudi likes BINARY_TAG to be set
 RUN cd /opt/spack-environment                                           \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && echo -n ""                                                          \
  && echo "Grabbing environment info"                                    \
  && spack env activate --sh -d .                                        \
