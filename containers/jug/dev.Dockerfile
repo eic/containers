@@ -93,7 +93,7 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 COPY spack.yaml /opt/spack-environment/
 RUN rm -r /usr/local                                                    \
  && spack env activate /opt/spack-environment/                          \
- && spack concretize
+ && spack concretize --fresh
 
 
 ## Now execute the main build (or fetch from cache if possible)
