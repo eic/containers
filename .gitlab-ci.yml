@@ -330,6 +330,8 @@ jug_xl:default:
     - version
     - jug_dev:default
   script:
+    - apt-get update -y && apt-get install -y qemu binfmt-support qemu-user-static
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - cp detectors.yaml containers/jug
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/jug/xl.Dockerfile
@@ -364,6 +366,8 @@ jug_xl:nightly:
     - version
     - jug_dev:default
   script:
+    - apt-get update -y && apt-get install -y qemu binfmt-support qemu-user-static
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - cp detectors.yaml containers/jug
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
                    -f containers/jug/xl.Dockerfile
