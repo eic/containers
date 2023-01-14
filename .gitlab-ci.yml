@@ -223,7 +223,7 @@ jug_dev:default:
     matrix:
       - BASE_IMAGE: debian_testing_base
         BUILD_IMAGE: jug_dev
-        ARCH: x86_64_v3
+        ARCH: x86_64
       - BASE_IMAGE: arm64v8_testing_base
         BUILD_IMAGE: jug_dev_arm64v8
         ARCH: aarch64
