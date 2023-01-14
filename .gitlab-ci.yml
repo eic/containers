@@ -300,6 +300,18 @@ jug_dev:default:
     ## standard exports
     - !reference [.build, script]
 
+jug_dev:multiarch:
+  parallel:
+    matrix:
+      - IMAGE: jug_dev
+        ARCHS: "amd64 arm64v8"
+  stage: jug
+  needs:
+    - version 
+    - jug_dev:default
+  script:
+    - echo ${ARCHS} | xargs -I {} echo docker manifest create ${IMAGE}:${EXPORT_TAG} "--amend ${IMAGE}:${EXPORT_TAG}-{}"
+
 jug_xl:default:
   parallel:
     matrix:
