@@ -184,7 +184,10 @@ WORKDIR /
 FROM builder as staging
 
 # Garbage collect in environment
-RUN cd /opt/spack-environment && spack env activate . && spack gc -y
+RUN cd /opt/spack-environment                                           \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
+ && spack env activate .                                                \
+ && spack gc -y
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
 ## See
