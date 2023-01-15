@@ -255,7 +255,6 @@ jug_dev:default:
                    -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
                    --target=builder
                    -f containers/jug/dev.Dockerfile
-                   --build-arg ARCH="${SPACK_ARCH}"
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
                    --build-arg SPACK_ARCH="${SPACK_ARCH}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
@@ -273,7 +272,6 @@ jug_dev:default:
     ## now build our image
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
                    -f containers/jug/dev.Dockerfile
-                   --build-arg ARCH="${SPACK_ARCH}"
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
                    --build-arg SPACK_ARCH="${SPACK_ARCH}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
