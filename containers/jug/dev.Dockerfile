@@ -31,8 +31,8 @@ ARG SPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
 RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}                      \
- && if [ -n "$SPACK_CHERRYPICKS" ] ; then                               \
-      git -C ${SPACK_ROOT} cherry-pick -n $SPACK_CHERRYPICKS ;          \
+ && if [ -n "${SPACK_CHERRYPICKS}" ] ; then                             \
+      git -C ${SPACK_ROOT} cherry-pick -n ${SPACK_CHERRYPICKS} ;        \
     fi                                                                  \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/docker-shell                                        \
