@@ -202,6 +202,9 @@ base:
         BUILD_IMAGE: cuda_base
       - BASE_IMAGE: arm64v8/debian:testing-20220822-slim
         BUILD_IMAGE: arm64v8_debian_testing_base
+      - BASE_IMAGE: debian:testing-20220822-slim
+        BUILD_IMAGE: debian_testing_base_multiarch
+        PLATFORM: linux/amd64,linux/arm64/v8
   extends: .build
   stage: base
   needs:
@@ -210,6 +213,7 @@ base:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/debian/base.Dockerfile
+                   ${PLATFORM:+--platform ${PLATFORM}}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    containers/debian
