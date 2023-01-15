@@ -304,7 +304,7 @@ jug_dev:multiarch:
     - version 
     - jug_dev:default
   script:
-    - echo ${ARCHS} | xargs -I {} echo docker manifest create ${IMAGE}:${EXPORT_TAG} "--amend ${IMAGE}:${EXPORT_TAG}-{}"
+    - echo docker manifest create ${IMAGE}:${EXPORT_TAG} $(echo ${ARCHS} | xargs -d " " -I "{}" echo -n "--amend ${IMAGE}:${EXPORT_TAG}-{}")
 
 jug_xl:default:
   parallel:
