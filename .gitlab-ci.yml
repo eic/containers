@@ -194,8 +194,6 @@ base:
     matrix:
       - BASE_IMAGE: amd64/debian:testing-20220822-slim
         BUILD_IMAGE: amd64_debian_testing_base
-      - BASE_IMAGE: amd64/debian:stable-20220527-slim
-        BUILD_IMAGE: amd64_debian_stable_base_new
       - BASE_IMAGE: amd64/ubuntu:20.04
         BUILD_IMAGE: amd64_ubuntu_base
       - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
