@@ -23,6 +23,7 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
 
 ## Setup spack
 ## parts:
+ARG SPACK_ARCH="x86_64"
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="develop"
@@ -30,8 +31,8 @@ ARG SPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
 RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}                      \
- && if [ -n "$SPACK_CHERRYPICKS" ] ; then                               \
-      git -C ${SPACK_ROOT} cherry-pick -n $SPACK_CHERRYPICKS ;          \
+ && if [ -n "${SPACK_CHERRYPICKS}" ] ; then                             \
+      git -C ${SPACK_ROOT} cherry-pick -n ${SPACK_CHERRYPICKS} ;        \
     fi                                                                  \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/docker-shell                                        \
@@ -40,7 +41,7 @@ RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/spack-env                                           \
  && export PATH=${PATH}:${SPACK_ROOT}/bin                               \
- && spack config --scope site add "packages:all:require:arch=x86_64"    \
+ && spack config --scope site add "packages:all:require:arch=${SPACK_ARCH}" \
  && spack config blame packages                                         \
  && spack config --scope site add "config:suppress_gpg_warnings:true"   \
  && spack config --scope site add "config:build_jobs:64"                \
@@ -92,6 +93,7 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 ## Setup our custom environment
 COPY spack.yaml /opt/spack-environment/
 RUN rm -r /usr/local                                                    \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate /opt/spack-environment/                          \
  && spack concretize --fresh
 
@@ -111,7 +113,7 @@ RUN rm -r /usr/local                                                    \
 ## 3. Add packages that need to be added to buildcache if any
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     cd /opt/spack-environment                                           \
- && ls /var/cache/spack-mirror                                          \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate .                                                \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
@@ -139,7 +141,9 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 COPY requirements.txt /usr/local/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip                            \
     echo "Installing additional python packages"                        \
- && cd /opt/spack-environment && spack env activate .                   \
+ && cd /opt/spack-environment                                           \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
+ && spack env activate .                                                \
  && python -m pip install                                               \
     --trusted-host pypi.org                                             \
     --trusted-host files.pythonhosted.org                               \
@@ -152,6 +156,7 @@ RUN --mount=type=cache,target=/var/cache/pip                            \
 ##   - Somehow PODIO env isn't automatically set, 
 ##   - and Gaudi likes BINARY_TAG to be set
 RUN cd /opt/spack-environment                                           \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && echo -n ""                                                          \
  && echo "Grabbing environment info"                                    \
  && spack env activate --sh -d .                                        \
@@ -179,7 +184,10 @@ WORKDIR /
 FROM builder as staging
 
 # Garbage collect in environment
-RUN cd /opt/spack-environment && spack env activate . && spack gc -y
+RUN cd /opt/spack-environment                                           \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
+ && spack env activate .                                                \
+ && spack gc -y
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
 ## See

@@ -193,22 +193,28 @@ base:
   parallel:
     matrix:
       - BASE_IMAGE: amd64/debian:testing-20220822-slim
-        BUILD_IMAGE: debian_testing_base
-      - BASE_IMAGE: amd64/debian:stable-20220527-slim
-        BUILD_IMAGE: debian_stable_base_new
-      - BASE_IMAGE: ubuntu:20.04
-        BUILD_IMAGE: ubuntu_base
+        BUILD_IMAGE: amd64_debian_testing_base
+      - BASE_IMAGE: amd64/ubuntu:20.04
+        BUILD_IMAGE: amd64_ubuntu_base
       - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
         BUILD_IMAGE: oneapi_base
       - BASE_IMAGE: nvidia/cuda:11.8.0-devel-ubuntu20.04
         BUILD_IMAGE: cuda_base
+      - BASE_IMAGE: arm64v8/debian:testing-20220822-slim
+        BUILD_IMAGE: arm64v8_debian_testing_base
+#      - BASE_IMAGE: debian:testing-20220822-slim
+#        BUILD_IMAGE: debian_testing_base_multiarch
+#        PLATFORM: linux/amd64,linux/arm64/v8
   extends: .build
   stage: base
   needs:
     - version
   script:
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx create --name builder --driver docker-container --bootstrap --use
+    - docker buildx build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/debian/base.Dockerfile
+                   ${PLATFORM:+--platform ${PLATFORM}}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    containers/debian
@@ -217,18 +223,25 @@ base:
 jug_dev:default:
   parallel:
     matrix:
-      - BASE_IMAGE: debian_testing_base
+      - BASE_IMAGE: amd64_debian_testing_base
         BUILD_IMAGE: jug_dev
+        SPACK_ARCH: x86_64
+      - BASE_IMAGE: arm64v8_debian_testing_base
+        BUILD_IMAGE: jug_dev_arm64v8
+        SPACK_ARCH: aarch64
 #      - BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE: jug_dev_oneapi
+#        SPACK_ARCH: x86_64 
 #      - BASE_IMAGE: cuda_base_new
 #        BUILD_IMAGE: jug_dev_cuda
+#        SPACK_ARCH: x86_64
   extends: .build
   stage: jug
   needs:
     - version
     - base
   script:
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     ## calculate a hash based on the spack.yaml file and the spack directory
     ## and use this spack as a docker variable to force a rebuild when there
     ## is a change (versus rerun from cache)
@@ -243,11 +256,12 @@ jug_dev:default:
         export CACHE_FLAG="--no-cache"
       fi
     ## Optionally build the raw builder image
-    - test ${EXPORT_BUILDER} = 1 && docker build ${CACHE_FLAG}
+    - test ${EXPORT_BUILDER} = 1 && docker buildx build ${CACHE_FLAG}
                    -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
                    --target=builder
                    -f containers/jug/dev.Dockerfile
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
+                   --build-arg SPACK_ARCH="${SPACK_ARCH}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
@@ -261,9 +275,10 @@ jug_dev:default:
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
     ## now build our image
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
+    - docker buildx build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
                    -f containers/jug/dev.Dockerfile
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
+                   --build-arg SPACK_ARCH="${SPACK_ARCH}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
@@ -284,19 +299,37 @@ jug_dev:default:
     ## standard exports
     - !reference [.build, script]
 
+jug_dev:multiarch:
+  parallel:
+    matrix:
+      - IMAGE: jug_dev
+        ARCHS: "amd64 arm64v8"
+  stage: jug
+  needs:
+    - version 
+    - jug_dev:default
+  script:
+    - echo docker manifest create ${IMAGE}:${EXPORT_TAG} $(echo ${ARCHS} | xargs -d " " -I "{}" echo -n "--amend ${IMAGE}:${EXPORT_TAG}-{}")
+
 jug_xl:default:
   parallel:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
+        DOCKER_ARCH: amd64
+      - BASE_IMAGE: jug_dev_arm64v8
+        BUILD_IMAGE: jug_xl_arm64v8
+        DOCKER_ARCH: arm64v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
+#        DOCKER_ARCH: amd64
   extends: .build
   stage: jug
   needs:
     - version
     - jug_dev:default
   script:
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - cp detectors.yaml containers/jug
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/jug/xl.Dockerfile
@@ -312,8 +345,13 @@ jug_xl:nightly:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
+        DOCKER_ARCH: amd64
+      - BASE_IMAGE: jug_dev_arm64v8
+        BUILD_IMAGE: jug_xl_arm64v8
+        DOCKER_ARCH: arm64v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
+#        DOCKER_ARCH: amd64
   extends: .build
   stage: jug
   rules:
@@ -326,6 +364,7 @@ jug_xl:nightly:
     - version
     - jug_dev:default
   script:
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - cp detectors.yaml containers/jug
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
                    -f containers/jug/xl.Dockerfile
