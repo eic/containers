@@ -212,7 +212,7 @@ base:
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
-    - docker buildx build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/debian/base.Dockerfile
                    ${PLATFORM:+--platform ${PLATFORM}}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
@@ -256,7 +256,7 @@ jug_dev:default:
         export CACHE_FLAG="--no-cache"
       fi
     ## Optionally build the raw builder image
-    - test ${EXPORT_BUILDER} = 1 && docker buildx build ${CACHE_FLAG}
+    - test ${EXPORT_BUILDER} = 1 && docker buildx build --load ${CACHE_FLAG}
                    -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
                    --target=builder
                    -f containers/jug/dev.Dockerfile
@@ -275,7 +275,7 @@ jug_dev:default:
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
     ## now build our image
-    - docker buildx build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
+    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
                    -f containers/jug/dev.Dockerfile
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
                    --build-arg SPACK_ARCH="${SPACK_ARCH}"
