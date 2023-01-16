@@ -47,6 +47,7 @@ RUN declare -A arch=(                                                   \
       ["linux/amd64"]="x86_64"                                          \
       ["linux/arm64"]="aarch64"                                         \
     )                                                                   \
+ && touch /opt/${TARGETPLATFORM} \
  && spack_arch=${arch[${TARGETPLATFORM}]}                               \
  && spack config --scope site add "packages:all:require:arch=${spack_arch}" \
  && spack config blame packages                                         \
