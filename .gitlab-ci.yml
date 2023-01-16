@@ -68,6 +68,8 @@ default:
     - ./gitlab-ci/docker_login.sh --ci -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
     - docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
+    - docker buildx ls
+    - docker buildx inspect
   after_script:
     - docker logout
     - docker logout ${CI_REGISTRY}
