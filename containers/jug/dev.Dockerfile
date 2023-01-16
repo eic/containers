@@ -2,13 +2,13 @@
 ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
 ARG BASE_IMAGE="debian_base"
 ARG INTERNAL_TAG="testing"
-ARG TARGETPLATFORM
 
 ## ========================================================================================
 ## STAGE1: spack builder image
 ## EIC builder image with spack
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as builder
+ARG TARGETPLATFORM
 
 ## install some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt                            \
@@ -47,9 +47,8 @@ RUN declare -A arch=(                                                   \
       ["linux/amd64"]="x86_64"                                          \
       ["linux/arm64"]="aarch64"                                         \
     )                                                                   \
- && touch /opt/${TARGETPLATFORM} \
- && spack_arch=${arch[${TARGETPLATFORM}]}                               \
- && spack config --scope site add "packages:all:require:arch=${spack_arch}" \
+ && arch=${arch[${TARGETPLATFORM}]}                                     \
+ && spack config --scope site add "packages:all:require:arch=${arch}"   \
  && spack config blame packages                                         \
  && spack config --scope site add "config:suppress_gpg_warnings:true"   \
  && spack config --scope site add "config:build_jobs:64"                \
