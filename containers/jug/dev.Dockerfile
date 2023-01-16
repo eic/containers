@@ -216,6 +216,7 @@ COPY profile.d/z11_jug_env.sh /etc/profile.d
 COPY singularity.d /.singularity.d
 
 ## Add minio client into /usr/local/bin
+## FIXME: This should download .../linux-arm64/mc for arm64.
 ADD https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin
 RUN chmod a+x /usr/local/bin/mc
 
@@ -224,10 +225,11 @@ RUN chmod a+x /usr/local/bin/mc
 ## Lean target image
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG}
+ARG TARGETPLATFORM
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="jug_xl" \
-      march="amd64"
+      march="$TARGETPLATFORM"
 
 ## copy over everything we need from staging in a single layer :-)
 RUN --mount=from=staging,target=/staging                                \
