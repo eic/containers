@@ -17,7 +17,7 @@ ENV CLICOLOR_FORCE=1                                                    \
 
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
-RUN --mount=type=cache,target=/var/cache/apt                            \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime          \
  && echo "US/Eastern" > /etc/timezone                                   \
