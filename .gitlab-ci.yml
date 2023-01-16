@@ -70,6 +70,7 @@ default:
     - docker buildx create --name builder --driver docker-container --bootstrap --use
     - docker buildx ls
     - docker buildx inspect
+    - docker context ls
   after_script:
     - docker logout
     - docker logout ${CI_REGISTRY}
