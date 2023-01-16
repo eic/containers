@@ -225,16 +225,12 @@ jug_dev:default:
     matrix:
       - BASE_IMAGE: amd64_debian_testing_base
         BUILD_IMAGE: jug_dev
-        SPACK_ARCH: x86_64
       - BASE_IMAGE: arm64v8_debian_testing_base
         BUILD_IMAGE: jug_dev_arm64v8
-        SPACK_ARCH: aarch64
 #      - BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE: jug_dev_oneapi
-#        SPACK_ARCH: x86_64 
 #      - BASE_IMAGE: cuda_base_new
 #        BUILD_IMAGE: jug_dev_cuda
-#        SPACK_ARCH: x86_64
   extends: .build
   stage: jug
   needs:
@@ -261,7 +257,6 @@ jug_dev:default:
                    --target=builder
                    -f containers/jug/dev.Dockerfile
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
-                   --build-arg SPACK_ARCH="${SPACK_ARCH}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
@@ -278,7 +273,6 @@ jug_dev:default:
     - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
                    -f containers/jug/dev.Dockerfile
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
-                   --build-arg SPACK_ARCH="${SPACK_ARCH}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
@@ -316,13 +310,10 @@ jug_xl:default:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        DOCKER_ARCH: amd64
       - BASE_IMAGE: jug_dev_arm64v8
         BUILD_IMAGE: jug_xl_arm64v8
-        DOCKER_ARCH: arm64v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
-#        DOCKER_ARCH: amd64
   extends: .build
   stage: jug
   needs:
@@ -345,13 +336,10 @@ jug_xl:nightly:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        DOCKER_ARCH: amd64
       - BASE_IMAGE: jug_dev_arm64v8
         BUILD_IMAGE: jug_xl_arm64v8
-        DOCKER_ARCH: arm64v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
-#        DOCKER_ARCH: amd64
   extends: .build
   stage: jug
   rules:

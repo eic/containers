@@ -2,6 +2,7 @@
 ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
 ARG BASE_IMAGE="debian_base"
 ARG INTERNAL_TAG="testing"
+ARG TARGETPLATFORM
 
 ## ========================================================================================
 ## STAGE1: spack builder image
@@ -23,7 +24,6 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
 
 ## Setup spack
 ## parts:
-ARG SPACK_ARCH="x86_64"
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="develop"
@@ -41,7 +41,8 @@ RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/spack-env                                           \
  && export PATH=${PATH}:${SPACK_ROOT}/bin                               \
- && spack config --scope site add "packages:all:require:arch=${SPACK_ARCH}" \
+ && declare -A arch=(["amd64"]="x86_64" ["arm64"]="aarch64")            \
+ && spack config --scope site add "packages:all:require:arch=${arch[${TARGETPLATFORM}]}" \
  && spack config blame packages                                         \
  && spack config --scope site add "config:suppress_gpg_warnings:true"   \
  && spack config --scope site add "config:build_jobs:64"                \
