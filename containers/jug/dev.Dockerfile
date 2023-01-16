@@ -39,17 +39,17 @@ RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/interactive-shell                                   \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
-          /usr/sbin/spack-env                                           \
- && export PATH=${PATH}:${SPACK_ROOT}/bin                               \
- && declare -A arch=(["amd64"]="x86_64" ["arm64"]="aarch64")            \
+          /usr/sbin/spack-env
+
+SHELL ["docker-shell"]
+
+RUN declare -A arch=(["amd64"]="x86_64" ["arm64"]="aarch64")            \
  && spack config --scope site add "packages:all:require:arch=${arch[${TARGETPLATFORM}]}" \
  && spack config blame packages                                         \
  && spack config --scope site add "config:suppress_gpg_warnings:true"   \
  && spack config --scope site add "config:build_jobs:64"                \
  && spack config --scope site add "config:install_tree:root:/opt/software" \
  && spack config blame config
-
-SHELL ["docker-shell"]
 
 ## Setup spack buildcache mirrors, including an internal
 ## spack mirror using the docker build cache, and
