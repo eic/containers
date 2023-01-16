@@ -66,6 +66,7 @@ default:
                                   -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
                                   ${GH_REGISTRY}
     - ./gitlab-ci/docker_login.sh --ci -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
+    - docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes
   after_script:
     - docker logout
     - docker logout ${CI_REGISTRY}
@@ -210,7 +211,6 @@ base:
   needs:
     - version
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
     - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/debian/base.Dockerfile
@@ -241,7 +241,6 @@ jug_dev:default:
     - version
     - base
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     ## calculate a hash based on the spack.yaml file and the spack directory
     ## and use this spack as a docker variable to force a rebuild when there
     ## is a change (versus rerun from cache)
@@ -329,7 +328,6 @@ jug_xl:default:
     - version
     - jug_dev:default
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - cp detectors.yaml containers/jug
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/jug/xl.Dockerfile
@@ -364,7 +362,6 @@ jug_xl:nightly:
     - version
     - jug_dev:default
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - cp detectors.yaml containers/jug
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
                    -f containers/jug/xl.Dockerfile
