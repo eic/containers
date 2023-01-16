@@ -17,8 +17,8 @@ function print_the_help {
   echo "          --dockerhub     Publish to DH only"
   echo "  positional              At least one export tag (e.g., v3.0-stable)"
   echo ""
-  echo "  Execute docker push from image:input_tag to REGISTRY/image:export_tag for"
-  echo "  for all export tags. Will push to $CI_REGISTRY, and optionally also to"
+  echo "  Execute docker push from image:label to REGISTRY/image:export_tag for"
+  echo "  all export tags. Will push to $CI_REGISTRY, and optionally also to"
   echo "  Dockerhub if the DH_PUSH environment variable is set"
   echo ""
   echo "EXAMPLE: ./docker_push.sh -i eic_base -l 3.0.0 3.0.0 3.0-stable"
@@ -97,7 +97,7 @@ if [ -z $IMAGE ]; then
   exit 1
 fi
 if [ -z $INPUT_TAG ]; then
-  echo "ERROR: no input_Tag given, please use -t <INPUT_TAG>"
+  echo "ERROR: no input_tag given, please use -l <INPUT_TAG>"
   print_the_help
   exit 1
 fi
