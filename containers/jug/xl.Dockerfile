@@ -121,7 +121,8 @@ ADD https://api.github.com/repos/eic/ip6 /tmp/ip6.json
 ADD https://api.github.com/repos/eic/epic /tmp/epic.json
 COPY setup_detectors.py /tmp
 COPY detectors.yaml /tmp
-RUN cd /tmp                                                                     \
+RUN --mount=type=cache,target=/root/.ccache/                                    \
+    cd /tmp                                                                     \
  && [ "z$NIGHTLY" = "z1" ] && NIGHTLY_FLAG="--nightly" || NIGHTLY_FLAG=""       \
  && /tmp/setup_detectors.py --prefix /opt/detector --config /tmp/detectors.yaml \
                          $NIGHTLY_FLAG                                          \
