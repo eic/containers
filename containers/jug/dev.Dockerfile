@@ -8,6 +8,7 @@ ARG INTERNAL_TAG="testing"
 ## EIC builder image with spack
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as builder
+ARG TARGETPLATFORM
 
 ## install some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt                            \
@@ -23,7 +24,6 @@ RUN --mount=type=cache,target=/var/cache/apt                            \
 
 ## Setup spack
 ## parts:
-ARG SPACK_ARCH="x86_64"
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="develop"
@@ -39,16 +39,21 @@ RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
           /usr/sbin/interactive-shell                                   \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
-          /usr/sbin/spack-env                                           \
- && export PATH=${PATH}:${SPACK_ROOT}/bin                               \
- && spack config --scope site add "packages:all:require:arch=${SPACK_ARCH}" \
+          /usr/sbin/spack-env
+
+SHELL ["docker-shell"]
+
+RUN declare -A arch=(                                                   \
+      ["linux/amd64"]="x86_64"                                          \
+      ["linux/arm64"]="aarch64"                                         \
+    )                                                                   \
+ && arch=${arch[${TARGETPLATFORM}]}                                     \
+ && spack config --scope site add "packages:all:require:arch=${arch}"   \
  && spack config blame packages                                         \
  && spack config --scope site add "config:suppress_gpg_warnings:true"   \
  && spack config --scope site add "config:build_jobs:64"                \
  && spack config --scope site add "config:install_tree:root:/opt/software" \
  && spack config blame config
-
-SHELL ["docker-shell"]
 
 ## Setup spack buildcache mirrors, including an internal
 ## spack mirror using the docker build cache, and
@@ -211,6 +216,7 @@ COPY profile.d/z11_jug_env.sh /etc/profile.d
 COPY singularity.d /.singularity.d
 
 ## Add minio client into /usr/local/bin
+## FIXME: This should download .../linux-arm64/mc for arm64.
 ADD https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin
 RUN chmod a+x /usr/local/bin/mc
 
@@ -219,10 +225,11 @@ RUN chmod a+x /usr/local/bin/mc
 ## Lean target image
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG}
+ARG TARGETPLATFORM
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="jug_xl" \
-      march="amd64"
+      march="$TARGETPLATFORM"
 
 ## copy over everything we need from staging in a single layer :-)
 RUN --mount=from=staging,target=/staging                                \

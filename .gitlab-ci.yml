@@ -194,14 +194,19 @@ base:
     matrix:
       - BASE_IMAGE: amd64/debian:testing-20220822-slim
         BUILD_IMAGE: amd64_debian_testing_base
+        PLATFORM: linux/amd64
       - BASE_IMAGE: amd64/ubuntu:20.04
         BUILD_IMAGE: amd64_ubuntu_base
+        PLATFORM: linux/amd64
       - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
         BUILD_IMAGE: oneapi_base
+        PLATFORM: linux/amd64
       - BASE_IMAGE: nvidia/cuda:11.8.0-devel-ubuntu20.04
         BUILD_IMAGE: cuda_base
+        PLATFORM: linux/amd64
       - BASE_IMAGE: arm64v8/debian:testing-20220822-slim
         BUILD_IMAGE: arm64v8_debian_testing_base
+        PLATFORM: linux/arm64/v8
 #      - BASE_IMAGE: debian:testing-20220822-slim
 #        BUILD_IMAGE: debian_testing_base_multiarch
 #        PLATFORM: linux/amd64,linux/arm64/v8
@@ -225,16 +230,16 @@ jug_dev:default:
     matrix:
       - BASE_IMAGE: amd64_debian_testing_base
         BUILD_IMAGE: jug_dev
-        SPACK_ARCH: x86_64
+        PLATFORM: linux/amd64
       - BASE_IMAGE: arm64v8_debian_testing_base
         BUILD_IMAGE: jug_dev_arm64v8
-        SPACK_ARCH: aarch64
+        PLATFORM: linux/arm64/v8
 #      - BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE: jug_dev_oneapi
-#        SPACK_ARCH: x86_64 
+#        PLATFORM: linux/amd64
 #      - BASE_IMAGE: cuda_base_new
 #        BUILD_IMAGE: jug_dev_cuda
-#        SPACK_ARCH: x86_64
+#        PLATFORM: linux/amd64
   extends: .build
   stage: jug
   needs:
@@ -260,8 +265,8 @@ jug_dev:default:
                    -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
                    --target=builder
                    -f containers/jug/dev.Dockerfile
+                   ${PLATFORM:+--platform ${PLATFORM}}
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
-                   --build-arg SPACK_ARCH="${SPACK_ARCH}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
@@ -277,8 +282,8 @@ jug_dev:default:
     ## now build our image
     - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
                    -f containers/jug/dev.Dockerfile
+                   ${PLATFORM:+--platform ${PLATFORM}}
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
-                   --build-arg SPACK_ARCH="${SPACK_ARCH}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
@@ -316,13 +321,13 @@ jug_xl:default:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        DOCKER_ARCH: amd64
+        PLATFORM: linux/amd64
       - BASE_IMAGE: jug_dev_arm64v8
         BUILD_IMAGE: jug_xl_arm64v8
-        DOCKER_ARCH: arm64v8
+        PLATFORM: linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
-#        DOCKER_ARCH: amd64
+#        PLATFORM: linux/amd64
   extends: .build
   stage: jug
   needs:
@@ -333,6 +338,7 @@ jug_xl:default:
     - cp detectors.yaml containers/jug
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/jug/xl.Dockerfile
+                   ${PLATFORM:+--platform ${PLATFORM}}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
@@ -345,13 +351,13 @@ jug_xl:nightly:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        DOCKER_ARCH: amd64
+        PLATFORM: linux/amd64
       - BASE_IMAGE: jug_dev_arm64v8
         BUILD_IMAGE: jug_xl_arm64v8
-        DOCKER_ARCH: arm64v8
+        PLATFORM: linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
-#        DOCKER_ARCH: amd64
+#        PLATFORM: linux/amd64
   extends: .build
   stage: jug
   rules:
@@ -368,6 +374,7 @@ jug_xl:nightly:
     - cp detectors.yaml containers/jug
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
                    -f containers/jug/xl.Dockerfile
+                   ${PLATFORM:+--platform ${PLATFORM}}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
