@@ -331,7 +331,7 @@ jug_xl:default:
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - cp detectors.yaml containers/jug
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/jug/xl.Dockerfile
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
@@ -366,7 +366,7 @@ jug_xl:nightly:
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - cp detectors.yaml containers/jug
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
+    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
                    -f containers/jug/xl.Dockerfile
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
@@ -408,7 +408,8 @@ jug_xl:feature:
         DETECTOR_BRANCH:
           - main
   script:
-    - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                    -f containers/jug/feature.Dockerfile
                    --build-arg INTERNAL_TAG=${NIGHTLY_TAG}
                    --build-arg DETECTOR=${DETECTOR}
