@@ -66,10 +66,7 @@ default:
                                   -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
                                   ${GH_REGISTRY}
     - ./gitlab-ci/docker_login.sh --ci -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-    - docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes
-    - docker buildx create --name builder --driver docker-container --bootstrap --use
     - docker buildx ls
-    - docker buildx inspect
     - docker context ls
   after_script:
     - docker logout
@@ -163,6 +160,12 @@ version:
     reports:
       dotenv: build.env
 
+builder:
+  stage: config
+  script:
+    - docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes
+    - docker buildx create --name ${CI_COMMIT_REF_NAME} --driver docker-container --bootstrap
+
 ## base job for all build jobs. Dependent jobs are expected to set
 ## the BUILD_IMAGE environment variable, and take care of the actual
 ## docker build during the "script" step
@@ -215,6 +218,7 @@ base:
   needs:
     - version
   script:
+    - docker buildx use ${CI_COMMIT_REF_NAME}
     - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/debian/base.Dockerfile
                    ${PLATFORM:+--platform ${PLATFORM}}
@@ -257,6 +261,8 @@ jug_dev:default:
         echo "FORCE_NOCACHE set"
         export CACHE_FLAG="--no-cache"
       fi
+    ## use buildx builder
+    - docker buildx use ${CI_COMMIT_REF_NAME}
     ## Optionally build the raw builder image
     - test ${EXPORT_BUILDER} = 1 && docker buildx build --load ${CACHE_FLAG}
                    -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
@@ -332,6 +338,7 @@ jug_xl:default:
     - jug_dev:default
   script:
     - cp detectors.yaml containers/jug
+    - docker buildx use ${CI_COMMIT_REF_NAME}
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/jug/xl.Dockerfile
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
@@ -366,6 +373,7 @@ jug_xl:nightly:
     - jug_dev:default
   script:
     - cp detectors.yaml containers/jug
+    - docker buildx use ${CI_COMMIT_REF_NAME}
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
                    -f containers/jug/xl.Dockerfile
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
@@ -408,6 +416,7 @@ jug_xl:feature:
         DETECTOR_BRANCH:
           - main
   script:
+    - docker buildx use ${CI_COMMIT_REF_NAME}
     - docker build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                    -f containers/jug/feature.Dockerfile
                    --build-arg INTERNAL_TAG=${NIGHTLY_TAG}
@@ -496,6 +505,8 @@ cleanup:
     - version
   when: always
   script:
+    ## remove buildx builder
+    - docker buildx rm ${CI_COMMIT_REF_NAME}
     ## remove the pipeline specific export from eicweb if needed
     - echo "Cleaning up pipeline specific docker tags if needed"
     - ./gitlab-ci/cleanup_registry.sh -i debian_testing_base -r 66 ${INTERNAL_TAG}
