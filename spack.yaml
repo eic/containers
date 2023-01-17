@@ -13,8 +13,8 @@ spack:
     - dawn@3_91a
     - dawncut@1_54a
     - dd4hep@1.23 +ddg4 +ddcad +hepmc3 +lcio
-    - edm4eic@1.2.2 cxxstd=17
-    - edm4hep@0.7.2 cxxstd=17
+    - edm4eic@1.2.2 cxxstd=17 -ipo
+    - edm4hep@0.7.2 cxxstd=17 -ipo
     - eic-smear@1.1.10
     - eicrecon@0.4.1
     - eigen@3.4.0
@@ -31,11 +31,11 @@ spack:
     - jana2@2.0.8 -ipo +root +zmq
     - madx@5.08.01
     - mesa@22.1.2 +glx -llvm +opengl +opengles +osmesa
-    - nlohmann-json@3.11.2
+    - nlohmann-json@3.11.2 -ipo
     - npsim@1.1.0 +geocad +http
     - opencascade@7.6.3
     - pkg-config@0.29.2
-    - podio@0.15
+    - podio@0.15 -ipo
     - prmon@3.0.2 +plot
     - pythia8@8.306 +fastjet
     - python@3.10.8
