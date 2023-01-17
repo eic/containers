@@ -121,11 +121,13 @@ ADD https://api.github.com/repos/eic/ip6 /tmp/ip6.json
 ADD https://api.github.com/repos/eic/epic /tmp/epic.json
 COPY setup_detectors.py /tmp
 COPY detectors.yaml /tmp
-RUN --mount=type=cache,target=/root/.ccache/                                    \
+ENV CCACHE_DIR=/ccache
+RUN --mount=type=cache,target=/ccache/                                          \
     cd /tmp                                                                     \
  && [ "z$NIGHTLY" = "z1" ] && NIGHTLY_FLAG="--nightly" || NIGHTLY_FLAG=""       \
  && /tmp/setup_detectors.py --prefix /opt/detector --config /tmp/detectors.yaml \
                          $NIGHTLY_FLAG                                          \
+ && ccache --show-stats                                                         \
  && rm /tmp/setup_detectors.py
 
 ## Hotfix for misbehaving OSG nodes
