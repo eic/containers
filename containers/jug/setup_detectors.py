@@ -122,6 +122,7 @@ if __name__ == '__main__':
                             detector=proj),
                        '&&',
                        'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
+                       '-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache',
                        '-DCMAKE_INSTALL_PREFIX={prefix}'.format(prefix=prefix),
                        '&&',
                        'cmake --build /tmp/build -j$(($(($(nproc)/4))+1)) -- install']
