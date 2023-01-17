@@ -66,8 +66,6 @@ default:
                                   -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
                                   ${GH_REGISTRY}
     - ./gitlab-ci/docker_login.sh --ci -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-    - docker buildx ls
-    - docker context ls
   after_script:
     - docker logout
     - docker logout ${CI_REGISTRY}
@@ -162,6 +160,9 @@ version:
 
 builder:
   stage: config
+  resource_group: ${CI_COMMIT_REF_NAME}
+  tags:
+    - docker-new
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes
     - docker buildx create --name ${CI_COMMIT_REF_NAME} --driver docker-container --bootstrap
@@ -217,6 +218,7 @@ base:
   stage: base
   needs:
     - version
+    - builder
   script:
     - docker buildx use ${CI_COMMIT_REF_NAME}
     - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
@@ -246,6 +248,7 @@ jug_dev:default:
   stage: jug
   needs:
     - version
+    - builder
     - base
   script:
     ## calculate a hash based on the spack.yaml file and the spack directory
@@ -314,7 +317,8 @@ jug_dev:multiarch:
         ARCHS: "amd64 arm64v8"
   stage: jug
   needs:
-    - version 
+    - version
+    - builder
     - jug_dev:default
   script:
     - echo docker manifest create ${IMAGE}:${EXPORT_TAG} $(echo ${ARCHS} | xargs -d " " -I "{}" echo -n "--amend ${IMAGE}:${EXPORT_TAG}-{}")
@@ -335,6 +339,7 @@ jug_xl:default:
   stage: jug
   needs:
     - version
+    - builder
     - jug_dev:default
   script:
     - cp detectors.yaml containers/jug
@@ -370,6 +375,7 @@ jug_xl:nightly:
     - when: never
   needs:
     - version
+    - builder
     - jug_dev:default
   script:
     - cp detectors.yaml containers/jug
@@ -407,6 +413,7 @@ jug_xl:feature:
     - when: never
   needs:
     - version
+    - builder
     - jug_xl:nightly
   variables:
     BUILD_IMAGE: "jug_xl"
@@ -504,6 +511,8 @@ cleanup:
   dependencies:
     - version
   when: always
+  tags:
+    - docker-new
   script:
     ## remove buildx builder
     - docker buildx rm ${CI_COMMIT_REF_NAME}
