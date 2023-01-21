@@ -1,3 +1,0 @@
-[default]
-s3 =
-  multipart_threshold = 8GB
