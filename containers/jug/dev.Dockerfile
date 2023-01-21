@@ -147,6 +147,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ARG S3RW_ACCESS_KEY=""
 ARG S3RW_SECRET_KEY=""
 RUN cd /opt/spack-environment                                           \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate .                                                \
  && if [ -n "${S3RW_ACCESS_KEY}" ] ; then                               \
     spack mirror add --scope site                                       \
