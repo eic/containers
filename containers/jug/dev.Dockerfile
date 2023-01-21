@@ -150,7 +150,7 @@ RUN cd /opt/spack-environment                                           \
  && spack env activate .                                                \
  && if [ -n "${S3RW_ACCESS_KEY}" ] ; then                               \
     spack mirror add --scope site                                       \
-      --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
+      --s3-endpoint-url https://dtn01.sdcc.bnl.gov:9000                 \
       --s3-access-key-id "${S3RW_ACCESS_KEY}"                           \
       --s3-access-key-secret "${S3RW_SECRET_KEY}"                       \
       eic-spack s3://eictest/EPIC/spack                                 \
