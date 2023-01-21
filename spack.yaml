@@ -57,4 +57,9 @@ spack:
       compiler: [gcc]
       variants:
         +ipo build_type=Release
+    opengl:
+      buildable: false
+      externals:
+      - spec: opengl@4.5
+        prefix: /usr
   view: /usr/local
