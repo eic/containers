@@ -30,6 +30,7 @@ spack:
     - intel-tbb@2020.3
     - irt@1.0.0
     - jana2@2.0.8 -ipo +root +zmq
+    - lcio@2.17.1
     - madx@5.08.01
     - mesa@22.1.2 +glx -llvm +opengl +opengles +osmesa
     - nlohmann-json@3.11.2
