@@ -25,7 +25,7 @@ packages:
   cnpy:
     require: "@master"
   cppcoro:
-    require: "@git.10bbcdbf2be3ad3aa56febcf4c7662d771460a99"
+    version: [10bbcdbf2be3ad3aa56febcf4c7662d771460a99]
   dawn:
     require: "@3_91a"
   dawncut:
