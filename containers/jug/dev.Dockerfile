@@ -102,7 +102,7 @@ ARG SPACK_ENV=dev
 RUN rm -r /usr/local                                                    \
  && cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate ${SPACK_ENV}                                     \
+ && spack env activate -d ${SPACK_ENV}                                  \
  && spack concretize --fresh
 
 
@@ -122,7 +122,7 @@ RUN rm -r /usr/local                                                    \
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate ${SPACK_ENV}                                     \
+ && spack env activate -d ${SPACK_ENV}                                  \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
     || spack install -j64 --no-check-signature                          \
@@ -178,7 +178,7 @@ RUN --mount=type=cache,target=/var/cache/pip                            \
     echo "Installing additional python packages"                        \
  && cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate ${SPACK_ENV}                                     \
+ && spack env activate -d ${SPACK_ENV}                                  \
  && python -m pip install                                               \
     --trusted-host pypi.org                                             \
     --trusted-host files.pythonhosted.org                               \
@@ -198,7 +198,7 @@ RUN cd /opt/spack-environment                                           \
         | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
         | sed '/MANPATH/ s/;$/:;/'                                      \
     > /etc/profile.d/z10_spack_environment.sh                           \
- && cd /opt/spack-environment && spack env activate ${SPACK_ENV}        \
+ && spack env activate -d ${SPACK_ENV}                                  \
  && echo -n ""                                                          \
  && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
  && echo "export PODIO=$(spack location -i podio);"                     \
@@ -221,7 +221,7 @@ FROM builder as staging
 # Garbage collect in environment
 RUN cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate ${SPACK_ENV}                                     \
+ && spack env activate -d ${SPACK_ENV}                                  \
  && spack gc -y
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
