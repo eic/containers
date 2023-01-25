@@ -48,7 +48,7 @@ RUN declare -A arch=(                                                   \
       ["linux/arm64"]="aarch64"                                         \
     )                                                                   \
  && arch=${arch[${TARGETPLATFORM}]}                                     \
- && spack config --scope site add "packages:all:require:arch=${arch}"   \
+ && spack config --scope site add "packages:all:target:[${arch}]"       \
  && spack config blame packages                                         \
  && spack config --scope site add "config:suppress_gpg_warnings:true"   \
  && spack config --scope site add "config:build_jobs:64"                \
