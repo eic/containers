@@ -50,7 +50,7 @@ RUN cd /tmp                                                                     
  && echo " - eicrecon: ${EICRECON_VERSION}-$(git rev-parse HEAD)"               \
           >> /etc/jug_info                                                      \
  && echo "export JANA_PLUGIN_PATH=/usr/local/lib/EICrecon/plugins"              \
-    > /profile.d/z12_eicrecon.sh                                                \
+    > /etc/profile.d/z12_eicrecon.sh                                            \
  && popd                                                                        \
  && rm -rf build eicrecon
 
