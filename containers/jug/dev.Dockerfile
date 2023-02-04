@@ -222,6 +222,13 @@ RUN cd /opt/spack-environment                                           \
  && spack env activate .                                                \
  && spack gc -y
 
+# Garbage collect in git
+RUN cd $SPACK_ROOT \
+ && du -sh $SPACK_ROOT \
+ && git pull --depth=1 \
+ && git gc --prune=all \
+ && du -sh $SPACK_ROOT
+
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
 ## See
 #https://askubuntu.com/questions/1034313/ubuntu-18-4-libqt5core-so-5-cannot-open-shared-object-file-no-such-file-or-dir
@@ -262,6 +269,7 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 ## copy over everything we need from staging in a single layer :-)
 RUN --mount=from=staging,target=/staging                                \
     rm -rf /usr/local                                                   \
+ && cp -r /staging/opt/spack /opt/spack                                 \
  && cp -r /staging/opt/spack-environment /opt/spack-environment         \
  && cp -r /staging/opt/software /opt/software                           \
  && cp -r /staging/usr/._local /usr/._local                             \
