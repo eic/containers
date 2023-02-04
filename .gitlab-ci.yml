@@ -203,9 +203,9 @@ base:
       - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
         BUILD_IMAGE: oneapi_base
         PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:11.8.0-devel-ubuntu20.04
-        BUILD_IMAGE: cuda_base
-        PLATFORM: linux/amd64
+#      - BASE_IMAGE: nvidia/cuda:11.8.0-devel-ubuntu20.04
+#        BUILD_IMAGE: cuda_base
+#        PLATFORM: linux/amd64
       - BASE_IMAGE: arm64v8/debian:testing-20220822-slim
         BUILD_IMAGE: arm64v8_debian_testing_base
         PLATFORM: linux/arm64/v8
