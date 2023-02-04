@@ -11,6 +11,7 @@ FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG}
 
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
 ARG JUGGLER_VERSION="main"
+ARG EICRECON_VERSION="main"
 
 ## version will automatically bust cache for nightly, as it includes
 ## the date
@@ -25,13 +26,33 @@ RUN cd /tmp                                                                     
  && git clone -b ${JUGGLER_VERSION} --depth 1                                   \
         https://eicweb.phy.anl.gov/EIC/juggler.git                              \
  && cmake -B build -S juggler                                                   \
-          -DCMAKE_CXX_STANDARD=17 -DCMAKE_INSTALL_PREFIX=/usr/local             \
+          -DCMAKE_CXX_STANDARD=17                                               \
+          -DCMAKE_INSTALL_PREFIX=/usr/local                                     \
+          -DCMAKE_BUILD_TYPE=Release                                            \
  && cmake --build build -j12 -- install                                         \
  && pushd juggler                                                               \
- && echo " - Juggler: ${JUGGLER_VERSION}-$(git rev-parse HEAD)"                 \
+ && echo " - juggler: ${JUGGLER_VERSION}-$(git rev-parse HEAD)"                 \
           >> /etc/jug_info                                                      \
  && popd                                                                        \
  && rm -rf build juggler
+
+ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
+RUN cd /tmp                                                                     \
+ && echo "INSTALLING EICRECON"                                                  \
+ && git clone -b ${EICRECON_VERSION} --depth 1                                  \
+        https://github.com/eic/eicrecon.git                                     \
+ && cmake -B build -S eicrecon                                                  \
+          -DCMAKE_CXX_STANDARD=17                                               \
+          -DCMAKE_INSTALL_PREFIX=/usr/local                                     \
+          -DCMAKE_BUILD_TYPE=Release                                            \
+ && cmake --build build -j12 -- install                                         \
+ && pushd eicrecon                                                              \
+ && echo " - eicrecon: ${EICRECON_VERSION}-$(git rev-parse HEAD)"               \
+          >> /etc/jug_info                                                      \
+ && echo "export JANA_PLUGIN_PATH=/usr/local/lib/EICrecon/plugins"              \
+    > /etc/profile.d/z12_eicrecon.sh                                            \
+ && popd                                                                        \
+ && rm -rf build eicrecon
 
 ## Install benchmarks into the container
 ARG BENCHMARK_COM_VERSION="master"
