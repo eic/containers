@@ -57,6 +57,7 @@ spack:
   - py-dask
   - py-deepdiff
   - py-epic-capybara
+  - py-htgettoken
   - py-ipython
   - py-jinja2
   - py-jinja2-cli
@@ -65,8 +66,8 @@ spack:
   - py-lmfit
   - py-lxml
   - py-matplotlib
+  - py-minkowskiengine
   - py-mplhep
-  - py-htgettoken
   - py-numpy
   - py-pandas
   - py-pip

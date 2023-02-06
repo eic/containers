@@ -273,6 +273,9 @@ packages:
   py-matplotlib:
     require:
     - '@3.7.1'
+  py-minkowskiengine:
+    require:
+    - '@0.5.4'
   py-mplhep:
     require:
     - '@0.3.26'
