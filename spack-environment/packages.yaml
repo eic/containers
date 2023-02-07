@@ -275,7 +275,7 @@ packages:
     - '@3.7.1'
   py-minkowskiengine:
     require:
-    - '@0.5.4'
+    - '@master'
   py-mplhep:
     require:
     - '@0.3.26'
