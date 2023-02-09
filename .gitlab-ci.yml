@@ -68,6 +68,7 @@ stages:
   - base            ## base OS image
   - jug             ## jug container images
   - deploy          ## build/deploy singularity images
+  - benchmarks
   - test
   - finalize
 
@@ -514,6 +515,38 @@ juggler:main:
   trigger:
     project: EIC/juggler
   allow_failure: true
+
+benchmarks:reconstruction:
+  stage: benchmarks
+  rules:
+    - if:  '$CI_SERVER_HOST == "eicweb.phy.anl.gov"'
+  needs: 
+    - version
+    - juggler:main
+  variables:
+    JUGGLER_TAG: "$INTERNAL_TAG"
+    JUGGLER_REGISTRY: "$CI_REGISTRY_IMAGE"
+  trigger:
+    project: EIC/benchmarks/reconstruction_benchmarks
+    strategy: depend
+  ## for now allow failure, as we need to update those pipelines
+  allow_failure: false
+  
+benchmarks:physics:
+  stage: benchmarks
+  rules:
+    - if:  '$CI_SERVER_HOST == "eicweb.phy.anl.gov"'
+  needs: 
+    - version
+    - juggler:main
+  variables:
+    RECO: "juggler"
+    JUGGLER_TAG: "$INTERNAL_TAG"
+    JUGGLER_REGISTRY: "$CI_REGISTRY_IMAGE"
+  trigger:
+    project: EIC/benchmarks/physics_benchmarks
+    strategy: depend
+  allow_failure: false
 
 cleanup:
   stage: finalize
