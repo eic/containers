@@ -3,8 +3,8 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 variables:
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
-  JUGGLER_VERSION: "v9.2.0"
-  EICRECON_VERSION: "v0.5.1"
+  JUGGLER_VERSION: "v9.3.0"
+  EICRECON_VERSION: "v0.5.4"
 
   ## Spack organization and repository, e.g. spack/spack
   SPACK_ORGREPO: "spack/spack"
@@ -384,6 +384,7 @@ jug_xl:nightly:
                    ${PLATFORM:+--platform ${PLATFORM}}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg EICRECON_VERSION=${EICRECON_VERSION}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
                    --build-arg NIGHTLY=1
                    containers/jug
