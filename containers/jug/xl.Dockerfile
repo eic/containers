@@ -97,19 +97,19 @@ ADD https://api.github.com/repos/eic/job_submission_slurm/commits/${CAMPAIGNS_SL
 RUN mkdir -p /opt/campaigns                                                     \
  && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_SINGLE_VERSION} --depth 1                          \
-        https://api.github.com/repos/eic/simulation_campaign_single.git         \
+        https://github.com/eic/simulation_campaign_single.git                   \
  && mkdir -p /opt/campaigns                                                     \
  && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_HEPMC3_VERSION} --depth 1                          \
-        https://api.github.com/repos/eic/simulation_campaign_hepmc3.git         \
+        https://github.com/eic/simulation_campaign_hepmc3.git                   \
  && mkdir -p /opt/campaigns                                                     \
  && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_CONDOR_VERSION} --depth 1                          \
-        https://api.github.com/repos/eic/job_submission_condor.git              \
+        https://github.com/eic/job_submission_condor.git                        \
  && mkdir -p /opt/campaigns                                                     \
  && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_SLURM_VERSION} --depth 1                           \
-        https://api.github.com/repos/eic/job_submission_slurm.git
+        https://github.com/eic/job_submission_slurm.git
 
 ## also install detector/ip geometries into opt
 ARG NIGHTLY=''
