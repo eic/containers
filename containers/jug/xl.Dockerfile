@@ -8,6 +8,7 @@ ARG INTERNAL_TAG="testing"
 ## EIC builder image with spack
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG}
+ARG TARGETPLATFORM
 
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
 ARG JUGGLER_VERSION="main"
@@ -121,7 +122,7 @@ ADD https://api.github.com/repos/eic/ip6 /tmp/ip6.json
 ADD https://api.github.com/repos/eic/epic /tmp/epic.json
 COPY setup_detectors.py /tmp
 COPY detectors.yaml /tmp
-ENV CCACHE_DIR=/ccache
+ENV CCACHE_DIR=/ccache/$TARGETPLATFORM
 RUN --mount=type=cache,target=/ccache/                                          \
     cd /tmp                                                                     \
  && [ "z$NIGHTLY" = "z1" ] && NIGHTLY_FLAG="--nightly" || NIGHTLY_FLAG=""       \
