@@ -223,10 +223,10 @@ RUN cd /opt/spack-environment                                           \
  && spack gc -y
 
 # Garbage collect in git
-RUN cd $SPACK_ROOT \
- && du -sh $SPACK_ROOT \
- && git pull --depth=1 \
- && git gc --prune=all \
+RUN cd $SPACK_ROOT                                                      \
+ && du -sh $SPACK_ROOT                                                  \
+ && git fetch --depth=1                                                 \
+ && git gc --prune=all --aggressive                                     \
  && du -sh $SPACK_ROOT
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
