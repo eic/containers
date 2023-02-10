@@ -90,26 +90,26 @@ ARG CAMPAIGNS_HEPMC3_VERSION="main"
 ARG CAMPAIGNS_CONDOR_VERSION="main"
 ARG CAMPAIGNS_SLURM_VERSION="main"
 ## cache bust when updated repositories
-ADD ${EICWEB}/482/repository/tree?ref=${CAMPAIGNS_SINGLE_VERSION} /tmp/482.json
-ADD ${EICWEB}/483/repository/tree?ref=${CAMPAIGNS_HEPMC3_VERSION} /tmp/483.json
-ADD ${EICWEB}/484/repository/tree?ref=${CAMPAIGNS_CONDOR_VERSION} /tmp/484.json
-ADD ${EICWEB}/485/repository/tree?ref=${CAMPAIGNS_SLURM_VERSION} /tmp/485.json
+ADD https://api.github.com/repos/eic/simulation_campaign_single/commits/${CAMPAIGNS_SINGLE_VERSION} /tmp/simulation_campaign_single.json
+ADD https://api.github.com/repos/eic/simulation_campaign_hepmc3/commits/${CAMPAIGNS_HEPMC3_VERSION} /tmp/simulation_campaign_hepmc3.json
+ADD https://api.github.com/repos/eic/job_submission_condor/commits/${CAMPAIGNS_CONDOR_VERSION} /tmp/job_submission_condor.json
+ADD https://api.github.com/repos/eic/job_submission_slurm/commits/${CAMPAIGNS_SLURM_VERSION} /tmp/job_submission_slurm.json
 RUN mkdir -p /opt/campaigns                                                     \
  && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_SINGLE_VERSION} --depth 1                          \
-        https://eicweb.phy.anl.gov/EIC/campaigns/single.git                     \
+        https://api.github.com/repos/eic/simulation_campaign_single.git         \
  && mkdir -p /opt/campaigns                                                     \
  && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_HEPMC3_VERSION} --depth 1                          \
-        https://eicweb.phy.anl.gov/EIC/campaigns/hepmc3.git                     \
+        https://api.github.com/repos/eic/simulation_campaign_hepmc3.git         \
  && mkdir -p /opt/campaigns                                                     \
  && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_CONDOR_VERSION} --depth 1                          \
-        https://eicweb.phy.anl.gov/EIC/campaigns/condor.git                     \
+        https://api.github.com/repos/eic/job_submission_condor.git              \
  && mkdir -p /opt/campaigns                                                     \
  && cd /opt/campaigns                                                           \
  && git clone -b ${CAMPAIGNS_SLURM_VERSION} --depth 1                           \
-        https://eicweb.phy.anl.gov/EIC/campaigns/slurm.git
+        https://api.github.com/repos/eic/job_submission_slurm.git
 
 ## also install detector/ip geometries into opt
 ARG NIGHTLY=''
