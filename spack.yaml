@@ -44,7 +44,7 @@ spack:
     - py-jinja2@3.1.2
     - py-jinja2-cli@0.8.2
     - py-jupyter@1.0.0
-    - py-jupyterlab@3.4.2
+    - py-jupyterlab@3.2.9
     - py-lmfit@1.0.2
     - py-lxml@4.9.1
     - py-matplotlib@3.6.2
