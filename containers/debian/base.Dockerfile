@@ -44,6 +44,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
         locales                                                         \
         lua-posix                                                       \
         make                                                            \
+        moreutils                                                       \
         nano                                                            \
         openssh-client                                                  \
         parallel                                                        \
