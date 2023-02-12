@@ -56,7 +56,6 @@ spack:
     - py-pyyaml@6.0
     - py-scipy@1.9.3
     - py-seaborn@0.12.0
-    - py-setuptools@65.5.0
     - py-toml@0.10.2
     - py-uproot@4.3.5
     - py-yapf@0.30.0
