@@ -69,7 +69,7 @@ spack:
     - tensorflow-lite@2.8.0 -xnnpack
     - xrootd@5.5.1 cxxstd=17 +python +scitokens-cpp
   concretizer: 
-    unify: when_possible
+    unify: true
   packages:
     all:
       compiler: [gcc]
