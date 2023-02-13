@@ -33,6 +33,7 @@ spack:
     - nlohmann-json@3.11.2
     - npsim@1.1.0 +geocad +http
     - opencascade@7.6.3
+    - osg-ca-certs@1.109.igtf.1.117
     - pkg-config@0.29.2
     - podio@0.15
     - prmon@3.0.2 +plot
@@ -49,6 +50,7 @@ spack:
     - py-lxml@4.9.1
     - py-matplotlib@3.6.2
     - py-mplhep@0.3.26
+    - py-htgettoken@1.16-33-g3788bb4
     - py-numpy@1.23.4
     - py-pandas@1.5.1
     - py-pip@22.2.2
