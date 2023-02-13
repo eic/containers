@@ -164,7 +164,7 @@ RUN cd /opt/spack-environment                                           \
     | xargs --no-run-if-empty                                           \
       spack buildcache create --allow-root --only package --unsigned    \
                               --mirror-name eic-spack                   \
-                              --rebuild-index                           \
+ && spack buildcache update-index --mirror-url eic-spack                \
  && spack mirror rm --scope site eic-spack                              \
     ; fi                                                                \
  && spack mirror list
