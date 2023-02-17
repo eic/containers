@@ -522,7 +522,7 @@ benchmarks:reconstruction:
     - if:  '$CI_SERVER_HOST == "eicweb.phy.anl.gov"'
   needs: 
     - version
-    - juggler:main
+    - jug_xl:default
   variables:
     JUGGLER_TAG: "$INTERNAL_TAG"
     JUGGLER_REGISTRY: "$CI_REGISTRY_IMAGE"
@@ -538,7 +538,7 @@ benchmarks:physics:
     - if:  '$CI_SERVER_HOST == "eicweb.phy.anl.gov"'
   needs: 
     - version
-    - juggler:main
+    - jug_xl:default
   variables:
     RECO: "juggler"
     JUGGLER_TAG: "$INTERNAL_TAG"
