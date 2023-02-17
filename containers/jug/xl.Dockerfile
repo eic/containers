@@ -124,7 +124,7 @@ COPY setup_detectors.py /tmp
 COPY detectors.yaml /tmp
 ENV CCACHE_DIR=/ccache/$TARGETPLATFORM
 RUN --mount=type=cache,target=/ccache/                                          \
-    cd /tmp                                                                     \
+    cd /tmp && ccache -c                                                                     \
  && [ "z$NIGHTLY" = "z1" ] && NIGHTLY_FLAG="--nightly" || NIGHTLY_FLAG=""       \
  && /tmp/setup_detectors.py --prefix /opt/detector --config /tmp/detectors.yaml \
                          $NIGHTLY_FLAG                                          \
