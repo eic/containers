@@ -49,6 +49,7 @@ RUN --mount=type=cache,target=/ccache/                                          
  && git clone -b ${EICRECON_VERSION} --depth 1                                  \
         https://github.com/eic/eicrecon.git                                     \
  && cmake -B build -S eicrecon                                                  \
+          -DCFLAGS="-Wno-psabi" -DCXXFLAGS="-Wno-psabi"                         \
           -DCMAKE_CXX_STANDARD=17                                               \
           -DCMAKE_INSTALL_PREFIX=/usr/local                                     \
           -DCMAKE_BUILD_TYPE=Release                                            \
