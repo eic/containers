@@ -30,6 +30,7 @@ RUN --mount=type=cache,target=/ccache/                                          
  && git clone -b ${JUGGLER_VERSION} --depth 1                                   \
         https://eicweb.phy.anl.gov/EIC/juggler.git                              \
  && cmake -B build -S juggler                                                   \
+          -DCMAKE_CXX_FLAGS="-Wno-psabi"                                        \
           -DCMAKE_CXX_STANDARD=17                                               \
           -DCMAKE_INSTALL_PREFIX=/usr/local                                     \
           -DCMAKE_BUILD_TYPE=Release                                            \
@@ -48,6 +49,7 @@ RUN --mount=type=cache,target=/ccache/                                          
  && git clone -b ${EICRECON_VERSION} --depth 1                                  \
         https://github.com/eic/eicrecon.git                                     \
  && cmake -B build -S eicrecon                                                  \
+          -DCMAKE_CXX_FLAGS="-Wno-psabi"                                        \
           -DCMAKE_CXX_STANDARD=17                                               \
           -DCMAKE_INSTALL_PREFIX=/usr/local                                     \
           -DCMAKE_BUILD_TYPE=Release                                            \
