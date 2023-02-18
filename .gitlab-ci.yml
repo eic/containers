@@ -524,8 +524,9 @@ benchmarks:reconstruction:
     - version
     - jug_xl:default
   variables:
-    JUGGLER_TAG: "$INTERNAL_TAG"
-    JUGGLER_REGISTRY: "$CI_REGISTRY_IMAGE"
+    BENCHMARKS_TAG: "$INTERNAL_TAG"
+    BENCHMARKS_CONTAINER: "jug_xl"
+    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
     strategy: depend
@@ -541,8 +542,9 @@ benchmarks:physics:
     - jug_xl:default
   variables:
     RECO: "juggler"
-    JUGGLER_TAG: "$INTERNAL_TAG"
-    JUGGLER_REGISTRY: "$CI_REGISTRY_IMAGE"
+    BENCHMARKS_TAG: "$INTERNAL_TAG"
+    BENCHMARKS_CONTAINER: "jug_xl"
+    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
     strategy: depend
