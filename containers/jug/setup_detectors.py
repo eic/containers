@@ -122,6 +122,7 @@ if __name__ == '__main__':
                             detector=proj),
                        '&&',
                        'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
+                       '-DCMAKE_CXX_FLAGS="-Wno-psabi"',
                        '-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache',
                        '-DCMAKE_INSTALL_PREFIX={prefix}'.format(prefix=prefix),
                        '&&',
