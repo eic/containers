@@ -177,7 +177,6 @@ version:
 .build:
   rules:
     - when: on_success
-  resource_group: ${CI_COMMIT_REF_NAME}
   ## Use docker runner for docker builds
   tags:
     - docker-new
@@ -190,6 +189,9 @@ version:
     - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
                                  ${INTERNAL_TAG} --eicweb
+
+.no-concurrency:
+  resource_group: ${CI_COMMIT_REF_NAME}
 
 ## Images:
 ## debian_testing_base --> jug_dev  --> jug_xl
@@ -222,7 +224,9 @@ base:
 #      - BASE_IMAGE: debian:testing-20220822-slim
 #        BUILD_IMAGE: debian_testing_base_multiarch
 #        PLATFORM: linux/amd64,linux/arm64/v8
-  extends: .build
+  extends:
+    - .build
+    - .no-concurrency
   stage: base
   needs:
     - version
@@ -252,7 +256,9 @@ jug_dev:default:
 #      - BASE_IMAGE: cuda_base_new
 #        BUILD_IMAGE: jug_dev_cuda
 #        PLATFORM: linux/amd64
-  extends: .build
+  extends:
+    - .build
+    - .no-concurrency
   stage: jug
   needs:
     - version
