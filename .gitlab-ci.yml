@@ -169,7 +169,9 @@ version:
 .build:
   rules:
     - when: on_success
-  resource_group: ${CI_COMMIT_REF_NAME}
+  needs:
+    - version
+  resource_group: ${VERSION}
   ## Use docker runner for docker builds
   tags:
     - docker-new
