@@ -63,6 +63,17 @@ variables:
   ## Force a rebuild without using cache
   FORCE_NOCACHE: 0
 
+  ## Default version and tags
+  ## - internal tag used for the CI. Also temporarily tagged
+  ##   on eicweb to communicate between jobs (removed in cleanup job)
+  ## - export tag to public registries, optional secondary export tag
+  VERSION: "$CI_COMMIT_BRANCH"
+  NIGHTLY_TAG: "nightly"
+  TESTING_TAG: "testing"
+  INTERNAL_TAG: "${TESTING_TAG}-${VERSION}"
+  EXPORT_TAG: ""
+  EXPORT_TAG2: ""
+
 stages:
   - config
   - base            ## base OS image
@@ -92,6 +103,7 @@ default:
 workflow:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-stable/'          ## main stable branch: vX.Y-stable
     - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-stable/'   ## special stable branch: vX.Y-acadia-stable (etc)
@@ -122,42 +134,22 @@ version:
   stage: config
   script:
     - |
-      VERSION="$CI_COMMIT_BRANCH"
-      TESTING="testing"
-      NIGHTLY="nightly"
-    ## determine appropriate major docker tag for this scenario
-    - |
-      ## internal tag used for the CI. Also temporarily tagged
-      ## on eicweb to communicate between jobs (removed in cleanup job)
-      INTERNAL_TAG="testing-$VERSION"
-      ## main export tag, optional secondary export tag,
-      EXPORT_TAG=${TESTING}
-      EXPORT_TAG2=
-      ## nightly tag, only used in master
-      NIGHTLY_TAG=${NIGHTLY}
       if [ "x${CI_PIPELINE_SOURCE}" = "xmerge_request_event" ]; then
         INTERNAL_TAG="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
         NIGHTLY_TAG="${INTERNAL_TAG}-nightly"
         EXPORT_TAG="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
-        EXPORT_TAG2=
       elif [[ "$CI_COMMIT_TAG" =~ ^v[0-9.]+ ]]; then
         VERSION="${CI_COMMIT_TAG:1}"
         INTERNAL_TAG="stable-tag-${VERSION}"
-        NIGHTLY_TAG=
         EXPORT_TAG=${VERSION}
-        EXPORT_TAG2=
       elif [[ "$CI_COMMIT_BRANCH" = "v[0-9.]+-stable" ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
         INTERNAL_TAG="stable-br-${VERSION}"
-        NIGHTLY_TAG=
         EXPORT_TAG=${VERSION}
-        EXPORT_TAG2=
       elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+-[a-z]+-stable ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
         INTERNAL_TAG="stable-br-${VERSION}"
-        NIGHTLY_TAG=
         EXPORT_TAG=${VERSION}
-        EXPORT_TAG2=
       fi
       echo "VERSION=$VERSION" >> build.env
       echo "INTERNAL_TAG=$INTERNAL_TAG" >> build.env
@@ -177,7 +169,9 @@ version:
 .build:
   rules:
     - when: on_success
-  resource_group: ${CI_COMMIT_REF_NAME}
+  needs:
+    - version
+  resource_group: ${VERSION}
   ## Use docker runner for docker builds
   tags:
     - docker-new
