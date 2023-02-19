@@ -64,10 +64,13 @@ variables:
   FORCE_NOCACHE: 0
 
   ## Default version and tags
+  ## - internal tag used for the CI. Also temporarily tagged
+  ##   on eicweb to communicate between jobs (removed in cleanup job)
+  ## - export tag to public registries, optional secondary export tag
   VERSION: "$CI_COMMIT_BRANCH"
   NIGHTLY_TAG: "nightly"
   TESTING_TAG: "testing"
-  INTERNAL_TAG: ""
+  INTERNAL_TAG: "${TESTING_TAG}-${VERSION}"
   EXPORT_TAG: ""
   EXPORT_TAG2: ""
 
@@ -130,11 +133,6 @@ version:
   stage: config
   script:
     - |
-      ## internal tag used for the CI. Also temporarily tagged
-      ## on eicweb to communicate between jobs (removed in cleanup job)
-      INTERNAL_TAG="testing-${VERSION}"
-      ## main export tag, optional secondary export tag,
-      EXPORT_TAG=${TESTING_TAG}
       if [ "x${CI_PIPELINE_SOURCE}" = "xmerge_request_event" ]; then
         INTERNAL_TAG="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
         NIGHTLY_TAG="${INTERNAL_TAG}-nightly"
