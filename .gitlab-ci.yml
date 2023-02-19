@@ -63,6 +63,14 @@ variables:
   ## Force a rebuild without using cache
   FORCE_NOCACHE: 0
 
+  ## Default version and tags
+  VERSION: "$CI_COMMIT_BRANCH"
+  NIGHTLY_TAG: "nightly"
+  TESTING_TAG: "testing"
+  INTERNAL_TAG: ""
+  EXPORT_TAG: ""
+  EXPORT_TAG2: ""
+
 stages:
   - config
   - base            ## base OS image
@@ -122,19 +130,12 @@ version:
   stage: config
   script:
     - |
-      VERSION="$CI_COMMIT_BRANCH"
-      TESTING="testing"
-      NIGHTLY="nightly"
-    ## determine appropriate major docker tag for this scenario
-    - |
       ## internal tag used for the CI. Also temporarily tagged
       ## on eicweb to communicate between jobs (removed in cleanup job)
-      INTERNAL_TAG="testing-$VERSION"
+      INTERNAL_TAG="testing-${VERSION}"
       ## main export tag, optional secondary export tag,
-      EXPORT_TAG=${TESTING}
+      EXPORT_TAG=${TESTING_TAG}
       EXPORT_TAG2=
-      ## nightly tag, only used in master
-      NIGHTLY_TAG=${NIGHTLY}
       if [ "x${CI_PIPELINE_SOURCE}" = "xmerge_request_event" ]; then
         INTERNAL_TAG="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
         NIGHTLY_TAG="${INTERNAL_TAG}-nightly"
