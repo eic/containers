@@ -67,7 +67,7 @@ variables:
   ## - internal tag used for the CI. Also temporarily tagged
   ##   on eicweb to communicate between jobs (removed in cleanup job)
   ## - export tag to public registries, optional secondary export tag
-  VERSION: "$CI_COMMIT_BRANCH"
+  VERSION: "${CI_COMMIT_REF_NAME}"
   NIGHTLY_TAG: "nightly"
   TESTING_TAG: "testing"
   INTERNAL_TAG: "${TESTING_TAG}-${VERSION}"
@@ -135,21 +135,22 @@ version:
   script:
     - |
       if [ "x${CI_PIPELINE_SOURCE}" = "xmerge_request_event" ]; then
-        INTERNAL_TAG="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
-        NIGHTLY_TAG="${INTERNAL_TAG}-nightly"
-        EXPORT_TAG="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
+        VERSION="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
+        INTERNAL_TAG="${VERSION}"
+        NIGHTLY_TAG="${VERSION}-nightly"
+        EXPORT_TAG="${VERSION}"
       elif [[ "$CI_COMMIT_TAG" =~ ^v[0-9.]+ ]]; then
         VERSION="${CI_COMMIT_TAG:1}"
         INTERNAL_TAG="stable-tag-${VERSION}"
-        EXPORT_TAG=${VERSION}
+        EXPORT_TAG="${VERSION}"
       elif [[ "$CI_COMMIT_BRANCH" = "v[0-9.]+-stable" ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
         INTERNAL_TAG="stable-br-${VERSION}"
-        EXPORT_TAG=${VERSION}
+        EXPORT_TAG="${VERSION}"
       elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+-[a-z]+-stable ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
         INTERNAL_TAG="stable-br-${VERSION}"
-        EXPORT_TAG=${VERSION}
+        EXPORT_TAG="${VERSION}"
       fi
       echo "VERSION=$VERSION" >> build.env
       echo "INTERNAL_TAG=$INTERNAL_TAG" >> build.env
@@ -171,7 +172,7 @@ version:
     - when: on_success
   needs:
     - version
-  resource_group: ${VERSION}
+  resource_group: ${CI_COMMIT_REF_NAME}
   ## Use docker runner for docker builds
   tags:
     - docker-new
