@@ -63,9 +63,9 @@ spack:
     - py-uproot@4.3.5
     - py-yapf@0.30.0
     - qt@5.15.5 +opengl
-    - root@6.26.06 cxxstd=17 
+    - root@6.28.00 cxxstd=17 
           +fftw +fortran +gdml +http -ipo +mlp +pythia8 
-          +root7 +tmva +vc -webgui +xrootd +ssl 
+          +root7 +tmva +vc +webgui +xrootd +ssl 
     - spdlog@1.10.0 +fmt_external
     - stow@2.3.1
     - tensorflow-lite@2.8.0 -xnnpack
