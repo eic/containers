@@ -39,10 +39,6 @@ variables:
   ## [hash]: [description]
   ## f892e2b5d7ea9d1f2e43741499e899ce21dd3d5a: py-minkowskiengine: new package
 
-  ## We need to enable Docker Buildkit to use cache mounts and better
-  ## build performance overall
-  DOCKER_BUILDKIT: 1
-
   ## Dockerhub registry
   DH_REGISTRY: docker.io
   DH_REGISTRY_USER: eicweb
