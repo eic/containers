@@ -200,9 +200,9 @@ version:
 base:
   parallel:
     matrix:
-      - BASE_IMAGE: amd64/debian:testing-20220822-slim
-        BUILD_IMAGE: amd64_debian_testing_base
-        PLATFORM: linux/amd64
+      - BASE_IMAGE: debian:testing-20220822-slim
+        BUILD_IMAGE: debian_testing_base
+        PLATFORM: linux/amd64,linux/arm64/v
       - BASE_IMAGE: ubuntu:20.04
         BUILD_IMAGE: ubuntu_base
         PLATFORM: linux/amd64,linux/arm64/v8
@@ -212,12 +212,6 @@ base:
 #      - BASE_IMAGE: nvidia/cuda:11.8.0-devel-ubuntu20.04
 #        BUILD_IMAGE: cuda_base
 #        PLATFORM: linux/amd64
-      - BASE_IMAGE: arm64v8/debian:testing-20220822-slim
-        BUILD_IMAGE: arm64v8_debian_testing_base
-        PLATFORM: linux/arm64/v8
-#      - BASE_IMAGE: debian:testing-20220822-slim
-#        BUILD_IMAGE: debian_testing_base_multiarch
-#        PLATFORM: linux/amd64,linux/arm64/v8
   extends: .build
   stage: base
   needs:
@@ -241,10 +235,10 @@ base:
 jug_dev:default:
   parallel:
     matrix:
-      - BASE_IMAGE: amd64_debian_testing_base
+      - BASE_IMAGE: debian_testing_base
         BUILD_IMAGE: jug_dev
         PLATFORM: linux/amd64
-      - BASE_IMAGE: arm64v8_debian_testing_base
+      - BASE_IMAGE: debian_testing_base
         BUILD_IMAGE: jug_dev_arm64v8
         PLATFORM: linux/arm64/v8
 #      - BASE_IMAGE: oneapi_base
