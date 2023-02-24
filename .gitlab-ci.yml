@@ -247,6 +247,7 @@ jug_dev:default:
     - base
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx create --name builder --driver docker-container --bootstrap --use
     ## calculate a hash based on the spack.yaml file and the spack directory
     ## and use this spack as a docker variable to force a rebuild when there
     ## is a change (versus rerun from cache)
@@ -331,6 +332,7 @@ jug_xl:default:
     - jug_dev:default
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx create --name builder --driver docker-container --bootstrap --use
     - cp detectors.yaml containers/jug
     - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    -f containers/jug/xl.Dockerfile
@@ -368,6 +370,7 @@ jug_xl:nightly:
     - jug_dev:default
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx create --name builder --driver docker-container --bootstrap --use
     - cp detectors.yaml containers/jug
     - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
                    -f containers/jug/xl.Dockerfile
