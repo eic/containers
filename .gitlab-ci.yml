@@ -48,7 +48,7 @@ variables:
   DH_REGISTRY_USER: eicweb
   DH_PUSH: 1
   ## GitHub registry
-  GH_REGISTRY: ghcr.ioio
+  GH_REGISTRY: ghcr.io
   GH_REGISTRY_USER: eic
   GH_PUSH: 1
 
@@ -205,7 +205,7 @@ base:
       - BASE_IMAGE: amd64/debian:testing-20220822-slim
         BUILD_IMAGE: amd64_debian_testing_base
         PLATFORM: linux/amd64
-      - BASE_IMAGE: amd64/ubuntu:20.04
+      - BASE_IMAGE: ubuntu:20.04
         BUILD_IMAGE: ubuntu_base
         PLATFORM: linux/amd64,linux/arm64/v8
       - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
