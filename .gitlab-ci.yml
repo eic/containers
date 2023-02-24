@@ -318,10 +318,7 @@ jug_xl:default:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64
-      - BASE_IMAGE: jug_dev
-        BUILD_IMAGE: jug_xl_arm64v8
-        PLATFORM: linux/arm64/v8
+        PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
 #        PLATFORM: linux/amd64
@@ -334,26 +331,28 @@ jug_xl:default:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
     - cp detectors.yaml containers/jug
-    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+    - docker buildx build --push
+                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   ${EXPORT_TAG:+
+                     -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                   }
                    -f containers/jug/xl.Dockerfile
-                   ${PLATFORM:+--platform ${PLATFORM}}
+                   --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg EICRECON_VERSION=${EICRECON_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
-    - !reference [.build, script]
 
 jug_xl:nightly:
   parallel:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64
-      - BASE_IMAGE: jug_dev
-        BUILD_IMAGE: jug_xl_arm64v8
-        PLATFORM: linux/arm64/v8
+        PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
 #        PLATFORM: linux/amd64
@@ -372,22 +371,20 @@ jug_xl:nightly:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
     - cp detectors.yaml containers/jug
-    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
+    - docker buildx build --push
+                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   ${EXPORT_TAG:+
+                     -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
+                   }
                    -f containers/jug/xl.Dockerfile
-                   ${PLATFORM:+--platform ${PLATFORM}}
+                   --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
                    --build-arg NIGHTLY=1
                    containers/jug
-    - |
-      PUSH_FLAG=""
-      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
-        PUSH_FLAG="--eicweb"
-      fi
-    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG}
-                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
-                                 ${NIGHTLY_TAG} ${PUSH_FLAG}
     - if [ -z "${PUSH_FLAG}" ] ; then
       ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG}
                                  -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
