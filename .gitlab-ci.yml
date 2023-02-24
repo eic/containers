@@ -75,7 +75,6 @@ variables:
   TESTING_TAG: "testing"
   INTERNAL_TAG: "${TESTING_TAG}-${VERSION}"
   EXPORT_TAG: ""
-  EXPORT_TAG2: ""
 
 stages:
   - config
@@ -159,7 +158,6 @@ version:
       echo "INTERNAL_TAG=$INTERNAL_TAG" >> build.env
       echo "NIGHTLY_TAG=$NIGHTLY_TAG" >> build.env
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
-      echo "EXPORT_TAG2=$EXPORT_TAG2" >> build.env
       cat build.env
 
   artifacts:
