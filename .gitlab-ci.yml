@@ -226,9 +226,12 @@ base:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
     - docker buildx build --push
-                   -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
-                   ${DH_PUSH:+-t ${DH_REGISTRY}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                   ${GH_PUSH:+-t ${GH_REGISTRY}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   ${EXPORT_TAG:+
+                     -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                   }
                    -f containers/debian/base.Dockerfile
                    --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
