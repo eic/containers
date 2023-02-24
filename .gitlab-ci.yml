@@ -44,10 +44,12 @@ variables:
   DOCKER_BUILDKIT: 1
 
   ## Dockerhub registry
+  DH_REGISTRY: docker.io
   DH_REGISTRY_USER: eicweb
   DH_PUSH: 1
   ## GitHub registry
-  GH_REGISTRY: ghcr.io
+  GH_REGISTRY: ghcr.ioio
+  GH_REGISTRY_USER: eic
   GH_PUSH: 1
 
   ## Also export the raw builder image, will be stored on DH only
@@ -225,13 +227,15 @@ base:
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
-    - docker buildx build -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+    - docker buildx build --push
+                   -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   ${DH_PUSH:+-t ${DH_REGISTRY}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                   ${GH_PUSH:+-t ${GH_REGISTRY}/${BUILD_IMAGE}:${EXPORT_TAG}}
                    -f containers/debian/base.Dockerfile
-                   ${PLATFORM:+--platform ${PLATFORM}}
+                   --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    containers/debian
-    - !reference [.build, script]
 
 jug_dev:default:
   parallel:
