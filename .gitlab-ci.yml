@@ -248,11 +248,6 @@ jug_dev:default:
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
-    ## calculate a hash based on the spack.yaml file and the spack directory
-    ## and use this spack as a docker variable to force a rebuild when there
-    ## is a change (versus rerun from cache)
-    - PACKAGE_HASH=$(sha1sum spack.yaml | head -c40)
-    - echo "PACKAGE_HASH=${PACKAGE_HASH}"
     ## move spack.yaml into the container build directory
     - cp -r spack.yaml containers/jug
     - CACHE_FLAG=""
@@ -283,7 +278,6 @@ jug_dev:default:
                    --build-arg S3_SECRET_KEY="${S3_SECRET_KEY}"
                    --build-arg S3RW_ACCESS_KEY="${S3RW_ACCESS_KEY}"
                    --build-arg S3RW_SECRET_KEY="${S3RW_SECRET_KEY}"
-                   --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
@@ -308,7 +302,6 @@ jug_dev:default:
                    --build-arg S3_SECRET_KEY="${S3_SECRET_KEY}"
                    --build-arg S3RW_ACCESS_KEY="${S3RW_ACCESS_KEY}"
                    --build-arg S3RW_SECRET_KEY="${S3RW_SECRET_KEY}"
-                   --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
