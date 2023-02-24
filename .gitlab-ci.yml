@@ -26,6 +26,7 @@ variables:
     cc2ae9f270befa554ba8b09c68e89bb8248ea650
     ae98d2ba2fcefa9d027e2d6ccc6e7558a32e7228
     ae189cfab8d9036e8d39bbd3f1b61b400d1fcd5b
+    3afe6f1adcc24335cbca9a9c03ffea188f802766
     559c3de213707b5d52d899fd0382495f2cc8508d
     8e84dcd7ef999e2659822b34372515175f1723c4
   ## Ref: https://github.com/spack/spack/commit/[hash]
@@ -44,6 +45,7 @@ variables:
   ## cc2ae9f270befa554ba8b09c68e89bb8248ea650: Add a "maintainer" directive
   ## ae98d2ba2fcefa9d027e2d6ccc6e7558a32e7228: Support packages for using scitokens on OSG
   ## ae189cfab8d9036e8d39bbd3f1b61b400d1fcd5b: geant4: new version 11.1.1
+  ## 3afe6f1adcc24335cbca9a9c03ffea188f802766: ROOT: add math/gsl conflict and change version-dependent features to conditional variants
   ## 559c3de213707b5d52d899fd0382495f2cc8508d: ROOT: new versions and associated dependency constraints
   ## 8e84dcd7ef999e2659822b34372515175f1723c4: root: new version 6.28.00
 
