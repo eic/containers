@@ -268,11 +268,16 @@ jug_dev:default:
         export CACHE_FLAG="--no-cache"
       fi
     ## Optionally build the raw builder image
-    - test ${EXPORT_BUILDER} = 1 && docker buildx build --load ${CACHE_FLAG}
-                   -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
+    - test ${EXPORT_BUILDER} = 1 && docker buildx build --push ${CACHE_FLAG}
+                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
+                   ${EXPORT_TAG:+
+                     -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:builder-${EXPORT_TAG}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/builder-${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/builder-${BUILD_IMAGE}:${EXPORT_TAG}}
+                   }
                    --target=builder
                    -f containers/jug/dev.Dockerfile
-                   ${PLATFORM:+--platform ${PLATFORM}}
+                   --platform ${PLATFORM}
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
@@ -289,9 +294,15 @@ jug_dev:default:
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
     ## now build our image
-    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
+    - docker buildx build --push ${CACHE_FLAG}
+                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   ${EXPORT_TAG:+
+                     -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                   }
                    -f containers/jug/dev.Dockerfile
-                   ${PLATFORM:+--platform ${PLATFORM}}
+                   --platform ${PLATFORM}
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
@@ -307,25 +318,6 @@ jug_dev:default:
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
-    ## push builder image do DH if desired
-    - test ${EXPORT_BUILDER} = 1 && ./gitlab-ci/docker_push.sh
-                                 -i ${BUILD_IMAGE} -l builder-${INTERNAL_TAG}
-                                 -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                 builder-${EXPORT_TAG} --dockerhub
-    ## standard exports
-    - !reference [.build, script]
-
-jug_dev:multiarch:
-  parallel:
-    matrix:
-      - IMAGE: jug_dev
-        ARCHS: "amd64 arm64v8"
-  stage: jug
-  needs:
-    - version 
-    - jug_dev:default
-  script:
-    - echo docker manifest create ${IMAGE}:${EXPORT_TAG} $(echo ${ARCHS} | xargs -d " " -I "{}" echo -n "--amend ${IMAGE}:${EXPORT_TAG}-{}")
 
 jug_xl:default:
   parallel:
