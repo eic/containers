@@ -319,7 +319,7 @@ jug_xl:default:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
         PLATFORM: linux/amd64
-      - BASE_IMAGE: jug_dev_arm64v8
+      - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl_arm64v8
         PLATFORM: linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
@@ -351,7 +351,7 @@ jug_xl:nightly:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
         PLATFORM: linux/amd64
-      - BASE_IMAGE: jug_dev_arm64v8
+      - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl_arm64v8
         PLATFORM: linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
