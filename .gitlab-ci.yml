@@ -202,7 +202,7 @@ base:
     matrix:
       - BASE_IMAGE: debian:testing-20220822-slim
         BUILD_IMAGE: debian_testing_base
-        PLATFORM: linux/amd64,linux/arm64/v
+        PLATFORM: linux/amd64,linux/arm64/v8
       - BASE_IMAGE: ubuntu:20.04
         BUILD_IMAGE: ubuntu_base
         PLATFORM: linux/amd64,linux/arm64/v8
