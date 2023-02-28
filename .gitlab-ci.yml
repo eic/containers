@@ -390,7 +390,6 @@ jug_xl:nightly:
                    ${PLATFORM:+--platform ${PLATFORM}}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg EICRECON_VERSION=${EICRECON_VERSION}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
                    --build-arg NIGHTLY=1
                    containers/jug
