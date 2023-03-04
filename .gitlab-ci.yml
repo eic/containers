@@ -39,6 +39,8 @@ variables:
   ## [hash]: [description]
   ## f892e2b5d7ea9d1f2e43741499e899ce21dd3d5a: py-minkowskiengine: new package
 
+  ## Local registry
+  CI_PUSH: 1
   ## Dockerhub registry
   DH_REGISTRY: docker.io
   DH_REGISTRY_USER: eicweb
@@ -218,7 +220,7 @@ base:
     - docker buildx build --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
-                     -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                    }
@@ -248,45 +250,27 @@ jug_dev:default:
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
-    ## move spack.yaml into the container build directory
-    - cp -r spack.yaml containers/jug
+    ## Which targets to build
+    - TARGETS="release"
+    - |
+      if [ ${EXPORT_BUILDER} = 1 ]; then
+        TARGETS="builder ${TARGETS}"
+      fi
+    ## Disable caching
     - CACHE_FLAG=""
     - |
       if [ $FORCE_NOCACHE = 1 ]; then
         echo "FORCE_NOCACHE set"
         export CACHE_FLAG="--no-cache"
       fi
-    ## Optionally build the raw builder image
-    - test ${EXPORT_BUILDER} = 1 && docker buildx build --push ${CACHE_FLAG}
-                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
-                   ${EXPORT_TAG:+
-                     -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:builder-${EXPORT_TAG}
-                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/builder-${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/builder-${BUILD_IMAGE}:${EXPORT_TAG}}
-                   }
-                   --target=builder
-                   -f containers/jug/dev.Dockerfile
-                   --platform ${PLATFORM}
-                   --build-arg BASE_IMAGE="${BASE_IMAGE}"
-                   --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
-                   --build-arg SPACK_VERSION="${SPACK_VERSION}"
-                   --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
-                   --build-arg EICSPACK_ORGREPO="${EICSPACK_ORGREPO}"
-                   --build-arg EICSPACK_VERSION="${EICSPACK_VERSION}"
-                   --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
-                   --build-arg S3_ACCESS_KEY="${S3_ACCESS_KEY}"
-                   --build-arg S3_SECRET_KEY="${S3_SECRET_KEY}"
-                   --build-arg S3RW_ACCESS_KEY="${S3RW_ACCESS_KEY}"
-                   --build-arg S3RW_SECRET_KEY="${S3RW_SECRET_KEY}"
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
-                   containers/jug
-                   --build-context spack=.
-    ## now build our image
-    - docker buildx build --push ${CACHE_FLAG}
+    ## Build targets
+    - for target in ${TARGETS} ; do
+        docker buildx build --push
+                   --target ${target}
+                   ${CACHE_FLAG}
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
-                     -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                    }
@@ -305,7 +289,9 @@ jug_dev:default:
                    --build-arg S3RW_SECRET_KEY="${S3RW_SECRET_KEY}"
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   --build-context spack=.
                    containers/jug
+      ; done
 
 jug_xl:default:
   parallel:
@@ -328,7 +314,7 @@ jug_xl:default:
     - docker buildx build --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
-                     -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                    }
@@ -368,7 +354,7 @@ jug_xl:nightly:
     - docker buildx build --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
-                     -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                    }
