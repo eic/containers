@@ -259,7 +259,7 @@ RUN chmod a+x /usr/local/bin/mc
 ## STAGE 3
 ## Lean target image
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG}
+FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as export
 ARG TARGETPLATFORM
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
