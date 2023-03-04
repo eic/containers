@@ -281,6 +281,7 @@ jug_dev:default:
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
+                   --build-context spack=.
     ## now build our image
     - docker buildx build --push ${CACHE_FLAG}
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
