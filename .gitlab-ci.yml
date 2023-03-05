@@ -39,15 +39,15 @@ variables:
   ## [hash]: [description]
   ## f892e2b5d7ea9d1f2e43741499e899ce21dd3d5a: py-minkowskiengine: new package
 
-  ## We need to enable Docker Buildkit to use cache mounts and better
-  ## build performance overall
-  DOCKER_BUILDKIT: 1
-
+  ## Local registry
+  CI_PUSH: 1
   ## Dockerhub registry
+  DH_REGISTRY: docker.io
   DH_REGISTRY_USER: eicweb
   DH_PUSH: 1
   ## GitHub registry
   GH_REGISTRY: ghcr.io
+  GH_REGISTRY_USER: eic
   GH_PUSH: 1
 
   ## Also export the raw builder image, will be stored on DH only
@@ -73,7 +73,6 @@ variables:
   TESTING_TAG: "testing"
   INTERNAL_TAG: "${TESTING_TAG}-${VERSION}"
   EXPORT_TAG: ""
-  EXPORT_TAG2: ""
 
 stages:
   - config
@@ -157,7 +156,6 @@ version:
       echo "INTERNAL_TAG=$INTERNAL_TAG" >> build.env
       echo "NIGHTLY_TAG=$NIGHTLY_TAG" >> build.env
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
-      echo "EXPORT_TAG2=$EXPORT_TAG2" >> build.env
       cat build.env
 
   artifacts:
@@ -200,24 +198,18 @@ version:
 base:
   parallel:
     matrix:
-      - BASE_IMAGE: amd64/debian:testing-20220822-slim
-        BUILD_IMAGE: amd64_debian_testing_base
-        PLATFORM: linux/amd64
-      - BASE_IMAGE: amd64/ubuntu:20.04
-        BUILD_IMAGE: amd64_ubuntu_base
-        PLATFORM: linux/amd64
+      - BASE_IMAGE: debian:testing-20220822-slim
+        BUILD_IMAGE: debian_testing_base
+        PLATFORM: linux/amd64,linux/arm64/v8
+      - BASE_IMAGE: ubuntu:20.04
+        BUILD_IMAGE: ubuntu_base
+        PLATFORM: linux/amd64,linux/arm64/v8
       - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
         BUILD_IMAGE: oneapi_base
         PLATFORM: linux/amd64
 #      - BASE_IMAGE: nvidia/cuda:11.8.0-devel-ubuntu20.04
 #        BUILD_IMAGE: cuda_base
 #        PLATFORM: linux/amd64
-      - BASE_IMAGE: arm64v8/debian:testing-20220822-slim
-        BUILD_IMAGE: arm64v8_debian_testing_base
-        PLATFORM: linux/arm64/v8
-#      - BASE_IMAGE: debian:testing-20220822-slim
-#        BUILD_IMAGE: debian_testing_base_multiarch
-#        PLATFORM: linux/amd64,linux/arm64/v8
   extends: .build
   stage: base
   needs:
@@ -225,23 +217,25 @@ base:
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
-    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+    - docker buildx build --push
+                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   ${EXPORT_TAG:+
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                   }
                    -f containers/debian/base.Dockerfile
-                   ${PLATFORM:+--platform ${PLATFORM}}
+                   --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    containers/debian
-    - !reference [.build, script]
 
 jug_dev:default:
   parallel:
     matrix:
-      - BASE_IMAGE: amd64_debian_testing_base
+      - BASE_IMAGE: debian_testing_base
         BUILD_IMAGE: jug_dev
-        PLATFORM: linux/amd64
-      - BASE_IMAGE: arm64v8_debian_testing_base
-        BUILD_IMAGE: jug_dev_arm64v8
-        PLATFORM: linux/arm64/v8
+        PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE: jug_dev_oneapi
 #        PLATFORM: linux/amd64
@@ -255,25 +249,36 @@ jug_dev:default:
     - base
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    ## calculate a hash based on the spack.yaml file and the spack directory
-    ## and use this spack as a docker variable to force a rebuild when there
-    ## is a change (versus rerun from cache)
-    - PACKAGE_HASH=$(sha1sum spack.yaml | head -c40)
-    - echo "PACKAGE_HASH=${PACKAGE_HASH}"
-    ## move spack.yaml into the container build directory
-    - cp -r spack.yaml containers/jug
+    - docker buildx create --name builder --driver docker-container --bootstrap --use
+    ## Which targets to build
+    - TARGETS="export"
+    - |
+      if [ ${EXPORT_BUILDER} = 1 ]; then
+        TARGETS="builder ${TARGETS}"
+      fi
+    ## Disable caching
     - CACHE_FLAG=""
     - |
       if [ $FORCE_NOCACHE = 1 ]; then
         echo "FORCE_NOCACHE set"
         export CACHE_FLAG="--no-cache"
       fi
-    ## Optionally build the raw builder image
-    - test ${EXPORT_BUILDER} = 1 && docker buildx build --load ${CACHE_FLAG}
-                   -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:builder-${INTERNAL_TAG}
-                   --target=builder
+    ## Build targets
+    - for target in ${TARGETS} ; do
+        if [ ! ${target} = export ] ; then
+          suffix=-${target} ;
+        fi ;
+        docker buildx build --push
+                   --target ${target}
+                   ${CACHE_FLAG}
+                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}${suffix}
+                   ${EXPORT_TAG:+
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}${suffix}}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}${suffix}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}${suffix}}
+                   }
                    -f containers/jug/dev.Dockerfile
-                   ${PLATFORM:+--platform ${PLATFORM}}
+                   --platform ${PLATFORM}
                    --build-arg BASE_IMAGE="${BASE_IMAGE}"
                    --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
                    --build-arg SPACK_VERSION="${SPACK_VERSION}"
@@ -285,58 +290,18 @@ jug_dev:default:
                    --build-arg S3_SECRET_KEY="${S3_SECRET_KEY}"
                    --build-arg S3RW_ACCESS_KEY="${S3RW_ACCESS_KEY}"
                    --build-arg S3RW_SECRET_KEY="${S3RW_SECRET_KEY}"
-                   --build-arg CACHE_BUST=${PACKAGE_HASH}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   --build-context spack=.
                    containers/jug
-    ## now build our image
-    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG} ${CACHE_FLAG}
-                   -f containers/jug/dev.Dockerfile
-                   ${PLATFORM:+--platform ${PLATFORM}}
-                   --build-arg BASE_IMAGE="${BASE_IMAGE}"
-                   --build-arg SPACK_ORGREPO="${SPACK_ORGREPO}"
-                   --build-arg SPACK_VERSION="${SPACK_VERSION}"
-                   --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
-                   --build-arg EICSPACK_ORGREPO="${EICSPACK_ORGREPO}"
-                   --build-arg EICSPACK_VERSION="${EICSPACK_VERSION}"
-                   --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
-                   --build-arg S3_ACCESS_KEY="${S3_ACCESS_KEY}"
-                   --build-arg S3_SECRET_KEY="${S3_SECRET_KEY}"
-                   --build-arg S3RW_ACCESS_KEY="${S3RW_ACCESS_KEY}"
-                   --build-arg S3RW_SECRET_KEY="${S3RW_SECRET_KEY}"
-                   --build-arg CACHE_BUST=${PACKAGE_HASH}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
-                   containers/jug
-    ## push builder image do DH if desired
-    - test ${EXPORT_BUILDER} = 1 && ./gitlab-ci/docker_push.sh
-                                 -i ${BUILD_IMAGE} -l builder-${INTERNAL_TAG}
-                                 -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                 builder-${EXPORT_TAG} --dockerhub
-    ## standard exports
-    - !reference [.build, script]
-
-jug_dev:multiarch:
-  parallel:
-    matrix:
-      - IMAGE: jug_dev
-        ARCHS: "amd64 arm64v8"
-  stage: jug
-  needs:
-    - version 
-    - jug_dev:default
-  script:
-    - echo docker manifest create ${IMAGE}:${EXPORT_TAG} $(echo ${ARCHS} | xargs -d " " -I "{}" echo -n "--amend ${IMAGE}:${EXPORT_TAG}-{}")
+      ; done
 
 jug_xl:default:
   parallel:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64
-      - BASE_IMAGE: jug_dev_arm64v8
-        BUILD_IMAGE: jug_xl_arm64v8
-        PLATFORM: linux/arm64/v8
+        PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
 #        PLATFORM: linux/amd64
@@ -347,27 +312,30 @@ jug_xl:default:
     - jug_dev:default
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx create --name builder --driver docker-container --bootstrap --use
     - cp detectors.yaml containers/jug
-    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+    - docker buildx build --push
+                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   ${EXPORT_TAG:+
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                   }
                    -f containers/jug/xl.Dockerfile
-                   ${PLATFORM:+--platform ${PLATFORM}}
+                   --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg EICRECON_VERSION=${EICRECON_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    containers/jug
-    - !reference [.build, script]
 
 jug_xl:nightly:
   parallel:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64
-      - BASE_IMAGE: jug_dev_arm64v8
-        BUILD_IMAGE: jug_xl_arm64v8
-        PLATFORM: linux/arm64/v8
+        PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
 #        PLATFORM: linux/amd64
@@ -384,31 +352,31 @@ jug_xl:nightly:
     - jug_dev:default
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx create --name builder --driver docker-container --bootstrap --use
     - cp detectors.yaml containers/jug
-    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
+    - |
+      PUSH_NIGHTLY_WITH_DATE=""
+      if [ "$CI_COMMIT_BRANCH" == "master" ]; then
+        PUSH_NIGHTLY_WITH_DATE="1"
+      fi
+    - docker buildx build --push
+                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   ${EXPORT_TAG:+
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
+                   }
+                   ${PUSH_NIGHTLY_WITH_DATE:+
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                   }
                    -f containers/jug/xl.Dockerfile
-                   ${PLATFORM:+--platform ${PLATFORM}}
+                   --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
                    --build-arg NIGHTLY=1
                    containers/jug
-    - |
-      PUSH_FLAG=""
-      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
-        PUSH_FLAG="--eicweb"
-      fi
-    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG}
-                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
-                                 ${NIGHTLY_TAG} ${PUSH_FLAG}
-    - if [ -z "${PUSH_FLAG}" ] ; then
-      ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG}
-                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
-                                 ${NIGHTLY_TAG}-$(date +%Y-%m-%d) --ghcr ;
-      ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${NIGHTLY_TAG}
-                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
-                                 ${NIGHTLY_TAG}-$(date +%Y-%m-%d) --dockerhub ;
-      fi
 
 jug_xl:feature:
   extends: .build

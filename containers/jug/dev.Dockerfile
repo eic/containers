@@ -1,4 +1,4 @@
-#syntax=docker/dockerfile:1.2
+#syntax=docker/dockerfile:1.4
 ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
 ARG BASE_IMAGE="debian_base"
 ARG INTERNAL_TAG="testing"
@@ -97,7 +97,7 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
  && spack repo add --scope site "${EICSPACK_ROOT}"
 
 ## Setup our custom environment
-COPY spack.yaml /opt/spack-environment/
+COPY --from=spack spack.yaml /opt/spack-environment/
 RUN rm -r /usr/local                                                    \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate /opt/spack-environment/                          \
@@ -259,7 +259,7 @@ RUN chmod a+x /usr/local/bin/mc
 ## STAGE 3
 ## Lean target image
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG}
+FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as export
 ARG TARGETPLATFORM
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
