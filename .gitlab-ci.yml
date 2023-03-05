@@ -533,7 +533,8 @@ clean:
 
 deep_clean:
   stage: finalize
-  dependencies: clean
+  dependencies:
+    - clean
   when: manual
   script:
     - docker system prune --force
