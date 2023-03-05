@@ -355,9 +355,9 @@ jug_xl:nightly:
     - docker buildx create --name builder --driver docker-container --bootstrap --use
     - cp detectors.yaml containers/jug
     - |
-      PUSH_FLAG=""
-      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
-        PUSH_FLAG="--eicweb"
+      PUSH_NIGHTLY_WITH_DATE=""
+      if [ "$CI_COMMIT_BRANCH" == "master" ]; then
+        PUSH_NIGHTLY_WITH_DATE="1"
       fi
     - docker buildx build --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
@@ -366,9 +366,9 @@ jug_xl:nightly:
                      ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                    }
-                   ${PUSH_FLAG:+
-                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/nightly-$(date +%Y-%m-%d)}
-                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/nightly-$(date +%Y-%m-%d)}
+                   ${PUSH_NIGHTLY_WITH_DATE:+
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
                    }
                    -f containers/jug/xl.Dockerfile
                    --platform ${PLATFORM}
