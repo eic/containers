@@ -270,9 +270,9 @@ jug_dev:default:
                    ${CACHE_FLAG}
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}${EXPORT_BUILDER:+-${target}}
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}${EXPORT_BUILDER:+-${target}}
-                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}${EXPORT_BUILDER:+-${target}}
-                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}${EXPORT_BUILDER:+-${target}}
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}${EXPORT_BUILDER:+-${target}}}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}${EXPORT_BUILDER:+-${target}}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}${EXPORT_BUILDER:+-${target}}}
                    }
                    -f containers/jug/dev.Dockerfile
                    --platform ${PLATFORM}
