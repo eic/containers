@@ -265,14 +265,17 @@ jug_dev:default:
       fi
     ## Build targets
     - for target in ${TARGETS} ; do
+        if [ ! ${target} = export ] ; then
+          suffix=-${target}
+        fi
         docker buildx build --push
                    --target ${target}
                    ${CACHE_FLAG}
-                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}${EXPORT_BUILDER:+-${target}}
+                   -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}${suffix}
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}${EXPORT_BUILDER:+-${target}}}
-                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}${EXPORT_BUILDER:+-${target}}}
-                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}${EXPORT_BUILDER:+-${target}}}
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}${suffix}}
+                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}${suffix}}
+                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}${suffix}}
                    }
                    -f containers/jug/dev.Dockerfile
                    --platform ${PLATFORM}
