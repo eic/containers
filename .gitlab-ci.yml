@@ -501,6 +501,8 @@ clean:
   stage: finalize
   dependencies:
     - version
+  tags:
+    - docker-new
   when: always
   script:
     ## remove the pipeline specific export from eicweb if needed
@@ -518,6 +520,8 @@ deep_clean:
   stage: finalize
   dependencies:
     - clean
+  tags:
+    - docker-new
   when: manual
   script:
     - docker system prune --force
