@@ -59,7 +59,7 @@ variables:
   DOCKER_WAIT_TIME: 5
 
   ## is this nightly or not?
-  NIGHTLY: 0
+  NIGHTLY:
 
   ## Force a rebuild without using cache
   FORCE_NOCACHE: 0
@@ -345,8 +345,8 @@ jug_xl:nightly:
       fi
     - docker buildx build --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                   ${NIGHTLY:+
+                     ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                    }
