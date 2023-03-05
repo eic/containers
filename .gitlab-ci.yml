@@ -266,8 +266,8 @@ jug_dev:default:
     ## Build targets
     - for target in ${TARGETS} ; do
         if [ ! ${target} = export ] ; then
-          suffix=-${target}
-        fi
+          suffix=-${target} ;
+        fi ;
         docker buildx build --push
                    --target ${target}
                    ${CACHE_FLAG}
