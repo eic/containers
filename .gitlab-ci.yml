@@ -157,33 +157,17 @@ version:
       echo "NIGHTLY_TAG=$NIGHTLY_TAG" >> build.env
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
       cat build.env
-
   artifacts:
     reports:
       dotenv: build.env
 
-## base job for all build jobs. Dependent jobs are expected to set
-## the BUILD_IMAGE environment variable, and take care of the actual
-## docker build during the "script" step
-## note that the nightly builds use a different pipeline
+## base job settings for all build jobs
 .build:
   rules:
     - when: on_success
-  needs:
-    - version
   resource_group: ${CI_COMMIT_REF_NAME}
-  ## Use docker runner for docker builds
   tags:
     - docker-new
-  ## cookie-cutter docker push code, to be included at the
-  ## end of the regular job scripts
-  script:
-    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}
-                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
-                                 ${EXPORT_TAG} ${EXPORT_TAG2}
-    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}
-                                 -n $DOCKER_NTRIES -t $DOCKER_WAIT_TIME
-                                 ${INTERNAL_TAG} --eicweb
 
 ## Images:
 ## debian_testing_base --> jug_dev  --> jug_xl
