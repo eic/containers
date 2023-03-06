@@ -297,7 +297,6 @@ jug_xl:default:
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
-    - cp detectors.yaml containers/jug
     - docker buildx build --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
@@ -312,6 +311,7 @@ jug_xl:default:
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg EICRECON_VERSION=${EICRECON_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   --build-context detectors=.
                    containers/jug
 
 jug_xl:nightly:
@@ -337,7 +337,6 @@ jug_xl:nightly:
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --name builder --driver docker-container --bootstrap --use
-    - cp detectors.yaml containers/jug
     - |
       PUSH_NIGHTLY_WITH_DATE=""
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
@@ -360,6 +359,7 @@ jug_xl:nightly:
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
                    --build-arg NIGHTLY=1
+                   --build-context detectors=.
                    containers/jug
 
 jug_xl:feature:
