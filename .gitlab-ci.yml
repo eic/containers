@@ -549,17 +549,20 @@ clean_merged_MRs:
     - docker images --filter=reference='eicweb*/*:unstable-mr*' --format "{{.ID}} {{.Repository}} {{.Tag}}"
       | while read id repository tag ; do
         echo $id $repository:$tag ;
-        if [[ ${tag} =~ ^unstable-mr-([0-9]+)-([0-9]+)$ ]] ; then
+        if [[ ${tag} =~ ^unstable-mr-([0-9]+)-([0-9]+)(-nightly){0,1}$ ]] ; then
           project_id=${BASH_REMATCH[1]} ;
-          merge_request_id=${BASH_REMATCH[2]} ;
-          echo $project_id $merge_request_id ;
-          if [[ $(curl -L https://eicweb.phy.anl.gov/api/v4/projects/${project_id}/merge_requests/${merge_request_id} | jq .state) == "merged" ]] ; then
+          merge_request_iid=${BASH_REMATCH[2]} ;
+          echo $project_id $merge_request_iid ;
+          if [[ $(curl -L https://eicweb.phy.anl.gov/api/v4/projects/${project_id}/merge_requests/${merge_request_iid} | jq .state) == =~ ^(merged|closed)$ ]] ; then
             echo docker rmi $id ;
           fi ;
         fi ;
-        if [[ ${tag} =~ ^unstable-mr-([0-9]+)$ ]] ; then
-          merge_request_iid=${BASH_REMATCH[1]} ;
-          echo $merge_request_iid ;
+        if [[ ${tag} =~ ^unstable-mr-([0-9]+)(-nightly){0,1}$ ]] ; then
+          merge_request_id=${BASH_REMATCH[1]} ;
+          echo $merge_request_id ;
+          if [[ $(curl -L https://eicweb.phy.anl.gov/api/v4/projects/${project_id}/merge_requests/ | jq -r ".[]|select(.id == ${$merge_request_id})|.state") =~ ^(merged|closed)$ ]] ; then
+            echo docker rmi $id ;
+          fi ;
         fi ;
       done
 
