@@ -538,14 +538,12 @@ clean:
     - docker images
 
 clean_merged_MRs:
-  stage: finalize
-  dependencies:
-    - clean
+  stage: config
   tags:
     - docker-new
   when: manual
   script:
-    - pip install jq
+    - python -m pip install jq
     - docker images --filter=reference='eicweb/*:unstable-mr*' --format "{{.ID}} {{.Repository}} {{.Tag}}"
       | while read id repository tag ; do
         if [[ ${tag} =~ ^unstable-mr-([0-9]+)-([0-9]+)$ ]] ; then
