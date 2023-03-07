@@ -558,7 +558,7 @@ clean_merged_MRs:
         fi ;
         if [[ ${tag} =~ ^unstable-mr-([0-9]+)$ ]] ; then
           merge_request_iid=${BASH_REMATCH[1]} ;
-          echo $merge_request_iid
+          echo $merge_request_iid ;
         fi ;
       done
 
