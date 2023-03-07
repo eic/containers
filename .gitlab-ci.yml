@@ -544,8 +544,7 @@ clean_merged_MRs:
   when: manual
   script:
     - apt update -q
-    - apt install -yq python3-pip
-    - python3 -m pip install jq
+    - apt install -yq jq
     - docker images --filter=reference='eicweb/*:unstable-mr*' --format "{{.ID}} {{.Repository}} {{.Tag}}"
       | while read id repository tag ; do
         if [[ ${tag} =~ ^unstable-mr-([0-9]+)-([0-9]+)$ ]] ; then
