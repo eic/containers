@@ -545,6 +545,7 @@ clean_merged_MRs:
   script:
     - apt update -q
     - apt install -yq jq
+    - docker images
     - docker images --filter=reference='eicweb/*:unstable-mr*' --format "{{.ID}} {{.Repository}} {{.Tag}}"
       | while read id repository tag ; do
         echo $id $repository:$tag ;
