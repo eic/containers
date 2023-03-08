@@ -50,8 +50,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
         parallel                                                        \
         patch                                                           \
         poppler-utils                                                   \
+        show-motd                                                       \
         time                                                            \
         unzip                                                           \
+        update-motd                                                     \
         valgrind                                                        \
         vim-nox                                                         \
         wget                                                            \
