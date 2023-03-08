@@ -542,6 +542,8 @@ clean_merged_MRs:
   tags:
     - docker-new
   when: manual
+  variables:
+    API: "https://eicweb.phy.anl.gov/api/v4"
   script:
     - apt update -q
     - apt install -yq jq
@@ -553,18 +555,32 @@ clean_merged_MRs:
         if [[ ${tag} =~ ^unstable-mr-([0-9]+)-([0-9]+)(-nightly){0,1}$ ]] ; then
           project_id=${BASH_REMATCH[1]} ;
           merge_request_iid=${BASH_REMATCH[2]} ;
-          if [[ $(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/projects/${project_id}/merge_requests" | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") =~ ^(merged|closed)$ ]] ; then
+          if [[ $(curl --silent -L
+                  "${API}/projects/${project_id}/merge_requests?scope=all&state=merged&per_page=100"
+                  "${API}/projects/${project_id}/merge_requests?scope=all&state=closed&per_page=100"
+                  | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") =~ ^(merged|closed)$ ]] ; then
             docker rmi $repository:$tag ;
           fi ;
         fi ;
         if [[ ${tag} =~ ^unstable-mr-([0-9]+)(-nightly){0,1}$ ]] ; then
           merge_request_id=${BASH_REMATCH[1]} ;
           suffix=${BASH_REMATCH[2]} ;
-          if [[ $(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=merged&per_page=10000" | jq -r ".[]|select(.id == ${merge_request_id})|.state") =~ ^(merged|closed)$ ]] ; then
+          if [[ $(curl --silent -L
+                  "${API}/projects/290/merge_requests?scope=all&state=merged&per_page=100"
+                  "${API}/projects/369/merge_requests?scope=all&state=merged&per_page=100"
+                  "${API}/projects/290/merge_requests?scope=all&state=closed&per_page=100"
+                  "${API}/projects/369/merge_requests?scope=all&state=closed&per_page=100"
+                  | jq -r ".[]|select(.id == ${merge_request_id})|.state") =~ ^(merged|closed)$ ]] ; then
             docker rmi $repository:$tag ;
           else
-            project_id=$(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=opened&per_page=10000" | jq -r ".[]|select(.id == ${merge_request_id})|.project_id") ;
-            merge_request_iid=$(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=opened&per_page=10000" | jq -r ".[]|select(.id == ${merge_request_id})|.iid") ;
+            project_id=$(curl --silent -L
+                        "${API}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
+                        "${API}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
+                        | jq -r ".[]|select(.id == ${merge_request_id})|.project_id") ;
+            merge_request_iid=$(curl --silent -L 
+                        "${API}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
+                        "${API}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
+                        | jq -r ".[]|select(.id == ${merge_request_id})|.iid") ;
             if [[ ${project_id} == "" || ${merge_request_iid} == "" ]] ; then
               echo "$tag not found" ;
             else
