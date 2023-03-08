@@ -554,13 +554,13 @@ clean_merged_MRs:
           project_id=${BASH_REMATCH[1]} ;
           merge_request_iid=${BASH_REMATCH[2]} ;
           if [[ $(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/projects/${project_id}/merge_requests" | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") =~ ^(merged|closed)$ ]] ; then
-            docker rmi $id ;
+            docker rmi $repository/$tag ;
           fi ;
         fi ;
         if [[ ${tag} =~ ^unstable-mr-([0-9]+)(-nightly){0,1}$ ]] ; then
           merge_request_id=${BASH_REMATCH[1]} ;
           if [[ $(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=all" | jq -r ".[]|select(.id == ${merge_request_id})|.state") =~ ^(merged|closed)$ ]] ; then
-            docker rmi $id ;
+            docker rmi $repository/$tag ;
           fi ;
         fi ;
       done
