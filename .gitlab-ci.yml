@@ -535,15 +535,68 @@ clean:
       if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
         ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${NIGHTLY_TAG}
       fi
-    - docker images
 
-deep_clean:
+clean_unstable_mr:
   stage: finalize
   dependencies:
     - clean
   tags:
     - docker-new
-  when: manual
+  when: always
+  variables:
+    API: "https://eicweb.phy.anl.gov/api/v4"
   script:
+    - apt update -q
+    - apt install -yq jq
+    - for registry in
+        eicweb
+        eicweb.phy.anl.gov:4567/eic/juggler
+        eicweb.phy.anl.gov:4567/containers/eic_container
+      ; do 
+        docker images 
+          --filter=reference=${registry}/*:unstable-mr*
+          --format "{{.ID}} {{.Repository}} {{.Tag}}" ;
+      done | while read id repository tag ; do
+        if [[ ${tag} =~ ^unstable-mr-([0-9]+)-([0-9]+)(-nightly){0,1}$ ]] ; then
+          project_id=${BASH_REMATCH[1]} ;
+          merge_request_iid=${BASH_REMATCH[2]} ;
+          if [[ $(curl --silent -L
+                  "${API}/projects/${project_id}/merge_requests?scope=all&state=merged&per_page=100"
+                  "${API}/projects/${project_id}/merge_requests?scope=all&state=closed&per_page=100"
+                  | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") =~ ^(merged|closed)$ ]] ; then
+            docker rmi $repository:$tag ;
+          else
+            echo "Image $repository:$tag still in use (project ${project_id}, idd ${merge_request_iid})." ;
+          fi ;
+        fi ;
+        if [[ ${tag} =~ ^unstable-mr-([0-9]+)(-nightly){0,1}$ ]] ; then
+          merge_request_id=${BASH_REMATCH[1]} ;
+          suffix=${BASH_REMATCH[2]} ;
+          if [[ $(curl --silent -L
+                  "${API}/projects/290/merge_requests?scope=all&state=merged&per_page=100"
+                  "${API}/projects/369/merge_requests?scope=all&state=merged&per_page=100"
+                  "${API}/projects/290/merge_requests?scope=all&state=closed&per_page=100"
+                  "${API}/projects/369/merge_requests?scope=all&state=closed&per_page=100"
+                  | jq -r ".[]|select(.id == ${merge_request_id})|.state") =~ ^(merged|closed)$ ]] ; then
+            docker rmi $repository:$tag ;
+          else
+            project_id=$(curl --silent -L
+                        "${API}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
+                        "${API}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
+                        | jq -r ".[]|select(.id == ${merge_request_id})|.project_id") ;
+            merge_request_iid=$(curl --silent -L 
+                        "${API}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
+                        "${API}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
+                        | jq -r ".[]|select(.id == ${merge_request_id})|.iid") ;
+            echo "Image $repository:$tag still in use (project ${project_id}, idd ${merge_request_iid})." ;
+            if [[ ${project_id} == "" || ${merge_request_iid} == "" ]] ; then
+              echo "$tag not found" ;
+            else
+              docker tag $repository:$tag $repository:unstable-mr-${project_id}-${merge_request_iid}${suffix} ;
+              docker rmi $repository:$tag ;
+            fi ;
+          fi ;
+        fi ;
+      done
     - docker system prune --force
     - docker images
