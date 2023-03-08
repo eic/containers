@@ -535,13 +535,14 @@ clean:
       if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
         ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${NIGHTLY_TAG}
       fi
-    - docker images
 
-clean_merged_MRs:
-  stage: config
+clean_unstable_mr:
+  stage: finalize
+  dependencies:
+    - clean
   tags:
     - docker-new
-  when: manual
+  when: always
   variables:
     API: "https://eicweb.phy.anl.gov/api/v4"
   script:
@@ -597,16 +598,5 @@ clean_merged_MRs:
           fi ;
         fi ;
       done
-    - docker system prune --force
-    - docker images
-
-deep_clean:
-  stage: finalize
-  dependencies:
-    - clean
-  tags:
-    - docker-new
-  when: manual
-  script:
     - docker system prune --force
     - docker images
