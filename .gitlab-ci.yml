@@ -557,12 +557,11 @@ clean_merged_MRs:
             docker rmi $repository:$tag ;
           fi ;
         fi ;
-        echo $repository $tag ;
         if [[ ${tag} =~ ^unstable-mr-([0-9]+)(-nightly){0,1}$ ]] ; then
           echo $tag ;
           merge_request_id=${BASH_REMATCH[1]} ;
           echo $merge_request_id ;
-          curl -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=all" | jq -r ".[]|.id" ;
+          curl -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=all" | jq -r ".[]|.iid" ;
           if [[ $(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=all" | jq -r ".[]|select(.id == ${merge_request_id})|.state") =~ ^(merged|closed)$ ]] ; then
             docker rmi $repository:$tag ;
           fi ;
