@@ -1,4 +1,4 @@
-#syntax=docker/dockerfile:1.2
+#syntax=docker/dockerfile:1.4
 ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
 ARG BASE_IMAGE="jug_dev"
 ARG INTERNAL_TAG="testing"
@@ -129,7 +129,7 @@ ADD ${EICWEB}/452/repository/tree?ref=master /tmp/452.json
 ADD https://api.github.com/repos/eic/ip6 /tmp/ip6.json
 ADD https://api.github.com/repos/eic/epic /tmp/epic.json
 COPY setup_detectors.py /tmp
-COPY detectors.yaml /tmp
+COPY --from=detectors detectors.yaml /tmp
 RUN --mount=type=cache,target=/ccache/                                          \
     cd /tmp                                                                     \
  && export CCACHE_DIR=/ccache/$TARGETPLATFORM                                   \
