@@ -547,7 +547,11 @@ clean_merged_MRs:
   script:
     - apt update -q
     - apt install -yq jq
-    - for registry in eicweb eicweb.phy.anl.gov:4567/containers/eic_container ; do 
+    - for registry in
+        eicweb
+        eicweb.phy.anl.gov:4567/eic/juggler
+        eicweb.phy.anl.gov:4567/containers/eic_container
+      ; do 
         docker images 
           --filter=reference=${registry}/*:unstable-mr*
           --format "{{.ID}} {{.Repository}} {{.Tag}}" ;
@@ -560,6 +564,8 @@ clean_merged_MRs:
                   "${API}/projects/${project_id}/merge_requests?scope=all&state=closed&per_page=100"
                   | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") =~ ^(merged|closed)$ ]] ; then
             docker rmi $repository:$tag ;
+          else
+            echo "Image $repository:$tag still in use (project ${project_id}, idd ${merge_request_iid})." ;
           fi ;
         fi ;
         if [[ ${tag} =~ ^unstable-mr-([0-9]+)(-nightly){0,1}$ ]] ; then
@@ -581,6 +587,7 @@ clean_merged_MRs:
                         "${API}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
                         "${API}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
                         | jq -r ".[]|select(.id == ${merge_request_id})|.iid") ;
+            echo "Image $repository:$tag still in use (project ${project_id}, idd ${merge_request_iid})." ;
             if [[ ${project_id} == "" || ${merge_request_iid} == "" ]] ; then
               echo "$tag not found" ;
             else
@@ -590,6 +597,7 @@ clean_merged_MRs:
           fi ;
         fi ;
       done
+    - docker system prune --force
     - docker images
 
 deep_clean:
