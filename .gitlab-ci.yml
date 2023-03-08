@@ -568,8 +568,8 @@ clean_merged_MRs:
             if [[ ${project_id} == "" || ${merge_request_iid} == "" ]] ; then
               echo "$tag not found" ;
             else
-              echo docker tag $repository:$tag $repository:unstable-mr-${project_id}-${merge_request_iid}${suffix} ;
-              echo docker rmi $repository:$tag ;
+              docker tag $repository:$tag $repository:unstable-mr-${project_id}-${merge_request_iid}${suffix} ;
+              docker rmi $repository:$tag ;
             fi ;
           fi ;
         fi ;
