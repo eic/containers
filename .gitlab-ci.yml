@@ -562,8 +562,8 @@ clean_merged_MRs:
           if [[ $(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=all&per_page=10000" | jq -r ".[]|select(.id == ${merge_request_id})|.state") =~ ^(merged|closed)$ ]] ; then
             docker rmi $repository:$tag ;
           else
-            project_id=$(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=all&per_page=10000" | jq -r ".[]|select(.id == ${merge_request_id})|.project") ;
-            merge_request_iid=$(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=all&per_page=10000" | jq -r ".[]|select(.id == ${merge_request_id})|.iid") ;
+            project_id=$(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=opened&per_page=10000" | jq -r ".[]|select(.id == ${merge_request_id})|.project_id") ;
+            merge_request_iid=$(curl --silent -L "https://eicweb.phy.anl.gov/api/v4/merge_requests?scope=all&state=opened&per_page=10000" | jq -r ".[]|select(.id == ${merge_request_id})|.iid") ;
             echo docker tag $repository:$tag $repository:unstable-mr-${project_id}-${merge_request_iid} ;
             echo docker rmi $repository:$tag ;
           fi ;
