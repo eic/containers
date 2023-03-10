@@ -220,8 +220,8 @@ base:
     - version
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_COMMIT_REF_NAME} --driver docker-container --bootstrap --use
-    - docker buildx build --builder builder-${CI_COMMIT_REF_NAME} --push
+    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
+    - docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -253,7 +253,7 @@ jug_dev:default:
     - base
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_COMMIT_REF_NAME} --driver docker-container --bootstrap --use
+    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
     ## Which targets to build
     - TARGETS="export"
     - |
@@ -272,7 +272,7 @@ jug_dev:default:
         if [ ! ${target} = export ] ; then
           suffix=-${target} ;
         fi ;
-        docker buildx build --builder builder-${CI_COMMIT_REF_NAME} --push
+        docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    --target ${target}
                    ${CACHE_FLAG}
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}${suffix}
@@ -316,8 +316,8 @@ jug_xl:default:
     - jug_dev:default
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_COMMIT_REF_NAME} --driver docker-container --bootstrap --use
-    - docker buildx build --builder builder-${CI_COMMIT_REF_NAME} --push
+    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
+    - docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -356,13 +356,13 @@ jug_xl:nightly:
     - jug_dev:default
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_COMMIT_REF_NAME}  --driver docker-container --bootstrap --use
+    - docker buildx create --name builder-${CI_PIPELINE_ID}  --driver docker-container --bootstrap --use
     - |
       PUSH_NIGHTLY_WITH_DATE=""
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
-    - docker buildx build --builder builder-${CI_COMMIT_REF_NAME} --push
+    - docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${NIGHTLY:+
                      ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
@@ -534,6 +534,17 @@ clean:
       if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
         ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${NIGHTLY_TAG}
       fi
+
+clean_builders:
+  stage: finalize
+  dependencies:
+    - clean
+  tags:
+    - docker-new
+  when: always
+  script:
+    - docker buildx ls
+    - docker buildx rm builder-${CI_PIPELINE_ID}
 
 clean_unstable_mr:
   stage: finalize
