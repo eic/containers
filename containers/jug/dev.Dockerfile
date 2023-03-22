@@ -11,7 +11,7 @@ FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as builder
 ARG TARGETPLATFORM
 
 ## install some extra spack dependencies
-RUN --mount=type=cache,target=/var/cache/apt                            \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && apt-get -yqq update                                                 \
  && apt-get -yqq install --no-install-recommends                        \
