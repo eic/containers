@@ -11,7 +11,6 @@ variables:
   ## Spack github version, e.g. v0.18.1 or commit hash
   SPACK_VERSION: "v0.19.1"
   ## Space-separated list of spack cherry-picks
-## Space-separated list of spack cherry-picks
   SPACK_CHERRYPICKS: >
     b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e
     99056e03bd3e903b222e300636ec484d85d4b3fb
@@ -227,8 +226,8 @@ base:
     - version
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder --driver docker-container --bootstrap --use
-    - docker buildx build --push
+    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
+    - docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -260,7 +259,7 @@ jug_dev:default:
     - base
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder --driver docker-container --bootstrap --use
+    - docker buildx create --name builder-${CI_PIPELINE_ID --driver docker-container --bootstrap --use
     ## Which targets to build
     - TARGETS="export"
     - |
@@ -279,7 +278,7 @@ jug_dev:default:
         if [ ! ${target} = export ] ; then
           suffix=-${target} ;
         fi ;
-        docker buildx build --push
+        docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    --target ${target}
                    ${CACHE_FLAG}
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}${suffix}
@@ -323,8 +322,8 @@ jug_xl:default:
     - jug_dev:default
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder --driver docker-container --bootstrap --use
-    - docker buildx build --push
+    - docker buildx create --name builder-${CI_PIPELINE_ID --driver docker-container --bootstrap --use
+    - docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -363,13 +362,13 @@ jug_xl:nightly:
     - jug_dev:default
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder --driver docker-container --bootstrap --use
+    - docker buildx create --name builder-${CI_PIPELINE_ID --driver docker-container --bootstrap --use
     - |
       PUSH_NIGHTLY_WITH_DATE=""
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
-    - docker buildx build --push
+    - docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${NIGHTLY:+
                      ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
@@ -408,7 +407,8 @@ jug_xl:feature:
           - main
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
+    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
+    - docker buildx build --builder builder-${CI_PIPELINE_ID} --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                    -f containers/jug/feature.Dockerfile
                    --build-arg INTERNAL_TAG=${NIGHTLY_TAG}
                    --build-arg DETECTOR=${DETECTOR}
@@ -541,6 +541,17 @@ clean:
       if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
         ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${NIGHTLY_TAG}
       fi
+
+clean_builder:
+  stage: finalize
+  dependencies:
+    - clean
+  tags:
+    - docker-new
+  when: always
+  script:
+    - docker buildx ls
+    - docker buildx rm builder-${CI_PIPELINE_ID}
 
 clean_unstable_mr:
   stage: finalize
