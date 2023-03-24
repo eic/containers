@@ -1,4 +1,4 @@
-#syntax=docker/dockerfile:1.2
+#syntax=docker/dockerfile:1.4
 ARG BASE_IMAGE="amd64/debian:testing-20220822-slim"
 ARG BUILD_IMAGE="debian_base"
 ARG TARGETPLATFORM
