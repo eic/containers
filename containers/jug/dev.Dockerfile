@@ -124,9 +124,8 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
     || spack install -j64 --no-check-signature                          \
-    || spack install -j1 --no-check-signature --show-log-on-error       \
+    || spack install -j64 --no-check-signature --show-log-on-error      \
     || status=$?                                                        \
- && tail -n 500 /tmp/root/spack-stage/spack-stage-*/spack-build-out.txt || true \
  && spack mirror rm --scope site eic-spack                              \
  && [ -z "${CACHE_NUKE}" ]                                              \
     || rm -rf /var/cache/spack-mirror/build_cache/*                     \
