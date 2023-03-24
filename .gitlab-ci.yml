@@ -583,7 +583,7 @@ clean_unstable_mr:
                   | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") =~ ^(merged|closed)$ ]] ; then
             docker rmi $repository:$tag ;
           else
-            echo "Image $repository:$tag still in use (project ${project_id}, idd ${merge_request_iid})." ;
+            echo "Image $repository:$tag still in use (project ${project_id}, iid ${merge_request_iid})." ;
           fi ;
         fi ;
         if [[ ${tag} =~ ^unstable-mr-([0-9]+)(-nightly){0,1}$ ]] ; then
