@@ -1,6 +1,7 @@
 #syntax=docker/dockerfile:1.2
 ARG BASE_IMAGE="amd64/debian:testing-20220822-slim"
 ARG BUILD_IMAGE="debian_base"
+ARG TARGETPLATFORM
 
 # Minimal container based on Debian base systems for up-to-date packages. 
 FROM  ${BASE_IMAGE}
@@ -17,8 +18,8 @@ ENV CLICOLOR_FORCE=1                                                    \
 
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
-    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked         \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=TARGETPLATFORM \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=TARGETPLATFORM \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime          \
  && echo "US/Eastern" > /etc/timezone                                   \
@@ -61,8 +62,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
 # Install updated compilers, with support for multiple base images
 ## Ubuntu: latest gcc from toolchain ppa, latest stable clang
 ## Debian: default gcc with distribution, latest stable clang
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
-    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked         \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=TARGETPLATFORM \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=TARGETPLATFORM \
     . /etc/os-release                                                   \
  && mkdir -p /etc/apt/source.list.d                                     \
  && if [ "${ID}" = "ubuntu" ] ; then                                    \
