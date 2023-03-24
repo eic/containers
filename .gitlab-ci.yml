@@ -259,7 +259,7 @@ jug_dev:default:
     - base
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_PIPELINE_ID --driver docker-container --bootstrap --use
+    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
     ## Which targets to build
     - TARGETS="export"
     - |
@@ -322,7 +322,7 @@ jug_xl:default:
     - jug_dev:default
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_PIPELINE_ID --driver docker-container --bootstrap --use
+    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
     - docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
@@ -362,7 +362,7 @@ jug_xl:nightly:
     - jug_dev:default
   script:
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_PIPELINE_ID --driver docker-container --bootstrap --use
+    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
     - |
       PUSH_NIGHTLY_WITH_DATE=""
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
