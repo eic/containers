@@ -11,7 +11,8 @@ FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as builder
 ARG TARGETPLATFORM
 
 ## install some extra spack dependencies
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM} \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=${TARGETPLATFORM} \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && apt-get -yqq update                                                 \
  && apt-get -yqq install --no-install-recommends                        \
@@ -172,7 +173,7 @@ RUN cd /opt/spack-environment                                           \
 ## Extra post-spack steps:
 ##   - Python packages
 COPY requirements.txt /usr/local/etc/requirements.txt
-RUN --mount=type=cache,target=/var/cache/pip                            \
+RUN --mount=type=cache,target=/var/cache/pip,sharing=locked             \
     echo "Installing additional python packages"                        \
  && cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
