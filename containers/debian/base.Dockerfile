@@ -18,8 +18,8 @@ ENV CLICOLOR_FORCE=1                                                    \
 
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=TARGETPLATFORM \
-    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=TARGETPLATFORM \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM} \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=${TARGETPLATFORM} \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime          \
  && echo "US/Eastern" > /etc/timezone                                   \
@@ -62,8 +62,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=TARGETPLATFORM \
 # Install updated compilers, with support for multiple base images
 ## Ubuntu: latest gcc from toolchain ppa, latest stable clang
 ## Debian: default gcc with distribution, latest stable clang
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=TARGETPLATFORM \
-    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=TARGETPLATFORM \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM} \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=${TARGETPLATFORM} \
     . /etc/os-release                                                   \
  && mkdir -p /etc/apt/source.list.d                                     \
  && if [ "${ID}" = "ubuntu" ] ; then                                    \
