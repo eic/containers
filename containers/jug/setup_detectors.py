@@ -222,6 +222,6 @@ if __name__ == '__main__':
             '&&',
             'ln -sf {full_prefix}/setup.sh {short_prefix}']
         print(' '.join(cmd))
-        subprocess.call(' '.join(cmd, shell=True).format(full_prefix=full_prefix, short_prefix=args.prefix))
+        subprocess.call(' '.join(cmd).format(full_prefix=full_prefix, short_prefix=args.prefix), shell=True)
 
     print('All done!')
