@@ -132,7 +132,7 @@ if __name__ == '__main__':
                        '&&',
                        'cmake --build /tmp/build -j$(($(($(nproc)/4))+1)) -- install']
                 print(' '.join(cmd))
-                subprocess.call(' '.join(cmd), shell=True, check=True)
+                subprocess.check_call(' '.join(cmd), shell=True)
                 ## write version info to jug_info if available
                 if os.path.exists('/etc/jug_info'):
                     cmd = ['cd /tmp/det',
@@ -145,17 +145,17 @@ if __name__ == '__main__':
                            '&&',
                            'cd -']
                     print(' '.join(cmd))
-                    subprocess.call(' '.join(cmd), shell=True, check=True)
+                    subprocess.check_call(' '.join(cmd), shell=True)
                 ## also copy over IP configuration to the detector
                 if 'ip' in cfg and os.path.exists('/tmp/det/{ip}'.format(ip=cfg['ip']['config'])):
                     cmd = 'cp -r /tmp/det/{ip} {data_dir}'.format(
                                     ip=ip['config'], data_dir=data_dir)
                     print(cmd)
-                    subprocess.call(cmd, shell=True, check=True)
+                    subprocess.check_call(cmd, shell=True)
                 ## cleanup
                 cmd = 'rm -rf /tmp/det /tmp/build'
                 print(cmd)
-                subprocess.call(cmd, shell=True, check=True)
+                subprocess.check_call(cmd, shell=True)
             # be resilient against failures
             if os.path.exists(prefix):
                 ## create a shortcut for the prefix if desired
@@ -164,7 +164,7 @@ if __name__ == '__main__':
                                 prefix=prefix,
                                 shortcut='{}/{}-{}'.format(args.prefix, det, branch))
                     print(cmd)
-                    subprocess.call(cmd, shell=True, check=True)
+                    subprocess.check_call(cmd, shell=True)
                 ## write an environment file for this detector
                 with open('{prefix}/setup.sh'.format(prefix=prefix), 'w') as f:
                     if 'ip' in cfg:
@@ -224,6 +224,6 @@ if __name__ == '__main__':
             '&&',
             'ln -sf {full_prefix}/setup.sh {short_prefix}']
         print(' '.join(cmd))
-        subprocess.call(' '.join(cmd).format(full_prefix=full_prefix, short_prefix=args.prefix), shell=True, check=True)
+        subprocess.check_call(' '.join(cmd).format(full_prefix=full_prefix, short_prefix=args.prefix), shell=True)
 
     print('All done!')
