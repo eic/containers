@@ -22,12 +22,12 @@ RUN cd /tmp                                                                     
  && echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info
 
 ADD ${EICWEB}/369/repository/tree?ref=${JUGGLER_VERSION} /tmp/369.json
-RUN --mount=type=cache,target=/ccache/                                          \
+RUN --mount=type=cache,target=/ccache/,sharing=locked,id=${TARGETPLATFORM}      \
     cd /tmp                                                                     \
  && echo "INSTALLING JUGGLER"                                                   \
  && git clone -b ${JUGGLER_VERSION} --depth 1                                   \
         https://eicweb.phy.anl.gov/EIC/juggler.git                              \
- && export CCACHE_DIR=/ccache/$TARGETPLATFORM                                   \     
+ && export CCACHE_DIR=/ccache                                                   \     
  && cmake -B build -S juggler                                                   \
           -DCMAKE_CXX_FLAGS="-Wno-psabi"                                        \
           -DCMAKE_CXX_STANDARD=17                                               \
@@ -42,12 +42,12 @@ RUN --mount=type=cache,target=/ccache/                                          
  && rm -rf build juggler
 
 ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
-RUN --mount=type=cache,target=/ccache/                                          \
+RUN --mount=type=cache,target=/ccache/,sharing=locked,id=${TARGETPLATFORM}      \
     cd /tmp                                                                     \
  && echo "INSTALLING EICRECON"                                                  \
  && git clone -b ${EICRECON_VERSION} --depth 1                                  \
         https://github.com/eic/eicrecon.git                                     \
- && export CCACHE_DIR=/ccache/$TARGETPLATFORM                                   \
+ && export CCACHE_DIR=/ccache                                                   \
  && cmake -B build -S eicrecon                                                  \
           -DCMAKE_CXX_FLAGS="-Wno-psabi"                                        \
           -DCMAKE_CXX_STANDARD=17                                               \
@@ -130,9 +130,9 @@ ADD https://api.github.com/repos/eic/ip6 /tmp/ip6.json
 ADD https://api.github.com/repos/eic/epic /tmp/epic.json
 COPY setup_detectors.py /tmp
 COPY --from=detectors detectors.yaml /tmp
-RUN --mount=type=cache,target=/ccache/                                          \
+RUN --mount=type=cache,target=/ccache/,sharing=locked,id=${TARGETPLATFORM}      \
     cd /tmp                                                                     \
- && export CCACHE_DIR=/ccache/$TARGETPLATFORM                                   \
+ && export CCACHE_DIR=/ccache                                                   \
  && [ "z$NIGHTLY" = "z1" ] && NIGHTLY_FLAG="--nightly" || NIGHTLY_FLAG=""       \
  && /tmp/setup_detectors.py --prefix /opt/detector --config /tmp/detectors.yaml \
                          $NIGHTLY_FLAG                                          \
