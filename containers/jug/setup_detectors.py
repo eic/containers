@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import yaml
 import argparse
+import subprocess
+from datetime import datetime
 
 DETECTOR_REPO_GROUP = 'https://github.com/eic'
 DETECTOR_BEAMLINE_ENV ='''
@@ -97,6 +100,7 @@ if __name__ == '__main__':
                         default_found = True
                 print('    - {}: {}{}'.format(det, branch, default_str))
     print(' --> Building and installing detector/ip libraries')
+    process_list = []
     for det in detectors:
         if not args.nightly and 'nightly' in detectors[det]:
             del detectors[det]['nightly']    
@@ -128,7 +132,7 @@ if __name__ == '__main__':
                        '&&',
                        'cmake --build /tmp/build -j$(($(($(nproc)/4))+1)) -- install']
                 print(' '.join(cmd))
-                os.system(' '.join(cmd))
+                subprocess.check_call(' '.join(cmd), shell=True)
                 ## write version info to jug_info if available
                 if os.path.exists('/etc/jug_info'):
                     cmd = ['cd /tmp/det',
@@ -141,17 +145,17 @@ if __name__ == '__main__':
                            '&&',
                            'cd -']
                     print(' '.join(cmd))
-                    os.system(' '.join(cmd))
+                    subprocess.check_call(' '.join(cmd), shell=True)
                 ## also copy over IP configuration to the detector
                 if 'ip' in cfg and os.path.exists('/tmp/det/{ip}'.format(ip=cfg['ip']['config'])):
                     cmd = 'cp -r /tmp/det/{ip} {data_dir}'.format(
                                     ip=ip['config'], data_dir=data_dir)
                     print(cmd)
-                    os.system(cmd)
+                    subprocess.check_call(cmd, shell=True)
                 ## cleanup
                 cmd = 'rm -rf /tmp/det /tmp/build'
                 print(cmd)
-                os.system(cmd)
+                subprocess.check_call(cmd, shell=True)
             # be resilient against failures
             if os.path.exists(prefix):
                 ## create a shortcut for the prefix if desired
@@ -160,7 +164,7 @@ if __name__ == '__main__':
                                 prefix=prefix,
                                 shortcut='{}/{}-{}'.format(args.prefix, det, branch))
                     print(cmd)
-                    os.system(cmd)
+                    subprocess.check_call(cmd, shell=True)
                 ## write an environment file for this detector
                 with open('{prefix}/setup.sh'.format(prefix=prefix), 'w') as f:
                     if 'ip' in cfg:
@@ -183,15 +187,31 @@ if __name__ == '__main__':
                             file=f)
                 ## run once inside global prefix to initialize artifacts in /opt/detectors
                 os.environ['DETECTOR_PATH'] = args.prefix
-                cmd = f'bash -c \'cd {args.prefix} && source {prefix}/setup.sh && checkGeometry -c {prefix}/share/{det}/{det}.xml\''
+                cmd = f'cd {args.prefix} && source {prefix}/setup.sh && checkGeometry -c {prefix}/share/{det}/{det}.xml'
                 print(cmd)
-                os.system(cmd)
+                process_list.append(subprocess.Popen(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.STDOUT))
                 ## run once inside specific prefix to initialize artifacts in $DETECTOR_PATH
                 os.environ['DETECTOR_PATH'] = args.prefix
-                cmd = f'bash -c \'cd {prefix}/share/{det} && source {prefix}/setup.sh && checkGeometry -c {prefix}/share/{det}/{det}.xml\''
+                cmd = f'cd {prefix}/share/{det} && source {prefix}/setup.sh && checkGeometry -c {prefix}/share/{det}/{det}.xml'
                 print(cmd)
-                os.system(cmd)
-    
+                process_list.append(subprocess.Popen(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.STDOUT))
+
+    while len(process_list) > 0:
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        print("{} processes running... ({})".format(len(process_list), current_time))
+        (out, err) = process_list[-1].communicate()
+        if process_list[-1].wait() != 0:
+            print(process_list[-1].args)
+            if out is not None:
+                print("stdout:")
+                print(out.decode())
+            if err is not None:
+                print("stderr:")
+                print(err.decode())
+            sys.exit(1)
+        process_list.pop()
+
     if not default_found and not args.nightly:
         # Skip symlinking if no defaults present and its not a nightly build
         pass
@@ -204,6 +224,6 @@ if __name__ == '__main__':
             '&&',
             'ln -sf {full_prefix}/setup.sh {short_prefix}']
         print(' '.join(cmd))
-        os.system(' '.join(cmd).format(full_prefix=full_prefix, short_prefix=args.prefix))
+        subprocess.check_call(' '.join(cmd).format(full_prefix=full_prefix, short_prefix=args.prefix), shell=True)
 
     print('All done!')
