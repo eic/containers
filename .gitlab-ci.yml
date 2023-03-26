@@ -30,6 +30,8 @@ variables:
     3afe6f1adcc24335cbca9a9c03ffea188f802766
     559c3de213707b5d52d899fd0382495f2cc8508d
     8e84dcd7ef999e2659822b34372515175f1723c4
+    65bd9b9ac556480b4a9dcc60f7539492af195d4a
+    1a32cea11495cbdd699fea4fe622babab83e630d
     6edc4807369a05786e36f63b5d959588ae94a1fa
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## [hash]: [description]
@@ -50,6 +52,8 @@ variables:
   ## 3afe6f1adcc24335cbca9a9c03ffea188f802766: ROOT: add math/gsl conflict and change version-dependent features to conditional variants
   ## 559c3de213707b5d52d899fd0382495f2cc8508d: ROOT: new versions and associated dependency constraints
   ## 8e84dcd7ef999e2659822b34372515175f1723c4: root: new version 6.28.00
+  ## 65bd9b9ac556480b4a9dcc60f7539492af195d4a: podio, edm4hep: add v0.7.2 and v0.16.1 respectively
+  ## 1a32cea11495cbdd699fea4fe622babab83e630d: podio: add v0.16.2
   ## 6edc4807369a05786e36f63b5d959588ae94a1fa: podio: Add version 0.16.3
 
   ## EIC spack organization and repository, e.g. eic/eic-spack
