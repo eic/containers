@@ -1,13 +1,14 @@
 #syntax=docker/dockerfile:1.4
 ARG BASE_IMAGE="amd64/debian:testing-20220822-slim"
 ARG BUILD_IMAGE="debian_base"
-ARG TARGETPLATFORM
 
 # Minimal container based on Debian base systems for up-to-date packages. 
 FROM  ${BASE_IMAGE}
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="${BUILD_IMAGE}" \
       march="amd64"
+
+ARG TARGETPLATFORM
 
 COPY bashrc /root/.bashrc
 
