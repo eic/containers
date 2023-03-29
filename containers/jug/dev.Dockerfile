@@ -97,10 +97,12 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
  && spack repo add --scope site "${EICSPACK_ROOT}"
 
 ## Setup our custom environment
-COPY --from=spack spack.yaml /opt/spack-environment/
+COPY --from=spack spack-environment/ /opt/spack-environment/
+ARG ENV=dev
 RUN rm -r /usr/local                                                    \
+ && cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate /opt/spack-environment/                          \
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
  && spack concretize --fresh
 
 
@@ -120,7 +122,7 @@ RUN rm -r /usr/local                                                    \
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate .                                                \
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
  && status=0                                                            \
  && spack install -j64 --no-check-signature                             \
     || spack install -j64 --no-check-signature                          \
@@ -148,7 +150,7 @@ ARG S3RW_ACCESS_KEY=""
 ARG S3RW_SECRET_KEY=""
 RUN cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate .                                                \
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
  && if [ -n "${S3RW_ACCESS_KEY}" ] ; then                               \
     spack mirror add --scope site                                       \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
@@ -176,7 +178,7 @@ RUN --mount=type=cache,target=/var/cache/pip                            \
     echo "Installing additional python packages"                        \
  && cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate .                                                \
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
  && python -m pip install                                               \
     --trusted-host pypi.org                                             \
     --trusted-host files.pythonhosted.org                               \
@@ -192,11 +194,12 @@ RUN cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && echo -n ""                                                          \
  && echo "Grabbing environment info"                                    \
- && spack env activate --sh -d .                                        \
+ && spack env activate --sh --dir /opt/spack-environment/${ENV}         \
         | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
         | sed '/MANPATH/ s/;$/:;/'                                      \
     > /etc/profile.d/z10_spack_environment.sh                           \
- && cd /opt/spack-environment && spack env activate .                   \
+ && cd /opt/spack-environment                                           \
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
  && echo -n ""                                                          \
  && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
  && echo "export PODIO=$(spack location -i podio);"                     \
@@ -219,7 +222,7 @@ FROM builder as staging
 # Garbage collect in environment
 RUN cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate .                                                \
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
  && spack gc -y
 
 # Garbage collect in git
