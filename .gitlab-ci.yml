@@ -11,7 +11,6 @@ variables:
   ## Spack github version, e.g. v0.18.1 or commit hash
   SPACK_VERSION: "v0.19.1"
   ## Space-separated list of spack cherry-picks
-## Space-separated list of spack cherry-picks
   SPACK_CHERRYPICKS: >
     b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e
     99056e03bd3e903b222e300636ec484d85d4b3fb
@@ -195,6 +194,10 @@ version:
   resource_group: ${CI_COMMIT_REF_NAME}
   tags:
     - docker-new
+  before_script:
+    - !reference [default, before_script]
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx create --name builder --driver docker-container --bootstrap --use
 
 ## Images:
 ## debian_testing_base --> jug_dev  --> jug_xl
@@ -226,8 +229,6 @@ base:
   needs:
     - version
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder --driver docker-container --bootstrap --use
     - docker buildx build --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
@@ -259,8 +260,6 @@ jug_dev:default:
     - version
     - base
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder --driver docker-container --bootstrap --use
     ## Which targets to build
     - TARGETS="export"
     - |
@@ -322,8 +321,6 @@ jug_xl:default:
     - version
     - jug_dev:default
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder --driver docker-container --bootstrap --use
     - docker buildx build --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
@@ -362,8 +359,6 @@ jug_xl:nightly:
     - version
     - jug_dev:default
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder --driver docker-container --bootstrap --use
     - |
       PUSH_NIGHTLY_WITH_DATE=""
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
@@ -407,7 +402,6 @@ jug_xl:feature:
         DETECTOR_BRANCH:
           - main
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                    -f containers/jug/feature.Dockerfile
                    --build-arg INTERNAL_TAG=${NIGHTLY_TAG}
