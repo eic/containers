@@ -1,4 +1,8 @@
 spack:
+  include: 
+  - ../concretizer.yaml
+  - ../packages.yaml
+  - ../view.yaml
   specs:
     - acts@21.1.0 +dd4hep +identification +json +tgeo +examples +fatras +geant4 +python
     - actsvg@0.4.26 +examples
@@ -73,11 +77,3 @@ spack:
     - stow@2.3.1
     - tensorflow-lite@2.8.0 -xnnpack
     - xrootd@5.5.1 cxxstd=17 +python +scitokens-cpp
-  concretizer: 
-    unify: true
-  packages:
-    all:
-      compiler: [gcc]
-      variants:
-        +ipo build_type=Release
-  view: /usr/local

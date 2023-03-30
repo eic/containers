@@ -1,0 +1,5 @@
+view:
+  default:
+    root: /usr/local
+    link: all
+    link_type: symlink
