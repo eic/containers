@@ -1,0 +1,5 @@
+packages:
+  all:
+    compiler: [gcc]
+    variants:
+      +ipo build_type=Release
