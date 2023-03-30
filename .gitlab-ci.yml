@@ -152,6 +152,7 @@ version:
         fi ;
       done
     - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
+    - docker buildx du --verbose
 
 ## rules for nightly jobs
 .nightly:
@@ -554,6 +555,7 @@ clean_builder:
   when: always
   script:
     - docker buildx ls
+    - docker buildx du --verbose
     - docker buildx rm builder-${CI_PIPELINE_ID}
 
 clean_unstable_mr:
