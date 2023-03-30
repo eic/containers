@@ -78,8 +78,8 @@ spack:
     - stow@2.3.1
     - tensorflow-lite@2.8.0 -xnnpack
     - xrootd@5.5.1 cxxstd=17 +python +scitokens-cpp
-view:
-  default:
-    root: /usr/local
-    link: all
-    link_type: symlink
+  view:
+    default:
+      root: /usr/local
+      link: all
+      link_type: symlink
