@@ -269,13 +269,19 @@ jug_dev:default:
   parallel:
     matrix:
       - BASE_IMAGE: debian_testing_base
-        BUILD_IMAGE: jug_dev
+        BUILD_IMAGE_PREFIX: jug_
+        BUILD_IMAGE_SUFFIX:
+        ENVIRONMENTS: dev,prod
         PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: oneapi_base
-#        BUILD_IMAGE: jug_dev_oneapi
+#        BUILD_IMAGE_PREFIX: jug_
+#        BUILD_IMAGE_SUFFIX: _oneapi
+#        ENVIRONMENTS: dev
 #        PLATFORM: linux/amd64
 #      - BASE_IMAGE: cuda_base_new
-#        BUILD_IMAGE: jug_dev_cuda
+#        BUILD_IMAGE_PREFIX: jug_
+#        BUILD_IMAGE_SUFFIX: _cuda
+#        ENVIRONMENTS: dev
 #        PLATFORM: linux/amd64
   extends: .build
   stage: jug
@@ -299,10 +305,12 @@ jug_dev:default:
     ## Setup mirrors.yaml with rw mirror secrets
     - cat mirrors.yaml.in | envsubst > mirrors.yaml
     ## Build targets
-    - for target in ${TARGETS} ; do
+    - for env in ${ENVIRONMENTS//,/ } ; do
+      for target in ${TARGETS} ; do
         if [ ! ${target} = export ] ; then
           suffix=-${target} ;
         fi ;
+        BUILD_IMAGE=${BUILD_IMAGE_PREFIX}${env}${BUILD_IMAGE_SUFFIX} ;
         docker buildx build --push
                    --target ${target}
                    ${CACHE_FLAG}
@@ -321,6 +329,7 @@ jug_dev:default:
                    --build-arg EICSPACK_ORGREPO="${EICSPACK_ORGREPO}"
                    --build-arg EICSPACK_VERSION="${EICSPACK_VERSION}"
                    --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
+                   --build-arg ENV=${env}
                    --build-arg S3_ACCESS_KEY="${S3_ACCESS_KEY}"
                    --build-arg S3_SECRET_KEY="${S3_SECRET_KEY}"
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
@@ -328,6 +337,7 @@ jug_dev:default:
                    --build-context spack=.
                    --secret id=mirrors,src=mirrors.yaml
                    containers/jug
+      ; done
       ; done
 
 jug_xl:default:
