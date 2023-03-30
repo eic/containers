@@ -2,7 +2,6 @@ spack:
   include: 
   - ../concretizer.yaml
   - ../packages.yaml
-  - ../view.yaml
   specs:
     - acts@21.1.0 +dd4hep +identification +json +tgeo +fatras +geant4 +python
     - clhep@2.4.6.0 cxxstd=17
