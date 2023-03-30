@@ -270,7 +270,6 @@ jug_dev:default:
     matrix:
       - BASE_IMAGE: debian_testing_base
         BUILD_IMAGE_PREFIX: jug_
-        BUILD_IMAGE_SUFFIX: ""
         ENVIRONMENTS: dev,prod
         PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: oneapi_base
@@ -310,7 +309,7 @@ jug_dev:default:
         if [ ! ${target} = export ] ; then
           suffix=-${target} ;
         fi ;
-        BUILD_IMAGE=${BUILD_IMAGE_PREFIX}${env}${BUILD_IMAGE_SUFFIX} ;
+        BUILD_IMAGE=${BUILD_IMAGE_PREFIX}${env}${BUILD_IMAGE_SUFFIX:-} ;
         docker buildx build --push
                    --target ${target}
                    ${CACHE_FLAG}
