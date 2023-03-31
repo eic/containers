@@ -139,7 +139,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     | sort > buildcache.local.txt                                       \
  && spack find --format {name}/{hash} | sort                            \
     | comm -23 - buildcache.local.txt                                   \
-    | xargs --no-run-if-empty                                           \
+    | xargs --verbose --no-run-if-empty                                 \
       spack buildcache create --allow-root --only package --unsigned    \
                               --directory /var/cache/spack-mirror       \
                               --rebuild-index                           \
@@ -164,7 +164,7 @@ RUN cd /opt/spack-environment                                           \
     | sort > buildcache.eic-spack.txt                                   \
  && spack find --format {name}/{hash} | sort                            \
     | comm -23 - buildcache.eic-spack.txt                               \
-    | xargs --no-run-if-empty                                           \
+    | xargs --verbose --no-run-if-empty                                 \
       spack buildcache create --allow-root --only package --unsigned    \
                               --mirror-name eic-spack                   \
  && spack buildcache update-index --mirror-url eic-spack                \
