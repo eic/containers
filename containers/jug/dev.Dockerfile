@@ -59,7 +59,7 @@ RUN declare -A arch=(                                                   \
 ## Setup spack buildcache mirrors, including an internal
 ## spack mirror using the docker build cache, and
 ## a backup mirror on the internal B010 network
-RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     export PATH=$PATH:$SPACK_ROOT/bin                                   \
  && spack mirror add docker /var/cache/spack-mirror                     \
  && spack buildcache update-index -d /var/cache/spack-mirror            \
@@ -68,7 +68,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
 ## Setup eic-spack buildcache mirrors (FIXME: leaks credentials into layer)
 ARG S3_ACCESS_KEY=""
 ARG S3_SECRET_KEY=""
-RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     export PATH=$PATH:$SPACK_ROOT/bin                                   \
  && if [ -n "${S3_ACCESS_KEY}" ] ; then                                 \
     spack mirror add --scope site                                       \
@@ -120,7 +120,7 @@ RUN rm -r /usr/local                                                    \
 ## 2. Get a list of all packages, and compare with what is already on
 ##    the buildcache (using package hash)
 ## 3. Add packages that need to be added to buildcache if any
-RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
