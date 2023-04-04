@@ -19,13 +19,14 @@ include $(SPACK_ENV)/spack.mk
 endif
 
 $(SPACK_ENV)/push: $(addprefix $(SPACK_ENV)/push/,$($(SPACK_ENV)/SPACK_PACKAGE_IDS))
-	@mkdir -p $(BUILDCACHE)
+	@mkdir -p $(BUILDCACHE_DIR)
 	$(foreach buildcache, $(BUILDCACHE_DIR), $(SPACK) buildcache update-index --directory $(buildcache) ;)
 	$(foreach buildcache, $(BUILDCACHE_MIRROR), $(SPACK) buildcache update-index --mirror-name $(buildcache) ;)
 
 $(SPACK_ENV)/push/%: $(SPACK_ENV)/install/%
 	@mkdir -p $(dir $@)
-	$(foreach buildcache, $(BUILDCACHE), $(SPACK) buildcache create --allow-root --only=package --unsigned $(buildcache) /$(HASH) ;) # push $(SPEC)
+	$(foreach buildcache, $(BUILDCACHE_DIR), $(SPACK) buildcache create --allow-root --only=package --unsigned $(buildcache) /$(HASH) ;) # push $(SPEC)
+	$(foreach buildcache, $(BUILDCACHE_MIRROR), $(SPACK) buildcache create --allow-root --only=package --unsigned $(buildcache) /$(HASH) ;) # push $(SPEC)
 	@touch $@
 
 $(SPACK_ENV)/spack.lock: $(SPACK_ENV)/spack.yaml Makefile
