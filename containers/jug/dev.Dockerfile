@@ -104,7 +104,17 @@ RUN rm -r /usr/local                                                    \
  && cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
- && make -C /opt/spack-environment BUILDCACHE=/var/cache/spack-mirror
+ && make -C /opt/spack-environment --keep-going SPACK_ENV=${ENV}        \
+    BUILDCACHE_DIR=/var/cache/spack-mirror                              \
+    BUILDCACHE_MIRROR=eic-spack
+
+## Optional, nuke the buildcache after install, before (re)caching
+## This is useful when going to completely different containers,
+## or intermittently to keep the buildcache step from taking too much time
+RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+    cd /opt/spack-environment                                           \
+ && [ -z "${CACHE_NUKE}" ]                                              \
+    || rm -rf /var/cache/spack-mirror/build_cache/*                     \
 
 ## Extra post-spack steps:
 ##   - Python packages

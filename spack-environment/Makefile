@@ -7,7 +7,8 @@ export SPACK_COLOR = always
 
 SPACK_ENV ?= dev
 
-BUILDCACHE := $(SPACK_ENV)/cache
+BUILDCACHE_DIR := $(SPACK_ENV)/cache
+BUILDCACHE_MIRROR :=
 
 .PHONY: all clean
 
@@ -19,7 +20,8 @@ endif
 
 $(SPACK_ENV)/push: $(addprefix $(SPACK_ENV)/push/,$($(SPACK_ENV)/SPACK_PACKAGE_IDS))
 	@mkdir -p $(BUILDCACHE)
-	$(foreach buildcache, $(BUILDCACHE), $(SPACK) buildcache update-index $(buildcache) ;)
+	$(foreach buildcache, $(BUILDCACHE_DIR), $(SPACK) buildcache update-index --directory $(buildcache) ;)
+	$(foreach buildcache, $(BUILDCACHE_MIRROR), $(SPACK) buildcache update-index --mirror-name $(buildcache) ;)
 
 $(SPACK_ENV)/push/%: $(SPACK_ENV)/install/%
 	@mkdir -p $(dir $@)
