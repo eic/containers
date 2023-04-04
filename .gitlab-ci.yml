@@ -39,6 +39,7 @@ variables:
     af74680405c931dab16c6674f9b97a32bf3f1122
     0a952f8b7bf6f70009dd5821bccbaf9170c73d07
     f050b1cf7835fd31992b020e1061c52294ff7330
+    a357a39963b5c9161b85f933f4001de8b951b99a
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## [hash]: [description]
   ## b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e: geant4: version bumps for Geant4 11.1.0
@@ -68,6 +69,7 @@ variables:
   ## af74680405c931dab16c6674f9b97a32bf3f1122: depfile: improve tab completion
   ## 0a952f8b7bf6f70009dd5821bccbaf9170c73d07: docs updates for spack env depfile
   ## f050b1cf7835fd31992b020e1061c52294ff7330: depfile: variable with all identifiers
+  ## a357a39963b5c9161b85f933f4001de8b951b99a: depfile: --make-target-prefix -> --make-prefix
 
   ## EIC spack organization and repository, e.g. eic/eic-spack
   EICSPACK_ORGREPO: "eic/eic-spack"
