@@ -30,7 +30,7 @@ $(SPACK_ENV)/spack.lock: $(SPACK_ENV)/spack.yaml Makefile
 	$(SPACK) concretize --force --fresh
 
 $(SPACK_ENV)/spack.mk: $(SPACK_ENV)/spack.lock Makefile
-	$(SPACK) env depfile --output $@ --make-prefix $(SPACK_ENV)
+	$(SPACK) env depfile --output $@ --make-target-prefix $(SPACK_ENV)
 
 clean:
 	rm -rf $(SPACK_ENV)/spack.lock $(SPACK_ENV)/spack.mk
