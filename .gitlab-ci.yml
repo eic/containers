@@ -37,6 +37,7 @@ variables:
     1a32cea11495cbdd699fea4fe622babab83e630d
     6edc4807369a05786e36f63b5d959588ae94a1fa
     af74680405c931dab16c6674f9b97a32bf3f1122
+    0a952f8b7bf6f70009dd5821bccbaf9170c73d07
     f050b1cf7835fd31992b020e1061c52294ff7330
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## [hash]: [description]
@@ -65,6 +66,7 @@ variables:
   ## 1a32cea11495cbdd699fea4fe622babab83e630d: podio: add v0.16.2
   ## 6edc4807369a05786e36f63b5d959588ae94a1fa: podio: Add version 0.16.3
   ## af74680405c931dab16c6674f9b97a32bf3f1122: depfile: improve tab completion
+  ## 0a952f8b7bf6f70009dd5821bccbaf9170c73d07: docs updates for spack env depfile
   ## f050b1cf7835fd31992b020e1061c52294ff7330: depfile: variable with all identifiers
 
   ## EIC spack organization and repository, e.g. eic/eic-spack
