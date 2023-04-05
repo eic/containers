@@ -100,8 +100,9 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 ## Setup our custom environment
 COPY --from=spack spack-environment/ /opt/spack-environment/
 ARG ENV=dev
-RUN rm -r /usr/local                                                    \
- && cd /opt/spack-environment                                           \
+RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+    cd /opt/spack-environment                                           \
+ && rm -r /usr/local                                                    \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
  && make -C /opt/spack-environment --keep-going SPACK_ENV=${ENV}        \
@@ -112,9 +113,8 @@ RUN rm -r /usr/local                                                    \
 ## This is useful when going to completely different containers,
 ## or intermittently to keep the buildcache step from taking too much time
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
-    cd /opt/spack-environment                                           \
- && [ -z "${CACHE_NUKE}" ]                                              \
-    || rm -rf /var/cache/spack-mirror/build_cache/*                     \
+    [ -z "${CACHE_NUKE}" ]                                              \
+    || rm -rf /var/cache/spack-mirror/build_cache/*
 
 ## Extra post-spack steps:
 ##   - Python packages
