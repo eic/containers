@@ -105,7 +105,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
  && rm -r /usr/local                                                    \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
- && make -C /opt/spack-environment --keep-going SPACK_ENV=${ENV}        \
+ && make -C /opt/spack-environment SPACK_ENV=${ENV}                     \
     BUILDCACHE_DIR=/var/cache/spack-mirror                              \
     BUILDCACHE_MIRROR=eic-spack
 
