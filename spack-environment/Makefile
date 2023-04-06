@@ -20,8 +20,8 @@ endif
 
 $(SPACK_ENV)/push: $(addprefix $(SPACK_ENV)/push/,$($(SPACK_ENV)/SPACK_PACKAGE_IDS))
 	@mkdir -p $(BUILDCACHE_DIR)
-	$(foreach buildcache, $(BUILDCACHE_DIR), $(SPACK) buildcache update-index --directory $(buildcache) ;)
-	$(foreach buildcache, $(BUILDCACHE_MIRROR), $(SPACK) buildcache update-index --mirror-name $(buildcache) ;)
+	$(foreach buildcache, $(BUILDCACHE_DIR), $(SPACK) buildcache update-index --mirror-url $(buildcache) ;)
+	$(foreach buildcache, $(BUILDCACHE_MIRROR), $(SPACK) buildcache update-index --mirror-url $(buildcache) ;)
 
 $(SPACK_ENV)/push/%: $(SPACK_ENV)/install/%
 	@mkdir -p $(dir $@)
