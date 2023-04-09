@@ -9,7 +9,7 @@ variables:
   ## Spack organization and repository, e.g. spack/spack
   SPACK_ORGREPO: "spack/spack"
   ## Spack github version, e.g. v0.18.1 or commit hash
-  SPACK_VERSION: "v0.19.1"
+  SPACK_VERSION: "v0.19.2"
   ## Space-separated list of spack cherry-picks
   SPACK_CHERRYPICKS: >
     b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e
