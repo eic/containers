@@ -21,6 +21,7 @@ variables:
     2f057d729da61e8c12828df44377f0a93fed820f
     39a1f1462b0abf12dfaccd33f84142c852c4b56e
     4b12d015e1c316b4837e02ae37e2c69a8a647180
+    f83d47442dade012b1019840181b8dd459fd8edd
     7f1467e795b1cab8b4855e019910c509896ea0e1
     ebc24b7063ba9a8eb43b4424aac5143cf958d76f
     a47ebe57841f13239e881ed69eab4949b1d98c32
@@ -46,6 +47,7 @@ variables:
   ## 2f057d729da61e8c12828df44377f0a93fed820f: py-scipy: add v1.9
   ## 39a1f1462b0abf12dfaccd33f84142c852c4b56e: SIP build system: fix "python not defined in builder"
   ## 4b12d015e1c316b4837e02ae37e2c69a8a647180: py-jinja2-cli: new package
+  ## f83d47442dade012b1019840181b8dd459fd8edd: dd4hep: depends_on root +x +opengl when +utilityapps
   ## 7f1467e795b1cab8b4855e019910c509896ea0e1: dd4hep: new version 1.24, depends_on podio@0.16:
   ## ebc24b7063ba9a8eb43b4424aac5143cf958d76f: dd4hep: extend conflict on CMake
   ## a47ebe57841f13239e881ed69eab4949b1d98c32: dd4hep: new versions 1.25, 1.25.1
