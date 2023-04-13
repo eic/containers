@@ -22,6 +22,9 @@ variables:
     39a1f1462b0abf12dfaccd33f84142c852c4b56e
     4b12d015e1c316b4837e02ae37e2c69a8a647180
     7f1467e795b1cab8b4855e019910c509896ea0e1
+    ebc24b7063ba9a8eb43b4424aac5143cf958d76f
+    a47ebe57841f13239e881ed69eab4949b1d98c32
+    ab999d5af90f1bff644b5134bb370b2716e1bcf0
     62da76cb5dca4d52c43bee06230cca6a5882f05d
     cc2ae9f270befa554ba8b09c68e89bb8248ea650
     ae98d2ba2fcefa9d027e2d6ccc6e7558a32e7228
@@ -44,6 +47,9 @@ variables:
   ## 39a1f1462b0abf12dfaccd33f84142c852c4b56e: SIP build system: fix "python not defined in builder"
   ## 4b12d015e1c316b4837e02ae37e2c69a8a647180: py-jinja2-cli: new package
   ## 7f1467e795b1cab8b4855e019910c509896ea0e1: dd4hep: new version 1.24, depends_on podio@0.16:
+  ## ebc24b7063ba9a8eb43b4424aac5143cf958d76f: dd4hep: extend conflict on CMake
+  ## a47ebe57841f13239e881ed69eab4949b1d98c32: dd4hep: new versions 1.25, 1.25.1
+  ## ab999d5af90f1bff644b5134bb370b2716e1bcf0: dd4hep: depends_on root +webgui when +ddeve ^root @6.28:
   ## 62da76cb5dca4d52c43bee06230cca6a5882f05d: directives: depends_on should not admit anonymous specs
   ## cc2ae9f270befa554ba8b09c68e89bb8248ea650: Add a "maintainer" directive
   ## ae98d2ba2fcefa9d027e2d6ccc6e7558a32e7228: Support packages for using scitokens on OSG
