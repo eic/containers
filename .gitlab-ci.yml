@@ -4,7 +4,7 @@ variables:
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
   JUGGLER_VERSION: "v9.3.0"
-  EICRECON_VERSION: "v0.6.4"
+  EICRECON_VERSION: "v1.0.0"
 
   ## Spack organization and repository, e.g. spack/spack
   SPACK_ORGREPO: "spack/spack"
