@@ -517,7 +517,7 @@ benchmarks:physics:
     - version
     - jug_xl:default
   variables:
-    RECO: "juggler"
+    RECO: "eicrecon"
     BENCHMARKS_TAG: "$INTERNAL_TAG"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
