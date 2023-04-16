@@ -204,9 +204,8 @@ version:
     - docker-new
   before_script:
     - !reference [default, before_script]
-    - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
-    - find /proc/sys/fs/binfmt_misc -type f -name 'qemu-*' -exec sh -c 'cat {}' \;
-    - for arch in aarch64 ; do
+    - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
+      for arch in aarch64 ; do
         if ! grep --quiet enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
           docker run --rm --privileged multiarch/qemu-user-static --persistent yes ;
         fi ;
