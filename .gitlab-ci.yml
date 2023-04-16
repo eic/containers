@@ -204,7 +204,7 @@ version:
     - docker-new
   before_script:
     - !reference [default, before_script]
-    - docker run --rm --privileged multiarch/qemu-user-static --persistent yes
+    - docker run --rm --privileged multiarch/qemu-user-static --persistent yes || true
     - docker buildx create --name builder --driver docker-container --bootstrap --use
 
 ## Images:
