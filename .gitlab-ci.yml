@@ -199,7 +199,7 @@ version:
 .build:
   rules:
     - when: on_success
-  resource_group: ${CI_COMMIT_REF_NAME}
+  resource_group: ${CI_COMMIT_REF_NAME}-${VERSION}
   tags:
     - docker-new
   before_script:
