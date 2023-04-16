@@ -207,7 +207,7 @@ version:
     - for arch in aarch64 ; do
         if ! grep --quiet enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
           docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes ;
-        if ;
+        fi ;
       done
     - docker buildx create --name builder --driver docker-container --bootstrap --use
 
