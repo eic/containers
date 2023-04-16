@@ -378,10 +378,10 @@ jug_xl:nightly:
                      ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
-                   }
-                   ${PUSH_NIGHTLY_WITH_DATE:+
-                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                     ${PUSH_NIGHTLY_WITH_DATE:+
+                       ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                       ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                     }
                    }
                    -f containers/jug/xl.Dockerfile
                    --platform ${PLATFORM}
