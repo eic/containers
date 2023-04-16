@@ -429,7 +429,6 @@ jug_xl:feature:
 .singularity:
   stage: deploy
   interruptible: true
-  resource_group: ${CI_COMMIT_REF_NAME}
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
