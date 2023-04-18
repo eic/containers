@@ -114,7 +114,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
  && rm -r /usr/local                                                    \
- && spack env view regenerate /usr/local
+ && spack env view enable /usr/local
 
 ## Optional, nuke the buildcache after install, before (re)caching
 ## This is useful when going to completely different containers,
