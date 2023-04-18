@@ -100,77 +100,21 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 ## Setup our custom environment
 COPY --from=spack spack-environment/ /opt/spack-environment/
 ARG ENV=dev
-RUN rm -r /usr/local                                                    \
- && cd /opt/spack-environment                                           \
+RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+    cd /opt/spack-environment                                           \
+ && rm -r /usr/local                                                    \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
- && spack concretize --fresh
+ && make -C /opt/spack-environment SPACK_ENV=${ENV}                     \
+    BUILDCACHE_DIR=/var/cache/spack-mirror                              \
+    BUILDCACHE_MIRROR=eic-spack
 
-
-## Now execute the main build (or fetch from cache if possible)
-## note, no-check-signature is needed to allow the quicker signature-less
-## packages from the internal (docker) buildcache
-##
 ## Optional, nuke the buildcache after install, before (re)caching
 ## This is useful when going to completely different containers,
 ## or intermittently to keep the buildcache step from taking too much time
-##
-## Update the local build cache if needed. Consists of 3 steps:
-## 1. Remove the eic-spack buildcache on S3
-## 2. Get a list of all packages, and compare with what is already on
-##    the buildcache (using package hash)
-## 3. Add packages that need to be added to buildcache if any
-RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
- && status=0                                                            \
- && spack install -j64 --no-check-signature                             \
-    || spack install -j64 --no-check-signature                          \
-    || spack install -j64 --no-check-signature --show-log-on-error      \
-    || status=$?                                                        \
- && spack mirror rm --scope site eic-spack                              \
- && [ -z "${CACHE_NUKE}" ]                                              \
-    || rm -rf /var/cache/spack-mirror/build_cache/*                     \
- && mkdir -p /var/cache/spack-mirror/build_cache                        \
- && spack buildcache update-index -d /var/cache/spack-mirror            \
- && spack buildcache list --allarch --very-long                         \
-    | sed '/^$/d;/^--/d;s/@.\+//;s/\([a-z0-9]*\) \(.*\)/\2\/\1/'        \
-    | sort > buildcache.local.txt                                       \
- && spack find --format {name}/{hash} | sort                            \
-    | comm -23 - buildcache.local.txt                                   \
-    | xargs --verbose --no-run-if-empty                                 \
-      spack buildcache create --allow-root --only package --unsigned    \
-                              --directory /var/cache/spack-mirror       \
-                              --rebuild-index                           \
- && spack clean -a                                                      \
- && exit $status
-
-## Update the S3 build cache (without local cache mount)
-ARG S3RW_ACCESS_KEY=""
-ARG S3RW_SECRET_KEY=""
-RUN cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
- && if [ -n "${S3RW_ACCESS_KEY}" ] ; then                               \
-    spack mirror add --scope site                                       \
-      --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
-      --s3-access-key-id "${S3RW_ACCESS_KEY}"                           \
-      --s3-access-key-secret "${S3RW_SECRET_KEY}"                       \
-      eic-spack s3://eictest/EPIC/spack                                 \
- && spack mirror list                                                   \
- && spack buildcache list --allarch --very-long                         \
-    | sed '/^$/d;/^--/d;s/@.\+//;s/\([a-z0-9]*\) \(.*\)/\2\/\1/'        \
-    | sort > buildcache.eic-spack.txt                                   \
- && spack find --format {name}/{hash} | sort                            \
-    | comm -23 - buildcache.eic-spack.txt                               \
-    | xargs --verbose --no-run-if-empty                                 \
-      spack buildcache create --allow-root --only package --unsigned    \
-                              --mirror-name eic-spack                   \
- && spack buildcache update-index --mirror-url eic-spack                \
- && spack mirror rm --scope site eic-spack                              \
-    ; fi                                                                \
- && spack mirror list
+RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+    [ -z "${CACHE_NUKE}" ]                                              \
+    || rm -rf /var/cache/spack-mirror/build_cache/*
 
 ## Extra post-spack steps:
 ##   - Python packages
