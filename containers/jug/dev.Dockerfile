@@ -102,12 +102,19 @@ COPY --from=spack spack-environment/ /opt/spack-environment/
 ARG ENV=dev
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     cd /opt/spack-environment                                           \
- && rm -r /usr/local                                                    \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
  && make -C /opt/spack-environment SPACK_ENV=${ENV}                     \
     BUILDCACHE_DIR=/var/cache/spack-mirror                              \
     BUILDCACHE_MIRROR=eic-spack
+
+## Create view at /usr/local
+RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+    cd /opt/spack-environment                                           \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
+ && rm -r /usr/local                                                    \
+ && spack env view enable /usr/local
 
 ## Optional, nuke the buildcache after install, before (re)caching
 ## This is useful when going to completely different containers,
