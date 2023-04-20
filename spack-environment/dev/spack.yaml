@@ -15,7 +15,7 @@ spack:
     - cppcoro@git.10bbcdbf2be3ad3aa56febcf4c7662d771460a99
     - dawn@3_91a
     - dawncut@1_54a
-    - dd4hep@1.25.1 +ddg4 +ddcad +hepmc3 +lcio
+    - dd4hep@1.25.1 +ddg4 +ddcad +hepmc3 +lcio +xercesc
     - edm4eic@2.0.0 cxxstd=17
     - edm4hep@0.7 cxxstd=17
     - eic-smear@1.1.10
