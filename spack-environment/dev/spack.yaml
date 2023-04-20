@@ -61,6 +61,7 @@ spack:
     - py-numpy@1.23.4
     - py-pandas@1.5.1
     - py-pip@22.2.2
+    - py-pre-commit@2.20.0
     - py-pycairo@1.20.0
     - py-pyyaml@6.0
     - py-scipy@1.9.3
