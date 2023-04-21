@@ -141,9 +141,7 @@ RUN --mount=type=cache,target=/var/cache/pip,sharing=locked,id=${TARGETPLATFORM}
     --no-warn-script-location
     # ^ Supress not on PATH Warnings
 
-## Including some small fixes:
-##   - Somehow PODIO env isn't automatically set, 
-##   - and Gaudi likes BINARY_TAG to be set
+## Including some small fixes
 RUN cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && echo -n ""                                                          \
@@ -151,16 +149,7 @@ RUN cd /opt/spack-environment                                           \
  && spack env activate --sh --dir /opt/spack-environment/${ENV}         \
         | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
         | sed '/MANPATH/ s/;$/:;/'                                      \
-    > /etc/profile.d/z10_spack_environment.sh                           \
- && cd /opt/spack-environment                                           \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
- && echo -n ""                                                          \
- && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
- && echo "export PODIO=$(spack location -i podio);"                     \
-        >> /etc/profile.d/z10_spack_environment.sh                      \
- && echo -n ""                                                          \
- && echo "Executing cmake patch for dd4hep 16.1"                        \                
- && sed -i "s/FIND_PACKAGE(Python/#&/" /usr/local/cmake/DD4hepBuild.cmake
+    > /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
