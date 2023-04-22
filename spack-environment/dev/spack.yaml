@@ -8,7 +8,7 @@ spack:
     - acts-dd4hep@1.0.1
     - afterburner@0.1.2 +root +zlib
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
-    - catch2@3.0.1
+    - catch2@3.0.1 -ipo
     - clhep@2.4.6.0 cxxstd=17
     - cli11@2.1.1
     - cmake@3.24.3
