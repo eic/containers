@@ -310,7 +310,7 @@ jug_dev:default:
         if [ ! ${target} = export ] ; then
           suffix=-${target} ;
         fi ;
-        BUILD_IMAGE=${BUILD_IMAGE_PREFIX}${env}${BUILD_IMAGE_SUFFIX:-} ;
+        BUILD_IMAGE=${BUILD_IMAGE_PREFIX}${ENVIRONMENT}${BUILD_IMAGE_SUFFIX:-} ;
         docker buildx build --push
                    --target ${target}
                    ${CACHE_FLAG}
