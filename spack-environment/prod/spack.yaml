@@ -24,7 +24,7 @@ spack:
     - jana2@2.1.0 -ipo +podio +root +zmq
     - mesa@22.1.2 +glx -llvm +opengl +opengles +osmesa
     - nlohmann-json@3.11.2
-    - npsim@1.1.0 +geocad +http
+    - npsim@1.1.0 -geocad +http
     - osg-ca-certs@1.109.igtf.1.117
     - pkg-config@0.29.2
     - podio@0.16.3
