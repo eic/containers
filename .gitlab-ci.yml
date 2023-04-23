@@ -270,7 +270,7 @@ jug_dev:default:
     matrix:
       - BASE_IMAGE: debian_testing_base
         BUILD_IMAGE_PREFIX: jug_
-        ENVIRONMENTS: 
+        ENVIRONMENT: 
         - dev
         - prod
         PLATFORM: linux/amd64,linux/arm64/v8
@@ -306,8 +306,7 @@ jug_dev:default:
     ## Setup mirrors.yaml with rw mirror secrets
     - cat mirrors.yaml.in | envsubst > mirrors.yaml
     ## Build targets
-    - for env in ${ENVIRONMENTS//,/ } ; do
-      for target in ${TARGETS} ; do
+    - for target in ${TARGETS} ; do
         if [ ! ${target} = export ] ; then
           suffix=-${target} ;
         fi ;
@@ -330,7 +329,7 @@ jug_dev:default:
                    --build-arg EICSPACK_ORGREPO="${EICSPACK_ORGREPO}"
                    --build-arg EICSPACK_VERSION="${EICSPACK_VERSION}"
                    --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
-                   --build-arg ENV=${env}
+                   --build-arg ENV="${ENVIRONMENT}"
                    --build-arg S3_ACCESS_KEY="${S3_ACCESS_KEY}"
                    --build-arg S3_SECRET_KEY="${S3_SECRET_KEY}"
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
@@ -338,7 +337,6 @@ jug_dev:default:
                    --build-context spack=.
                    --secret id=mirrors,src=mirrors.yaml
                    containers/jug
-      ; done
       ; done
 
 jug_xl:default:
