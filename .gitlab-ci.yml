@@ -233,10 +233,10 @@ base:
     matrix:
       - BASE_IMAGE: debian:testing-20220822-slim
         BUILD_IMAGE: debian_testing_base
-        PLATFORM: linux/amd64
+        PLATFORM: linux/amd64,linux/arm64/v8
       - BASE_IMAGE: ubuntu:20.04
         BUILD_IMAGE: ubuntu_base
-        PLATFORM: linux/amd64
+        PLATFORM: linux/amd64,linux/arm64/v8
       - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
         BUILD_IMAGE: oneapi_base
         PLATFORM: linux/amd64
@@ -266,7 +266,7 @@ jug_dev:default:
     matrix:
       - BASE_IMAGE: debian_testing_base
         BUILD_IMAGE: jug_dev
-        PLATFORM: linux/amd64
+        PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE: jug_dev_oneapi
 #        PLATFORM: linux/amd64
@@ -330,7 +330,7 @@ jug_xl:default:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64
+        PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
 #        PLATFORM: linux/amd64
@@ -362,7 +362,7 @@ jug_xl:nightly:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64
+        PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
 #        PLATFORM: linux/amd64
