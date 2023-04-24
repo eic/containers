@@ -11,158 +11,158 @@ packages:
     variants:
       +ipo build_type=Release
   acts:
-    version: 21.1.0
+    version: [21.1.0]
     variants: +dd4hep +identification +json +tgeo +examples +fatras +geant4 +python
   actsvg:
-    version: 0.4.26
+    version: [0.4.26]
     variants: +examples
   afterburner:
-    version: 0.1.2
+    version: [0.1.2]
     variants: +root +zlib
   cairo:
-    version: 1.16.0
+    version: [1.16.0]
     variants: +fc +ft +X +pdf +gobject
   clhep:
-    version: 2.4.6.0
+    version: [2.4.6.0]
     variants: cxxstd=17
   cli11:
-    version: 2.1.1
+    version: [2.1.1]
   cmake:
-    version: 3.24.3
+    version: [3.24.3]
   cnpy:
-    version: master
+    version: [master]
   cppcoro:
     version: [10bbcdbf2be3ad3aa56febcf4c7662d771460a99]
   dawn:
-    version: 3_91a
+    version: [3_91a]
   dawncut:
-    version: 1_54a
+    version: [1_54a]
   dd4hep:
-    version: 1.25.1
+    version: [1.25.1]
     variants: +ddg4 +ddcad +hepmc3 +lcio
   edm4eic:
-    version: 2.0.0
+    version: [2.0.0]
     variants: cxxstd=17
   edm4hep:
-    version: 0.7
+    version: [0.7]
     variants: cxxstd=17
   eic-smear:
-    version: 1.1.10
+    version: [1.1.10]
   eigen:
-    version: 3.4.0
+    version: [3.4.0]
   emacs:
-    version: 28.1
+    version: [28.1]
   fastjet:
-    version: 3.4.0
+    version: [3.4.0]
   fjcontrib:
-    version: 1.045
+    version: [1.045]
   fmt:
-    version: 8.1.1
+    version: [8.1.1]
     variants: +shared cxxstd=17
   gaudi:
-    version: 36.7
+    version: [36.7]
     variants: +aida
   geant4:
-    version: 11.1.1
+    version: [11.1.1]
     variants: cxxstd=17 +opengl -vecgeom +x11 +qt +threads -vtk
   hepmc3:
-    version: 3.2.5
+    version: [3.2.5]
     variants: +python +rootio
   heppdt:
-    version: 2.06.01
+    version: [2.06.01]
   imagemagick:
-    version: 7.0.8-7
+    version: [7.0.8-7]
   intel-tbb:
-    version: 2020.3
+    version: [2020.3]
   irt:
-    version: 1.0.6
+    version: [1.0.6]
   jana2:
-    version: 2.1.0
+    version: [2.1.0]
     variants: -ipo +podio +root +zmq
   madx:
-    version: 5.08.01
+    version: [5.08.01]
   mesa:
-    version: 22.1.2
+    version: [22.1.2]
     variants: +glx -llvm +opengl +opengles +osmesa
   nlohmann-json:
-    version: 3.11.2
+    version: [3.11.2]
   npsim:
-    version: 1.1.0
+    version: [1.1.0]
     variants: +geocad +http
   onnx:
-    version: 1.12.0
+    version: [1.12.0]
   opencascade:
-    version: 7.6.3
+    version: [7.6.3]
   pkg-config:
-    version: 0.29.2
+    version: [0.29.2]
   podio:
-    version: 0.16.3
+    version: [0.16.3]
   prmon:
-    version: 3.0.2
+    version: [3.0.2]
     variants: +plot
   pythia8:
-    version: 8.306
+    version: [8.306]
     variants: +fastjet
   python:
-    version: 3.10.8
+    version: [3.10.8]
   py-boto3:
-    version: 1.18.12
+    version: [1.18.12]
   py-ipython:
-    version: 8.5.0
+    version: [8.5.0]
   py-jinja2:
-    version: 3.1.2
+    version: [3.1.2]
   py-jinja2cli:
-    version: 0.8.2
+    version: [0.8.2]
   py-jupyter:
-    version: 1.0.0
+    version: [1.0.0]
   py-jupyterlab:
-    version: 3.2.9
+    version: [3.2.9]
   py-lmfit:
-    version: 1.0.2
+    version: [1.0.2]
   py-lxml:
-    version: 4.9.1
+    version: [4.9.1]
   py-matplotlib:
-    version: 3.6.2
+    version: [3.6.2]
   py-mplhep:
-    version: 0.3.26
+    version: [0.3.26]
   py-htgettoken:
-    version: 1.16-33-g3788bb4
+    version: [1.16-33-g3788bb4]
   py-numpy:
-    version: 1.23.4
+    version: [1.23.4]
   py-pandas:
-    version: 1.5.1
+    version: [1.5.1]
   py-pip:
-    version: 22.2.2
+    version: [22.2.2]
   py-pre-commit:
-    version: 2.20.0
+    version: [2.20.0]
   py-pycairo:
-    version: 1.20.0
+    version: [1.20.0]
   py-pyyaml:
-    version: 6.0
+    version: [6.0]
   py-scipy:
-    version: 1.9.3
+    version: [1.9.3]
   py-seaborn:
-    version: 0.12.0
+    version: [0.12.0]
   py-toml:
-    version: 0.10.2
+    version: [0.10.2]
   py-uproot:
-    version: 4.3.5
+    version: [4.3.5]
   py-yapf:
-    version: 0.30.0
+    version: [0.30.0]
   qt:
-    version: 5.15.5
+    version: [5.15.5]
     variants: +opengl
   root:
-    version: 6.26.10
+    version: [6.26.10]
     variants: cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl 
   spdlog:
-    version: 1.10.0
+    version: [1.10.0]
     variants: +fmt_external
   stow:
-    version: 2.3.1
+    version: [2.3.1]
   tensorflow-lite:
-    version: 2.8.0
+    version: [2.8.0]
     variants: -xnnpack
   xrootd:
-    version: 5.5.1
+    version: [5.5.1]
     variants: cxxstd=17 +python +scitokens-cpp
