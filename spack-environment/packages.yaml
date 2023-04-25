@@ -5,11 +5,16 @@
 # - if reuse == true and build caches contain other versions/variants
 #   (this is disabled by concretize:reuse:false in concretizer.yaml)
 #
+# The variants in packages:all:variants are overridden by package-specific 
+# variants. Therefore, we use the pattern require:one_of:[+variant,@:]
+# which either sets the variant or doesn't do anything if not supported.
+#
 packages:
   all:
     compiler: [gcc]
-    variants:
-      +ipo build_type=Release
+    require:
+      - one_of: [+ipo, '@:']
+      - one_of: [build_type=Release, '@:']
   acts:
     version: [21.1.0]
     variants: +dd4hep +identification +json +tgeo +examples +fatras +geant4 +python
