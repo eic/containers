@@ -104,7 +104,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
- && make -C /opt/spack-environment SPACK_ENV=${ENV}                     \
+ && make -j 8 -C /opt/spack-environment SPACK_ENV=${ENV}                \
     BUILDCACHE_DIR=/var/cache/spack-mirror
 # FIXME disabled S3 buildcache until multipart upload fixed
 #                              \
