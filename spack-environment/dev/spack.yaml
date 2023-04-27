@@ -1,10 +1,14 @@
 spack:
+  include: 
+  - ../concretizer.yaml
+  - ../packages.yaml
   specs:
     - acts@21.1.0 +dd4hep +identification +json +tgeo +examples +fatras +geant4 +python
     - actsvg@0.4.26 +examples
     - acts-dd4hep@1.0.1
     - afterburner@0.1.2 +root +zlib
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
+    - catch2@3.0.1 -ipo
     - clhep@2.4.6.0 cxxstd=17
     - cli11@2.1.1
     - cmake@3.24.3
@@ -12,8 +16,8 @@ spack:
     - cppcoro@git.10bbcdbf2be3ad3aa56febcf4c7662d771460a99
     - dawn@3_91a
     - dawncut@1_54a
-    - dd4hep@1.24 +ddg4 +ddcad -frames +hepmc3 +lcio
-    - edm4eic@1.2.2 cxxstd=17
+    - dd4hep@1.25.1 +ddg4 +ddcad +hepmc3 +lcio +xercesc
+    - edm4eic@2.0.0 cxxstd=17
     - edm4hep@0.7 cxxstd=17
     - eic-smear@1.1.10
     - eigen@3.4.0
@@ -27,13 +31,14 @@ spack:
     - heppdt@2.06.01
     - imagemagick@7.0.8-7
     - intel-tbb@2020.3
-    - irt@1.0.5
-    - jana2@2.0.8 -ipo +root +zmq
+    - irt@1.0.6
+    - jana2@2.1.0 -ipo +podio +root +zmq
     - lcov@1.15
     - madx@5.08.01
     - mesa@22.1.2 +glx -llvm +opengl +opengles +osmesa
     - nlohmann-json@3.11.2
     - npsim@1.1.0 +geocad +http
+    - onnx@1.12.0
     - opencascade@7.6.3
     - osg-ca-certs@1.109.igtf.1.117
     - phonebook-cli@1.0.0
@@ -57,6 +62,7 @@ spack:
     - py-numpy@1.23.4
     - py-pandas@1.5.1
     - py-pip@22.2.2
+    - py-pre-commit@2.20.0
     - py-pycairo@1.20.0
     - py-pyyaml@6.0
     - py-scipy@1.9.3
@@ -72,11 +78,4 @@ spack:
     - stow@2.3.1
     - tensorflow-lite@2.8.0 -xnnpack
     - xrootd@5.5.1 cxxstd=17 +python +scitokens-cpp
-  concretizer: 
-    unify: true
-  packages:
-    all:
-      compiler: [gcc]
-      variants:
-        +ipo build_type=Release
-  view: /usr/local
+  view: false

@@ -11,7 +11,8 @@ FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as builder
 ARG TARGETPLATFORM
 
 ## install some extra spack dependencies
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM} \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=${TARGETPLATFORM} \
     rm -f /etc/apt/apt.conf.d/docker-clean                              \
  && apt-get -yqq update                                                 \
  && apt-get -yqq install --no-install-recommends                        \
@@ -58,7 +59,7 @@ RUN declare -A arch=(                                                   \
 ## Setup spack buildcache mirrors, including an internal
 ## spack mirror using the docker build cache, and
 ## a backup mirror on the internal B010 network
-RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     export PATH=$PATH:$SPACK_ROOT/bin                                   \
  && spack mirror add docker /var/cache/spack-mirror                     \
  && spack buildcache update-index -d /var/cache/spack-mirror            \
@@ -67,7 +68,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
 ## Setup eic-spack buildcache mirrors (FIXME: leaks credentials into layer)
 ARG S3_ACCESS_KEY=""
 ARG S3_SECRET_KEY=""
-RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     export PATH=$PATH:$SPACK_ROOT/bin                                   \
  && if [ -n "${S3_ACCESS_KEY}" ] ; then                                 \
     spack mirror add --scope site                                       \
@@ -97,86 +98,41 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
  && spack repo add --scope site "${EICSPACK_ROOT}"
 
 ## Setup our custom environment
-COPY --from=spack spack.yaml /opt/spack-environment/
-RUN rm -r /usr/local                                                    \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate /opt/spack-environment/                          \
- && spack concretize --fresh
-
-
-## Now execute the main build (or fetch from cache if possible)
-## note, no-check-signature is needed to allow the quicker signature-less
-## packages from the internal (docker) buildcache
-##
-## Optional, nuke the buildcache after install, before (re)caching
-## This is useful when going to completely different containers,
-## or intermittently to keep the buildcache step from taking too much time
-##
-## Update the local build cache if needed. Consists of 3 steps:
-## 1. Remove the eic-spack buildcache on S3
-## 2. Get a list of all packages, and compare with what is already on
-##    the buildcache (using package hash)
-## 3. Add packages that need to be added to buildcache if any
+COPY --from=spack spack-environment/ /opt/spack-environment/
+ARG ENV=dev
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate .                                                \
- && status=0                                                            \
- && spack install -j64 --no-check-signature                             \
-    || spack install -j64 --no-check-signature                          \
-    || spack install -j64 --no-check-signature --show-log-on-error      \
-    || status=$?                                                        \
- && spack mirror rm --scope site eic-spack                              \
- && [ -z "${CACHE_NUKE}" ]                                              \
-    || rm -rf /var/cache/spack-mirror/build_cache/*                     \
- && mkdir -p /var/cache/spack-mirror/build_cache                        \
- && spack buildcache update-index -d /var/cache/spack-mirror            \
- && spack buildcache list --allarch --very-long                         \
-    | sed '/^$/d;/^--/d;s/@.\+//;s/\([a-z0-9]*\) \(.*\)/\2\/\1/'        \
-    | sort > buildcache.local.txt                                       \
- && spack find --format {name}/{hash} | sort                            \
-    | comm -23 - buildcache.local.txt                                   \
-    | xargs --no-run-if-empty                                           \
-      spack buildcache create --allow-root --only package --unsigned    \
-                              --directory /var/cache/spack-mirror       \
-                              --rebuild-index                           \
- && spack clean -a                                                      \
- && exit $status
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
+ && make -C /opt/spack-environment SPACK_ENV=${ENV}                     \
+    BUILDCACHE_DIR=/var/cache/spack-mirror
+# FIXME disabled S3 buildcache until multipart upload fixed
+#                              \
+#    BUILDCACHE_MIRROR=eic-spack
 
-## Update the S3 build cache (without local cache mount)
-ARG S3RW_ACCESS_KEY=""
-ARG S3RW_SECRET_KEY=""
-RUN cd /opt/spack-environment                                           \
+## Create view at /usr/local
+RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+    cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate .                                                \
- && if [ -n "${S3RW_ACCESS_KEY}" ] ; then                               \
-    spack mirror add --scope site                                       \
-      --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
-      --s3-access-key-id "${S3RW_ACCESS_KEY}"                           \
-      --s3-access-key-secret "${S3RW_SECRET_KEY}"                       \
-      eic-spack s3://eictest/EPIC/spack                                 \
- && spack mirror list                                                   \
- && spack buildcache list --allarch --very-long                         \
-    | sed '/^$/d;/^--/d;s/@.\+//;s/\([a-z0-9]*\) \(.*\)/\2\/\1/'        \
-    | sort > buildcache.eic-spack.txt                                   \
- && spack find --format {name}/{hash} | sort                            \
-    | comm -23 - buildcache.eic-spack.txt                               \
-    | xargs --no-run-if-empty                                           \
-      spack buildcache create --allow-root --only package --unsigned    \
-                              --mirror-name eic-spack                   \
- && spack buildcache update-index --mirror-url eic-spack                \
- && spack mirror rm --scope site eic-spack                              \
-    ; fi                                                                \
- && spack mirror list
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
+ && rm -r /usr/local                                                    \
+ && spack env view enable /usr/local
+
+## Optional, nuke the buildcache after install, before (re)caching
+## This is useful when going to completely different containers,
+## or intermittently to keep the buildcache step from taking too much time
+RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+    [ -z "${CACHE_NUKE}" ]                                              \
+    || rm -rf /var/cache/spack-mirror/build_cache/*
 
 ## Extra post-spack steps:
 ##   - Python packages
 COPY requirements.txt /usr/local/etc/requirements.txt
-RUN --mount=type=cache,target=/var/cache/pip                            \
+RUN --mount=type=cache,target=/var/cache/pip,sharing=locked,id=${TARGETPLATFORM} \
     echo "Installing additional python packages"                        \
  && cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate .                                                \
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
  && python -m pip install                                               \
     --trusted-host pypi.org                                             \
     --trusted-host files.pythonhosted.org                               \
@@ -185,25 +141,15 @@ RUN --mount=type=cache,target=/var/cache/pip                            \
     --no-warn-script-location
     # ^ Supress not on PATH Warnings
 
-## Including some small fixes:
-##   - Somehow PODIO env isn't automatically set, 
-##   - and Gaudi likes BINARY_TAG to be set
+## Including some small fixes
 RUN cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && echo -n ""                                                          \
  && echo "Grabbing environment info"                                    \
- && spack env activate --sh -d .                                        \
+ && spack env activate --sh --dir /opt/spack-environment/${ENV}         \
         | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
         | sed '/MANPATH/ s/;$/:;/'                                      \
-    > /etc/profile.d/z10_spack_environment.sh                           \
- && cd /opt/spack-environment && spack env activate .                   \
- && echo -n ""                                                          \
- && echo "Add extra environment variables for Jug, Podio and Gaudi"     \
- && echo "export PODIO=$(spack location -i podio);"                     \
-        >> /etc/profile.d/z10_spack_environment.sh                      \
- && echo -n ""                                                          \
- && echo "Executing cmake patch for dd4hep 16.1"                        \                
- && sed -i "s/FIND_PACKAGE(Python/#&/" /usr/local/cmake/DD4hepBuild.cmake
+    > /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
@@ -219,7 +165,7 @@ FROM builder as staging
 # Garbage collect in environment
 RUN cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate .                                                \
+ && spack env activate --dir /opt/spack-environment/${ENV}              \
  && spack gc -y
 
 # Garbage collect in git

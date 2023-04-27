@@ -3,13 +3,13 @@ image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 variables:
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
-  JUGGLER_VERSION: "v9.3.0"
-  EICRECON_VERSION: "v0.6.2"
+  JUGGLER_VERSION: "v9.4.0"
+  EICRECON_VERSION: "v1.0.0"
 
   ## Spack organization and repository, e.g. spack/spack
   SPACK_ORGREPO: "spack/spack"
   ## Spack github version, e.g. v0.18.1 or commit hash
-  SPACK_VERSION: "v0.19.1"
+  SPACK_VERSION: "v0.19.2"
   ## Space-separated list of spack cherry-picks
   SPACK_CHERRYPICKS: >
     b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e
@@ -21,7 +21,11 @@ variables:
     2f057d729da61e8c12828df44377f0a93fed820f
     39a1f1462b0abf12dfaccd33f84142c852c4b56e
     4b12d015e1c316b4837e02ae37e2c69a8a647180
+    f83d47442dade012b1019840181b8dd459fd8edd
     7f1467e795b1cab8b4855e019910c509896ea0e1
+    ebc24b7063ba9a8eb43b4424aac5143cf958d76f
+    a47ebe57841f13239e881ed69eab4949b1d98c32
+    ab999d5af90f1bff644b5134bb370b2716e1bcf0
     62da76cb5dca4d52c43bee06230cca6a5882f05d
     cc2ae9f270befa554ba8b09c68e89bb8248ea650
     ae98d2ba2fcefa9d027e2d6ccc6e7558a32e7228
@@ -32,6 +36,10 @@ variables:
     65bd9b9ac556480b4a9dcc60f7539492af195d4a
     1a32cea11495cbdd699fea4fe622babab83e630d
     6edc4807369a05786e36f63b5d959588ae94a1fa
+    af74680405c931dab16c6674f9b97a32bf3f1122
+    0a952f8b7bf6f70009dd5821bccbaf9170c73d07
+    f050b1cf7835fd31992b020e1061c52294ff7330
+    a419ffcf501134faed24253ccc83e6c71f9659f9
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## [hash]: [description]
   ## b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e: geant4: version bumps for Geant4 11.1.0
@@ -43,7 +51,11 @@ variables:
   ## 2f057d729da61e8c12828df44377f0a93fed820f: py-scipy: add v1.9
   ## 39a1f1462b0abf12dfaccd33f84142c852c4b56e: SIP build system: fix "python not defined in builder"
   ## 4b12d015e1c316b4837e02ae37e2c69a8a647180: py-jinja2-cli: new package
+  ## f83d47442dade012b1019840181b8dd459fd8edd: dd4hep: depends_on root +x +opengl when +utilityapps
   ## 7f1467e795b1cab8b4855e019910c509896ea0e1: dd4hep: new version 1.24, depends_on podio@0.16:
+  ## ebc24b7063ba9a8eb43b4424aac5143cf958d76f: dd4hep: extend conflict on CMake
+  ## a47ebe57841f13239e881ed69eab4949b1d98c32: dd4hep: new versions 1.25, 1.25.1
+  ## ab999d5af90f1bff644b5134bb370b2716e1bcf0: dd4hep: depends_on root +webgui when +ddeve ^root @6.28:
   ## 62da76cb5dca4d52c43bee06230cca6a5882f05d: directives: depends_on should not admit anonymous specs
   ## cc2ae9f270befa554ba8b09c68e89bb8248ea650: Add a "maintainer" directive
   ## ae98d2ba2fcefa9d027e2d6ccc6e7558a32e7228: Support packages for using scitokens on OSG
@@ -54,6 +66,10 @@ variables:
   ## 65bd9b9ac556480b4a9dcc60f7539492af195d4a: podio, edm4hep: add v0.7.2 and v0.16.1 respectively
   ## 1a32cea11495cbdd699fea4fe622babab83e630d: podio: add v0.16.2
   ## 6edc4807369a05786e36f63b5d959588ae94a1fa: podio: Add version 0.16.3
+  ## af74680405c931dab16c6674f9b97a32bf3f1122: depfile: improve tab completion
+  ## 0a952f8b7bf6f70009dd5821bccbaf9170c73d07: docs updates for spack env depfile
+  ## f050b1cf7835fd31992b020e1061c52294ff7330: depfile: variable with all identifiers
+  ## a419ffcf501134faed24253ccc83e6c71f9659f9: osg-ca-certs: igtf link should point to version, not 'current'
 
   ## EIC spack organization and repository, e.g. eic/eic-spack
   EICSPACK_ORGREPO: "eic/eic-spack"
@@ -191,9 +207,18 @@ version:
 .build:
   rules:
     - when: on_success
-  resource_group: ${CI_COMMIT_REF_NAME}
+  resource_group: ${CI_COMMIT_REF_NAME}-${VERSION}
   tags:
     - docker-new
+  before_script:
+    - !reference [default, before_script]
+    - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
+      for arch in aarch64 ; do
+        if ! grep --quiet enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
+          docker run --rm --privileged multiarch/qemu-user-static --persistent yes ;
+        fi ;
+      done
+    - docker buildx create --name builder --driver docker-container --bootstrap --use
 
 ## Images:
 ## debian_testing_base --> jug_dev  --> jug_xl
@@ -225,8 +250,6 @@ base:
   needs:
     - version
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
     - docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
@@ -258,8 +281,6 @@ jug_dev:default:
     - version
     - base
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
     ## Which targets to build
     - TARGETS="export"
     - |
@@ -321,8 +342,6 @@ jug_xl:default:
     - version
     - jug_dev:default
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_PIPELINE_ID} --driver docker-container --bootstrap --use
     - docker buildx build --builder builder-${CI_PIPELINE_ID} --push
                    -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
@@ -361,8 +380,6 @@ jug_xl:nightly:
     - version
     - jug_dev:default
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --name builder-${CI_PIPELINE_ID}  --driver docker-container --bootstrap --use
     - |
       PUSH_NIGHTLY_WITH_DATE=""
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
@@ -374,10 +391,10 @@ jug_xl:nightly:
                      ${CI_PUSH:+-t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
-                   }
-                   ${PUSH_NIGHTLY_WITH_DATE:+
-                     ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                     ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                     ${PUSH_NIGHTLY_WITH_DATE:+
+                       ${DH_PUSH:+-t ${DH_REGISTRY}/${DH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                       ${GH_PUSH:+-t ${GH_REGISTRY}/${GH_REGISTRY_USER}/${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                     }
                    }
                    -f containers/jug/xl.Dockerfile
                    --platform ${PLATFORM}
@@ -406,7 +423,6 @@ jug_xl:feature:
         DETECTOR_BRANCH:
           - main
   script:
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx build --load -t ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                    -f containers/jug/feature.Dockerfile
                    --build-arg INTERNAL_TAG=${NIGHTLY_TAG}
@@ -426,7 +442,6 @@ jug_xl:feature:
 .singularity:
   stage: deploy
   interruptible: true
-  resource_group: ${CI_COMMIT_REF_NAME}
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
@@ -470,25 +485,6 @@ jug_xl:singularity:nightly:
     - mkdir build
     - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
 
-## trigger juggler rebuild on nightly schedule to ensure both images remain in sync
-juggler:main:
-  stage: deploy
-  rules:
-    - if: '$NIGHTLY != "0" && $CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - when: never
-  needs:
-    - version
-    - jug_xl:nightly
-  variables:
-    TRIGGERED_BY_NIGHTLY: 1
-    JUGGLER_VERSION: main
-    DETECTOR_VERSION: master
-    IP6_VERSION: master
-  trigger:
-    project: EIC/juggler
-  allow_failure: true
-
 benchmarks:reconstruction:
   stage: benchmarks
   rules:
@@ -503,7 +499,6 @@ benchmarks:reconstruction:
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
     strategy: depend
-  ## for now allow failure, as we need to update those pipelines
   allow_failure: false
   
 benchmarks:physics:
@@ -514,7 +509,7 @@ benchmarks:physics:
     - version
     - jug_xl:default
   variables:
-    RECO: "juggler"
+    RECO: "eicrecon"
     BENCHMARKS_TAG: "$INTERNAL_TAG"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
