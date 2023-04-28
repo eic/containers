@@ -83,7 +83,9 @@ packages:
     version: [1.0.6]
   jana2:
     version: [2.1.0]
-    variants: -ipo +podio +root +zmq
+    variants: +podio +root +zmq
+    require:
+    - -ipo
   madx:
     version: [5.08.01]
   mesa:
@@ -159,7 +161,9 @@ packages:
     variants: +opengl
   root:
     version: [6.26.10]
-    variants: cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl 
+    variants: cxxstd=17 +fftw +fortran +gdml +http +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl
+    require:
+    - -ipo
   spdlog:
     version: [1.10.0]
     variants: +fmt_external
