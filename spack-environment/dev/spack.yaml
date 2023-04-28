@@ -3,7 +3,7 @@ spack:
   - ../concretizer.yaml
   - ../packages.yaml
   specs:
-    - acts@21.1.0 +dd4hep +identification +json +tgeo +examples +fatras +geant4 +python build_type=RelWithDebInfo
+    - acts@21.1.0 +dd4hep +identification +json +tgeo +examples +fatras +geant4 +python build_type=Debug
     - actsvg@0.4.26 +examples
     - acts-dd4hep@1.0.1
     - afterburner@0.1.2 +root +zlib
