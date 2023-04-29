@@ -104,7 +104,7 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 ## Setup our custom environment
 COPY --from=spack spack-environment/ /opt/spack-environment/
 ARG ENV=dev
-RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
@@ -116,7 +116,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
 #    BUILDCACHE_MIRROR=eic-spack
 
 ## Create view at /usr/local
-RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
