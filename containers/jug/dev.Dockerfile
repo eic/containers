@@ -110,10 +110,8 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
     SPACK_ENV=${ENV}                                                    \
-    BUILDCACHE_DIR=/var/cache/spack-mirror
-# FIXME disabled S3 buildcache until multipart upload fixed
-#                              \
-#    BUILDCACHE_MIRROR=eic-spack
+    BUILDCACHE_DIR=/var/cache/spack-mirror                              \
+    BUILDCACHE_MIRROR=eic-spack
 
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
