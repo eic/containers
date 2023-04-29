@@ -69,7 +69,9 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
  && spack buildcache update-index -d /var/cache/spack-mirror            \
  && spack mirror list
 
-## Setup eic-spack buildcache mirrors (FIXME: leaks credentials into layer)
+## Setup eic-spack buildcache mirrors
+## - this always adds the read-only mirror to the container
+## - the write-enabled mirror is provided later as a secret mount
 ARG S3_ACCESS_KEY=""
 ARG S3_SECRET_KEY=""
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
@@ -101,10 +103,11 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
     fi                                                                  \
  && spack repo add --scope site "${EICSPACK_ROOT}"
 
-## Setup our custom environment
+## Setup our custom environment (secret mount for write-enabled mirror)
 COPY --from=spack spack-environment/ /opt/spack-environment/
 ARG ENV=dev
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+    --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \

@@ -294,6 +294,8 @@ jug_dev:default:
         echo "FORCE_NOCACHE set"
         export CACHE_FLAG="--no-cache"
       fi
+    ## Setup mirrors.yaml with rw mirror secrets
+    - cat mirrors.yaml.in | envsubst > mirrors.yaml
     ## Build targets
     - for target in ${TARGETS} ; do
         if [ ! ${target} = export ] ; then
@@ -319,11 +321,10 @@ jug_dev:default:
                    --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
                    --build-arg S3_ACCESS_KEY="${S3_ACCESS_KEY}"
                    --build-arg S3_SECRET_KEY="${S3_SECRET_KEY}"
-                   --build-arg S3RW_ACCESS_KEY="${S3RW_ACCESS_KEY}"
-                   --build-arg S3RW_SECRET_KEY="${S3RW_SECRET_KEY}"
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    --build-context spack=.
+                   --secret id=mirrors,src=mirrors.yaml
                    containers/jug
       ; done
 
