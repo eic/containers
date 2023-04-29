@@ -53,7 +53,7 @@ RUN declare -A arch=(                                                   \
  && spack config --scope site add "packages:all:require:arch=${arch}"   \
  && spack config blame packages                                         \
  && spack config --scope site add "config:suppress_gpg_warnings:true"   \
- && spack config --scope site add "config:build_jobs:${jobs}"           \
+ && spack config --scope site add "config:build_jobs:${jobs}0"          \
  && spack config --scope site add "config:db_lock_timeout:120"          \
  && spack config --scope site add "config:install_tree:root:/opt/software" \
  && spack config blame config                                           \
