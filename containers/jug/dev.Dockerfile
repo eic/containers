@@ -24,7 +24,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM}
  && rm -rf /var/lib/apt/lists/*
 
 ## Setup spack
-## parts:
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="develop"
