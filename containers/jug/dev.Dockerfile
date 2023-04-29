@@ -107,15 +107,16 @@ ARG ENV=dev
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
+ && spack env activate --dir ${SPACK_ENV}                               \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-    SPACK_ENV=${ENV}                                                    \
-    BUILDCACHE_DIR=/var/cache/spack-mirror                              \
+    SPACK_ENV=${SPACK_ENV}                                              \
+    BUILDCACHE_DIR=/var/cache/spack-mirror
     BUILDCACHE_MIRROR=eic-spack
 
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
-    spack env activate --dir /opt/spack-environment/${ENV}              \
+    source $SPACK_ROOT/share/spack/setup-env.sh                         \
+ && spack env activate --dir ${SPACK_ENV}                               \
  && rm -r /usr/local                                                    \
  && spack env view enable /usr/local
 
@@ -131,7 +132,8 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
 COPY requirements.txt /usr/local/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip,sharing=locked,id=${TARGETPLATFORM} \
     echo "Installing additional python packages"                        \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
+ && source $SPACK_ROOT/share/spack/setup-env.sh                         \
+ && spack env activate --dir ${SPACK_ENV}                               \
  && python -m pip install                                               \
     --trusted-host pypi.org                                             \
     --trusted-host files.pythonhosted.org                               \
@@ -142,7 +144,7 @@ RUN --mount=type=cache,target=/var/cache/pip,sharing=locked,id=${TARGETPLATFORM}
 
 ## Including some small fixes
 RUN echo "Grabbing environment info"                                    \
- && spack env activate --sh --dir /opt/spack-environment/${ENV}         \
+ && spack env activate --sh --dir ${SPACK_ENV}                          \
     > /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
@@ -157,16 +159,12 @@ WORKDIR /
 FROM builder as staging
 
 # Garbage collect in environment
-RUN cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
- && spack gc -y
+RUN spack -e ${SPACK_ENV} gc -y
 
 # Garbage collect in git
-RUN cd $SPACK_ROOT                                                      \
- && du -sh $SPACK_ROOT                                                  \
- && git fetch --depth=1                                                 \
- && git gc --prune=all --aggressive                                     \
+RUN du -sh $SPACK_ROOT                                                  \
+ && git -C $SPACK_ROOT fetch --depth=1                                  \
+ && git -C $SPACK_ROOT gc --prune=all --aggressive                      \
  && du -sh $SPACK_ROOT
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
