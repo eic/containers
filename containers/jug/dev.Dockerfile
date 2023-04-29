@@ -44,6 +44,7 @@ RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
 
 SHELL ["docker-shell"]
 
+ARG jobs=64
 RUN declare -A arch=(                                                   \
       ["linux/amd64"]="x86_64"                                          \
       ["linux/arm64"]="aarch64"                                         \
@@ -52,9 +53,11 @@ RUN declare -A arch=(                                                   \
  && spack config --scope site add "packages:all:require:arch=${arch}"   \
  && spack config blame packages                                         \
  && spack config --scope site add "config:suppress_gpg_warnings:true"   \
- && spack config --scope site add "config:build_jobs:64"                \
+ && spack config --scope site add "config:build_jobs:${jobs}"           \
  && spack config --scope site add "config:install_tree:root:/opt/software" \
- && spack config blame config
+ && spack config blame config                                           \
+ && spack compiler find --scope site                                    \
+ && spack config blame compilers
 
 ## Setup spack buildcache mirrors, including an internal
 ## spack mirror using the docker build cache, and
@@ -104,7 +107,8 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
- && make -j 8 -C /opt/spack-environment SPACK_ENV=${ENV}                \
+ && make --jobs ${jobs} --directory /opt/spack-environment              \
+    SPACK_ENV=${ENV}                                                    \
     BUILDCACHE_DIR=/var/cache/spack-mirror
 # FIXME disabled S3 buildcache until multipart upload fixed
 #                              \
