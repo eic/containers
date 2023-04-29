@@ -101,6 +101,7 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 ## Setup our custom environment (secret mount for write-enabled mirror)
 COPY --from=spack spack-environment/ /opt/spack-environment/
 ARG ENV=dev
+ENV SPACK_ENV=/opt/spack-environment/${ENV}
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     source $SPACK_ROOT/share/spack/setup-env.sh                         \
