@@ -108,7 +108,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
  && spack env activate --dir ${SPACK_ENV}                               \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
     SPACK_ENV=${SPACK_ENV}                                              \
-    BUILDCACHE_DIR=/var/cache/spack-mirror
+    BUILDCACHE_DIR=/var/cache/spack-mirror                              \
     BUILDCACHE_MIRROR=eic-spack
 
 ## Create view at /usr/local
