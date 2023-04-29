@@ -60,9 +60,7 @@ RUN declare -A arch=(                                                   \
  && spack compiler find --scope site                                    \
  && spack config blame compilers
 
-## Setup spack buildcache mirrors, including an internal
-## spack mirror using the docker build cache, and
-## a backup mirror on the internal B010 network
+## Setup spack buildcache mirrors
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     spack mirror add docker /var/cache/spack-mirror                     \
  && spack buildcache update-index -d /var/cache/spack-mirror            \
