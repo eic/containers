@@ -1,0 +1,18 @@
+mirrors:
+  eic-spack:
+    fetch:
+      url: s3://eictest/EPIC/spack
+      access_pair:
+      - ${S3RW_ACCESS_KEY}
+      - ${S3RW_SECRET_KEY}
+      access_token: null
+      profile: null
+      endpoint_url: https://eics3.sdcc.bnl.gov:9000
+    push:
+      url: s3://eictest/EPIC/spack
+      access_pair:
+      - ${S3RW_ACCESS_KEY}
+      - ${S3RW_SECRET_KEY}
+      access_token: null
+      profile: null
+      endpoint_url: https://eics3.sdcc.bnl.gov:9000
