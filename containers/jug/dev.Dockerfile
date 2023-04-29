@@ -148,11 +148,8 @@ RUN --mount=type=cache,target=/var/cache/pip,sharing=locked,id=${TARGETPLATFORM}
 ## Including some small fixes
 RUN cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && echo -n ""                                                          \
  && echo "Grabbing environment info"                                    \
  && spack env activate --sh --dir /opt/spack-environment/${ENV}         \
-        | sed "s?LD_LIBRARY_PATH=?&/lib/x86_64-linux-gnu:?"             \
-        | sed '/MANPATH/ s/;$/:;/'                                      \
     > /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
