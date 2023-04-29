@@ -64,8 +64,7 @@ RUN declare -A arch=(                                                   \
 ## spack mirror using the docker build cache, and
 ## a backup mirror on the internal B010 network
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    export PATH=$PATH:$SPACK_ROOT/bin                                   \
- && spack mirror add docker /var/cache/spack-mirror                     \
+    spack mirror add docker /var/cache/spack-mirror                     \
  && spack buildcache update-index -d /var/cache/spack-mirror            \
  && spack mirror list
 
@@ -75,8 +74,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ARG S3_ACCESS_KEY=""
 ARG S3_SECRET_KEY=""
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    export PATH=$PATH:$SPACK_ROOT/bin                                   \
- && if [ -n "${S3_ACCESS_KEY}" ] ; then                                 \
+    if [ -n "${S3_ACCESS_KEY}" ] ; then                                 \
     spack mirror add --scope site                                       \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
       --s3-access-key-id "${S3_ACCESS_KEY}"                             \
@@ -108,8 +106,7 @@ COPY --from=spack spack-environment/ /opt/spack-environment/
 ARG ENV=dev
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
-    cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
+    source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
     SPACK_ENV=${ENV}                                                    \
@@ -118,9 +115,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
 
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
-    cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
+    spack env activate --dir /opt/spack-environment/${ENV}              \
  && rm -r /usr/local                                                    \
  && spack env view enable /usr/local
 
@@ -136,8 +131,6 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
 COPY requirements.txt /usr/local/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip,sharing=locked,id=${TARGETPLATFORM} \
     echo "Installing additional python packages"                        \
- && cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir /opt/spack-environment/${ENV}              \
  && python -m pip install                                               \
     --trusted-host pypi.org                                             \
@@ -148,9 +141,7 @@ RUN --mount=type=cache,target=/var/cache/pip,sharing=locked,id=${TARGETPLATFORM}
     # ^ Supress not on PATH Warnings
 
 ## Including some small fixes
-RUN cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && echo "Grabbing environment info"                                    \
+RUN echo "Grabbing environment info"                                    \
  && spack env activate --sh --dir /opt/spack-environment/${ENV}         \
     > /etc/profile.d/z10_spack_environment.sh
 
