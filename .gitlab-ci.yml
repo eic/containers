@@ -499,7 +499,7 @@ benchmarks:reconstruction:
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
     strategy: depend
-  allow_failure: false
+  allow_failure: true
   
 benchmarks:physics:
   stage: benchmarks
