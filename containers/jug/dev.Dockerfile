@@ -36,11 +36,11 @@ RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
       git -C ${SPACK_ROOT} cherry-pick -n ${SPACK_CHERRYPICKS} ;        \
     fi                                                                  \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
-          /usr/sbin/docker-shell                                        \
+          /usr/bin/docker-shell                                         \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
-          /usr/sbin/interactive-shell                                   \
+          /usr/bin/interactive-shell                                    \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
-          /usr/sbin/spack-env
+          /usr/bin/spack-env
 
 SHELL ["docker-shell"]
 
