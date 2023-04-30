@@ -44,12 +44,12 @@ RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
 SHELL ["docker-shell"]
 
 ARG jobs=64
-RUN declare -A arch=(                                                   \
+RUN declare -A target=(                                                 \
       ["linux/amd64"]="x86_64"                                          \
       ["linux/arm64"]="aarch64"                                         \
     )                                                                   \
- && arch=${arch[${TARGETPLATFORM}]}                                     \
- && spack config --scope site add "packages:all:require:arch=${arch}"   \
+ && target=${target[${TARGETPLATFORM}]}                                 \
+ && spack config --scope site add "packages:all:require:[target=${target}]" \
  && spack config blame packages                                         \
  && spack config --scope site add "config:suppress_gpg_warnings:true"   \
  && spack config --scope site add "config:build_jobs:${jobs}"           \
