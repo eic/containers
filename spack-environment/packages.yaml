@@ -78,7 +78,8 @@ packages:
   imagemagick:
     version: [7.0.8-7]
   intel-tbb:
-    version: [2020.3]
+    require:
+    - '@2020.3'
   irt:
     version: [1.0.6]
   jana2:
