@@ -24,7 +24,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM}
  && rm -rf /var/lib/apt/lists/*
 
 ## Setup spack
-## parts:
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="develop"
@@ -36,11 +35,11 @@ RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
       git -C ${SPACK_ROOT} cherry-pick -n ${SPACK_CHERRYPICKS} ;        \
     fi                                                                  \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
-          /usr/sbin/docker-shell                                        \
+          /usr/bin/docker-shell                                         \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
-          /usr/sbin/interactive-shell                                   \
+          /usr/bin/interactive-shell                                    \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
-          /usr/sbin/spack-env
+          /usr/bin/spack-env
 
 SHELL ["docker-shell"]
 
@@ -60,12 +59,9 @@ RUN declare -A arch=(                                                   \
  && spack compiler find --scope site                                    \
  && spack config blame compilers
 
-## Setup spack buildcache mirrors, including an internal
-## spack mirror using the docker build cache, and
-## a backup mirror on the internal B010 network
+## Setup spack buildcache mirrors
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    export PATH=$PATH:$SPACK_ROOT/bin                                   \
- && spack mirror add docker /var/cache/spack-mirror                     \
+    spack mirror add docker /var/cache/spack-mirror                     \
  && spack buildcache update-index -d /var/cache/spack-mirror            \
  && spack mirror list
 
@@ -75,8 +71,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ARG S3_ACCESS_KEY=""
 ARG S3_SECRET_KEY=""
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    export PATH=$PATH:$SPACK_ROOT/bin                                   \
- && if [ -n "${S3_ACCESS_KEY}" ] ; then                                 \
+    if [ -n "${S3_ACCESS_KEY}" ] ; then                                 \
     spack mirror add --scope site                                       \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
       --s3-access-key-id "${S3_ACCESS_KEY}"                             \
@@ -106,21 +101,20 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 ## Setup our custom environment (secret mount for write-enabled mirror)
 COPY --from=spack spack-environment/ /opt/spack-environment/
 ARG ENV=dev
+ENV SPACK_ENV=/opt/spack-environment/${ENV}
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
-    cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
+    source $SPACK_ROOT/share/spack/setup-env.sh                         \
+ && spack env activate --dir ${SPACK_ENV}                               \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-    SPACK_ENV=${ENV}                                                    \
+    SPACK_ENV=${SPACK_ENV}                                              \
     BUILDCACHE_DIR=/var/cache/spack-mirror                              \
     BUILDCACHE_MIRROR=eic-spack
 
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
-    cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
+    source $SPACK_ROOT/share/spack/setup-env.sh                         \
+ && spack env activate --dir ${SPACK_ENV}                               \
  && rm -r /usr/local                                                    \
  && spack env view enable /usr/local
 
@@ -136,9 +130,8 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
 COPY requirements.txt /usr/local/etc/requirements.txt
 RUN --mount=type=cache,target=/var/cache/pip,sharing=locked,id=${TARGETPLATFORM} \
     echo "Installing additional python packages"                        \
- && cd /opt/spack-environment                                           \
  && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
+ && spack env activate --dir ${SPACK_ENV}                               \
  && python -m pip install                                               \
     --trusted-host pypi.org                                             \
     --trusted-host files.pythonhosted.org                               \
@@ -148,10 +141,8 @@ RUN --mount=type=cache,target=/var/cache/pip,sharing=locked,id=${TARGETPLATFORM}
     # ^ Supress not on PATH Warnings
 
 ## Including some small fixes
-RUN cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && echo "Grabbing environment info"                                    \
- && spack env activate --sh --dir /opt/spack-environment/${ENV}         \
+RUN echo "Grabbing environment info"                                    \
+ && spack env activate --sh --dir ${SPACK_ENV}                          \
     > /etc/profile.d/z10_spack_environment.sh
 
 ## make sure we have the entrypoints setup correctly
@@ -166,16 +157,12 @@ WORKDIR /
 FROM builder as staging
 
 # Garbage collect in environment
-RUN cd /opt/spack-environment                                           \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate --dir /opt/spack-environment/${ENV}              \
- && spack gc -y
+RUN spack -e ${SPACK_ENV} gc -y
 
 # Garbage collect in git
-RUN cd $SPACK_ROOT                                                      \
- && du -sh $SPACK_ROOT                                                  \
- && git fetch --depth=1                                                 \
- && git gc --prune=all --aggressive                                     \
+RUN du -sh $SPACK_ROOT                                                  \
+ && git -C $SPACK_ROOT fetch --depth=1                                  \
+ && git -C $SPACK_ROOT gc --prune=all --aggressive                      \
  && du -sh $SPACK_ROOT
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
