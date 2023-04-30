@@ -13,6 +13,7 @@ ARG TARGETPLATFORM
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
 ARG JUGGLER_VERSION="main"
 ARG EICRECON_VERSION="main"
+ARG jobs=8
 
 ## version will automatically bust cache for nightly, as it includes
 ## the date
@@ -34,7 +35,7 @@ RUN --mount=type=cache,target=/ccache/,sharing=locked,id=${TARGETPLATFORM}      
           -DCMAKE_INSTALL_PREFIX=/usr/local                                     \
           -DCMAKE_BUILD_TYPE=Release                                            \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
- && cmake --build build -j12 -- install                                         \
+ && cmake --build build -j${jobs} -- install                                    \
  && pushd juggler                                                               \
  && echo " - juggler: ${JUGGLER_VERSION}-$(git rev-parse HEAD)"                 \
           >> /etc/jug_info                                                      \
@@ -54,7 +55,7 @@ RUN --mount=type=cache,target=/ccache/,sharing=locked,id=${TARGETPLATFORM}      
           -DCMAKE_INSTALL_PREFIX=/usr/local                                     \
           -DCMAKE_BUILD_TYPE=Release                                            \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
- && cmake --build build -j12 -- install                                         \
+ && cmake --build build -j${jobs} -- install                                    \
  && pushd eicrecon                                                              \
  && echo " - eicrecon: ${EICRECON_VERSION}-$(git rev-parse HEAD)"               \
           >> /etc/jug_info                                                      \
