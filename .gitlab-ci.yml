@@ -268,11 +268,11 @@ base:
 jug_dev:default:
   parallel:
     matrix:
-      - BASE_IMAGE: debian_testing_base
-        BUILD_IMAGE_PREFIX: jug_
-        ENVIRONMENT: 
+      - ENVIRONMENT:
         - dev
         - prod
+        BASE_IMAGE: debian_testing_base
+        BUILD_IMAGE_PREFIX: jug_
         PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE_PREFIX: jug_
