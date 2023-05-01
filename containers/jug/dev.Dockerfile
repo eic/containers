@@ -45,7 +45,7 @@ SHELL ["docker-shell"]
 
 ARG jobs=64
 RUN declare -A target=(                                                 \
-      ["linux/amd64"]="x86_64_v3"                                       \
+      ["linux/amd64"]="x86_64_v2"                                       \
       ["linux/arm64"]="aarch64"                                         \
     )                                                                   \
  && target=${target[${TARGETPLATFORM}]}                                 \
