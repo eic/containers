@@ -43,3 +43,5 @@ detectors:
       version: 23.03.0
     23.03.0-alt-img:
       version: alternative-geometries-img-ecal
+    23.05.0:
+      version: 23.05.0
