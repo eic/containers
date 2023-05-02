@@ -55,6 +55,7 @@ RUN declare -A target=(                                                 \
  && spack config --scope site add "config:build_jobs:${jobs}"           \
  && spack config --scope site add "config:db_lock_timeout:${jobs}0"     \
  && spack config --scope site add "config:install_tree:root:/opt/software" \
+ && spack config --scope site add "config:source_cache:/var/cache/spack" \
  && spack config blame config                                           \
  && spack compiler find --scope site                                    \
  && spack config blame compilers
