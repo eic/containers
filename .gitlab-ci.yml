@@ -9,6 +9,7 @@ variables:
   ## Spack organization and repository, e.g. spack/spack
   SPACK_ORGREPO: "spack/spack"
   ## Spack github version, e.g. v0.18.1 or commit hash
+  ## note: nightly builds will use e.g. releases/v0.19
   SPACK_VERSION: "v0.19.2"
   ## Space-separated list of spack cherry-picks
   SPACK_CHERRYPICKS: >
@@ -75,8 +76,9 @@ variables:
 
   ## EIC spack organization and repository, e.g. eic/eic-spack
   EICSPACK_ORGREPO: "eic/eic-spack"
-  ## EIC spack github version, e.g. v0.18 branch, v0.18.1 tag, or commit hash
-  EICSPACK_VERSION: "v0.19"
+  ## EIC spack github version, e.g. v0.19.7 or commit hash
+  ## note: nightly builds will use e.g. releases/v0.19
+  EICSPACK_VERSION: "v0.19.0"
   ## Space-separated list of eic-spack cherry-picks
   EICSPACK_CHERRYPICKS: "f892e2b5d7ea9d1f2e43741499e899ce21dd3d5a"
   ## Ref: https://github.com/eic/eic-spack/commit/[hash]
