@@ -26,7 +26,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM}
 ## Setup spack
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
-ARG SPACK_VERSION="develop"
+ARG SPACK_VERSION="releases/v0.19"
 ARG SPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
 RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
