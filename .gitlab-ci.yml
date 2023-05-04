@@ -370,7 +370,7 @@ jug_xl:
   script:
     - |
       if [ "${BUILD_TYPE}" == "nightly" ] ; then
-        BUILD_NIGHTLY=1
+        IF_BUILD_NIGHTLY=1
       fi
     - |
       if [ "${BUILD_TYPE}" == "default" ] ; then
