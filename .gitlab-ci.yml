@@ -406,9 +406,9 @@ jug_xl:feature:
     - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                    ${NIGHTLY:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}}
+                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${VERSION}-${DETECTOR}-${DETECTOR_BRANCH}}
+                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${VERSION}-${DETECTOR}-${DETECTOR_BRANCH}}
+                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${VERSION}-${DETECTOR}-${DETECTOR_BRANCH}}
                    }
                    --file containers/jug/feature.Dockerfile
                    --platform ${PLATFORM}
