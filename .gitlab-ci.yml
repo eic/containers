@@ -119,6 +119,7 @@ variables:
 
   ## is this nightly or not?
   NIGHTLY:
+  NIGHTLY_WITH_DATE: 1
 
   ## Force a rebuild without using cache
   FORCE_NOCACHE: 0
@@ -346,72 +347,49 @@ jug_dev:default:
                    containers/jug
       ; done
 
-jug_xl:default:
+jug_xl:
   parallel:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
+        BUILD_TYPE:
+        - default
+        - nightly
         PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
+#         BUILD_TYPE:
+#         - default
+#         - nightly
 #        PLATFORM: linux/amd64
   extends: .build
   stage: jug
-  needs:
-    - version
-    - jug_dev:default
-  script:
-    - docker buildx build --push
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                   }
-                   --file containers/jug/xl.Dockerfile
-                   --platform ${PLATFORM}
-                   --build-arg BASE_IMAGE=${BASE_IMAGE}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
-                   --build-arg EICRECON_VERSION=${EICRECON_VERSION}
-                   --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
-                   --build-arg jobs=${JOBS}
-                   --build-context detectors=.
-                   containers/jug
-
-jug_xl:nightly:
-  parallel:
-    matrix:
-      - BASE_IMAGE: jug_dev
-        BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64,linux/arm64/v8
-#      - BASE_IMAGE: jug_dev_oneapi
-#        BUILD_IMAGE: jug_xl_oneapi
-#        PLATFORM: linux/amd64
-  extends: .build
-  stage: jug
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: on_success
-    - when: never
   needs:
     - version
     - jug_dev:default
   script:
     - |
-      PUSH_NIGHTLY_WITH_DATE=""
-      if [ "$CI_COMMIT_BRANCH" == "master" ]; then
-        PUSH_NIGHTLY_WITH_DATE="1"
+      if [ "${BUILD_TYPE}" == "nightly" ] ; then
+        BUILD_NIGHTLY=1
+      fi
+    - |
+      if [ "${BUILD_TYPE}" == "default" ] ; then
+        IF_BUILD_DEFAULT=1
       fi
     - docker buildx build --push
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   ${IF_BUILD_DEFAULT:+
+                     ${EXPORT_TAG:+
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     }
+                   }
                    ${NIGHTLY:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
-                     ${PUSH_NIGHTLY_WITH_DATE:+
+                     ${NIGHTLY_WITH_DATE:+
                        ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
                        ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
                      }
@@ -420,8 +398,16 @@ jug_xl:nightly:
                    --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
-                   --build-arg NIGHTLY=1
+                   ${IF_BUILD_DEFAULT:+
+                     --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
+                     --build-arg EICRECON_VERSION=${EICRECON_VERSION}
+                     --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   }
+                   ${IF_BUILD_NIGHTLY:+
+                     --build-arg NIGHTLY=1
+                     --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   }
+                   --build-arg jobs=${JOBS}
                    --build-context detectors=.
                    containers/jug
 
@@ -434,7 +420,7 @@ jug_xl:feature:
     - when: never
   needs:
     - version
-    - jug_xl:nightly
+    - jug_xl
   variables:
     BUILD_IMAGE: "jug_xl"
   parallel:
@@ -485,7 +471,7 @@ jug_xl:singularity:default:
   extends: .singularity
   needs:
     - version
-    - jug_xl:default
+    - jug_xl
   variables:
     BUILD_IMAGE: "jug_xl"
 
@@ -498,7 +484,7 @@ jug_xl:singularity:nightly:
     - when: never
   needs:
     - version
-    - jug_xl:nightly
+    - jug_xl
   variables:
     BUILD_IMAGE: "jug_xl"
   script:
@@ -511,7 +497,7 @@ benchmarks:reconstruction:
     - if:  '$CI_SERVER_HOST == "eicweb.phy.anl.gov"'
   needs: 
     - version
-    - jug_xl:default
+    - jug_xl
   variables:
     BENCHMARKS_TAG: "$INTERNAL_TAG"
     BENCHMARKS_CONTAINER: "jug_xl"
@@ -527,7 +513,7 @@ benchmarks:physics:
     - if:  '$CI_SERVER_HOST == "eicweb.phy.anl.gov"'
   needs: 
     - version
-    - jug_xl:default
+    - jug_xl
   variables:
     RECO: "eicrecon"
     BENCHMARKS_TAG: "$INTERNAL_TAG"
