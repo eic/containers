@@ -244,19 +244,28 @@ base:
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    containers/debian
 
-jug_dev:default:
+jug_dev:
   parallel:
     matrix:
       - BASE_IMAGE: debian_stable_base
         BUILD_IMAGE: jug_
+        BUILD_TYPE:
+        - default
+        - nightly
         PLATFORM: linux/amd64,linux/arm64/v8
         ENV: [dev, prod]
 #      - BASE_IMAGE: oneapi_base
-#        BUILD_IMAGE: jug_dev_oneapi
+#        BUILD_IMAGE: oneapi_
+#        BUILD_TYPE:
+#        - default
+#        - nightly
 #        PLATFORM: linux/amd64
 #        ENV: [prod]
 #      - BASE_IMAGE: cuda_base_new
-#        BUILD_IMAGE: jug_dev_cuda
+#        BUILD_IMAGE: cuda_
+#        BUILD_TYPE:
+#        - default
+#        - nightly
 #        PLATFORM: linux/amd64
 #        ENV: [prod]
   extends: .build
@@ -265,16 +274,31 @@ jug_dev:default:
     - version
     - base
   script:
+    - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY=1 ; fi
+    - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT=1 ; fi
     - source spack.sh ; 
       source eic-spack.sh ;
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml ;
       docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                   ${IF_BUILD_DEFAULT:+
+                     ${EXPORT_TAG:+
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                     }
+                   }
+                   ${IF_BUILD_NIGHTLY:+
+                     ${NIGHLTY:+
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                       ${PUSH_NIGHTLY_WITH_DATE:+
+                         ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                         ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                       }
+                     }
                    }
                    --file containers/jug/dev.Dockerfile
                    --platform ${PLATFORM}
@@ -282,10 +306,14 @@ jug_dev:default:
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
-                   --build-arg SPACK_VERSION=${SPACK_VERSION}
+                   ${IF_BUILD_DEFAULT:+
+                     --build-arg SPACK_VERSION=${SPACK_VERSION}
+                   }
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
                    --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
-                   --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
+                   ${IF_BUILD_DEFAULT:+
+                     --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
+                   }
                    --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
                    --build-arg S3_ACCESS_KEY=${S3_ACCESS_KEY}
                    --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
@@ -309,7 +337,7 @@ jug_xl:default:
   stage: jug
   needs:
     - version
-    - jug_dev:default
+    - jug_dev
   script:
     - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
@@ -349,7 +377,7 @@ jug_xl:nightly:
     - when: never
   needs:
     - version
-    - jug_dev:default
+    - jug_dev
   script:
     - |
       PUSH_NIGHTLY_WITH_DATE=""
@@ -400,7 +428,7 @@ jug_dev:singularity:default:
   extends: .singularity
   needs:
     - version
-    - jug_dev:default
+    - jug_dev
   variables:
     BUILD_IMAGE: "jug_dev"
 
