@@ -281,22 +281,22 @@ jug_dev:
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml ;
       docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${IF_BUILD_DEFAULT:+
                      ${EXPORT_TAG:+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
                      }
                    }
                    ${IF_BUILD_NIGHTLY:+
                      ${NIGHLTY:+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-${BUILD_TYPE}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-${BUILD_TYPE}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-${BUILD_TYPE}}
                        ${PUSH_NIGHTLY_WITH_DATE:+
-                         ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                         ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                         ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-${BUILD_TYPE}-$(date +%Y-%m-%d)}
+                         ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-${BUILD_TYPE}-$(date +%Y-%m-%d)}
                        }
                      }
                    }
