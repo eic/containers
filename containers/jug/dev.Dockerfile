@@ -56,6 +56,7 @@ RUN declare -A target=(                                                 \
  && spack config --scope site add "config:db_lock_timeout:${jobs}0"     \
  && spack config --scope site add "config:install_tree:root:/opt/software" \
  && spack config --scope site add "config:source_cache:/var/cache/spack" \
+ && spack config --scope site add "config:ccache:true"                  \
  && spack config blame config                                           \
  && spack compiler find --scope site                                    \
  && spack config blame compilers
@@ -103,14 +104,17 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
 COPY --from=spack spack-environment/ /opt/spack-environment/
 ARG ENV=dev
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
-RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
+RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
+    --mount=type=cache,target=/var/cache/spack-mirror                   \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     source $SPACK_ROOT/share/spack/setup-env.sh                         \
+ && export CCACHE_DIR=/ccache                                           \
  && spack env activate --dir ${SPACK_ENV}                               \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
     SPACK_ENV=${SPACK_ENV}                                              \
     BUILDCACHE_DIR=/var/cache/spack-mirror                              \
-    BUILDCACHE_MIRROR=eic-spack
+    BUILDCACHE_MIRROR=eic-spack                                         \
+ && ccache --show-stats
 
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
