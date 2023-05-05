@@ -104,6 +104,9 @@ variables:
   DOCKER_NTRIES: 5
   DOCKER_WAIT_TIME: 5
 
+  ## Number of jobs to start during container builds
+  JOBS: 128
+
   ## is this nightly or not?
   NIGHTLY:
 
@@ -361,7 +364,7 @@ jug_xl:default:
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg EICRECON_VERSION=${EICRECON_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
-                   --build-arg jobs=64
+                   --build-arg jobs=${JOBS}
                    --build-context detectors=.
                    containers/jug
 
