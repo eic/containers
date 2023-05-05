@@ -349,8 +349,8 @@ jug_xl:default:
                    --file containers/jug/xl.Dockerfile
                    --platform ${PLATFORM}
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
-                   --build-arg BASE_IMAGE=${BASE_IMAGE}-nightly
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg BASE_IMAGE=${BASE_IMAGE}
+                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}-default
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg EICRECON_VERSION=${EICRECON_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
@@ -404,7 +404,7 @@ jug_xl:nightly:
                    --platform ${PLATFORM}
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}-nightly
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
                    --build-arg NIGHTLY=1
                    --build-context detectors=.
