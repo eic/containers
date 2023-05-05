@@ -349,7 +349,7 @@ jug_xl:default:
                    --file containers/jug/xl.Dockerfile
                    --platform ${PLATFORM}
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
-                   --build-arg BASE_IMAGE=${BASE_IMAGE}
+                   --build-arg BASE_IMAGE=${BASE_IMAGE}-nightly
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg EICRECON_VERSION=${EICRECON_VERSION}
