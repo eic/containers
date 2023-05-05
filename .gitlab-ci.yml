@@ -330,6 +330,7 @@ jug_dev:default:
                    --build-arg S3_SECRET_KEY="${S3_SECRET_KEY}"
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   --build-arg jobs=${JOBS}
                    --build-context spack=.
                    --secret id=mirrors,src=mirrors.yaml
                    containers/jug
