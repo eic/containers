@@ -198,7 +198,7 @@ RUN declare -A target=(                                                 \
  && chmod a+x /usr/local/bin/mc                                         \
  && unset target[${TARGETPLATFORM}]                                     \
  && for t in ${target[*]} ; do                                          \
-      rm /usr/local/bin/mc-${t}                                         \
+      rm /usr/local/bin/mc-${t} ;                                       \
     done
 
 ## ========================================================================================
