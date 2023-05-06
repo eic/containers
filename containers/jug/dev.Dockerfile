@@ -197,7 +197,9 @@ RUN declare -A target=(                                                 \
  && mv /usr/local/bin/mc-${target[${TARGETPLATFORM}]} /usr/local/bin/mc \
  && chmod a+x /usr/local/bin/mc                                         \
  && unset target[${TARGETPLATFORM}]                                     \
- && rm /usr/local/bin/mc-{$(IFS=,; echo "${target[*]}")}
+ && for t in ${target[*]} ; do                                          \
+      rm /usr/local/bin/mc-${t}                                         \
+    done
 
 ## ========================================================================================
 ## STAGE 3
