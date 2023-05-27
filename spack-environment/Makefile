@@ -18,7 +18,6 @@ include $(SPACK_ENV)/spack.mk
 endif
 
 $(SPACK_ENV)/push: $(addprefix $(SPACK_ENV)/push/,$($(SPACK_ENV)/SPACK_PACKAGE_IDS))
-	@mkdir -p $(BUILDCACHE_DIR)
 	$(foreach buildcache, $(BUILDCACHE_MIRROR), $(SPACK) buildcache update-index --mirror-url $(buildcache) ;)
 
 $(SPACK_ENV)/push/%: $(SPACK_ENV)/install/%
