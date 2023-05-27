@@ -64,7 +64,7 @@ RUN declare -A target=(                                                 \
 ## Setup local buildcache mirrors
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     spack mirror add spack_mirror /var/cache/spack-mirror/${SPACK_VERSION} \
- && spack buildcache update-index -d /var/cache/spack-mirror/${SPACK_VERSION} \
+ && spack buildcache update-index spack-mirror                          \
  && spack mirror list
 
 ## Setup eics3 buildcache mirrors
