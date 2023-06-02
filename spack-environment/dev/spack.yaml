@@ -50,7 +50,7 @@ spack:
     - prmon@3.0.2 +plot
     - pythia8@8.309 +fastjet
     - python@3.10.8
-    - py-awkward@1.9.0
+    - py-awkward@2.1.1
     - py-boto3@1.18.12
     - py-ipython@8.5.0
     - py-jinja2@3.1.2
@@ -71,7 +71,7 @@ spack:
     - py-scipy@1.9.3
     - py-seaborn@0.12.0
     - py-toml@0.10.2
-    - py-uproot@4.3.5
+    - py-uproot@5.0.5
     - py-yapf@0.30.0
     - qt@5.15.5 +opengl
     - root@6.26.10 cxxstd=17 
