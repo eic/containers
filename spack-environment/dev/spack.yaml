@@ -73,7 +73,7 @@ spack:
     - py-toml@0.10.2
     - py-uproot@5.0.5
     - py-yapf@0.30.0
-    - qt@5.15.5 +opengl
+    - qt@5.15.9 +opengl
     - root@6.26.10 cxxstd=17 
           +fftw +fortran +gdml +http -ipo +mlp +pythia8 
           +root7 +tmva +vc -webgui +xrootd +ssl 
