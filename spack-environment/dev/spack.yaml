@@ -48,7 +48,7 @@ spack:
     - pkg-config@0.29.2
     - podio@0.16.3
     - prmon@3.0.2 +plot
-    - pythia8@8.306 +fastjet
+    - pythia8@8.309 +fastjet
     - python@3.10.8
     - py-awkward@1.9.0
     - py-boto3@1.18.12
