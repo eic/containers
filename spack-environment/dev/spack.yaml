@@ -11,7 +11,7 @@ spack:
     - catch2@3.0.1 -ipo
     - cernlib@2022.11.08.0-free
     - clhep@2.4.6.0 cxxstd=17
-    - cli11@2.1.1
+    - cli11@2.3.2
     - cmake@3.24.3
     - cnpy@master
     - cppcoro@git.10bbcdbf2be3ad3aa56febcf4c7662d771460a99
