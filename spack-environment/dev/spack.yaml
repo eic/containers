@@ -42,7 +42,7 @@ spack:
     - nlohmann-json@3.11.2
     - npsim@1.1.0 +geocad +http
     - onnx@1.13.1
-    - opencascade@7.6.3
+    - opencascade@7.7.1
     - osg-ca-certs@1.109.igtf.1.117
     - phonebook-cli@1.0.0
     - pkg-config@0.29.2
