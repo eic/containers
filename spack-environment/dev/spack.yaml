@@ -1,5 +1,5 @@
 spack:
-  include: 
+  include:
   - ../concretizer.yaml
   - ../packages.yaml
   specs:
@@ -10,7 +10,7 @@ spack:
     - cairo@1.16.0 +fc+ft+X+pdf+gobject
     - catch2@3.0.1 -ipo
     - cernlib@2022.11.08.0-free
-    - clhep@2.4.6.0 cxxstd=17
+    - clhep@2.4.6.4 cxxstd=17
     - cli11@2.3.2
     - cmake@3.24.3
     - cnpy@master
