@@ -68,7 +68,7 @@ spack:
     - py-pre-commit@2.20.0
     - py-pycairo@1.20.0
     - py-pyyaml@6.0
-    - py-scipy@1.9.3
+    - py-scipy@1.10.1
     - py-seaborn@0.12.0
     - py-toml@0.10.2
     - py-uproot@5.0.5
