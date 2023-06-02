@@ -74,7 +74,7 @@ spack:
     - py-uproot@5.0.5
     - py-yapf@0.30.0
     - qt@5.15.9 +opengl
-    - root@6.28.10 cxxstd=17 
+    - root@6.28.04 cxxstd=17 
           +fftw +fortran +gdml +http -ipo +mlp +pythia8 
           +root7 +tmva +vc -webgui +xrootd +ssl 
     - spdlog@1.11.0 +fmt_external
