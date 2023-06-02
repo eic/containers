@@ -77,7 +77,7 @@ spack:
     - root@6.26.10 cxxstd=17 
           +fftw +fortran +gdml +http -ipo +mlp +pythia8 
           +root7 +tmva +vc -webgui +xrootd +ssl 
-    - spdlog@1.10.0 +fmt_external
+    - spdlog@1.11.0 +fmt_external
     - stow@2.3.1
     - tensorflow-lite@2.8.0 -xnnpack
     - xrootd@5.5.1 cxxstd=17 +python +scitokens-cpp
