@@ -38,7 +38,7 @@ spack:
     - lcov@1.15
     - lhapdf@6.5.1 +python
     - madx@5.08.01
-    - mesa@22.1.2 +glx -llvm +opengl +opengles +osmesa
+    - mesa@22.1.6 +glx -llvm +opengl +opengles +osmesa
     - nlohmann-json@3.11.2
     - npsim@1.1.0 +geocad +http
     - onnx@1.13.1
