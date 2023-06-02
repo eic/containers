@@ -41,7 +41,7 @@ spack:
     - mesa@22.1.2 +glx -llvm +opengl +opengles +osmesa
     - nlohmann-json@3.11.2
     - npsim@1.1.0 +geocad +http
-    - onnx@1.12.0
+    - onnx@1.13.1
     - opencascade@7.6.3
     - osg-ca-certs@1.109.igtf.1.117
     - phonebook-cli@1.0.0
