@@ -1,2 +1,2 @@
 concretizer: 
-  unify: when_possible
+  unify: true
