@@ -15,12 +15,10 @@ variables:
   SPACK_CHERRYPICKS: >
     9ee2d79de172de14477a78e5d407548a63eea33a
     776ab132760d63eab0703b7c0ebebc72a8443f5b
-    27bce8d489bf7556c4c3a921267f456b2b4e70a2
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## [hash]: [description]
   ## 9ee2d79de172de14477a78e5d407548a63eea33a: libxpm package: fix RHEL8 build with libintl
   ## 776ab132760d63eab0703b7c0ebebc72a8443f5b: [xrootd] New variants, new version, improve build config
-  ## 27bce8d489bf7556c4c3a921267f456b2b4e70a2: gdb: add missing zstd, add system dep for zlib
 
   ## EIC spack organization and repository, e.g. eic/eic-spack
   EICSPACK_ORGREPO: "eic/eic-spack"
