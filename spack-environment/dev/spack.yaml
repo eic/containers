@@ -61,7 +61,7 @@ spack:
     - py-matplotlib@3.7.1
     - py-mplhep@0.3.26
     - py-htgettoken@1.16-33-g3788bb4
-    - py-numpy@1.24.3
+    - py-numpy@1.23.4
     - py-pandas@2.0.1
     - py-pip@23.0
     - py-pre-commit@2.20.0
