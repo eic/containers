@@ -53,7 +53,7 @@ spack:
     - py-awkward@2.1.1
     - py-boto3@1.26.26
     - py-cython@0.29.33
-    - py-gevent@21.12
+    - py-gevent@21.12.0
     - py-ipython@8.11.0
     - py-jinja2@3.1.2
     - py-jinja2-cli@0.8.2
