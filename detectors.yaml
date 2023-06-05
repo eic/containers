@@ -49,3 +49,5 @@ detectors:
       version: 23.05.1
     23.05.2:
       version: 23.05.2
+    23.06.0:
+      version: 23.06.0
