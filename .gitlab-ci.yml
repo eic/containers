@@ -43,6 +43,10 @@ variables:
     a419ffcf501134faed24253ccc83e6c71f9659f9
     c3e41153ac92f6ef92414024a8386d4ceec2615c
     42a452d54c8a25f9f415fef8cf9e3a5c64b7a46a
+    a7b5f2ef39543f047f587d778579a958bbd0be45
+    44f7363fbe48d516112cb5bcaabf3778b665f800
+    6fefb924136da4814e96525dd6b2d73a523ca5dc
+    0c2aafec33fbd3418dc731c987f43573a7610439
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## [hash]: [description]
   ## b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e: geant4: version bumps for Geant4 11.1.0
@@ -75,6 +79,10 @@ variables:
   ## a419ffcf501134faed24253ccc83e6c71f9659f9: osg-ca-certs: igtf link should point to version, not 'current'
   ## c3e41153ac92f6ef92414024a8386d4ceec2615c: Package requirements: allow single specs in requirement lists
   ## 42a452d54c8a25f9f415fef8cf9e3a5c64b7a46a: estarlight, dpmjet: new packages
+  ## a7b5f2ef39543f047f587d778579a958bbd0be45: Add the very first version of cernlib package
+  ## 44f7363fbe48d516112cb5bcaabf3778b665f800: cernlib: depends_on libxaw libxt
+  ## 6fefb924136da4814e96525dd6b2d73a523ca5dc: cernlib: depends_on freetype, libnsl, libxcrypt, openssl; and patch
+  ## 0c2aafec33fbd3418dc731c987f43573a7610439: cernlib: depends_on openssl when platform=linux
 
   ## EIC spack organization and repository, e.g. eic/eic-spack
   EICSPACK_ORGREPO: "eic/eic-spack"
