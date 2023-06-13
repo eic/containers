@@ -28,7 +28,7 @@ spack:
     - fjcontrib@1.051
     - fmt@9.1.0 +shared cxxstd=17
     - gaudi@36.10 +aida
-    - gdb@12.1
+    - gdb@12.1 -debuginfod
     - geant4@11.1.1 cxxstd=17 +opengl -vecgeom +x11 +qt +threads
     - hepmc3@3.2.6 +python +rootio
     - heppdt@2.06.01
