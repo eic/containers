@@ -112,7 +112,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
  && spack env activate --dir ${SPACK_ENV}                               \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
     SPACK_ENV=${SPACK_ENV}                                              \
-    BUILDCACHE_DIR=/var/cache/spack-mirror                              \
+    BUILDCACHE_DIR=/var/cache/spack-mirror/${SPACK_VERSION}             \
     BUILDCACHE_MIRROR=eics3rw                                           \
  && ccache --show-stats
 
