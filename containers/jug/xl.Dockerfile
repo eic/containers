@@ -147,3 +147,8 @@ RUN echo "test -f $HOME/.eic-news && source /usr/local/bin/eic-news"            
 
 ## Hotfix for misbehaving OSG nodes
 RUN mkdir /hadoop
+
+## create local user `eic` with lower privileges for use in docker
+RUN useradd --create-home --shell /bin/bash eic
+USER eic
+WORKDIR /home/eic

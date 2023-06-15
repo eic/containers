@@ -241,10 +241,5 @@ RUN echo "" >> /etc/jug_info                                            \
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT ["/usr/local/sbin/entrypoint.sh"]
 CMD ["bash", "--rcfile", "/etc/profile", "-l"]
-
-## create local user `eic` with lower privileges for use in docker
-RUN useradd --create-home --shell /bin/bash eic
-USER eic
-WORKDIR /home/eic
-
 SHELL ["/usr/local/bin/eic-shell"]
+
