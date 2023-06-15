@@ -61,13 +61,13 @@ RUN declare -A target=(                                                 \
  && spack compiler find --scope site                                    \
  && spack config blame compilers
 
-## Setup spack buildcache mirrors
+## Setup local buildcache mirrors
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    spack mirror add docker /var/cache/spack-mirror                     \
- && spack buildcache update-index -d /var/cache/spack-mirror            \
+    spack mirror add docker /var/cache/spack-mirror/${SPACK_VERSION}    \
+ && spack buildcache update-index -d /var/cache/spack-mirror/${SPACK_VERSION} \
  && spack mirror list
 
-## Setup eic-spack buildcache mirrors
+## Setup eics3 buildcache mirrors
 ## - this always adds the read-only mirror to the container
 ## - the write-enabled mirror is provided later as a secret mount
 ARG S3_ACCESS_KEY=""
@@ -78,7 +78,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
       --s3-access-key-id "${S3_ACCESS_KEY}"                             \
       --s3-access-key-secret "${S3_SECRET_KEY}"                         \
-      eic-spack s3://eictest/EPIC/spack                                 \
+      eics3 s3://eictest/EPIC/spack                                     \
     ; fi                                                                \
  && spack mirror list
 
@@ -93,7 +93,7 @@ ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="$SPACK_VERSION"
 ARG EICSPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
-RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}     \
+RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT} \
  && git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}                \
  && if [ -n "${EICSPACK_CHERRYPICKS}" ] ; then                          \
       git -C ${EICSPACK_ROOT} cherry-pick -n ${EICSPACK_CHERRYPICKS} ;  \
@@ -113,7 +113,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
     SPACK_ENV=${SPACK_ENV}                                              \
     BUILDCACHE_DIR=/var/cache/spack-mirror                              \
-    BUILDCACHE_MIRROR=eic-spack                                         \
+    BUILDCACHE_MIRROR=eics3rw                                           \
  && ccache --show-stats
 
 ## Create view at /usr/local

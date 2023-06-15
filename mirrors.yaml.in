@@ -1,5 +1,5 @@
 mirrors:
-  eic-spack:
+  eics3rw:
     fetch:
       url: s3://eictest/EPIC/spack
       access_pair:
