@@ -1,5 +1,5 @@
 #syntax=docker/dockerfile:1.4
-ARG DOCKER_REGISTRY=""
+ARG DOCKER_REGISTRY="eicweb/"
 ARG BASE_IMAGE="jug_dev"
 ARG INTERNAL_TAG="testing"
 
