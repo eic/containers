@@ -329,7 +329,7 @@ jug_dev:default:
                    }
                    --file containers/jug/dev.Dockerfile
                    --platform ${PLATFORM}
-                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}
+                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
@@ -371,7 +371,7 @@ jug_xl:default:
                    }
                    --file containers/jug/xl.Dockerfile
                    --platform ${PLATFORM}
-                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}
+                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
@@ -420,7 +420,7 @@ jug_xl:nightly:
                    }
                    --file containers/jug/xl.Dockerfile
                    --platform ${PLATFORM}
-                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}
+                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
