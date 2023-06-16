@@ -1,7 +1,7 @@
 mirrors:
   eics3rw:
     fetch:
-      url: s3://eictest/EPIC/spack
+      url: s3://eictest/EPIC/spack/${SPACK_VERSION}
       access_pair:
       - ${S3RW_ACCESS_KEY}
       - ${S3RW_SECRET_KEY}
@@ -9,7 +9,7 @@ mirrors:
       profile: null
       endpoint_url: https://eics3.sdcc.bnl.gov:9000
     push:
-      url: s3://eictest/EPIC/spack
+      url: s3://eictest/EPIC/spack/${SPACK_VERSION}
       access_pair:
       - ${S3RW_ACCESS_KEY}
       - ${S3RW_SECRET_KEY}
