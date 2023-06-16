@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1.4
-ARG DOCKER_REGISTRY="eicweb.phy.anl.gov:4567/containers/eic_container/"
-ARG BASE_IMAGE="debian_base"
+ARG DOCKER_REGISTRY="eicweb"
+ARG BASE_IMAGE="debian_testing_base"
 ARG INTERNAL_TAG="testing"
 
 ## ========================================================================================
