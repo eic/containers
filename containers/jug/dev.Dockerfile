@@ -63,7 +63,8 @@ RUN declare -A target=(                                                 \
 
 ## Setup local buildcache mirrors
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    spack mirror add docker /var/cache/spack-mirror/${SPACK_VERSION}    \
+    mkdir -p /var/cache/spack-mirror/${SPACK_VERSION}                   \
+ && spack mirror add docker /var/cache/spack-mirror/${SPACK_VERSION}    \
  && spack buildcache update-index -d /var/cache/spack-mirror/${SPACK_VERSION} \
  && spack mirror list
 
