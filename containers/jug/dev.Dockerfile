@@ -63,8 +63,8 @@ RUN declare -A target=(                                                 \
 
 ## Setup local buildcache mirrors
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    spack mirror add spack_mirror /var/cache/spack-mirror/${SPACK_VERSION} \
- && spack buildcache update-index spack-mirror                          \
+    spack mirror add local /var/cache/spack-mirror/${SPACK_VERSION}     \
+ && spack buildcache update-index local                                 \
  && spack mirror list
 
 ## Setup eics3 buildcache mirrors
@@ -112,7 +112,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
  && spack env activate --dir ${SPACK_ENV}                               \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
     SPACK_ENV=${SPACK_ENV}                                              \
-    BUILDCACHE_MIRROR="spack-mirror eics3rw"                            \
+    BUILDCACHE_MIRROR="local eics3rw"                                   \
  && ccache --show-stats
 
 ## Create view at /usr/local
