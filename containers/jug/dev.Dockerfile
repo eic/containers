@@ -128,7 +128,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ## or intermittently to keep the buildcache step from taking too much time
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     [ -z "${CACHE_NUKE}" ]                                              \
-    || rm -rf /var/cache/spack-mirror/build_cache/*
+    || rm -rf /var/cache/spack-mirror/${SPACK_VERSION}/build_cache/*
 
 ## Extra post-spack steps:
 ##   - Python packages
