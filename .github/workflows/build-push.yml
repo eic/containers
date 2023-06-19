@@ -125,20 +125,18 @@ jobs:
         id: spack
         shell: bash
         run: |
-          pwd
-          ls -al
           source spack.sh
           echo "orgrepo=${SPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
           echo "version=${SPACK_VERSION}" | tee -a $GITHUB_OUTPUT
-          #echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
+          echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
       -
         name: Load eic-spack version and cherry-picks
         id: eicspack
         run: |
           source eicspack.sh
-          echo "orgrepo=${EICSPACK_ORGREPO}" >> $GITHUB_OUTPUT
-          echo "version=${EICSPACK_VERSION}" >> $GITHUB_OUTPUT
-          echo "cherrypicks=${EICSPACK_CHERRYPICKS//$'\n'/ }" >> $GITHUB_OUTPUT
+          echo "orgrepo=${EICSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
+          echo "version=${EICSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
+          echo "cherrypicks=${EICSPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
