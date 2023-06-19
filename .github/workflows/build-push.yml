@@ -123,6 +123,7 @@ jobs:
       -
         name: Load spack version and cherry-picks
         id: spack
+        shell: bash
         run: |
           source spack.sh
           echo "orgrepo=${SPACK_ORGREPO}" >> $GITHUB_OUTPUT
