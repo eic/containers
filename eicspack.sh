@@ -4,7 +4,7 @@ EICSPACK_ORGREPO="eic/eic-spack"
 ## note: nightly builds will use e.g. releases/v0.19
 EICSPACK_VERSION="v0.19.1"
 ## Space-separated list of eic-spack cherry-picks
-read -r -d '' EICSPACK_CHERRYPICKS <<- \
+read -r -d '' EICSPACK_CHERRYPICKS || true <<- \
 ---
    f892e2b5d7ea9d1f2e43741499e899ce21dd3d5a
 ---
