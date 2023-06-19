@@ -157,7 +157,7 @@ jobs:
         if: ${{ env.GH_PUSH == '1' }}
         with:
           registry: ${{ env.GH_REGISTRY }}
-          username: ${{ github.repository_owner }}
+          username: ${{ env.GH_REGISTRY_USER }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Build and push
