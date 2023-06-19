@@ -126,9 +126,9 @@ jobs:
         shell: bash
         run: |
           source spack.sh
-          echo "orgrepo=${SPACK_ORGREPO}" >> $GITHUB_OUTPUT
-          echo "version=${SPACK_VERSION}" >> $GITHUB_OUTPUT
-          echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ } >> $GITHUB_OUTPUT
+          echo "orgrepo=${SPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
+          echo "version=${SPACK_VERSION}" | tee -a $GITHUB_OUTPUT
+          #echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
       -
         name: Load eic-spack version and cherry-picks
         id: eicspack
