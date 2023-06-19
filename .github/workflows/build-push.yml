@@ -103,7 +103,6 @@ jobs:
 
   dev:
     runs-on: ubuntu-latest
-    needs: base
     strategy:
       matrix:
         include:
