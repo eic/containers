@@ -1,0 +1,98 @@
+name: build-push
+
+on:
+  push:
+    branches:
+      - 'master'
+
+env:
+  ## Application versions used for the main release 
+  ## note: nightly builds will always use the master/main branch
+  JUGGLER_VERSION: "v9.4.0"
+  EICRECON_VERSION: "v1.2.1"
+
+  ## Spack organization and repository, e.g. spack/spack
+  SPACK_ORGREPO: "spack/spack"
+  ## Spack github version, e.g. v0.18.1 or commit hash
+  ## note: nightly builds will use e.g. releases/v0.19
+  SPACK_VERSION: "v0.20.0"
+  ## Space-separated list of spack cherry-picks
+  SPACK_CHERRYPICKS: >
+    9ee2d79de172de14477a78e5d407548a63eea33a
+    776ab132760d63eab0703b7c0ebebc72a8443f5b
+  ## Ref: https://github.com/spack/spack/commit/[hash]
+  ## [hash]: [description]
+  ## 9ee2d79de172de14477a78e5d407548a63eea33a: libxpm package: fix RHEL8 build with libintl
+  ## 776ab132760d63eab0703b7c0ebebc72a8443f5b: [xrootd] New variants, new version, improve build config
+
+  ## EIC spack organization and repository, e.g. eic/eic-spack
+  EICSPACK_ORGREPO: "eic/eic-spack"
+  ## EIC spack github version, e.g. v0.19.7 or commit hash
+  ## note: nightly builds will use e.g. releases/v0.19
+  EICSPACK_VERSION: "v0.20.1"
+  ## Space-separated list of eic-spack cherry-picks
+  EICSPACK_CHERRYPICKS: >
+  ## Ref: https://github.com/eic/eic-spack/commit/[hash]
+  ## [hash]: [description]
+
+  ## Dockerhub registry
+  DH_REGISTRY: docker.io
+  DH_REGISTRY_USER: eicweb
+  DH_PUSH: 0
+  ## GitHub registry
+  GH_REGISTRY: ghcr.io
+  GH_REGISTRY_USER: eic
+  GH_PUSH: 0
+
+jobs:
+  base:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+      - BASE_IMAGE: debian:testing-20220822-slim
+        BUILD_IMAGE: debian_testing_base
+        PLATFORM: linux/amd64,linux/arm64/v8
+      - BASE_IMAGE: ubuntu:20.04
+        BUILD_IMAGE: ubuntu_base
+        PLATFORM: linux/amd64,linux/arm64/v8
+      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
+        BUILD_IMAGE: oneapi_base
+        PLATFORM: linux/amd64
+#      - BASE_IMAGE: nvidia/cuda:11.8.0-devel-ubuntu20.04
+#        BUILD_IMAGE: cuda_base
+#        PLATFORM: linux/amd64
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          file: containers/debian/base.Dockerfile
+          context: containers/debian
+          platforms: ${{ matrix.PLATFORM }}
+          push: false
+          tags: |
+            eicweb/${{ matrix.BUILD_IMAGE }}:test
+            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:test
+          build-args: |
+            BASE_IMAGE=${{ matrix.BASE_IMAGE }}
+            BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
