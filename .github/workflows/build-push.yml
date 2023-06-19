@@ -3,6 +3,10 @@ name: build-push
 on:
   push:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 env:
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
