@@ -70,15 +70,17 @@ jobs:
       -
         name: Login to Docker Hub
         uses: docker/login-action@v2
+        if: ${{ env.DH_PUSH == '1' }}
         with:
-          registry: docker.io
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ${{ env.DH_REGISTRY }}
+          username: ${{ env.DH_REGISTRY_USER }}
+          password: ${{ secrets.DH_EICWEB_TOKEN }}
       -
         name: Login to GitHub Container Registry
         uses: docker/login-action@v2
+        if: ${{ env.GH_PUSH == '1' }}
         with:
-          registry: ghcr.io
+          registry: ${{ env.GH_REGISTRY }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
