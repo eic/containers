@@ -125,6 +125,8 @@ jobs:
         id: spack
         shell: bash
         run: |
+          pwd
+          ls -al
           source spack.sh
           echo "orgrepo=${SPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
           echo "version=${SPACK_VERSION}" | tee -a $GITHUB_OUTPUT
