@@ -47,7 +47,6 @@ variables:
     44f7363fbe48d516112cb5bcaabf3778b665f800
     6fefb924136da4814e96525dd6b2d73a523ca5dc
     0c2aafec33fbd3418dc731c987f43573a7610439
-    89b8445eb0f03ff79006b7dd0723e4c59e64cd01
     188168c476eabe99764634db8d78eb3f9ea2a927
   ## Ref: https://github.com/spack/spack/commit/[hash]
   ## [hash]: [description]
@@ -85,7 +84,6 @@ variables:
   ## 44f7363fbe48d516112cb5bcaabf3778b665f800: cernlib: depends_on libxaw libxt
   ## 6fefb924136da4814e96525dd6b2d73a523ca5dc: cernlib: depends_on freetype, libnsl, libxcrypt, openssl; and patch
   ## 0c2aafec33fbd3418dc731c987f43573a7610439: cernlib: depends_on openssl when platform=linux
-  ## 89b8445eb0f03ff79006b7dd0723e4c59e64cd01: Add jmcarcell to the maintainers of some packages
   ## 188168c476eabe99764634db8d78eb3f9ea2a927: podio: Add 0.16.5 tag
 
   ## EIC spack organization and repository, e.g. eic/eic-spack
