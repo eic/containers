@@ -181,7 +181,7 @@ jobs:
             eicweb/${{ matrix.BUILD_IMAGE }}:test
             ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:test
           build-args: |
-            CI_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}
+            DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
             SPACK_ORGREPO=${{ steps.spack.outputs.orgrepo }}
