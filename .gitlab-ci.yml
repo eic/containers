@@ -233,6 +233,7 @@ base:
     - version
   script:
     - docker buildx build --push ${BUILD_OPTIONS}
+                   --builder builder-${CI_PIPELINE_ID}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -268,6 +269,7 @@ jug_dev:default:
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml ;
       docker buildx build --push ${BUILD_OPTIONS}
+                   --builder builder-${CI_PIPELINE_ID}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -309,6 +311,7 @@ jug_xl:default:
     - jug_dev:default
   script:
     - docker buildx build --push ${BUILD_OPTIONS}
+                   --builder builder-${CI_PIPELINE_ID}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -354,6 +357,7 @@ jug_xl:nightly:
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
     - docker buildx build --push ${BUILD_OPTIONS}
+                   --builder builder-${CI_PIPELINE_ID}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-nightly
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
@@ -398,6 +402,7 @@ jug_xl:feature:
           - main
   script:
     - docker buildx build --load ${BUILD_OPTIONS}
+                   --builder builder-${CI_PIPELINE_ID}
                    --tag ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                    --file containers/jug/feature.Dockerfile
                    --build-arg INTERNAL_TAG=${NIGHTLY_TAG}
