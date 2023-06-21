@@ -10,7 +10,7 @@ variables:
   SPACK_ORGREPO: "spack/spack"
   ## Spack github version, e.g. v0.18.1 or commit hash
   ## note: nightly builds will use e.g. releases/v0.19
-  SPACK_VERSION: "v0.20.0"
+  SPACK_VERSION: "v0.20.2"
   ## Space-separated list of spack cherry-picks
   SPACK_CHERRYPICKS: >
     9ee2d79de172de14477a78e5d407548a63eea33a
