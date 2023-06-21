@@ -6,8 +6,8 @@ EICSPACK_ORGREPO="eic/eic-spack"
 EICSPACK_VERSION="v0.19.1"
 
 ## Space-separated list of eic-spack cherry-picks
-read -r -d '' EICSPACK_CHERRYPICKS || true <<- \
----
+read -r -d '' EICSPACK_CHERRYPICKS <<- \
+--- || true
 f892e2b5d7ea9d1f2e43741499e899ce21dd3d5a
 ---
 ## Ref: https://github.com/eic/eic-spack/commit/[hash]

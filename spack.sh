@@ -6,8 +6,8 @@ SPACK_ORGREPO="spack/spack"
 SPACK_VERSION="v0.19.2"
 
 ## Space-separated list of spack cherry-picks
-read -r -d '' SPACK_CHERRYPICKS || true <<- \
----
+read -r -d '' SPACK_CHERRYPICKS <<- \
+--- || true
 b5ef5c2eb5145020f9de1bcb964626ce6ac2d02e
 99056e03bd3e903b222e300636ec484d85d4b3fb
 f3f8b31be54280c6ef0b5f95ab85604aba3dff30
