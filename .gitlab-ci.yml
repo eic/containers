@@ -6,32 +6,6 @@ variables:
   JUGGLER_VERSION: "v9.4.0"
   EICRECON_VERSION: "v1.2.1"
 
-  ## Spack organization and repository, e.g. spack/spack
-  SPACK_ORGREPO: "spack/spack"
-  ## Spack github version, e.g. v0.18.1 or commit hash
-  ## note: nightly builds will use e.g. releases/v0.19
-  SPACK_VERSION: "v0.20.0"
-  ## Space-separated list of spack cherry-picks
-  SPACK_CHERRYPICKS: >
-    9ee2d79de172de14477a78e5d407548a63eea33a
-    776ab132760d63eab0703b7c0ebebc72a8443f5b
-    188168c476eabe99764634db8d78eb3f9ea2a927
-  ## Ref: https://github.com/spack/spack/commit/[hash]
-  ## [hash]: [description]
-  ## 9ee2d79de172de14477a78e5d407548a63eea33a: libxpm package: fix RHEL8 build with libintl
-  ## 776ab132760d63eab0703b7c0ebebc72a8443f5b: [xrootd] New variants, new version, improve build config
-  ## 188168c476eabe99764634db8d78eb3f9ea2a927: podio: Add 0.16.5 tag
-
-  ## EIC spack organization and repository, e.g. eic/eic-spack
-  EICSPACK_ORGREPO: "eic/eic-spack"
-  ## EIC spack github version, e.g. v0.19.7 or commit hash
-  ## note: nightly builds will use e.g. releases/v0.19
-  EICSPACK_VERSION: "v0.20.2"
-  ## Space-separated list of eic-spack cherry-picks
-  EICSPACK_CHERRYPICKS: >
-  ## Ref: https://github.com/eic/eic-spack/commit/[hash]
-  ## [hash]: [description]
-
   ## Local registry
   CI_PUSH: 1
   ## Dockerhub registry
@@ -251,7 +225,9 @@ jug_dev:default:
     ## Setup mirrors.yaml with rw mirror secrets
     - cat mirrors.yaml.in | envsubst > mirrors.yaml
     ## Build targets
-    - for target in ${TARGETS} ; do
+    - source spack.sh ; 
+      source eic-spack.sh ; 
+      for target in ${TARGETS} ; do
         if [ ! ${target} = export ] ; then
           suffix=-${target} ;
         fi ;
@@ -558,5 +534,5 @@ clean_unstable_mr:
           fi ;
         fi ;
       done
-    - docker system prune --force
+    - docker system prune --filter until=144h --force
     - docker images
