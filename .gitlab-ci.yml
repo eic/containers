@@ -164,6 +164,9 @@ base:
       - BASE_IMAGE: debian:testing-slim
         BUILD_IMAGE: debian_testing_base
         PLATFORM: linux/amd64,linux/arm64/v8
+      - BASE_IMAGE: debian:stable-slim
+        BUILD_IMAGE: debian_stable_base
+        PLATFORM: linux/amd64,linux/arm64/v8
       - BASE_IMAGE: ubuntu:22.04
         BUILD_IMAGE: ubuntu_base
         PLATFORM: linux/amd64,linux/arm64/v8
@@ -194,7 +197,7 @@ base:
 jug_dev:default:
   parallel:
     matrix:
-      - BASE_IMAGE: debian_testing_base
+      - BASE_IMAGE: debian_stable_base
         BUILD_IMAGE: jug_dev
         PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: oneapi_base

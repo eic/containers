@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1.4
-ARG BASE_IMAGE="amd64/debian:testing-slim"
-ARG BUILD_IMAGE="debian_base"
+ARG BASE_IMAGE="amd64/debian:stable-slim"
+ARG BUILD_IMAGE="debian_stable_base"
 
 # Minimal container based on Debian base systems for up-to-date packages. 
 FROM  ${BASE_IMAGE}
