@@ -51,6 +51,7 @@ spack:
     - pythia8@8.309 +fastjet
     - python@3.10.10
     - py-awkward@2.1.1
+    - py-dask@2021.6.2
     - py-boto3@1.26.26
     - py-ipython@8.11.0
     - py-jinja2@3.1.2
