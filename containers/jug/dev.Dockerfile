@@ -101,7 +101,7 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT} \
  && spack repo add --scope site "${EICSPACK_ROOT}"
 
 ## Setup our custom environment (secret mount for write-enabled mirror)
-COPY --from=spack spack-environment/ /opt/spack-environment/
+COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
