@@ -166,9 +166,11 @@ dind:
       - BUILD_IMAGE: dind
   extends: .build
   stage: dind
+  needs:
+    - version
   script:
     - docker buildx build --push
-        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
+        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
         --file containers/dind/Dockerfile
         containers/dind
 
