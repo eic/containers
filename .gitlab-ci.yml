@@ -45,6 +45,7 @@ variables:
   EXPORT_TAG: ""
 
 stages:
+  - dind
   - config
   - base            ## base OS image
   - jug             ## jug container images
@@ -78,6 +79,15 @@ workflow:
     - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-stable/'          ## main stable branch: vX.Y-stable
     - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-stable/'   ## special stable branch: vX.Y-acadia-stable (etc)
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'            ## commit tags start with vX.Y.Z with optional suffix
+
+## Docker-in-docker image
+dind:
+  stage: dind
+  script:
+    - docker buildx build --push
+        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${CI_COMMIT_REF_NAME}
+        --file containers/dind/Dockerfile
+        containers/dind
 
 ## plan:
 ##  Workflows:
