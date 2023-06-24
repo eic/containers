@@ -45,8 +45,8 @@ variables:
   EXPORT_TAG: ""
 
 stages:
-  - dind
   - config
+  - dind
   - base            ## base OS image
   - jug             ## jug container images
   - deploy          ## build/deploy singularity images
@@ -82,6 +82,7 @@ workflow:
 
 ## Docker-in-docker image
 dind:
+  extends: .build
   stage: dind
   script:
     - docker buildx build --push
