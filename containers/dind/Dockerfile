@@ -1,10 +1,10 @@
-FROM  eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu/ubuntu:20.04
+FROM ubuntu:22.04
 LABEL maintainer="Whitney Armstrong <warmstrong@anl.gov>" \
       name="ubuntu_dind" \
       group="ubuntu_dind" \
       march="native" \
       base="ubuntu" \
-      version="20.04"
+      version="22.04"
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
