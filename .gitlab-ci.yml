@@ -80,16 +80,6 @@ workflow:
     - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-stable/'   ## special stable branch: vX.Y-acadia-stable (etc)
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'            ## commit tags start with vX.Y.Z with optional suffix
 
-## Docker-in-docker image
-dind:
-  extends: .build
-  stage: dind
-  script:
-    - docker buildx build --push
-        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${CI_COMMIT_REF_NAME}
-        --file containers/dind/Dockerfile
-        containers/dind
-
 ## plan:
 ##  Workflows:
 ##  - master      --> config + all build stages + singularity
@@ -168,6 +158,19 @@ version:
 
 ## TODO
 ## oneapi_runtime + jug_xl --> oneapi_prod 
+
+## Docker-in-docker image
+dind:
+  parallel:
+    matrix:
+      - BUILD_IMAGE: dind
+  extends: .build
+  stage: dind
+  script:
+    - docker buildx build --push
+        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
+        --file containers/dind/Dockerfile
+        containers/dind
 
 base:
   parallel:
