@@ -46,6 +46,7 @@ variables:
 
 stages:
   - config
+  - dind
   - base            ## base OS image
   - jug             ## jug container images
   - deploy          ## build/deploy singularity images
@@ -157,6 +158,21 @@ version:
 
 ## TODO
 ## oneapi_runtime + jug_xl --> oneapi_prod 
+
+## Docker-in-docker image
+dind:
+  parallel:
+    matrix:
+      - BUILD_IMAGE: dind
+  extends: .build
+  stage: dind
+  needs:
+    - version
+  script:
+    - docker buildx build --push
+        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+        --file containers/dind/Dockerfile
+        containers/dind
 
 base:
   parallel:
