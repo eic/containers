@@ -82,44 +82,41 @@ if __name__ == '__main__':
             version = cfg['version'] if branch != 'nightly' else 'nightly'
             prefix = '{}/{}-{}'.format(args.prefix, det, version)
             data_dir = '{}/share/{}'.format(prefix, det)
-            ## build list of projects to install
-            proj_vers_list = [(det, cfg['version'])]
-            ## build and install projects
-            for (proj, vers) in proj_vers_list:
-                print('    - {}-{}'.format(proj, vers))
-                ## clone/build/install detector libraries
-                cmd = ['rm -rf /tmp/build /tmp/det',
-                       '&&',
-                       'git clone --depth 1 -b {version} {repo_grp}/{detector}.git /tmp/det'.format(
-                            version=vers, 
-                            repo_grp=DETECTOR_REPO_GROUP,
-                            detector=proj),
-                       '&&',
-                       'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
-                       '-DCMAKE_CXX_FLAGS="-Wno-psabi"',
-                       '-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache',
-                       '-DCMAKE_INSTALL_PREFIX={prefix}'.format(prefix=prefix),
-                       '&&',
-                       'cmake --build /tmp/build -j$(($(($(nproc)/4))+1)) -- install']
+            ## build and install
+            print('    - {}-{}'.format(det, cfg['version']))
+            ## clone/build/install detector libraries
+            cmd = ['rm -rf /tmp/build /tmp/det',
+                    '&&',
+                    'git clone --depth 1 -b {version} {repo_grp}/{detector}.git /tmp/det'.format(
+                        version=cfg['version'], 
+                        repo_grp=DETECTOR_REPO_GROUP,
+                        detector=det),
+                    '&&',
+                    'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
+                    '-DCMAKE_CXX_FLAGS="-Wno-psabi"',
+                    '-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache',
+                    '-DCMAKE_INSTALL_PREFIX={prefix}'.format(prefix=prefix),
+                    '&&',
+                    'cmake --build /tmp/build -j$(($(($(nproc)/4))+1)) -- install']
+            print(' '.join(cmd))
+            subprocess.check_call(' '.join(cmd), shell=True)
+            ## write version info to jug_info if available
+            if os.path.exists('/etc/jug_info'):
+                cmd = ['cd /tmp/det',
+                        '&&',
+                        'echo " - {detector}/{branch}: {version}-$(git rev-parse HEAD)"'.format(
+                            detector=det,
+                            branch=branch,
+                            version=cfg['version']),
+                        '>> /etc/jug_info',
+                        '&&',
+                        'cd -']
                 print(' '.join(cmd))
                 subprocess.check_call(' '.join(cmd), shell=True)
-                ## write version info to jug_info if available
-                if os.path.exists('/etc/jug_info'):
-                    cmd = ['cd /tmp/det',
-                           '&&',
-                           'echo " - {detector}/{branch}: {version}-$(git rev-parse HEAD)"'.format(
-                               detector=proj,
-                               branch=branch,
-                               version=cfg['version']),
-                           '>> /etc/jug_info',
-                           '&&',
-                           'cd -']
-                    print(' '.join(cmd))
-                    subprocess.check_call(' '.join(cmd), shell=True)
-                ## cleanup
-                cmd = 'rm -rf /tmp/det /tmp/build'
-                print(cmd)
-                subprocess.check_call(cmd, shell=True)
+            ## cleanup
+            cmd = 'rm -rf /tmp/det /tmp/build'
+            print(cmd)
+            subprocess.check_call(cmd, shell=True)
             # be resilient against failures
             if os.path.exists(prefix):
                 ## create a shortcut for the prefix if desired
