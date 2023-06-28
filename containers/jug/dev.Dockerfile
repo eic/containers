@@ -1,5 +1,5 @@
 #syntax=docker/dockerfile:1.4
-ARG DOCKER_REGISTRY="eicweb"
+ARG DOCKER_REGISTRY="eicweb/"
 ARG BASE_IMAGE="debian_stable_base"
 ARG INTERNAL_TAG="testing"
 
@@ -26,7 +26,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM}
 ## Setup spack
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
-ARG SPACK_VERSION="releases/v0.19"
+ARG SPACK_VERSION="releases/v0.20"
 ARG SPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
 RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
@@ -63,8 +63,8 @@ RUN declare -A target=(                                                 \
 
 ## Setup local buildcache mirrors
 RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    spack mirror add docker /var/cache/spack-mirror/${SPACK_VERSION}    \
- && spack buildcache update-index -d /var/cache/spack-mirror/${SPACK_VERSION} \
+    spack mirror add local /var/cache/spack-mirror/${SPACK_VERSION}     \
+ && spack buildcache update-index local                                 \
  && spack mirror list
 
 ## Setup eics3 buildcache mirrors
@@ -112,8 +112,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
  && spack env activate --dir ${SPACK_ENV}                               \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
     SPACK_ENV=${SPACK_ENV}                                              \
-    BUILDCACHE_DIR=/var/cache/spack-mirror/${SPACK_VERSION}             \
-    BUILDCACHE_MIRROR=eics3rw                                           \
+    BUILDCACHE_MIRROR="local eics3rw"                                   \
  && ccache --show-stats
 
 ## Create view at /usr/local
