@@ -98,14 +98,14 @@ if __name__ == '__main__':
             print(' '.join(cmd))
             subprocess.check_call(' '.join(cmd), shell=True)
             ## patches
-            if cfg['patches']:
+            if cfg.get('patches'):
                 for patch in cfg['patches']:
                     cmd = ['curl -L {patch} | patch -p1 -d/tmp/det']
                     print(' '.join(cmd))
                     subprocess.check_call(' '.join(cmd), shell=True)
             ## build
             cxxflags = ''
-            if cfg['cxxflags']:
+            if cfg.get('cxxflags'):
                 cxxflags = cfg['cxxflags']
             cmd = [
                 'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
