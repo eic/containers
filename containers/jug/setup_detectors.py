@@ -108,10 +108,10 @@ if __name__ == '__main__':
             if cfg.get('cxxflags'):
                 cxxflags = cfg['cxxflags']
             cmd = [
-                'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
-                '-DCMAKE_CXX_FLAGS="-Wno-psabi {cxxflags}"',
-                '-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache',
-                '-DCMAKE_INSTALL_PREFIX={prefix}'.format(prefix=prefix)
+                f'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
+                f'-DCMAKE_CXX_FLAGS="-Wno-psabi {cxxflags}"',
+                f'-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache',
+                f'-DCMAKE_INSTALL_PREFIX={prefix}'
             ]
             print(' '.join(cmd))
             subprocess.check_call(' '.join(cmd), shell=True)
