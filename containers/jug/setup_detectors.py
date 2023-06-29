@@ -100,7 +100,7 @@ if __name__ == '__main__':
             ## patches
             if cfg.get('patches'):
                 for patch in cfg['patches']:
-                    cmd = ['curl -L {patch} | patch -p1 -d/tmp/det']
+                    cmd = [f'curl -L {patch} | patch -p1 -d/tmp/det']
                     print(' '.join(cmd))
                     subprocess.check_call(' '.join(cmd), shell=True)
             ## build
