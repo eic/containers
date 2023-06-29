@@ -84,20 +84,41 @@ if __name__ == '__main__':
             data_dir = '{}/share/{}'.format(prefix, det)
             ## build and install
             print('    - {}-{}'.format(det, cfg['version']))
-            ## clone/build/install detector libraries
-            cmd = ['rm -rf /tmp/build /tmp/det',
-                    '&&',
-                    'git clone --depth 1 -b {version} {repo_grp}/{detector}.git /tmp/det'.format(
-                        version=cfg['version'], 
-                        repo_grp=DETECTOR_REPO_GROUP,
-                        detector=det),
-                    '&&',
-                    'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
-                    '-DCMAKE_CXX_FLAGS="-Wno-psabi"',
-                    '-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache',
-                    '-DCMAKE_INSTALL_PREFIX={prefix}'.format(prefix=prefix),
-                    '&&',
-                    'cmake --build /tmp/build -j$(($(($(nproc)/4))+1)) -- install']
+            ## cleanup
+            cmd = ['rm -rf /tmp/build /tmp/det']
+            print(' '.join(cmd))
+            subprocess.check_call(' '.join(cmd), shell=True)
+            ## clone
+            cmd = [
+                'git clone --depth 1 -b {version} {repo_grp}/{detector}.git /tmp/det'.format(
+                    version=cfg['version'],
+                    repo_grp=DETECTOR_REPO_GROUP,
+                    detector=det)
+            ]
+            print(' '.join(cmd))
+            subprocess.check_call(' '.join(cmd), shell=True)
+            ## patches
+            if cfg['patches']:
+                for patch in cfg['patches']:
+                    cmd = ['curl -L {patch} | patch -p1 -d/tmp/det']
+                    print(' '.join(cmd))
+                    subprocess.check_call(' '.join(cmd), shell=True)
+            ## build
+            cxxflags = ''
+            if cfg['cxxflags']:
+                cxxflags = cfg['cxxflags']
+            cmd = [
+                'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
+                '-DCMAKE_CXX_FLAGS="-Wno-psabi {cxxflags}"',
+                '-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache',
+                '-DCMAKE_INSTALL_PREFIX={prefix}'.format(prefix=prefix)
+            ]
+            print(' '.join(cmd))
+            subprocess.check_call(' '.join(cmd), shell=True)
+            ## install
+            cmd = [
+                'cmake --build /tmp/build -j$(($(($(nproc)/4))+1)) -- install'
+            ]
             print(' '.join(cmd))
             subprocess.check_call(' '.join(cmd), shell=True)
             ## write version info to jug_info if available
