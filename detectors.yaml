@@ -3,9 +3,13 @@ detectors:
     nightly:
       default: true
       version: main
+      patches:
+      - https://github.com/eic/epic/pull/449.patch
       cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
     main:
       version: main
+      patches:
+      - https://github.com/eic/epic/pull/449.patch
       cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
     22.12.0:
       version: 22.12.0
