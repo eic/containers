@@ -120,7 +120,7 @@ if __name__ == '__main__':
                 'cmake --build /tmp/build -j$(($(($(nproc)/4))+1)) -- install'
             ]
             print(' '.join(cmd))
-            subprocess.check_call(' '.join(cmd), shell=True)
+            subprocess.check_output(' '.join(cmd), shell=True)
             ## write version info to jug_info if available
             if os.path.exists('/etc/jug_info'):
                 cmd = ['cd /tmp/det',
