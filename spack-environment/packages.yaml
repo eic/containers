@@ -274,7 +274,7 @@ packages:
     - +opengl
   root:
     require:
-    - '@6.26.10'
+    - '@6.28.04'
     - cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl
     - any_of: [+opengl +x, -opengl -x]
   spdlog:
