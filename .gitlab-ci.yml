@@ -17,9 +17,6 @@ variables:
   GH_REGISTRY_USER: eic
   GH_PUSH: 1
 
-  ## Also export the raw builder image, will be stored on DH only
-  EXPORT_BUILDER: 0
-
   ## TLS error resiliency: number of retries and second wait between tries 
   ## (wait time is doubled with each attempt)
   DOCKER_NTRIES: 5
@@ -31,7 +28,7 @@ variables:
   ## is this nightly or not?
   NIGHTLY:
 
-  ## Additional options for docker build (e.g. ----no-cache)
+  ## Additional options for docker build (e.g. --no-cache)
   BUILD_OPTIONS:
 
   ## Default version and tags
@@ -228,24 +225,12 @@ jug_dev:default:
     - version
     - base
   script:
-    ## Which targets to build
-    - TARGETS="export"
-    - |
-      if [ ${EXPORT_BUILDER} = 1 ]; then
-        TARGETS="builder ${TARGETS}"
-      fi
     ## Setup mirrors.yaml with rw mirror secrets
     - cat mirrors.yaml.in | envsubst > mirrors.yaml
     ## Build targets
     - source spack.sh ; 
-      source eic-spack.sh ; 
-      for target in ${TARGETS} ; do
-        if [ ! ${target} = export ] ; then
-          suffix=-${target} ;
-        fi ;
-        docker buildx build --push ${BUILD_OPTIONS}
-                   --target ${target}
-                   ${CACHE_FLAG}
+      source eic-spack.sh ;
+      docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}${suffix}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}${suffix}}
@@ -270,7 +255,6 @@ jug_dev:default:
                    --build-context spack-environment=spack-environment
                    --secret id=mirrors,src=mirrors.yaml
                    containers/jug
-      ; done
 
 jug_xl:default:
   parallel:
