@@ -17,9 +17,6 @@ variables:
   GH_REGISTRY_USER: eic
   GH_PUSH: 1
 
-  ## Also export the raw builder image, will be stored on DH only
-  EXPORT_BUILDER: 0
-
   ## TLS error resiliency: number of retries and second wait between tries 
   ## (wait time is doubled with each attempt)
   DOCKER_NTRIES: 5
@@ -228,12 +225,6 @@ jug_dev:default:
     - version
     - base
   script:
-    ## Which targets to build
-    - TARGETS="export"
-    - |
-      if [ ${EXPORT_BUILDER} = 1 ]; then
-        TARGETS="builder ${TARGETS}"
-      fi
     ## Disable caching
     - CACHE_FLAG=""
     - |
@@ -246,12 +237,7 @@ jug_dev:default:
     ## Build targets
     - source spack.sh ; 
       source eic-spack.sh ; 
-      for target in ${TARGETS} ; do
-        if [ ! ${target} = export ] ; then
-          suffix=-${target} ;
-        fi ;
-        docker buildx build --push
-                   --target ${target}
+      docker buildx build --push
                    ${CACHE_FLAG}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}${suffix}
                    ${EXPORT_TAG:+
@@ -277,7 +263,6 @@ jug_dev:default:
                    --build-context spack-environment=spack-environment
                    --secret id=mirrors,src=mirrors.yaml
                    containers/jug
-      ; done
 
 jug_xl:default:
   parallel:
