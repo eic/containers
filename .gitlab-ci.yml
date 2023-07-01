@@ -28,8 +28,8 @@ variables:
   ## is this nightly or not?
   NIGHTLY:
 
-  ## Force a rebuild without using cache
-  FORCE_NOCACHE: 0
+  ## Additional options for docker build (e.g. --no-cache)
+  BUILD_OPTIONS:
 
   ## Default version and tags
   ## - internal tag used for the CI. Also temporarily tagged
@@ -194,7 +194,7 @@ base:
   needs:
     - version
   script:
-    - docker buildx build --push
+    - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -225,20 +225,12 @@ jug_dev:default:
     - version
     - base
   script:
-    ## Disable caching
-    - CACHE_FLAG=""
-    - |
-      if [ $FORCE_NOCACHE = 1 ]; then
-        echo "FORCE_NOCACHE set"
-        export CACHE_FLAG="--no-cache"
-      fi
     ## Setup mirrors.yaml with rw mirror secrets
     - cat mirrors.yaml.in | envsubst > mirrors.yaml
     ## Build targets
     - source spack.sh ; 
-      source eic-spack.sh ; 
-      docker buildx build --push
-                   ${CACHE_FLAG}
+      source eic-spack.sh ;
+      docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}${suffix}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}${suffix}}
@@ -279,7 +271,7 @@ jug_xl:default:
     - version
     - jug_dev:default
   script:
-    - docker buildx build --push
+    - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -324,7 +316,7 @@ jug_xl:nightly:
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
-    - docker buildx build --push
+    - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${NIGHTLY:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
@@ -363,7 +355,8 @@ jug_xl:feature:
         DETECTOR_BRANCH:
           - main
   script:
-    - docker buildx build --load --tag ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
+    - docker buildx build --load ${BUILD_OPTIONS}
+                   --tag ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
                    --file containers/jug/feature.Dockerfile
                    --build-arg INTERNAL_TAG=${NIGHTLY_TAG}
                    --build-arg DETECTOR=${DETECTOR}
