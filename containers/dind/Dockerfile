@@ -17,6 +17,7 @@ RUN apt-get update && \
     gettext \
     git \
     iptables \
+    libglib2.0-dev \
     libgpgme11-dev \
     libseccomp-dev \
     libssl-dev \
@@ -29,28 +30,33 @@ RUN apt-get update && \
     squashfs-tools \
     wget
 
-RUN cd /tmp \
-    && export VERSION=1.15.6 OS=linux ARCH=amd64 && \
-    wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz && \
-    tar -C /usr/local -xzvf go$VERSION.$OS-$ARCH.tar.gz && \
-    rm go$VERSION.$OS-$ARCH.tar.gz 
+# Install Go
+ARG GO_OS=linux
+ARG GO_ARCH=amd64
+ARG GO_VERSION=1.20.5
+ARG GO_URL=https://dl.google.com/go/go${GO_VERSION}.${GO_OS}-${GO_ARCH}.tar.gz
+RUN curl -L ${GO_URL} | tar -C /usr/local -xzvf -
 
-RUN cd /tmp \
-    && export PATH=/usr/local/go/bin:$PATH \
-    && export VERSION=3.7.4 && \
-    wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz && \ 
-    tar -xzf singularity-${VERSION}.tar.gz && \
-    cd singularity \
-    && ./mconfig && \
-    make -C builddir && \
-    make -C builddir install
+# Install Singularity CE
+ARG SINGULARITY_VERSION=3.11.4
+ARG SINGULARITY_URL=https://github.com/sylabs/singularity/releases/download/v${SINGULARITY_VERSION}/singularity-ce-${SINGULARITY_VERSION}.tar.gz
+RUN curl -L ${SINGULARITY_URL} | tar -C /tmp -xzf - \
+ && cd /tmp/singularity-ce-${SINGULARITY_VERSION} \
+ && export PATH=/usr/local/go/bin:$PATH \
+ && ./mconfig \
+ && make -C builddir \
+ && make -C builddir install \
+ && rm -rf /tmp/singularity-ce-${SINGULARITY_VERSION}
 
-# Install Docker from Docker Inc. repositories. 
-RUN export VERSION=20.10.17 \
- && curl -sSL https://get.docker.com/ | sh
-# Install the magic wrapper. 
+# Install Docker
+ARG DOCKER_VERSION=24
+ADD https://get.docker.com/ /tmp/get-docker.sh
+RUN bash /tmp/get-docker.sh --version ${DOCKER_VERSION}
+
+# Install the magic wrapper.
 ADD ./wrapdocker /usr/local/bin/wrapdocker
 RUN chmod +x /usr/local/bin/wrapdocker
-# Define additional metadata for our image. 
+
+# Define additional metadata for our image.
 VOLUME /var/lib/docker
 CMD ["wrapdocker"]
