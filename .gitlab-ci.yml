@@ -180,7 +180,7 @@ dind-publish:
   stage: dind
   needs:
     - version
-    - dind
+    - dind-build
   script:
     - docker buildx build --push
         --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
