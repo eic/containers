@@ -192,20 +192,20 @@ version:
 dind-build:
   extends: .dind
   variables:
-  - EXPORT_TAG:
+    EXPORT_TAG:
 
 dind-publish:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${INTERNAL_TAG}
   extends: .dind
   variables:
-  - EXPORT_TAG: ${EXPORT_TAG}
+    EXPORT_TAG: ${EXPORT_TAG}
 
 dind-default:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${INTERNAL_TAG}
   extends: .dind
   when: manual
   variables:
-  - EXPORT_TAG: master
+    EXPORT_TAG: master
 
 base:
   parallel:
