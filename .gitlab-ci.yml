@@ -102,6 +102,7 @@ version:
   stage: config
   script:
     - |
+      uname -a ;
       if [ "x${CI_PIPELINE_SOURCE}" = "xmerge_request_event" ]; then
         VERSION="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
         INTERNAL_TAG="${VERSION}"
