@@ -162,6 +162,22 @@ version:
       when: on_success
     - when: never
 
+.dind:
+  stage: dind
+  extends: .build
+  variables:
+  - BUILD_IMAGE: dind
+  script:
+    - docker buildx build --push
+        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+        ${EXPORT_TAG:+
+          ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+          ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+          ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+        }        
+        --file containers/dind/Dockerfile
+        containers/dind
+
 ## Images:
 ## debian_testing_base --> jug_dev  --> jug_xl
 ##             ---------------> jug_sim
@@ -174,39 +190,22 @@ version:
 
 ## Docker-in-docker image
 dind-build:
-  parallel:
-    matrix:
-      - BUILD_IMAGE: dind
-  extends: .build
-  stage: dind
-  needs:
-    - version
-  script:
-    - docker buildx build --push
-        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}     
-        --file containers/dind/Dockerfile
-        containers/dind
+  extends: .dind
+  variables:
+  - EXPORT_TAG:
 
 dind-publish:
-  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-  parallel:
-    matrix:
-      - BUILD_IMAGE: dind
-  extends: .build
-  stage: dind
-  needs:
-    - version
-    - dind-build
-  script:
-    - docker buildx build --push
-        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-        ${EXPORT_TAG:+
-          ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-          ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-          ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-        }        
-        --file containers/dind/Dockerfile
-        containers/dind
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${INTERNAL_TAG}
+  extends: .dind
+  variables:
+  - EXPORT_TAG: ${EXPORT_TAG}
+
+dind-default:
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${INTERNAL_TAG}
+  extends: .dind
+  when: manual
+  variables:
+  - EXPORT_TAG: master
 
 base:
   parallel:
