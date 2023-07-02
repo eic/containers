@@ -191,10 +191,12 @@ dind-build:
   extends: .dind
   variables:
     BUILD_IMAGE: dind
-    EXPORT_TAG:
+    EXPORT_TAG: ""
 
 dind-publish:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${INTERNAL_TAG}
+  needs:
+    - dind-build
   extends: .dind
   variables:
     BUILD_IMAGE: dind
@@ -202,6 +204,8 @@ dind-publish:
 
 dind-default:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${INTERNAL_TAG}
+  needs: 
+    - dind-build
   extends: .dind
   when: manual
   variables:
