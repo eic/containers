@@ -165,8 +165,6 @@ version:
 .dind:
   stage: dind
   extends: .build
-  variables:
-  - BUILD_IMAGE: dind
   script:
     - docker buildx build --push
         --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
@@ -192,12 +190,14 @@ version:
 dind-build:
   extends: .dind
   variables:
+    BUILD_IMAGE: dind
     EXPORT_TAG:
 
 dind-publish:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${INTERNAL_TAG}
   extends: .dind
   variables:
+    BUILD_IMAGE: dind
     EXPORT_TAG: ${EXPORT_TAG}
 
 dind-default:
@@ -205,6 +205,7 @@ dind-default:
   extends: .dind
   when: manual
   variables:
+    BUILD_IMAGE: dind
     EXPORT_TAG: master
 
 base:
