@@ -157,7 +157,7 @@ version:
 ## oneapi_runtime + jug_xl --> oneapi_prod 
 
 ## Docker-in-docker image
-dind:
+dind-build:
   parallel:
     matrix:
       - BUILD_IMAGE: dind
@@ -165,6 +165,22 @@ dind:
   stage: dind
   needs:
     - version
+  script:
+    - docker buildx build --push
+        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}     
+        --file containers/dind/Dockerfile
+        containers/dind
+
+dind-publish:
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+  parallel:
+    matrix:
+      - BUILD_IMAGE: dind
+  extends: .build
+  stage: dind
+  needs:
+    - version
+    - dind
   script:
     - docker buildx build --push
         --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
