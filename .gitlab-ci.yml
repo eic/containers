@@ -165,6 +165,9 @@ version:
 .dind:
   stage: dind
   extends: .build
+  variables:
+    BUILD_IMAGE: dind
+    EXPORT_TAG: ${CI_COMMIT_REF_NAME}
   script:
     - docker buildx build --push
         --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
@@ -189,24 +192,18 @@ version:
 ## Docker-in-docker image
 dind-build:
   extends: .dind
-  variables:
-    BUILD_IMAGE: dind
-    EXPORT_TAG: ${CI_COMMIT_REF_NAME}
 
-dind-publish:
+dind-confirm:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
+  extends: .dind
   needs:
     - dind-build
-  extends: .dind
-  variables:
-    BUILD_IMAGE: dind
-    EXPORT_TAG: ${CI_COMMIT_REF_NAME}
 
-dind-default:
+dind-deploy:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
-  needs: 
-    - dind-build
   extends: .dind
+  needs: 
+    - dind-confirm
   rules:
     - when: manual
   variables:
