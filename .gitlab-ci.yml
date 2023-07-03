@@ -207,7 +207,8 @@ dind-default:
   needs: 
     - dind-build
   extends: .dind
-  when: manual
+  rules:
+    - when: manual
   variables:
     BUILD_IMAGE: dind
     EXPORT_TAG: master
