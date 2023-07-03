@@ -167,7 +167,7 @@ version:
   extends: .build
   script:
     - docker buildx build --push
-        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
         ${EXPORT_TAG:+
           ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
           ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -191,7 +191,7 @@ dind-build:
   extends: .dind
   variables:
     BUILD_IMAGE: dind
-    EXPORT_TAG: ""
+    EXPORT_TAG: ${CI_COMMIT_REF_NAME}
 
 dind-publish:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
@@ -200,6 +200,7 @@ dind-publish:
   extends: .dind
   variables:
     BUILD_IMAGE: dind
+    EXPORT_TAG: ${CI_COMMIT_REF_NAME}
 
 dind-default:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
