@@ -194,7 +194,7 @@ dind-build:
     EXPORT_TAG: ""
 
 dind-publish:
-  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${EXPORT_TAG}
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
   needs:
     - dind-build
   extends: .dind
@@ -202,7 +202,7 @@ dind-publish:
     BUILD_IMAGE: dind
 
 dind-default:
-  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${EXPORT_TAG}
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
   needs: 
     - dind-build
   extends: .dind
