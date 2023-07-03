@@ -173,7 +173,9 @@ RUN du -sh $SPACK_ROOT                                                  \
 ## See
 #https://askubuntu.com/questions/1034313/ubuntu-18-4-libqt5core-so-5-cannot-open-shared-object-file-no-such-file-or-dir
 ## and links therin for more info
-RUN strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
+RUN if [ -f /usr/local/lib/libQt5Core.so ] ; then                       \
+      strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so;\
+    fi
 
 RUN spack debug report                                                  \
       | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//"             \
