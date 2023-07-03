@@ -200,7 +200,6 @@ dind-publish:
   extends: .dind
   variables:
     BUILD_IMAGE: dind
-    EXPORT_TAG: ${EXPORT_TAG}
 
 dind-default:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/dind:${EXPORT_TAG}
