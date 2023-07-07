@@ -481,7 +481,7 @@ benchmarks:physics:default:
 benchmarks:reconstruction:nightly:
   stage: benchmarks
   rules:
-    - [!reference '.nightly', rules]
+    - !reference ['.nightly', rules]
   needs: 
     - version
     - jug_xl:nightly
@@ -497,7 +497,7 @@ benchmarks:reconstruction:nightly:
 benchmarks:physics:nightly:
   stage: benchmarks
   rules:
-    - [!reference '.nightly', rules]
+    - !reference ['.nightly', rules]
   needs: 
     - version
     - jug_xl:nightly
