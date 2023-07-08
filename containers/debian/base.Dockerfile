@@ -80,6 +80,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
           gcc${GCC} g++${GCC} gfortran${GCC}                            \
    && apt-get -yqq install                                              \
           clang${CLANG} clang-tidy${CLANG} clang-format${CLANG}         \
+          iwyu                                                          \
    && update-alternatives --install /usr/bin/gcc gcc                    \
                                     /usr/bin/gcc${GCC} 100              \
    && update-alternatives --install /usr/bin/g++ g++                    \
@@ -95,6 +96,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
    && apt-get -yqq install                                              \
           gcc g++ gfortran                                              \
           clang clang-tidy clang-format                                 \
+          iwyu                                                          \
  ; fi                                                                   \
  && apt-get -yqq autoremove                                             \
  && gcc --version                                                       \
