@@ -45,3 +45,6 @@ detectors:
     23.07.0:
       version: 23.07.0
       cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
+    23.07.1:
+      version: 23.07.1
+      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
