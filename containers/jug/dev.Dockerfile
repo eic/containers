@@ -193,14 +193,13 @@ COPY profile.d/z11_jug_env.sh /etc/profile.d
 COPY singularity.d /.singularity.d
 
 ## Add minio client into /usr/local/bin
-ADD https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc-amd64
-ADD https://dl.min.io/client/mc/release/linux-arm64/mc /usr/local/bin/mc-arm64
+ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc-amd64
+ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-arm64/mc /usr/local/bin/mc-arm64
 RUN declare -A target=(                                                 \
       ["linux/amd64"]="amd64"                                           \
       ["linux/arm64"]="arm64"                                           \
     )                                                                   \
  && mv /usr/local/bin/mc-${target[${TARGETPLATFORM}]} /usr/local/bin/mc \
- && chmod a+x /usr/local/bin/mc                                         \
  && unset target[${TARGETPLATFORM}]                                     \
  && for t in ${target[*]} ; do                                          \
       rm /usr/local/bin/mc-${t} ;                                       \
