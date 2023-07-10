@@ -383,39 +383,39 @@ jug_xl:nightly:
                    containers/jug
 
 jug_xl:feature:
+  parallel:
+    matrix:
+      - BASE_IMAGE: jug_xl
+        BUILD_IMAGE: jug_xl
+        PLATFORM: linux/amd64,linux/arm64/v8
+        DETECTOR: epic
+        DETECTOR_BRANCH:
+        - main
   extends: .build
   stage: jug
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
     - when: never
   needs:
     - version
     - jug_xl:nightly
-  variables:
-    BUILD_IMAGE: "jug_xl"
-  parallel:
-    matrix:
-      - DETECTOR: epic
-        DETECTOR_BRANCH:
-          - main
   script:
-    - docker buildx build --load ${BUILD_OPTIONS}
+    - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
+                   ${NIGHTLY:+
+                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}}
+                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}}
+                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}}
+                   }
                    --file containers/jug/feature.Dockerfile
+                   --platform ${PLATFORM}
                    --build-arg INTERNAL_TAG=${NIGHTLY_TAG}
                    --build-arg DETECTOR=${DETECTOR}
                    --build-arg DETECTOR_BRANCH=${DETECTOR_BRANCH}
                    containers/jug
-    - |
-      PUSH_FLAG=""
-      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
-        PUSH_FLAG="--eicweb"
-      fi
-      FEATURE_EXPORT_TAG="${VERSION}-${DETECTOR}-${DETECTOR_BRANCH}-stable"
-    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
-                                 -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                 ${FEATURE_EXPORT_TAG} ${PUSH_FLAG}
 
 .singularity:
   stage: deploy
