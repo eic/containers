@@ -54,8 +54,7 @@ ADD https://get.docker.com/ /tmp/get-docker.sh
 RUN bash /tmp/get-docker.sh --version ${DOCKER_VERSION}
 
 # Install the magic wrapper.
-ADD ./wrapdocker /usr/local/bin/wrapdocker
-RUN chmod +x /usr/local/bin/wrapdocker
+ADD --chmod=0755 wrapdocker /usr/local/bin/wrapdocker
 
 # Define additional metadata for our image.
 VOLUME /var/lib/docker
