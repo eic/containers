@@ -140,5 +140,10 @@ RUN --mount=type=cache,target=/ccache/,sharing=locked,id=${TARGETPLATFORM}      
  && ccache --show-stats                                                         \
  && rm /tmp/setup_detectors.py
 
+## eic-news
+COPY --chmod=0755 eic-news /usr/local/bin/eic-news
+RUN echo "test -f $HOME/.eic-news && source /usr/local/bin/eic-news"            \
+    > /etc/profile.d/z13_eic-news.sh 
+
 ## Hotfix for misbehaving OSG nodes
 RUN mkdir /hadoop

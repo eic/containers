@@ -1,0 +1,22 @@
+#!/bin/bash
+
+news=$HOME/.eic-news
+
+# run only if stdin and sterr
+if [[ -t 0 && -t 2 && ! -f $HOME/.hushlogin && -f $news ]] ; then
+
+  if [[ $- == *i* ]] ; then
+    # sourced: print once a day
+    if [[ -z $(find $HOME/.eic-news -atime -1) ]] ; then
+      cat $news
+    fi
+  else
+    # else: print always
+    cat $news
+  fi
+
+  # update once a day
+  if [[ -z $(find $HOME/.eic-news -mtime -1) ]] ; then
+    (&>/dev/null curl --silent --connect-timeout 5 --location https://eic.github.io/motd --output $news &)
+  fi
+fi
