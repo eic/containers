@@ -1,5 +1,17 @@
+# This file contains the preferences for versions and variants.
+# Note that spack can deviate from these preferences for various reasons:
+# - if explicitly requested in spack.yaml
+# - if required to satisfy explicit requests
+# - if reuse == true and build caches contain other versions/variants
+#   (this is disabled by concretize:reuse:false in concretizer.yaml)
+#
+# The variants in packages:all:variants are overridden by package-specific 
+# variants. Therefore, we use the pattern require:any_of:[+variant,@:]
+# which sets the variant or doesn't do anything if not supported.
+#
 packages:
   all:
     compiler: [gcc]
-    variants:
-      +ipo build_type=Release
+    require:
+    - any_of: [+ipo, '@:']
+    - any_of: [build_type=Release, '@:']
