@@ -27,19 +27,14 @@ variables:
 
   ## is this nightly or not?
   NIGHTLY:
+  ## Add to tag
+  NIGHTLY_TAG: "nightly"
 
   ## Additional options for docker build (e.g. --no-cache)
   BUILD_OPTIONS:
 
-  ## Default version and tags
-  ## - internal tag used for the CI. Also temporarily tagged
-  ##   on eicweb to communicate between jobs (removed in cleanup job)
-  ## - export tag to public registries, optional secondary export tag
-  VERSION: "${CI_COMMIT_REF_NAME}"
-  NIGHTLY_TAG: "nightly"
-  TESTING_TAG: "testing"
-  INTERNAL_TAG: "${TESTING_TAG}-${VERSION}"
-  EXPORT_TAG: ""
+  ## Internal tag used for the CI
+  INTERNAL_TAG: "${CI_COMMIT_REF_NAME}-${CI_PIPELINE_ID}"
 
 stages:
   - config
@@ -98,30 +93,36 @@ workflow:
 ## caching strategy for dispatch to multiple nodes and to avoid
 ##  --> try this strategy: https://medium.com/titansoft-engineering/docker-build-cache-sharing-on-multi-hosts-with-buildkit-and-buildx-eb8f7005918e
 
+## Default version and tags
+## - internal tag used for the CI. Also temporarily tagged
+##   on eicweb to communicate between jobs (removed in cleanup job)
+## - export tag to public registries, optional secondary export tag
 version:
   stage: config
   script:
     - |
       if [ "x${CI_PIPELINE_SOURCE}" = "xmerge_request_event" ]; then
         VERSION="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
-        INTERNAL_TAG="${VERSION}"
         NIGHTLY_TAG="${VERSION}-nightly"
         EXPORT_TAG="${VERSION}"
       elif [[ "$CI_COMMIT_TAG" =~ ^v[0-9.]+\.[0-9]+\.[0-9]+ ]]; then
         VERSION="${CI_COMMIT_TAG:1}"
-        INTERNAL_TAG="stable-tag-${VERSION}"
         EXPORT_TAG="${VERSION}"
-      elif [[ "$CI_COMMIT_BRANCH" = ^v[0-9.]+\.[0-9]+-stable ]]; then
+      elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-stable ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
-        INTERNAL_TAG="stable-br-${VERSION}"
         EXPORT_TAG="${VERSION}"
       elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-[a-z]+-stable ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
-        INTERNAL_TAG="stable-br-${VERSION}"
         EXPORT_TAG="${VERSION}"
+      elif [[ "$CI_COMMIT_BRANCH" =~ ^master$ ]]; then
+        VERSION="${CI_COMMIT_BRANCH}"
+        EXPORT_TAG="${VERSION}"
+      else
+        VERSION="${CI_COMMIT_REF_NAME}-${CI_PIPELINE_ID}"
+        EXPORT_TAG=""
       fi
-      echo "VERSION=$VERSION" >> build.env
       echo "INTERNAL_TAG=$INTERNAL_TAG" >> build.env
+      echo "VERSION=$VERSION" >> build.env
       echo "NIGHTLY_TAG=$NIGHTLY_TAG" >> build.env
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
       cat build.env
