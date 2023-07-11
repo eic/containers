@@ -142,7 +142,8 @@ concretize:
   script:
     - spack debug report
   artifacts:
-    - /opt/spack-environment/dev/spack.lock
+    paths:
+      - /opt/spack-environment/dev/spack.lock
 
 ## base job settings for all build jobs
 .build:
