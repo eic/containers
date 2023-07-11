@@ -38,7 +38,7 @@ variables:
   VERSION: "${CI_COMMIT_REF_NAME}"
   NIGHTLY_TAG: "nightly"
   TESTING_TAG: "testing"
-  INTERNAL_TAG: "${TESTING_TAG}-${VERSION}"
+  INTERNAL_TAG: "${VERSION}-${CI_PIPELINE_ID}"
   EXPORT_TAG: ""
 
 stages:
@@ -111,13 +111,16 @@ version:
         VERSION="${CI_COMMIT_TAG:1}"
         INTERNAL_TAG="stable-tag-${VERSION}"
         EXPORT_TAG="${VERSION}"
-      elif [[ "$CI_COMMIT_BRANCH" = ^v[0-9.]+\.[0-9]+-stable ]]; then
+      elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-stable ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
         INTERNAL_TAG="stable-br-${VERSION}"
         EXPORT_TAG="${VERSION}"
       elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-[a-z]+-stable ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
         INTERNAL_TAG="stable-br-${VERSION}"
+        EXPORT_TAG="${VERSION}"
+      elif [[ "$CI_COMMIT_BRANCH" =~ ^master$ ]]; then
+        VERSION="${CI_COMMIT_BRANCH}"
         EXPORT_TAG="${VERSION}"
       fi
       echo "VERSION=$VERSION" >> build.env
