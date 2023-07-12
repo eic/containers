@@ -34,7 +34,7 @@ variables:
   BUILD_OPTIONS:
 
   ## Internal tag used for the CI
-  INTERNAL_TAG: "${CI_COMMIT_REF_NAME}-${CI_PIPELINE_ID}"
+  INTERNAL_TAG: "pipeline-${CI_PIPELINE_ID}"
 
 stages:
   - config
