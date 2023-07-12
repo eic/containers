@@ -1,2 +1,8 @@
-concretizer: 
+# This file contains the preferences for the concretizer
+# - we disable reuse of build cache products during concretization
+#   (but build cache products will get used if available during install)
+# - we want unified environments that can be installed in a simple view
+#
+concretizer:
+  reuse: false
   unify: true
