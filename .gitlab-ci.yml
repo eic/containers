@@ -136,15 +136,6 @@ version:
     reports:
       dotenv: build.env
 
-concretize:
-  image: eicweb.phy.anl.gov:4567/containers/eic_container/jug_dev:nightly
-  stage: config
-  script:
-    - spack debug report
-  artifacts:
-    paths:
-      - /opt/spack-environment/dev/spack.lock
-
 ## base job settings for all build jobs
 .build:
   rules:
