@@ -147,6 +147,15 @@ version:
       done
     - docker buildx create --name builder --driver docker-container --bootstrap --use
 
+## rules for nightly jobs
+.nightly:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+    - when: never
+
 ## Images:
 ## debian_testing_base --> jug_dev  --> jug_xl
 ##             ---------------> jug_sim
@@ -339,7 +348,12 @@ jug_xl:nightly:
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
     - docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-nightly
+                   ${EXPORT_TAG:+
+                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
+                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
+                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
+                   }
                    ${NIGHTLY:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
@@ -440,10 +454,8 @@ jug_xl:singularity:nightly:
     - mkdir build
     - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
 
-benchmarks:reconstruction:
+benchmarks:reconstruction:default:
   stage: benchmarks
-  rules:
-    - if:  '$CI_SERVER_HOST == "eicweb.phy.anl.gov"'
   needs: 
     - version
     - jug_xl:default
@@ -456,16 +468,47 @@ benchmarks:reconstruction:
     strategy: depend
   allow_failure: true
   
-benchmarks:physics:
+benchmarks:physics:default:
   stage: benchmarks
-  rules:
-    - if:  '$CI_SERVER_HOST == "eicweb.phy.anl.gov"'
   needs: 
     - version
     - jug_xl:default
   variables:
     RECO: "eicrecon"
     BENCHMARKS_TAG: "$INTERNAL_TAG"
+    BENCHMARKS_CONTAINER: "jug_xl"
+    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
+  trigger:
+    project: EIC/benchmarks/physics_benchmarks
+    strategy: depend
+  allow_failure: false
+
+benchmarks:reconstruction:nightly:
+  stage: benchmarks
+  rules:
+    - !reference ['.nightly', rules]
+  needs: 
+    - version
+    - jug_xl:nightly
+  variables:
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_CONTAINER: "jug_xl"
+    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
+  trigger:
+    project: EIC/benchmarks/reconstruction_benchmarks
+    strategy: depend
+  allow_failure: true
+  
+benchmarks:physics:nightly:
+  stage: benchmarks
+  rules:
+    - !reference ['.nightly', rules]
+  needs: 
+    - version
+    - jug_xl:nightly
+  variables:
+    RECO: "eicrecon"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
