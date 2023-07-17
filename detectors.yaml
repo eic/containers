@@ -3,47 +3,37 @@ detectors:
     nightly:
       default: true
       version: main
-      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
     main:
       version: main
-      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
-    22.12.0:
-      version: 22.12.0
-      patches:
-      - https://github.com/eic/epic/pull/449.patch
-      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
     23.01.0:
       version: 23.01.0
       patches:
       - https://github.com/eic/epic/pull/449.patch
-      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
     23.03.0:
       version: 23.03.0
       patches:
       - https://github.com/eic/epic/pull/449.patch
-      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
     23.05.0:
       version: 23.05.0
       patches:
       - https://github.com/eic/epic/pull/449.patch
-      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
     23.05.1:
       version: 23.05.1
       patches:
       - https://github.com/eic/epic/pull/449.patch
-      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
     23.05.2:
       version: 23.05.2
       patches:
       - https://github.com/eic/epic/pull/449.patch
-      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
     23.06.0:
       version: 23.06.0
       patches:
       - https://github.com/eic/epic/pull/449.patch
-      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
     23.06.1:
       version: 23.06.1
       patches:
       - https://github.com/eic/epic/pull/449.patch
-      cxxflags: -DDD4HEP_FIELD_TYPE_OVERRIDE=field_type
+    23.07.0:
+      version: 23.07.0
+    23.07.1:
+      version: 23.07.1

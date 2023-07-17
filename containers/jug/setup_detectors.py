@@ -105,6 +105,8 @@ if __name__ == '__main__':
                     subprocess.check_call(' '.join(cmd), shell=True)
             ## build
             cxxflags = ''
+            if os.environ['CXXFLAGS']:
+                cxxflags = os.environ['CXXFLAGS']
             if cfg.get('cxxflags'):
                 cxxflags = cfg['cxxflags']
             cmd = [

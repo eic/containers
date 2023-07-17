@@ -173,7 +173,9 @@ RUN du -sh $SPACK_ROOT                                                  \
 ## See
 #https://askubuntu.com/questions/1034313/ubuntu-18-4-libqt5core-so-5-cannot-open-shared-object-file-no-such-file-or-dir
 ## and links therin for more info
-RUN strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
+RUN if [ -f /usr/local/lib/libQt5Core.so ] ; then                       \
+      strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so;\
+    fi
 
 RUN spack debug report                                                  \
       | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//"             \
@@ -191,14 +193,13 @@ COPY profile.d/z11_jug_env.sh /etc/profile.d
 COPY singularity.d /.singularity.d
 
 ## Add minio client into /usr/local/bin
-ADD https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc-amd64
-ADD https://dl.min.io/client/mc/release/linux-arm64/mc /usr/local/bin/mc-arm64
+ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc-amd64
+ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-arm64/mc /usr/local/bin/mc-arm64
 RUN declare -A target=(                                                 \
       ["linux/amd64"]="amd64"                                           \
       ["linux/arm64"]="arm64"                                           \
     )                                                                   \
  && mv /usr/local/bin/mc-${target[${TARGETPLATFORM}]} /usr/local/bin/mc \
- && chmod a+x /usr/local/bin/mc                                         \
  && unset target[${TARGETPLATFORM}]                                     \
  && for t in ${target[*]} ; do                                          \
       rm /usr/local/bin/mc-${t} ;                                       \
