@@ -348,7 +348,12 @@ jug_xl:nightly:
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
     - docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-nightly
+                   ${EXPORT_TAG:+
+                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
+                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
+                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
+                   }
                    ${NIGHTLY:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
@@ -486,7 +491,7 @@ benchmarks:reconstruction:nightly:
     - version
     - jug_xl:nightly
   variables:
-    BENCHMARKS_TAG: "${NIGHTLY_TAG}"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
@@ -503,7 +508,7 @@ benchmarks:physics:nightly:
     - jug_xl:nightly
   variables:
     RECO: "eicrecon"
-    BENCHMARKS_TAG: "${NIGHTLY_TAG}"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
