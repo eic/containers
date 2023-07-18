@@ -256,11 +256,9 @@ jug_dev:default:
     - version
     - base
   script:
-    ## Setup mirrors.yaml with rw mirror secrets
-    - cat mirrors.yaml.in | envsubst > mirrors.yaml
-    ## Build targets
     - source spack.sh ; 
       source eic-spack.sh ;
+      cat mirrors.yaml.in | envsubst > mirrors.yaml ;
       docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
