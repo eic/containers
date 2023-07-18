@@ -193,13 +193,13 @@ dind-build:
   extends: .dind
 
 dind-confirm:
-  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
   extends: .dind
   needs:
     - dind-build
 
 dind-deploy:
-  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${CI_COMMIT_REF_NAME}
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}
   extends: .dind
   needs: 
     - dind-confirm
