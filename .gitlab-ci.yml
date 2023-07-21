@@ -33,6 +33,9 @@ variables:
   ## Additional options for docker build (e.g. --no-cache)
   BUILD_OPTIONS:
 
+  ## Version to be set by external trigger
+  VERSION:
+
   ## Internal tag used for the CI
   INTERNAL_TAG: "pipeline-${CI_PIPELINE_ID}"
 
@@ -101,7 +104,10 @@ version:
   stage: config
   script:
     - |
-      if [ "x${CI_PIPELINE_SOURCE}" = "xmerge_request_event" ]; then
+      if [ -n "${VERSION}" ]; then
+        # external trigger with specified version
+        EXPORT_TAG="${VERSION}"
+      elif [ "x${CI_PIPELINE_SOURCE}" = "xmerge_request_event" ]; then
         VERSION="unstable-mr-${CI_MERGE_REQUEST_PROJECT_ID}-${CI_MERGE_REQUEST_IID}"
         NIGHTLY_TAG="${VERSION}-nightly"
         EXPORT_TAG="${VERSION}"
