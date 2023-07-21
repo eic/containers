@@ -42,6 +42,7 @@ RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
 
 SHELL ["docker-shell"]
 
+## Setup build configuration
 ARG jobs=64
 RUN declare -A target=(                                                 \
       ["linux/amd64"]="x86_64_v2"                                       \
@@ -61,8 +62,8 @@ RUN declare -A target=(                                                 \
  && spack config blame compilers
 
 ## Setup local buildcache mirrors
-RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
-    spack mirror add local /var/cache/spack-mirror/${SPACK_VERSION}     \
+RUN --mount=type=cache,target=/var/cache/spack                          \
+    spack mirror add local /var/cache/spack/mirror/${SPACK_VERSION}     \
  && spack buildcache update-index local                                 \
  && spack mirror list
 
@@ -71,7 +72,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ## - the write-enabled mirror is provided later as a secret mount
 ARG S3_ACCESS_KEY=""
 ARG S3_SECRET_KEY=""
-RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
+RUN --mount=type=cache,target=/var/cache/spack                          \
     if [ -n "${S3_ACCESS_KEY}" ] ; then                                 \
     spack mirror add --scope site                                       \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
@@ -81,7 +82,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     ; fi                                                                \
  && spack mirror list
 
-## Setup our custom package overrides
+## Setup eic-spack
 ENV EICSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/eic-spack
 ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="$SPACK_VERSION"
@@ -105,7 +106,7 @@ COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
-    --mount=type=cache,target=/var/cache/spack-mirror                   \
+    --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && export CCACHE_DIR=/ccache                                           \
@@ -116,7 +117,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
  && ccache --show-stats
 
 ## Create view at /usr/local
-RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
+RUN --mount=type=cache,target=/var/cache/spack                          \
     source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && spack env activate --dir ${SPACK_ENV}                               \
  && rm -r /usr/local                                                    \
@@ -126,9 +127,9 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ## This is useful when going to completely different containers,
 ## or intermittently to keep the buildcache step from taking too much time
 ARG CACHE_NUKE=""
-RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
+RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
     [ -z "${CACHE_NUKE}" ]                                              \
-    || rm -rf /var/cache/spack-mirror/${SPACK_VERSION}/build_cache/*
+    || rm -rf /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*
 
 ## Extra post-spack steps:
 ##   - Python packages
