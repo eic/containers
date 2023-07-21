@@ -123,13 +123,11 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
  && rm -r /usr/local                                                    \
  && spack env view enable /usr/local
 
-## Optional, nuke the buildcache after install, before (re)caching
-## This is useful when going to completely different containers,
-## or intermittently to keep the buildcache step from taking too much time
-ARG CACHE_NUKE=""
-RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
-    [ -z "${CACHE_NUKE}" ]                                              \
-    || rm -rf /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*
+## Clear the local source and buildcache before install
+RUN --mount=type=cache,target=/var/cache/spack                          \
+    find /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*         \
+         /var/cache/spack/_source-cache/archives*                       \
+      -atime +30 -print -delete
 
 ## Extra post-spack steps:
 ##   - Python packages
