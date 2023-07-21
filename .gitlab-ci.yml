@@ -258,6 +258,7 @@ jug_dev:default:
   script:
     - source spack.sh ; 
       source eic-spack.sh ;
+      export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml ;
       docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
