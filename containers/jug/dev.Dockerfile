@@ -125,9 +125,8 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
 
 ## Clear the local source and buildcache before install
 RUN --mount=type=cache,target=/var/cache/spack                          \
-    find /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*         \
-         /var/cache/spack/_source-cache/archives*                       \
-      -atime +30 -print -delete
+    find /var/cache/spack/mirror/${SPACK_VERSION}/ -atime +30 -print \
+ && find /var/cache/spack/_source-cache/archive -atime +30 -print
 
 ## Extra post-spack steps:
 ##   - Python packages
