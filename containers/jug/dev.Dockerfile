@@ -4,10 +4,10 @@ ARG BASE_IMAGE="debian_stable_base"
 ARG INTERNAL_TAG="testing"
 
 ## ========================================================================================
-## STAGE1: spack builder image
-## EIC builder image with spack
+## STAGE0: spack image
+## EIC spack image with spack and eic-spack repositories
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as builder
+FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as spack
 ARG TARGETPLATFORM
 
 ## install some extra spack dependencies
@@ -20,8 +20,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM}
         python3-dev                                                     \
         python3-distutils                                               \
         python3-boto3                                                   \
-        python-is-python3                                               \
- && rm -rf /var/lib/apt/lists/*
+        python-is-python3
 
 ## Setup spack
 ENV SPACK_ROOT=/opt/spack
@@ -82,11 +81,6 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
     ; fi                                                                \
  && spack mirror list
 
-## This variable will change whenever either spack.yaml or our spack package
-## overrides change, triggering a rebuild
-ARG CACHE_BUST="hash"
-ARG CACHE_NUKE=""
-
 ## Setup our custom package overrides
 ENV EICSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/eic-spack
 ARG EICSPACK_ORGREPO="eic/eic-spack"
@@ -99,6 +93,12 @@ RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT} \
       git -C ${EICSPACK_ROOT} cherry-pick -n ${EICSPACK_CHERRYPICKS} ;  \
     fi                                                                  \
  && spack repo add --scope site "${EICSPACK_ROOT}"
+
+## ========================================================================================
+## STAGE1: builder
+## EIC builder image with spack environment
+## ========================================================================================
+FROM spack as builder
 
 ## Setup our custom environment (secret mount for write-enabled mirror)
 COPY --from=spack-environment . /opt/spack-environment/
@@ -125,6 +125,7 @@ RUN --mount=type=cache,target=/var/cache/spack-mirror                   \
 ## Optional, nuke the buildcache after install, before (re)caching
 ## This is useful when going to completely different containers,
 ## or intermittently to keep the buildcache step from taking too much time
+ARG CACHE_NUKE=""
 RUN --mount=type=cache,target=/var/cache/spack-mirror,sharing=locked    \
     [ -z "${CACHE_NUKE}" ]                                              \
     || rm -rf /var/cache/spack-mirror/${SPACK_VERSION}/build_cache/*
