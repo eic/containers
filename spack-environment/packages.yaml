@@ -15,3 +15,265 @@ packages:
     require:
     - any_of: [+ipo, '@:']
     - any_of: [build_type=Release, '@:']
+  acts:
+    require:
+    - '@21.1.1'
+    - +dd4hep +examples +fatras +geant4 +identification +json +python +tgeo
+  actsvg:
+    require:
+    - '@0.4.26'
+    - +examples
+  acts-dd4hep:
+    require:
+    - '@1.0.1'
+  afterburner:
+    require:
+    - '@0.1.2'
+    - +root +zlib
+  cairo:
+    require:
+    - '@1.16.0'
+    - +fc+ft+X+pdf+gobject
+  catch2:
+    require:
+    - '@3.0.1'
+    - -ipo
+  cernlib:
+    require:
+    - '@2022.11.08.0-free'
+  clhep:
+    require:
+    - '@2.4.6.4'
+    - cxxstd=17
+  cli11:
+    require:
+    - '@2.3.2'
+  cmake:
+    require:
+    - '@3.26.3'
+  cnpy:
+    require:
+    - '@master'
+  cppcoro:
+    require:
+    - '@git.10bbcdbf2be3ad3aa56febcf4c7662d771460a99'
+  dawn:
+    require:
+    - '@3_91a'
+  dawncut:
+    require:
+    - '@1_54a'
+  dd4hep:
+    require:
+    - '@1.25.1'
+    - +ddg4 +ddcad -frames +hepmc3 +lcio +xercesc
+  dpmjet:
+    require:
+    - '@19.3.5'
+  edm4eic:
+    require:
+    - '@2.0.0'
+    - cxxstd=17
+  edm4hep:
+    require:
+    - '@0.7.2'
+    - cxxstd=17
+  eic-smear:
+    require:
+    - '@1.1.10'
+  eigen:
+    require:
+    - '@3.4.0'
+  emacs:
+    require:
+    - '@28.2'
+  fastjet:
+    require:
+    - '@3.4.0'
+  fjcontrib:
+    require:
+    - '@1.051'
+  fmt:
+    require:
+    - '@9.1.0'
+    - +shared cxxstd=17
+  gaudi:
+    require:
+    - '@36.10'
+    - +aida
+  gdb:
+    require:
+    - '@12.1'
+    - -debuginfod
+  geant4:
+    require:
+    - '@11.1.1'
+    - cxxstd=17 +opengl -vecgeom +x11 +qt +threads
+  graphviz:
+    require:
+    - '@8.0.1'
+  hepmc3:
+    require:
+    - '@3.2.6'
+    - +python +rootio
+  heppdt:
+    require:
+    - '@2.06.01'
+  imagemagick:
+    require:
+    - '@7.0.8-7'
+  intel-tbb:
+    require:
+    - '@2020.3'
+  irt:
+    require:
+    - '@1.0.6'
+  jana2:
+    require:
+    - '@2.1.0'
+    - -ipo +podio +root +zmq
+  lcov:
+    require:
+    - '@1.16'
+  lhapdf:
+    require:
+    - '@6.5.1'
+    - +python
+  madx:
+    require:
+    - '@5.08.01'
+  mesa:
+    require:
+    - '@22.1.6'
+    - +glx -llvm +opengl +opengles +osmesa
+  nlohmann-json:
+    require:
+    - '@3.11.2'
+  npsim:
+    require:
+    - '@1.1.0'
+    - +geocad +http
+  onnx:
+    require:
+    - '@1.13.1'
+  opencascade:
+    require:
+    - '@7.7.1'
+  osg-ca-certs:
+    require:
+    - '@1.109.igtf.1.117'
+  phonebook-cli:
+    require:
+    - '@1.0.0'
+  podio:
+    require:
+    - '@0.16.5'
+  prmon:
+    require:
+    - '@3.0.2'
+    - +plot
+  pythia8:
+    require:
+    - '@8.309'
+    - +fastjet
+  python:
+    require:
+    - '@3.10.10'
+  py-awkward:
+    require:
+    - '@2.1.1'
+  py-boto3:
+    require:
+    - '@1.26.26'
+  py-dask:
+    require:
+    - '@2021.6.2'
+  py-deepdiff:
+    require:
+    - '@6.3.0'
+  py-ipython:
+    require:
+    - '@8.11.0'
+  py-jinja2:
+    require:
+    - '@3.1.2'
+  py-jinja2-cli:
+    require:
+    - '@0.8.2'
+  py-jupyter-console:
+    require:
+    - '@6.4.4'
+  py-jupyterlab:
+    require:
+    - '@3.4.8'
+  py-lmfit:
+    require:
+    - '@1.0.2'
+  py-lxml:
+    require:
+    - '@4.9.1'
+  py-matplotlib:
+    require:
+    - '@3.7.1'
+  py-mplhep:
+    require:
+    - '@0.3.26'
+  py-htgettoken:
+    require:
+    - '@1.16-33-g3788bb4'
+  py-numpy:
+    require:
+    - '@1.23.4'
+  py-pandas:
+    require:
+    - '@1.5.3'
+  py-pip:
+    require:
+    - '@23.0'
+  py-pre-commit:
+    require:
+    - '@2.20.0'
+  py-pycairo:
+    require:
+    - '@1.20.0'
+  py-pyyaml:
+    require:
+    - '@6.0'
+  py-scipy:
+    require:
+    - '@1.10.1'
+  py-seaborn:
+    require:
+    - '@0.12.2'
+  py-toml:
+    require:
+    - '@0.10.2'
+  py-uproot:
+    require:
+    - '@5.0.5'
+  py-yapf:
+    require:
+    - '@0.30.0'
+  qt:
+    require:
+    - '@5.15.9'
+    - +opengl
+  root:
+    require:
+    - '@6.26.10'
+    - cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl 
+  spdlog:
+    require:
+    - '@1.11.0'
+    - +fmt_external
+  stow:
+    require:
+    - '@2.3.1'
+  tensorflow-lite:
+    require:
+    - '@2.8.0'
+    - -xnnpack
+  xrootd:
+    require:
+    - '@5.5.5'
+    - cxxstd=17 -davix +python +scitokens-cpp
