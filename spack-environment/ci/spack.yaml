@@ -1,0 +1,24 @@
+spack:
+  include: 
+  - ../concretizer.yaml
+  - ../packages.yaml
+  specs:
+    - acts
+    - cmake
+    - dd4hep
+    - edm4eic
+    - fastjet
+    - fjcontrib
+    - gaudi
+    - geant4
+    - hepmc3
+    - intel-tbb
+    - irt
+    - jana2
+    - npsim
+    - py-boto3
+    - py-jinja2
+    - py-jinja2-cli
+    - root
+    - xrootd
+  view: false
