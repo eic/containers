@@ -250,13 +250,15 @@ jug_dev:default:
       - BASE_IMAGE: debian_stable_base
         BUILD_IMAGE: jug_
         PLATFORM: linux/amd64,linux/arm64/v8
-        ENV: dev,prod
+        ENV: [dev, prod]
 #      - BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE: jug_dev_oneapi
 #        PLATFORM: linux/amd64
+#        ENV: [prod]
 #      - BASE_IMAGE: cuda_base_new
 #        BUILD_IMAGE: jug_dev_cuda
 #        PLATFORM: linux/amd64
+#        ENV: [prod]
   extends: .build
   stage: jug
   needs:
