@@ -248,14 +248,17 @@ jug_dev:default:
   parallel:
     matrix:
       - BASE_IMAGE: debian_stable_base
-        BUILD_IMAGE: jug_dev
+        BUILD_IMAGE: jug_
         PLATFORM: linux/amd64,linux/arm64/v8
+        ENV: [dev, prod]
 #      - BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE: jug_dev_oneapi
 #        PLATFORM: linux/amd64
+#        ENV: [prod]
 #      - BASE_IMAGE: cuda_base_new
 #        BUILD_IMAGE: jug_dev_cuda
 #        PLATFORM: linux/amd64
+#        ENV: [prod]
   extends: .build
   stage: jug
   needs:
@@ -267,11 +270,11 @@ jug_dev:default:
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml ;
       docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
                    }
                    --file containers/jug/dev.Dockerfile
                    --platform ${PLATFORM}
@@ -287,6 +290,7 @@ jug_dev:default:
                    --build-arg S3_ACCESS_KEY=${S3_ACCESS_KEY}
                    --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   --build-arg ENV=${ENV}
                    --build-arg jobs=${JOBS}
                    --build-context spack-environment=spack-environment
                    --secret id=mirrors,src=mirrors.yaml
