@@ -130,7 +130,7 @@ packages:
     - '@1.0.6'
   jana2:
     require:
-    - '@2.1.0'
+    - '@2.1.1'
     - -ipo +podio +root +zmq
   lcov:
     require:
