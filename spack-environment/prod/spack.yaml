@@ -10,7 +10,7 @@ spack:
     - fastjet
     - fjcontrib
     - gaudi
-    - geant4
+    - geant4 -opengl
     - hepmc3
     - intel-tbb
     - irt
