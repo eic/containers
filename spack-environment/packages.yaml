@@ -266,7 +266,8 @@ packages:
   root:
     require:
     - '@6.26.10'
-    - cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl 
+    - cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl
+    - any_of: [+opengl +x, -opengl -x]
   spdlog:
     require:
     - '@1.11.0'
