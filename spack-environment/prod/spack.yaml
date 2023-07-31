@@ -20,6 +20,6 @@ spack:
     - py-jinja2
     - py-jinja2-cli
     - py-pip
-    - root
+    - root -opengl
     - xrootd
   view: false
