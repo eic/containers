@@ -56,7 +56,7 @@ packages:
     - '@master'
   cppcoro:
     require:
-    - '@10bbcdbf2be3ad3aa56febcf4c7662d771460a99=develop'
+    - '@10bbcdbf2be3ad3aa56febcf4c7662d771460a99'
   dawn:
     require:
     - '@3_91a'
