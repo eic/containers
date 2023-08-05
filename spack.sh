@@ -12,6 +12,9 @@ read -r -d '' SPACK_CHERRYPICKS <<- \
 776ab132760d63eab0703b7c0ebebc72a8443f5b
 188168c476eabe99764634db8d78eb3f9ea2a927
 b3268c2703b84f4e4961c1e2cdf43e8998f283e6
+ce0b9ea8cf184c9048cac1ae88f2d69f0e4520c7
+ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
+5996aaa4e3b8b37f847da356489bb27958b968f1
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -19,3 +22,6 @@ b3268c2703b84f4e4961c1e2cdf43e8998f283e6
 ## 776ab132760d63eab0703b7c0ebebc72a8443f5b: [xrootd] New variants, new version, improve build config
 ## 188168c476eabe99764634db8d78eb3f9ea2a927: podio: Add 0.16.5 tag
 ## b3268c2703b84f4e4961c1e2cdf43e8998f283e6: freetype: add pic and shared variants
+## ce0b9ea8cf184c9048cac1ae88f2d69f0e4520c7: acts: ensure Python_EXECUTABLE uses ^python when +python
+## ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8: acts: new variant cxxstd
+## 5996aaa4e3b8b37f847da356489bb27958b968f1: acts: new versions 23.[3-5].0, 24.0.0, 25.0.[0-1], 26.0.0, 27.[0-1].0, 28.0.0
