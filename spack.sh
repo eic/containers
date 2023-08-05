@@ -12,6 +12,7 @@ read -r -d '' SPACK_CHERRYPICKS <<- \
 776ab132760d63eab0703b7c0ebebc72a8443f5b
 188168c476eabe99764634db8d78eb3f9ea2a927
 b3268c2703b84f4e4961c1e2cdf43e8998f283e6
+4ae1a73d54b33bc4876535422d3f3bf3d9641c51
 9e4c4be3f523a0d144870dbf5645ad7bf0ff04be
 d8a9b42da6cdef3a08ec48931bf282e5e4811d38
 ce0b9ea8cf184c9048cac1ae88f2d69f0e4520c7
@@ -24,6 +25,7 @@ ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 ## 776ab132760d63eab0703b7c0ebebc72a8443f5b: [xrootd] New variants, new version, improve build config
 ## 188168c476eabe99764634db8d78eb3f9ea2a927: podio: Add 0.16.5 tag
 ## b3268c2703b84f4e4961c1e2cdf43e8998f283e6: freetype: add pic and shared variants
+## 4ae1a73d54b33bc4876535422d3f3bf3d9641c51: (r-rcpp)ensmallen: new package
 ## 9e4c4be3f523a0d144870dbf5645ad7bf0ff04be: mlpack: new package
 ## d8a9b42da6cdef3a08ec48931bf282e5e4811d38: actsvg: add v0.4.33
 ## ce0b9ea8cf184c9048cac1ae88f2d69f0e4520c7: acts: ensure Python_EXECUTABLE uses ^python when +python
