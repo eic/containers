@@ -72,7 +72,7 @@ packages:
     - '@19.3.5'
   east:
     require:
-    - '@656aa3192b097a631ddd1e0380e80c26fd6644a7=main'
+    - '@656aa3192b097a631ddd1e0380e80c26fd6644a7'
   edm4eic:
     require:
     - '@2.0.0'
