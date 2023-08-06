@@ -13,7 +13,7 @@ spack:
     - cli11
     - cmake
     - cnpy
-    #- cppcoro
+    - cppcoro
     - dawn
     - dawncut
     - dd4hep

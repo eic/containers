@@ -18,6 +18,7 @@ d8a9b42da6cdef3a08ec48931bf282e5e4811d38
 ce0b9ea8cf184c9048cac1ae88f2d69f0e4520c7
 ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 5996aaa4e3b8b37f847da356489bb27958b968f1
+31431f967a59c07585021cba40683c2ca6ff2c47
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -31,3 +32,4 @@ ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 ## ce0b9ea8cf184c9048cac1ae88f2d69f0e4520c7: acts: ensure Python_EXECUTABLE uses ^python when +python
 ## ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8: acts: new variant cxxstd
 ## 5996aaa4e3b8b37f847da356489bb27958b968f1: acts: new versions 23.[3-5].0, 24.0.0, 25.0.[0-1], 26.0.0, 27.[0-1].0, 28.0.0
+## 31431f967a59c07585021cba40683c2ca6ff2c47: Environment/depfile: fix bug with Git hash versions
