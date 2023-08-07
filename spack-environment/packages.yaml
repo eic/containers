@@ -32,7 +32,7 @@ packages:
     - +root +zlib
   algorithms:
     require:
-    - '@main'
+    - '@main=master'
   cairo:
     require:
     - '@1.16.0'
