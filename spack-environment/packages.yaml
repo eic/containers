@@ -156,7 +156,8 @@ packages:
   npsim:
     require:
     - '@git.npsim-headless=1.1.1'
-    - +geocad +http
+    - +http
+    - any_of: [+geocad, -geocad]
   onnx:
     require:
     - '@1.13.1'

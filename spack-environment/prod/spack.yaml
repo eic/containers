@@ -15,7 +15,7 @@ spack:
     - intel-tbb
     - irt
     - jana2
-    - npsim
+    - npsim -geocad
     - py-boto3
     - py-jinja2
     - py-jinja2-cli
