@@ -7,6 +7,7 @@ spack:
     - actsvg
     - acts-dd4hep
     - afterburner
+    - algorithms
     - cairo
     - catch2
     - cernlib
