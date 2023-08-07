@@ -69,7 +69,7 @@ packages:
   dd4hep:
     require:
     - '@1.25.1'
-    - +ddg4 +ddcad -frames +hepmc3 +lcio +xercesc
+    - +ddg4 +ddcad +hepmc3 +lcio +xercesc
   dpmjet:
     require:
     - '@19.3.5'
