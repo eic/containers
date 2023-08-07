@@ -162,7 +162,7 @@ packages:
   opencascade:
     require:
     - '@7.7.1'
-    - -vtk
+    - +application_framework -vtk
   osg-ca-certs:
     require:
     - '@1.109.igtf.1.117'
