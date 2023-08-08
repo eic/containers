@@ -51,12 +51,12 @@ RUN declare -A target=(                                                 \
  && target=${target[${TARGETPLATFORM}]}                                 \
  && spack config --scope site add "packages:all:require:[target=${target}]" \
  && spack config blame packages                                         \
- && spack config --scope site add "config:suppress_gpg_warnings:true"   \
- && spack config --scope site add "config:build_jobs:${jobs}"           \
- && spack config --scope site add "config:db_lock_timeout:${jobs}0"     \
- && spack config --scope site add "config:install_tree:root:/opt/software" \
- && spack config --scope site add "config:source_cache:/var/cache/spack" \
- && spack config --scope site add "config:ccache:true"                  \
+ && spack config --scope user add "config:suppress_gpg_warnings:true"   \
+ && spack config --scope user add "config:build_jobs:${jobs}"           \
+ && spack config --scope user add "config:db_lock_timeout:${jobs}0"     \
+ && spack config --scope user add "config:source_cache:/var/cache/spack" \
+ && spack config --scope user add "config:install_tree:root:/opt/software" \
+ && spack config --scope user add "config:ccache:true"                  \
  && spack config blame config                                           \
  && spack compiler find --scope site                                    \
  && spack config blame compilers
@@ -234,6 +234,17 @@ RUN --mount=from=staging,target=/staging                                \
  && cp /staging/etc/eic-env.sh /etc/eic-env.sh                          \
  && cp /staging/etc/jug_info /etc/jug_info                              \
  && cp -r /staging/.singularity.d /.singularity.d                        
+
+## set the local spack configuration
+ENV SPACK_DISABLE_LOCAL_CONFIG="true"
+RUN spack config --scope site add "config:install_tree:root:~/spack"   \
+ && spack config --scope site add "config:source_cache:~/.spack/cache" \
+ && spack config --scope site add "config:binary_index_root:~/.spack"  \
+ && spack config --scope site add "config:module_roots:tcl:~/.spack/modules" \
+ && spack config --scope site add "config:module_roots:lmod:~/.spack/lmod" \
+ && spack config blame config                                           \
+ && spack config --scope site add "upstreams:eic-shell:install_tree:/opt/software" \
+ && spack config blame upstreams
 
 ## set the jug_dev version and add the afterburner
 ARG JUG_VERSION=1
