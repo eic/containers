@@ -19,6 +19,8 @@ ce0b9ea8cf184c9048cac1ae88f2d69f0e4520c7
 ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 5996aaa4e3b8b37f847da356489bb27958b968f1
 31431f967a59c07585021cba40683c2ca6ff2c47
+316bfd8b7d0d1bc63a7bccf030845775a442a317
+6e47f1645f31ce598d7f1f9770e24b483fb117d9
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -33,3 +35,5 @@ ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 ## ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8: acts: new variant cxxstd
 ## 5996aaa4e3b8b37f847da356489bb27958b968f1: acts: new versions 23.[3-5].0, 24.0.0, 25.0.[0-1], 26.0.0, 27.[0-1].0, 28.0.0
 ## 31431f967a59c07585021cba40683c2ca6ff2c47: Environment/depfile: fix bug with Git hash versions
+## 316bfd8b7d0d1bc63a7bccf030845775a442a317: opencascade: new variants
+## 6e47f1645f31ce598d7f1f9770e24b483fb117d9: opencascade: typo in True
