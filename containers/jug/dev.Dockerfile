@@ -241,8 +241,6 @@ RUN . /opt/spack/share/spack/setup-env.sh                               \
  && spack config --scope site add "config:install_tree:root:~/spack"    \
  && spack config --scope site add "config:source_cache:~/.spack/cache"  \
  && spack config --scope site add "config:binary_index_root:~/.spack"   \
- && spack config --scope site add "config:module_roots:tcl:~/.spack/modules" \
- && spack config --scope site add "config:module_roots:lmod:~/.spack/lmod" \
  && spack config blame config                                           \
  && spack config --scope site add "upstreams:eic-shell:install_tree:/opt/software" \
  && spack config blame upstreams
