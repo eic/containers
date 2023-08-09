@@ -5,10 +5,6 @@ detectors:
       version: main
     main:
       version: main
-    23.01.0:
-      version: 23.01.0
-      patches:
-      - https://github.com/eic/epic/pull/449.patch
     23.03.0:
       version: 23.03.0
       patches:
@@ -39,3 +35,5 @@ detectors:
       version: 23.07.1
     23.07.2:
       version: 23.07.2
+    23.08.0:
+      version: 23.08.0
