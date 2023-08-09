@@ -111,7 +111,8 @@ packages:
   geant4:
     require:
     - '@11.1.1'
-    - cxxstd=17 +opengl -vecgeom +x11 +qt +threads -vtk
+    - cxxstd=17 -vecgeom +threads -vtk
+    - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   graphviz:
     require:
     - '@8.0.1'
@@ -154,8 +155,9 @@ packages:
     - '@3.11.2'
   npsim:
     require:
-    - '@1.1.0'
-    - +geocad +http
+    - '@1.2.0'
+    - +http
+    - any_of: [+geocad, -geocad]
   onnx:
     require:
     - '@1.13.1'
@@ -265,7 +267,8 @@ packages:
   root:
     require:
     - '@6.26.10'
-    - cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl 
+    - cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl
+    - any_of: [+opengl +x, -opengl -x]
   spdlog:
     require:
     - '@1.11.0'

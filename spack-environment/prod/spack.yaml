@@ -10,16 +10,16 @@ spack:
     - fastjet
     - fjcontrib
     - gaudi
-    - geant4
+    - geant4 -opengl
     - hepmc3
     - intel-tbb
     - irt
     - jana2
-    - npsim
+    - npsim -geocad
     - py-boto3
     - py-jinja2
     - py-jinja2-cli
     - py-pip
-    - root
+    - root -opengl
     - xrootd
   view: false
