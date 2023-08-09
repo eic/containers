@@ -28,7 +28,7 @@ ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="releases/v0.20"
 ARG SPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
-RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
+RUN git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}                      \
  && if [ -n "${SPACK_CHERRYPICKS}" ] ; then                             \
       git -C ${SPACK_ROOT} cherry-pick -n ${SPACK_CHERRYPICKS} ;        \
@@ -51,12 +51,12 @@ RUN declare -A target=(                                                 \
  && target=${target[${TARGETPLATFORM}]}                                 \
  && spack config --scope site add "packages:all:require:[target=${target}]" \
  && spack config blame packages                                         \
- && spack config --scope site add "config:suppress_gpg_warnings:true"   \
- && spack config --scope site add "config:build_jobs:${jobs}"           \
- && spack config --scope site add "config:db_lock_timeout:${jobs}0"     \
- && spack config --scope site add "config:install_tree:root:/opt/software" \
- && spack config --scope site add "config:source_cache:/var/cache/spack" \
- && spack config --scope site add "config:ccache:true"                  \
+ && spack config --scope user add "config:suppress_gpg_warnings:true"   \
+ && spack config --scope user add "config:build_jobs:${jobs}"           \
+ && spack config --scope user add "config:db_lock_timeout:${jobs}0"     \
+ && spack config --scope user add "config:source_cache:/var/cache/spack" \
+ && spack config --scope user add "config:install_tree:root:/opt/software" \
+ && spack config --scope user add "config:ccache:true"                  \
  && spack config blame config                                           \
  && spack compiler find --scope site                                    \
  && spack config blame compilers
@@ -88,7 +88,7 @@ ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="$SPACK_VERSION"
 ARG EICSPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
-RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT} \
+RUN git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT} \
  && git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}                \
  && if [ -n "${EICSPACK_CHERRYPICKS}" ] ; then                          \
       git -C ${EICSPACK_ROOT} cherry-pick -n ${EICSPACK_CHERRYPICKS} ;  \
@@ -234,6 +234,16 @@ RUN --mount=from=staging,target=/staging                                \
  && cp /staging/etc/eic-env.sh /etc/eic-env.sh                          \
  && cp /staging/etc/jug_info /etc/jug_info                              \
  && cp -r /staging/.singularity.d /.singularity.d                        
+
+## set the local spack configuration
+ENV SPACK_DISABLE_LOCAL_CONFIG="true"
+RUN . /opt/spack/share/spack/setup-env.sh                               \
+ && spack config --scope site add "config:install_tree:root:~/spack"    \
+ && spack config --scope site add "config:source_cache:~/.spack/cache"  \
+ && spack config --scope site add "config:binary_index_root:~/.spack"   \
+ && spack config blame config                                           \
+ && spack config --scope site add "upstreams:eic-shell:install_tree:/opt/software" \
+ && spack config blame upstreams
 
 ## set the jug_dev version and add the afterburner
 ARG JUG_VERSION=1
