@@ -237,7 +237,7 @@ RUN --mount=from=staging,target=/staging                                \
 
 ## set the local spack configuration
 ENV SPACK_DISABLE_LOCAL_CONFIG="true"
-RUN source /opt/spack/share/spack/setup-env.sh                          \
+RUN . /opt/spack/share/spack/setup-env.sh                               \
  && spack config --scope site add "config:install_tree:root:~/spack"    \
  && spack config --scope site add "config:source_cache:~/.spack/cache"  \
  && spack config --scope site add "config:binary_index_root:~/.spack"   \
