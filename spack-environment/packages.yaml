@@ -30,6 +30,9 @@ packages:
     require:
     - '@0.1.2'
     - +root +zlib
+  algorithms:
+    require:
+    - '@main'
   cairo:
     require:
     - '@1.16.0'
