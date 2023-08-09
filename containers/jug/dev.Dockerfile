@@ -28,7 +28,7 @@ ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="releases/v0.20"
 ARG SPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
-RUN git clone https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
+RUN git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}                      \
  && if [ -n "${SPACK_CHERRYPICKS}" ] ; then                             \
       git -C ${SPACK_ROOT} cherry-pick -n ${SPACK_CHERRYPICKS} ;        \
@@ -88,7 +88,7 @@ ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="$SPACK_VERSION"
 ARG EICSPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
-RUN git clone https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT} \
+RUN git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT} \
  && git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}                \
  && if [ -n "${EICSPACK_CHERRYPICKS}" ] ; then                          \
       git -C ${EICSPACK_ROOT} cherry-pick -n ${EICSPACK_CHERRYPICKS} ;  \
