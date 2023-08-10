@@ -113,7 +113,7 @@ packages:
     - -debuginfod
   geant4:
     require:
-    - '@11.1.1'
+    - '@11.1.1.east'
     - cxxstd=17 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   graphviz:
