@@ -21,6 +21,7 @@ ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 31431f967a59c07585021cba40683c2ca6ff2c47
 316bfd8b7d0d1bc63a7bccf030845775a442a317
 6e47f1645f31ce598d7f1f9770e24b483fb117d9
+63bb2c9bad8acb018f220630e5ce58e4a039d8a2
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -37,3 +38,4 @@ ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 ## 31431f967a59c07585021cba40683c2ca6ff2c47: Environment/depfile: fix bug with Git hash versions
 ## 316bfd8b7d0d1bc63a7bccf030845775a442a317: opencascade: new variants
 ## 6e47f1645f31ce598d7f1f9770e24b483fb117d9: opencascade: typo in True
+## 63bb2c9bad8acb018f220630e5ce58e4a039d8a2: py-cryptography: does not run-depend on py-setuptools-rust
