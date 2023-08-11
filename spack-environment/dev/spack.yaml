@@ -24,7 +24,6 @@ spack:
     - edm4hep
     - eic-smear
     - eigen
-    - emacs
     - fastjet
     - fjcontrib
     - fmt
