@@ -230,9 +230,9 @@ COPY --from=staging /.singularity.d /.singularity.d
 
 ## ensure /usr/local link is pointing to the right view
 RUN rm -rf /usr/local                                                   \
- && PREFIX_PATH=$(realpath $(ls /usr/._local | tail -n1))               \
+ && PREFIX_PATH=$(realpath $(ls /usr/._local/ | tail -n1))              \
  && echo "Found spack true prefix path to be $PREFIX_PATH"              \
- && ln -s ${PREFIX_PATH} /usr/local
+ && ln -s /usr/._local/${PREFIX_PATH} /usr/local
 
 ## set the local spack configuration
 ENV SPACK_DISABLE_LOCAL_CONFIG="true"
