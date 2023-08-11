@@ -218,22 +218,21 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="jug_xl" \
       march="$TARGETPLATFORM"
 
-## copy over everything we need from staging in a single layer :-)
-RUN --mount=from=staging,target=/staging                                \
-    rm -rf /usr/local                                                   \
- && cp -r /staging/opt/spack /opt/spack                                 \
- && cp -r /staging/opt/spack-environment /opt/spack-environment         \
- && cp -r /staging/opt/software /opt/software                           \
- && cp -r /staging/usr/._local /usr/._local                             \
- && cd /usr/._local                                                     \
- && PREFIX_PATH=$(realpath $(ls | tail -n1))                            \
+## copy over everything we need from staging
+COPY --from=staging /opt/spack /opt/spack
+COPY --from=staging /opt/spack-environment /opt/spack-environment
+COPY --from=staging /opt/software /opt/software
+COPY --from=staging /usr/._local /usr/._local
+COPY --from=staging /etc/profile.d /etc/profile.d
+COPY --from=staging /etc/jug_info /etc/jug_info
+COPY --from=staging /etc/eic-env.sh /etc/eic-env.sh
+COPY --from=staging /.singularity.d /.singularity.d
+
+## ensure /usr/local link is pointing to the right view
+RUN rm -rf /usr/local                                                   \
+ && PREFIX_PATH=$(realpath $(ls /usr/._local | tail -n1))               \
  && echo "Found spack true prefix path to be $PREFIX_PATH"              \
- && cd -                                                                \
- && ln -s ${PREFIX_PATH} /usr/local                                     \
- && cp /staging/etc/profile.d/*.sh /etc/profile.d/                      \
- && cp /staging/etc/eic-env.sh /etc/eic-env.sh                          \
- && cp /staging/etc/jug_info /etc/jug_info                              \
- && cp -r /staging/.singularity.d /.singularity.d                        
+ && ln -s ${PREFIX_PATH} /usr/local
 
 ## set the local spack configuration
 ENV SPACK_DISABLE_LOCAL_CONFIG="true"
