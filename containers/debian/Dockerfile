@@ -226,7 +226,7 @@ EOF
 ARG jobs=1
 RUN <<EOF
 set -e
-declare -A target=(["linux/amd64"]="x86_64_v2" ["linux/arm64"]="aarch64")
+declare -A target=(["linux/amd64"]="x86_64_v3" ["linux/arm64"]="aarch64")
 target=${target[${TARGETPLATFORM}]}
 spack config --scope site add "packages:all:require:[target=${target}]"
 spack config --scope site add "packages:all:target:[${target}]"
