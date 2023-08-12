@@ -49,7 +49,7 @@ RUN declare -A target=(                                                 \
       ["linux/arm64"]="aarch64"                                         \
     )                                                                   \
  && target=${target[${TARGETPLATFORM}]}                                 \
- && spack config --scope site add "packages:all:require:[target=${target}]" \
+ && spack config --scope site add "packages:all:target:${target}"       \
  && spack config blame packages                                         \
  && spack config --scope user add "config:suppress_gpg_warnings:true"   \
  && spack config --scope user add "config:build_jobs:${jobs}"           \
