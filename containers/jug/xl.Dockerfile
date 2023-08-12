@@ -11,8 +11,6 @@ FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG}
 ARG TARGETPLATFORM
 
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
-ARG JUGGLER_VERSION="main"
-ARG EICRECON_VERSION="main"
 ARG jobs=8
 
 ## version will automatically bust cache for nightly, as it includes
