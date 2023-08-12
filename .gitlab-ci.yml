@@ -325,8 +325,6 @@ jug_xl:default:
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
-                   --build-arg EICRECON_VERSION=${EICRECON_VERSION}
                    --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
                    --build-arg jobs=${JOBS}
                    --build-context detectors=.
