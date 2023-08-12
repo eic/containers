@@ -22,6 +22,7 @@ ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 316bfd8b7d0d1bc63a7bccf030845775a442a317
 6e47f1645f31ce598d7f1f9770e24b483fb117d9
 63bb2c9bad8acb018f220630e5ce58e4a039d8a2
+ed76eab6943221f17776fd8d128ade6ba69e492c
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -39,3 +40,4 @@ ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 ## 316bfd8b7d0d1bc63a7bccf030845775a442a317: opencascade: new variants
 ## 6e47f1645f31ce598d7f1f9770e24b483fb117d9: opencascade: typo in True
 ## 63bb2c9bad8acb018f220630e5ce58e4a039d8a2: py-cryptography: does not run-depend on py-setuptools-rust
+## ed76eab6943221f17776fd8d128ade6ba69e492c: geant4: new version 11.1.2
