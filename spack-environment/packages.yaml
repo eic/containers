@@ -44,6 +44,7 @@ packages:
   cernlib:
     require:
     - '@2022.11.08.0-free'
+    - -shared
   clhep:
     require:
     - '@2.4.6.4'
