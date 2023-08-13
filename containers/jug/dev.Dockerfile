@@ -252,6 +252,9 @@ ARG JUG_VERSION=1
 RUN echo "" >> /etc/jug_info                                            \
  && echo " - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
 
+## eicweb shortcut
+ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
+
 ## Install benchmarks into the container
 ARG BENCHMARK_COM_VERSION="master"
 ARG BENCHMARK_DET_VERSION="master"
