@@ -382,41 +382,6 @@ jug_xl:nightly:
                    --build-context detectors=.
                    containers/jug
 
-jug_xl:feature:
-  extends: .build
-  stage: jug
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - when: never
-  needs:
-    - version
-    - jug_xl:nightly
-  variables:
-    BUILD_IMAGE: "jug_xl"
-  parallel:
-    matrix:
-      - DETECTOR: epic
-        DETECTOR_BRANCH:
-          - main
-  script:
-    - docker buildx build --load ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
-                   --file containers/jug/feature.Dockerfile
-                   --build-arg INTERNAL_TAG=${NIGHTLY_TAG}
-                   --build-arg DETECTOR=${DETECTOR}
-                   --build-arg DETECTOR_BRANCH=${DETECTOR_BRANCH}
-                   containers/jug
-    - |
-      PUSH_FLAG=""
-      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
-        PUSH_FLAG="--eicweb"
-      fi
-      FEATURE_EXPORT_TAG="${VERSION}-${DETECTOR}-${DETECTOR_BRANCH}-stable"
-    - ./gitlab-ci/docker_push.sh -i ${BUILD_IMAGE} -l ${INTERNAL_TAG}-${DETECTOR}-${DETECTOR_BRANCH}
-                                 -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                 ${FEATURE_EXPORT_TAG} ${PUSH_FLAG}
-
 .singularity:
   stage: deploy
   interruptible: true
