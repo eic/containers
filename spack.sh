@@ -24,6 +24,7 @@ ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 63bb2c9bad8acb018f220630e5ce58e4a039d8a2
 ed76eab6943221f17776fd8d128ade6ba69e492c
 6c5d125cb06a86ce05bec27ae9fb9b07103bc1c5
+e3e7609af4903be7df42b6ae5ccf9a20293503d2
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -43,3 +44,4 @@ ed76eab6943221f17776fd8d128ade6ba69e492c
 ## 63bb2c9bad8acb018f220630e5ce58e4a039d8a2: py-cryptography: does not run-depend on py-setuptools-rust
 ## ed76eab6943221f17776fd8d128ade6ba69e492c: geant4: new version 11.1.2
 ## 6c5d125cb06a86ce05bec27ae9fb9b07103bc1c5: cernlib: new variant shared
+## e3e7609af4903be7df42b6ae5ccf9a20293503d2: edm4hep: Add version 0.9
