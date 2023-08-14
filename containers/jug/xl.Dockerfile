@@ -20,18 +20,6 @@ ARG JUG_VERSION=1
 RUN cd /tmp                                                                     \
  && echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info
 
-## Install juggler to the environment
-RUN spack add juggler@${JUGGLER_VERSION}                                        \
- && spack concretize                                                            \
- && spack install
-
-## Install eicrecon to the environment
-RUN spack add eicrecon@${EICRECON_VERSION}                                      \
- && spack concretize                                                            \
- && spack install                                                               \
- && echo "export JANA_PLUGIN_PATH=/usr/local/lib/EICrecon/plugins"              \
-    > /etc/profile.d/z12_eicrecon.sh
-
 ## also install detector/ip geometries into opt
 ARG NIGHTLY=''
 ## cache bust when updated repositories
