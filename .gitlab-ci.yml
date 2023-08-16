@@ -197,6 +197,8 @@ dind-confirm:
   extends: .dind
   needs:
     - dind-build
+  rules:
+    - when: manual
 
 dind-deploy:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}
