@@ -112,6 +112,10 @@ packages:
     require:
     - '@12.1'
     - -debuginfod
+  g4ndl:
+    externals:
+    - spec: g4ndl@4.7
+      prefix: /opt/software/externals/g4ndl
   geant4:
     require:
     - '@11.1.2.east'
