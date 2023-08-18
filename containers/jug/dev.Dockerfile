@@ -209,6 +209,25 @@ rm -r /usr/local
 spack -e ${SPACK_ENV} env view enable /usr/local
 EOF
 
+## Setup our geometry environment
+RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
+    --mount=type=cache,target=/var/cache/spack                          \
+    --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    <<EOF
+source $SPACK_ROOT/share/spack/setup-env.sh
+export CCACHE_DIR=/ccache
+spack buildcache update-index eics3rw
+spack env activate --dir /opt/spack-environment/epic
+spack concretize --fresh --force --quiet
+make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
+  SPACK_ENV=${SPACK_ENV} \
+  BUILDCACHE_OCI_PROMPT="eicweb" \
+  BUILDCACHE_OCI_FINAL="ghcr" \
+  BUILDCACHE_S3_PROMPT="eics3rw"
+ccache --show-stats
+ccache --zero-stats
+EOF
+
 ## Place cvmfs catalogs
 RUN <<EOF
 touch ${SPACK_ROOT}/.cvmfscatalog
