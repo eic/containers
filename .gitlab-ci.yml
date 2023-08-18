@@ -456,7 +456,7 @@ benchmarks:reconstruction:default:
     - version
     - jug_xl:default
   variables:
-    BENCHMARKS_TAG: "$INTERNAL_TAG"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
@@ -471,7 +471,7 @@ benchmarks:physics:default:
     - jug_xl:default
   variables:
     RECO: "eicrecon"
-    BENCHMARKS_TAG: "$INTERNAL_TAG"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
