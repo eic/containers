@@ -25,6 +25,7 @@ ea1439dfa11a3996c9927ed792dc9fe4b7efc1b8
 ed76eab6943221f17776fd8d128ade6ba69e492c
 6c5d125cb06a86ce05bec27ae9fb9b07103bc1c5
 e3e7609af4903be7df42b6ae5ccf9a20293503d2
+df4a2457a41e7ab634e86d3148d8b22a9f433a6a
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -45,3 +46,4 @@ e3e7609af4903be7df42b6ae5ccf9a20293503d2
 ## ed76eab6943221f17776fd8d128ade6ba69e492c: geant4: new version 11.1.2
 ## 6c5d125cb06a86ce05bec27ae9fb9b07103bc1c5: cernlib: new variant shared
 ## e3e7609af4903be7df42b6ae5ccf9a20293503d2: edm4hep: Add version 0.9
+## df4a2457a41e7ab634e86d3148d8b22a9f433a6a: Fix broken semver regex
