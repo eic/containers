@@ -1,0 +1,31 @@
+spack:
+  include:
+  - ../packages.yaml
+  concretizer:
+    reuse: true
+    unify: false
+  definitions:
+  - versions:
+    - '@main'
+    - '@23.03.0'
+    - '@23.05.0'
+    - '@23.05.1'
+    - '@23.05.2'
+    - '@23.06.0'
+    - '@23.06.1'
+    - '@23.07.0'
+    - '@23.07.1'
+    - '@23.07.2'
+    - '@23.08.0'
+  specs:
+    - matrix:
+      - [epic-eic]
+      - [$versions]
+  view:
+    detector:
+      root: /opt/detector
+      select: [epic-eic]
+      projections:
+        all: '{name}-{version}'
+      link: roots
+      link_type: symlink
