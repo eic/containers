@@ -301,7 +301,7 @@ jug_xl:default:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64,linux/arm64/v8
+        PLATFORM: linux/amd64
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
 #        PLATFORM: linux/amd64
@@ -335,7 +335,7 @@ jug_xl:nightly:
     matrix:
       - BASE_IMAGE: jug_dev
         BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64,linux/arm64/v8
+        PLATFORM: linux/amd64
 #      - BASE_IMAGE: jug_dev_oneapi
 #        BUILD_IMAGE: jug_xl_oneapi
 #        PLATFORM: linux/amd64
