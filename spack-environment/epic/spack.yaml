@@ -3,7 +3,7 @@ spack:
   - ../packages.yaml
   concretizer:
     reuse: true
-    unify: false
+    unify: when_possible
   definitions:
   - versions:
     - '@main'
