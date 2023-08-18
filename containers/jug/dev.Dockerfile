@@ -220,7 +220,7 @@ spack buildcache update-index eics3rw
 spack env activate --dir /opt/spack-environment/epic
 spack concretize --fresh --force --quiet
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV} \
+  SPACK_ENV=epic \
   BUILDCACHE_OCI_PROMPT="eicweb" \
   BUILDCACHE_OCI_FINAL="ghcr" \
   BUILDCACHE_S3_PROMPT="eics3rw"
