@@ -306,14 +306,10 @@ jug_dev:
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
-                   ${IF_BUILD_DEFAULT:+
-                     --build-arg SPACK_VERSION=${SPACK_VERSION}
-                   }
+                   --build-arg SPACK_VERSION=${SPACK_VERSION}
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
                    --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
-                   ${IF_BUILD_DEFAULT:+
-                     --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
-                   }
+                   --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
                    --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
                    --build-arg S3_ACCESS_KEY=${S3_ACCESS_KEY}
                    --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
