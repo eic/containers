@@ -114,8 +114,8 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && export CCACHE_DIR=/ccache                                           \
  && spack env activate --dir ${SPACK_ENV}                               \
- && spack add juggler@git.${JUGGLER_VERSION}=${JUGGLER_VERSION}         \
- && spack add eicrecon@git.${EICRECON_VERSION}=${EICRECON_VERSION}      \
+ && spack add juggler@git.${JUGGLER_VERSION}=${JUGGLER_VERSION:1}       \
+ && spack add eicrecon@git.${EICRECON_VERSION}=${EICRECON_VERSION:1}    \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
     SPACK_ENV=${SPACK_ENV}                                              \
     BUILDCACHE_MIRROR="local eics3rw"                                   \
