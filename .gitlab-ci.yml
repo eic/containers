@@ -347,7 +347,7 @@ jug_xl:default:
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}-default
                    --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                    --build-arg EICRECON_VERSION=${EICRECON_VERSION}
-                   --build-arg JUG_VERSION=${EXPORT_TAG}-default-$(git rev-parse HEAD)-$(date +%Y-%m-%d_%H-%M-%S)
+                   --build-arg JUG_VERSION=${EXPORT_TAG}-$(git rev-parse HEAD)-$(date +%Y-%m-%d_%H-%M-%S)
                    --build-arg jobs=${JOBS}
                    --build-context detectors=.
                    containers/jug
