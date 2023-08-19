@@ -244,19 +244,28 @@ base:
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    containers/debian
 
-jug_dev:default:
+jug_dev:
   parallel:
     matrix:
-      - BASE_IMAGE: debian_stable_base
+      - BUILD_TYPE:
+        - default
+        - nightly
+        BASE_IMAGE: debian_stable_base
         BUILD_IMAGE: jug_
         PLATFORM: linux/amd64,linux/arm64/v8
         ENV: [dev, prod]
-#      - BASE_IMAGE: oneapi_base
-#        BUILD_IMAGE: jug_dev_oneapi
+#      - BUILD_TYPE:
+#        - default
+#        - nightly
+#        BASE_IMAGE: oneapi_base
+#        BUILD_IMAGE: oneapi_
 #        PLATFORM: linux/amd64
 #        ENV: [prod]
-#      - BASE_IMAGE: cuda_base_new
-#        BUILD_IMAGE: jug_dev_cuda
+#      - BUILD_TYPE:
+#        - default
+#        - nightly
+#        BASE_IMAGE: cuda_base_new
+#        BUILD_IMAGE: cuda_
 #        PLATFORM: linux/amd64
 #        ENV: [prod]
   extends: .build
@@ -265,16 +274,29 @@ jug_dev:default:
     - version
     - base
   script:
+    - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY=1 ; fi
+    - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT=1 ; fi
     - source spack.sh ; 
       source eic-spack.sh ;
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml ;
       docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                   }
+                   ${IF_BUILD_NIGHTLY:+
+                     ${NIGHLTY:+
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                       ${PUSH_NIGHTLY_WITH_DATE:+
+                         ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                         ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                       }
+                     }
                    }
                    --file containers/jug/dev.Dockerfile
                    --platform ${PLATFORM}
@@ -289,9 +311,11 @@ jug_dev:default:
                    --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"
                    --build-arg S3_ACCESS_KEY=${S3_ACCESS_KEY}
                    --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
-                   --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
-                   --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
-                   --build-arg EICRECON_VERSION=${EICRECON_VERSION}
+                   --build-arg JUG_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
+                   ${IF_BUILD_DEFAULT:+
+                     --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
+                     --build-arg EICRECON_VERSION=${EICRECON_VERSION}
+                   }
                    --build-arg ENV=${ENV}
                    --build-arg jobs=${JOBS}
                    --build-context spack-environment=spack-environment
@@ -311,10 +335,10 @@ jug_xl:default:
   stage: jug
   needs:
     - version
-    - jug_dev:default
+    - jug_dev
   script:
     - docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-default
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -324,8 +348,8 @@ jug_xl:default:
                    --platform ${PLATFORM}
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg JUG_VERSION=${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}-default
+                   --build-arg JUG_VERSION=${EXPORT_TAG}-$(git rev-parse HEAD)
                    --build-arg jobs=${JOBS}
                    --build-context detectors=.
                    containers/jug
@@ -349,7 +373,7 @@ jug_xl:nightly:
     - when: never
   needs:
     - version
-    - jug_dev:default
+    - jug_dev
   script:
     - |
       PUSH_NIGHTLY_WITH_DATE=""
@@ -376,8 +400,8 @@ jug_xl:nightly:
                    --platform ${PLATFORM}
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg JUG_VERSION=nightly-$(date +%Y-%m-%d_%H-%M-%S)-${INTERNAL_TAG}-$(git rev-parse HEAD)
+                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}-nightly
+                   --build-arg JUG_VERSION=${EXPORT_TAG}-nightly-$(git rev-parse HEAD)-$(date +%Y-%m-%d_%H-%M-%S)
                    --build-arg NIGHTLY=1
                    --build-context detectors=.
                    containers/jug
@@ -400,7 +424,7 @@ jug_dev:singularity:default:
   extends: .singularity
   needs:
     - version
-    - jug_dev:default
+    - jug_dev
   variables:
     BUILD_IMAGE: "jug_dev"
 
@@ -434,7 +458,7 @@ benchmarks:reconstruction:default:
     - version
     - jug_xl:default
   variables:
-    BENCHMARKS_TAG: "$INTERNAL_TAG"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
@@ -449,7 +473,7 @@ benchmarks:physics:default:
     - jug_xl:default
   variables:
     RECO: "eicrecon"
-    BENCHMARKS_TAG: "$INTERNAL_TAG"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
