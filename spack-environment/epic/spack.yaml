@@ -4,23 +4,18 @@ spack:
   concretizer:
     reuse: true
     unify: when_possible
-  definitions:
-  - versions:
-    - '@git.main'
-    - '@git.23.03.0'
-    - '@git.23.05.0'
-    - '@git.23.05.1'
-    - '@git.23.05.2'
-    - '@git.23.06.0'
-    - '@git.23.06.1'
-    - '@git.23.07.0'
-    - '@git.23.07.1'
-    - '@git.23.07.2'
-    - '@git.23.08.0'
   specs:
-    - matrix:
-      - [epic-eic]
-      - [$versions]
+    - 'epic-eic@git.main'
+    - 'epic-eic@git.23.03.0'
+    - 'epic-eic@git.23.05.0'
+    - 'epic-eic@git.23.05.1'
+    - 'epic-eic@git.23.05.2'
+    - 'epic-eic@git.23.06.0'
+    - 'epic-eic@git.23.06.1'
+    - 'epic-eic@git.23.07.0'
+    - 'epic-eic@git.23.07.1'
+    - 'epic-eic@git.23.07.2'
+    - 'epic-eic@git.23.08.0'
   view:
     detector:
       root: /opt/detector
