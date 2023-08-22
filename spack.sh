@@ -8,6 +8,7 @@ SPACK_VERSION="v0.20.1"
 ## Space-separated list of spack cherry-picks
 read -r -d '' SPACK_CHERRYPICKS <<- \
 --- || true
+ef5d110d4abd2411d6bde82d738b205eb6672fe8
 9ee2d79de172de14477a78e5d407548a63eea33a
 776ab132760d63eab0703b7c0ebebc72a8443f5b
 188168c476eabe99764634db8d78eb3f9ea2a927
@@ -29,6 +30,7 @@ df4a2457a41e7ab634e86d3148d8b22a9f433a6a
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
+## ef5d110d4abd2411d6bde82d738b205eb6672fe8: Fix multiple quadratic complexity issues in environments
 ## 9ee2d79de172de14477a78e5d407548a63eea33a: libxpm package: fix RHEL8 build with libintl
 ## 776ab132760d63eab0703b7c0ebebc72a8443f5b: [xrootd] New variants, new version, improve build config
 ## 188168c476eabe99764634db8d78eb3f9ea2a927: podio: Add 0.16.5 tag
