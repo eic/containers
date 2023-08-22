@@ -71,6 +71,7 @@ packages:
     require:
     - '@1.26'
     - +ddg4 +ddcad +hepmc3 +xercesc
+    - any_of: [+ddeve, -ddeve]
   dpmjet:
     require:
     - '@19.3.5'
