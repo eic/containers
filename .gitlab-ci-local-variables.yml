@@ -1,0 +1,3 @@
+CI_REGISTRY: docker.io/eicweb
+CI_CONTAINER: dind
+CI_TAG: master

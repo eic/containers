@@ -30,15 +30,15 @@ variables:
   JOBS: 128
 
   ## is this nightly or not?
-  NIGHTLY:
+  NIGHTLY: ""
   ## Add to tag
   NIGHTLY_TAG: "nightly"
 
   ## Additional options for docker build (e.g. --no-cache)
-  BUILD_OPTIONS:
+  BUILD_OPTIONS: ""
 
   ## Version to be set by external trigger
-  VERSION:
+  VERSION: ""
 
   ## Internal tag used for the CI
   INTERNAL_TAG: "pipeline-${CI_PIPELINE_ID}"

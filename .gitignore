@@ -19,4 +19,7 @@ BUILD
 debug
 DEBUG
 
+#gitlab-ci-local
+.gitlab-ci-local/
+
 .nfs*
