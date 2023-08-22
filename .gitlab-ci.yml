@@ -55,16 +55,39 @@ stages:
 
 default:
   before_script:
-    - ./gitlab-ci/docker_login.sh -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN}
-                                  -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-    - ./gitlab-ci/docker_login.sh -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN}
-                                  -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                  ${GH_REGISTRY}
-    - ./gitlab-ci/docker_login.sh --ci -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
+    - |
+      # Login to registries
+      if [[ -n "${EXPORT_TAG}" ]] ; then
+        if [[ -n "${DH_REGISTRY}" ]] ; then
+          ./gitlab-ci/docker_login.sh -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN}
+                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
+                                      ${DH_REGISTRY} ;
+        fi ;
+        if [[ -n "${GH_REGISTRY}" ]] ; then
+          ./gitlab-ci/docker_login.sh -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN}
+                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
+                                      ${GH_REGISTRY} ;
+        fi ;
+        if [[ -n "${CI_REGISTRY}" ]] ; then
+          ./gitlab-ci/docker_login.sh -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWOR}
+                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
+                                      ${CI_REGISTRY} ;
+        fi ;
+      fi
   after_script:
-    - docker logout
-    - docker logout ${CI_REGISTRY}
-    - docker logout ${GH_REGISTRY}
+    - |
+      # Logout from registries
+      if [[ -n "${EXPORT_TAG}" ]] ; then
+        if [[ -n "${DH_REGISTRY}" ]] ; then
+          docker logout ${DH_REGISTRY}
+        fi ;
+        if [[ -n "${GH_REGISTRY}" ]] ; then
+          docker logout ${GH_REGISTRY}
+        fi ;
+        if [[ -n "${CI_REGISTRY}" ]] ; then
+          docker logout ${CI_REGISTRY}
+        fi ;
+      fi
 
 ## only run CI for in the following cases:
 ## master, stable branch, release tag, MR event and nightly builds
