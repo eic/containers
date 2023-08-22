@@ -218,7 +218,7 @@ source $SPACK_ROOT/share/spack/setup-env.sh
 export CCACHE_DIR=/ccache
 spack buildcache update-index eics3rw
 spack env activate --dir /opt/spack-environment/epic
-spack concretize --fresh --force --quiet
+spack concretize --reuse --force --quiet
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=/opt/spack-environment/epic \
   BUILDCACHE_OCI_PROMPT="eicweb" \
