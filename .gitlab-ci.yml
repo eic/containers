@@ -154,7 +154,7 @@ version:
         VERSION="${CI_COMMIT_REF_NAME}-${CI_PIPELINE_ID}"
         EXPORT_TAG=""
       fi
-      echo "INTERNAL_TAG=$INTERNAL_TAG" >> build.env
+      echo "INTERNAL_TAG=$INTERNAL_TAG" > build.env
       echo "VERSION=$VERSION" >> build.env
       echo "NIGHTLY_TAG=$NIGHTLY_TAG" >> build.env
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
