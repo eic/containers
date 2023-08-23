@@ -432,6 +432,7 @@ jug_xl:nightly:
   after_script: ""
 
 jug_xl:singularity:default:
+  extends: .singularity
   variables:
     - BUILD_TYPE: default
     - BUILD_IMAGE: jug_xl
@@ -441,6 +442,7 @@ jug_xl:singularity:default:
 
 # eic-shell expects build/jug_xl.sif from the job with name 'jug_xl:singularity:nightly'
 jug_xl:singularity:nightly:
+  extends: .singularity
   variables:
     - BUILD_TYPE: nightly
     - BUILD_IMAGE: jug_xl
