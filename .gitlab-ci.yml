@@ -411,7 +411,7 @@ jug_xl:nightly:
                    containers/jug
 
 
-.singularity:
+singularity:
   image:
     name: ${SINGULARITY_IMAGE}
     entrypoint: [""]
@@ -424,15 +424,7 @@ jug_xl:nightly:
   artifacts:
       expire_in: 1 days
       paths:
-        - build/${BUILD_IMAGE}.sif
-  before_script: ""
-  script:
-    - mkdir build
-    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
-  after_script: ""
-
-singularity:
-  extends: .singularity
+        - ${BUILD_IMAGE}.sif
   parallel:
     matrix:
       - BUILD_TYPE:
@@ -446,6 +438,8 @@ singularity:
     - jug_dev
     - jug_xl:default
     - jug_xl:nightly
+  script:
+    - singularity pull ${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
 
 
 benchmarks:reconstruction:default:
