@@ -420,7 +420,7 @@ singularity:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
-    - when: never
+    - when: on_success
   artifacts:
       expire_in: 1 days
       paths:
