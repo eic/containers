@@ -423,9 +423,11 @@ jug_xl:nightly:
       expire_in: 1 days
       paths:
         - build/${BUILD_IMAGE}.sif
+  before_script: ""
   script:
     - mkdir build
     - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+  after_script: ""
 
 jug_dev:singularity:default:
   extends: .singularity
