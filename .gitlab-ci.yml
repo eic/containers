@@ -166,6 +166,9 @@ version:
   image: ${DOCKER_IMAGE}
   services:
     - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
   rules:
     - when: on_success
   resource_group: ${CI_COMMIT_REF_NAME}-${VERSION}
