@@ -1,3 +1,5 @@
+image: alpine
+
 variables:
   ## External images
   DOCKER_IMAGE: docker.io/docker:24.0.5
