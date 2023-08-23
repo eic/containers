@@ -438,8 +438,10 @@ singularity:
     - jug_dev
     - jug_xl:default
     - jug_xl:nightly
+  before_script: ""
   script:
     - singularity pull ${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
+  after_script: ""
 
 
 benchmarks:reconstruction:default:
