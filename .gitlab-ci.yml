@@ -69,7 +69,7 @@ default:
                                       ${GH_REGISTRY} ;
         fi ;
         if [[ -n "${CI_REGISTRY}" ]] ; then
-          ./gitlab-ci/docker_login.sh -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWOR}
+          ./gitlab-ci/docker_login.sh -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
                                       -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
                                       ${CI_REGISTRY} ;
         fi ;
