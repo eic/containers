@@ -434,8 +434,8 @@ jug_xl:nightly:
 jug_xl:singularity:default:
   extends: .singularity
   variables:
-    - BUILD_TYPE: default
-    - BUILD_IMAGE: jug_xl
+    BUILD_TYPE: default
+    BUILD_IMAGE: jug_xl
   needs:
     - version
     - jug_xl:default
@@ -444,8 +444,8 @@ jug_xl:singularity:default:
 jug_xl:singularity:nightly:
   extends: .singularity
   variables:
-    - BUILD_TYPE: nightly
-    - BUILD_IMAGE: jug_xl
+    BUILD_TYPE: nightly
+    BUILD_IMAGE: jug_xl
   needs:
     - version
     - jug_xl:nightly
