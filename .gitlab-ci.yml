@@ -2,7 +2,9 @@ image: alpine
 
 variables:
   ## External images
-  DOCKER_IMAGE: docker.io/docker:24.0.5
+  # FIXME:
+  #DOCKER_IMAGE: docker.io/docker:24.0.5
+  DOCKER_IMAGE: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.4
 
   ## Application versions used for the main release 
@@ -52,40 +54,6 @@ stages:
   - benchmarks
   - test
   - finalize
-
-default:
-  before_script:
-    - # Login to registries
-      if [[ -n "${EXPORT_TAG}" ]] ; then
-        if [[ -n "${DH_REGISTRY}" ]] ; then
-          ./gitlab-ci/docker_login.sh -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN}
-                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                      ${DH_REGISTRY} ;
-        fi ;
-        if [[ -n "${GH_REGISTRY}" ]] ; then
-          ./gitlab-ci/docker_login.sh -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN}
-                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                      ${GH_REGISTRY} ;
-        fi ;
-        if [[ -n "${CI_REGISTRY}" ]] ; then
-          ./gitlab-ci/docker_login.sh -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
-                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                      ${CI_REGISTRY} ;
-        fi ;
-      fi
-  after_script:
-    - # Logout from registries
-      if [[ -n "${EXPORT_TAG}" ]] ; then
-        if [[ -n "${DH_REGISTRY}" ]] ; then
-          docker logout ${DH_REGISTRY}
-        fi ;
-        if [[ -n "${GH_REGISTRY}" ]] ; then
-          docker logout ${GH_REGISTRY}
-        fi ;
-        if [[ -n "${CI_REGISTRY}" ]] ; then
-          docker logout ${CI_REGISTRY}
-        fi ;
-      fi
 
 ## only run CI for in the following cases:
 ## master, stable branch, release tag, MR event and nightly builds
@@ -161,16 +129,52 @@ version:
     reports:
       dotenv: build.env
 
-## base job settings for all build jobs
+## base job settings for all docker interactions
+.docker:
+  image: ${DOCKER_IMAGE}
+  before_script:
+    - # Login to registries
+      if [[ -n "${EXPORT_TAG}" ]] ; then
+        if [[ -n "${DH_REGISTRY}" ]] ; then
+          ./gitlab-ci/docker_login.sh -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN}
+                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
+                                      ${DH_REGISTRY} ;
+        fi ;
+        if [[ -n "${GH_REGISTRY}" ]] ; then
+          ./gitlab-ci/docker_login.sh -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN}
+                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
+                                      ${GH_REGISTRY} ;
+        fi ;
+        if [[ -n "${CI_REGISTRY}" ]] ; then
+          ./gitlab-ci/docker_login.sh -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
+                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
+                                      ${CI_REGISTRY} ;
+        fi ;
+      fi
+  after_script:
+    - # Logout from registries
+      if [[ -n "${EXPORT_TAG}" ]] ; then
+        if [[ -n "${DH_REGISTRY}" ]] ; then
+          docker logout ${DH_REGISTRY}
+        fi ;
+        if [[ -n "${GH_REGISTRY}" ]] ; then
+          docker logout ${GH_REGISTRY}
+        fi ;
+        if [[ -n "${CI_REGISTRY}" ]] ; then
+          docker logout ${CI_REGISTRY}
+        fi ;
+      fi
+
+## base job settings for all docker build jobs
 .build:
-  image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
+  extends: .docker 
   rules:
     - when: on_success
   resource_group: ${CI_COMMIT_REF_NAME}-${VERSION}
   tags:
     - docker-new
   before_script:
-    - !reference [default, before_script]
+    - !reference [.docker, before_script]
     - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
       for arch in aarch64 ; do
         if ! grep -q enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
@@ -449,11 +453,9 @@ jug_xl:nightly:
       expire_in: 1 days
       paths:
         - build/${BUILD_IMAGE}.sif
-  before_script: ""
   script:
     - mkdir build
     - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
-  after_script: ""
 
 jug_xl:singularity:default:
   extends: .singularity
@@ -537,6 +539,7 @@ benchmarks:physics:nightly:
   allow_failure: false
 
 clean:
+  extends: .docker
   stage: finalize
   dependencies:
     - version
@@ -562,6 +565,7 @@ clean:
     - ./gitlab-ci/cleanup_registry.sh -i dind -r 93 ${INTERNAL_TAG}
 
 clean_unstable_mr:
+  extends: .docker
   stage: finalize
   dependencies:
     - clean
