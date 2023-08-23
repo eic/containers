@@ -1,6 +1,10 @@
 image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
 
 variables:
+  ## External images
+  DOCKER_IMAGE: docker.io/docker:24.0.5
+  SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.4
+
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
   JUGGLER_VERSION: "v10.0.1"
@@ -406,51 +410,45 @@ jug_xl:nightly:
                    --build-context detectors=.
                    containers/jug
 
+
 .singularity:
+  image:
+    name: ${SINGULARITY_IMAGE}
+    entrypoint: [""]
   stage: deploy
   interruptible: true
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - when: never
   artifacts:
       expire_in: 1 days
       paths:
         - build/${BUILD_IMAGE}.sif
+  before_script: ""
   script:
     - mkdir build
-    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
-
-jug_dev:singularity:default:
-  extends: .singularity
-  needs:
-    - version
-    - jug_dev
-  variables:
-    BUILD_IMAGE: "jug_dev"
+    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
+  after_script: ""
 
 jug_xl:singularity:default:
   extends: .singularity
+  variables:
+    BUILD_TYPE: default
+    BUILD_IMAGE: jug_xl
   needs:
     - version
     - jug_xl:default
-  variables:
-    BUILD_IMAGE: "jug_xl"
 
+# eic-shell expects build/jug_xl.sif from the job with name 'jug_xl:singularity:nightly'
 jug_xl:singularity:nightly:
   extends: .singularity
-  rules:
-    - !reference ['.singularity', rules]
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - when: never
+  variables:
+    BUILD_TYPE: nightly
+    BUILD_IMAGE: jug_xl
   needs:
     - version
     - jug_xl:nightly
-  variables:
-    BUILD_IMAGE: "jug_xl"
-  script:
-    - mkdir build
-    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
 
 benchmarks:reconstruction:default:
   stage: benchmarks
