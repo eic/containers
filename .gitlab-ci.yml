@@ -47,7 +47,6 @@ variables:
 
 stages:
   - config
-  - dind
   - base            ## base OS image
   - jug             ## jug container images
   - deploy          ## build/deploy singularity images
@@ -203,42 +202,6 @@ version:
 
 ## TODO
 ## oneapi_runtime + jug_xl --> oneapi_prod 
-
-## Docker-in-docker image
-dind-build:
-  parallel:
-    matrix:
-      - BUILD_IMAGE: dind
-  extends: .build
-  stage: dind
-  needs:
-    - version
-  script:
-    - docker buildx build --push
-        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}     
-        --file containers/dind/Dockerfile
-        containers/dind
-
-dind-publish:
-  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-  parallel:
-    matrix:
-      - BUILD_IMAGE: dind
-  extends: .build
-  stage: dind
-  needs:
-    - version
-    - dind-build
-  script:
-    - docker buildx build --push
-        --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-        ${EXPORT_TAG:+
-          ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-          ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-          ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-        }        
-        --file containers/dind/Dockerfile
-        containers/dind
 
 base:
   parallel:
@@ -562,7 +525,6 @@ clean:
       if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
         ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${NIGHTLY_TAG}
       fi
-    - ./gitlab-ci/cleanup_registry.sh -i dind -r 93 ${INTERNAL_TAG}
 
 clean_unstable_mr:
   extends: .docker
