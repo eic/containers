@@ -1,5 +1,3 @@
-image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
-
 variables:
   ## External images
   DOCKER_IMAGE: docker.io/docker:24.0.5
