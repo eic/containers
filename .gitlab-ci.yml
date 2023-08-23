@@ -55,8 +55,7 @@ stages:
 
 default:
   before_script:
-    - |
-      # Login to registries
+    - # Login to registries
       if [[ -n "${EXPORT_TAG}" ]] ; then
         if [[ -n "${DH_REGISTRY}" ]] ; then
           ./gitlab-ci/docker_login.sh -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN}
@@ -76,8 +75,7 @@ default:
         fi ;
       fi
   after_script:
-    - |
-      # Logout from registries
+    - # Logout from registries
       if [[ -n "${EXPORT_TAG}" ]] ; then
         if [[ -n "${DH_REGISTRY}" ]] ; then
           docker logout ${DH_REGISTRY}
