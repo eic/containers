@@ -161,7 +161,7 @@ version:
 
 ## base job settings for all build jobs
 .build:
-  image: image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
+  image: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
   rules:
     - when: on_success
   resource_group: ${CI_COMMIT_REF_NAME}-${VERSION}
