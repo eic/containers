@@ -411,8 +411,9 @@ jug_xl:nightly:
                    containers/jug
 
 .singularity:
-  image: ${SINGULARITY_IMAGE}
-  entrypoint: ["/bin/sh"]
+  image:
+    name: ${SINGULARITY_IMAGE}
+    entrypoint: ["/bin/sh"]
   stage: deploy
   interruptible: true
   rules:
