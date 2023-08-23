@@ -155,13 +155,13 @@ version:
     - # Logout from registries
       if [[ -n "${EXPORT_TAG}" ]] ; then
         if [[ -n "${DH_REGISTRY}" ]] ; then
-          docker logout ${DH_REGISTRY}
+          docker logout ${DH_REGISTRY} ;
         fi ;
         if [[ -n "${GH_REGISTRY}" ]] ; then
-          docker logout ${GH_REGISTRY}
+          docker logout ${GH_REGISTRY} ;
         fi ;
         if [[ -n "${CI_REGISTRY}" ]] ; then
-          docker logout ${CI_REGISTRY}
+          docker logout ${CI_REGISTRY} ;
         fi ;
       fi
 
