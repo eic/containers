@@ -163,6 +163,9 @@ version:
 
 ## base job settings for all build jobs
 .build:
+  image: ${DOCKER_IMAGE}
+  services:
+    - docker:dind
   rules:
     - when: on_success
   resource_group: ${CI_COMMIT_REF_NAME}-${VERSION}
@@ -172,11 +175,13 @@ version:
     - !reference [default, before_script]
     - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
       for arch in aarch64 ; do
-        if ! grep --quiet enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
+        if ! grep -q enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
           docker run --rm --privileged multiarch/qemu-user-static --persistent yes ;
         fi ;
       done
-    - docker buildx create --name builder --driver docker-container --bootstrap --use
+    - docker context create context
+    - docker context use context
+    - docker buildx create --name builder --driver docker-container --bootstrap --use context
 
 ## rules for nightly jobs
 .nightly:
