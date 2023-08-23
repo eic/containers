@@ -411,7 +411,7 @@ jug_xl:nightly:
                    containers/jug
 
 
-singularity:
+.singularity:
   image:
     name: ${SINGULARITY_IMAGE}
     entrypoint: [""]
@@ -424,25 +424,29 @@ singularity:
   artifacts:
       expire_in: 1 days
       paths:
-        - ${BUILD_IMAGE}.sif
-  parallel:
-    matrix:
-      - BUILD_TYPE:
-        - default
-        - nightly
-        BUILD_IMAGE:
-        - jug_dev
-        - jug_xl
-  needs:
-    - version
-    - jug_dev
-    - jug_xl:default
-    - jug_xl:nightly
+        - build/${BUILD_IMAGE}.sif
   before_script: ""
   script:
-    - singularity pull ${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
+    - mkdir build
+    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
   after_script: ""
 
+jug_xl:singularity:default:
+  variables:
+    - BUILD_TYPE: default
+    - BUILD_IMAGE: jug_xl
+  needs:
+    - version
+    - jug_xl:default
+
+# eic-shell expects build/jug_xl.sif from the job with name 'jug_xl:singularity:nightly'
+jug_xl:singularity:nightly:
+  variables:
+    - BUILD_TYPE: nightly
+    - BUILD_IMAGE: jug_xl
+  needs:
+    - version
+    - jug_xl:nightly
 
 benchmarks:reconstruction:default:
   stage: benchmarks
