@@ -5,7 +5,7 @@ spack:
   specs:
     - acts
     - cmake
-    - dd4hep
+    - dd4hep -ddeve
     - edm4eic
     - fastjet
     - fjcontrib
