@@ -418,8 +418,6 @@ jug_xl:nightly:
   stage: deploy
   interruptible: true
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: on_success
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
     - when: never
@@ -433,7 +431,8 @@ jug_xl:nightly:
     - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
   after_script: ""
 
-jug_dev:singularity:
+singularity:
+  extends: .singularity
   parallel:
     matrix:
       - BUILD_TYPE:
@@ -441,22 +440,10 @@ jug_dev:singularity:
         - nightly
         BUILD_IMAGE:
         - jug_dev
-  extends: .singularity
+        - jug_xl
   needs:
     - version
     - jug_dev
-
-jug_xl:singularity:
-  parallel:
-    matrix:
-      - BUILD_TYPE:
-        - default
-        - nightly
-        BUILD_IMAGE:
-        - jug_xl
-  extends: .singularity
-  needs:
-    - version
     - jug_xl:default
     - jug_xl:nightly
 
