@@ -410,6 +410,7 @@ jug_xl:nightly:
                    --build-context detectors=.
                    containers/jug
 
+
 .singularity:
   image:
     name: ${SINGULARITY_IMAGE}
@@ -418,7 +419,10 @@ jug_xl:nightly:
   interruptible: true
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: always
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - when: never
   artifacts:
       expire_in: 1 days
       paths:
@@ -426,40 +430,35 @@ jug_xl:nightly:
   before_script: ""
   script:
     - mkdir build
-    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}
+    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
   after_script: ""
 
-jug_dev:singularity:default:
+jug_dev:singularity:
+  parallel:
+    matrix:
+      - BUILD_TYPE:
+        - default
+        - nightly
+        BUILD_IMAGE:
+        - jug_dev
   extends: .singularity
   needs:
     - version
     - jug_dev
-  variables:
-    BUILD_IMAGE: "jug_dev"
 
-jug_xl:singularity:default:
+jug_xl:singularity:
+  parallel:
+    matrix:
+      - BUILD_TYPE:
+        - default
+        - nightly
+        BUILD_IMAGE:
+        - jug_xl
   extends: .singularity
   needs:
     - version
-    - jug_xl:default
-  variables:
-    BUILD_IMAGE: "jug_xl"
+    - jug_xl
 
-jug_xl:singularity:nightly:
-  extends: .singularity
-  rules:
-    - !reference ['.singularity', rules]
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - when: never
-  needs:
-    - version
-    - jug_xl:nightly
-  variables:
-    BUILD_IMAGE: "jug_xl"
-  script:
-    - mkdir build
-    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${NIGHTLY_TAG}
 
 benchmarks:reconstruction:default:
   stage: benchmarks
