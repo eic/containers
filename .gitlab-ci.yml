@@ -457,7 +457,8 @@ jug_xl:singularity:
   extends: .singularity
   needs:
     - version
-    - jug_xl
+    - jug_xl:default
+    - jug_xl:nightly
 
 
 benchmarks:reconstruction:default:
