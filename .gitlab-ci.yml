@@ -137,14 +137,10 @@ version:
     - # Login to registries
       if [[ -n "${EXPORT_TAG}" ]] ; then
         if [[ -n "${DH_REGISTRY}" ]] ; then
-          ./gitlab-ci/docker_login.sh -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN}
-                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                      ${DH_REGISTRY} ;
+          docker login -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN} ${DH_REGISTRY} ;
         fi ;
         if [[ -n "${GH_REGISTRY}" ]] ; then
-          ./gitlab-ci/docker_login.sh -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN}
-                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                      ${GH_REGISTRY} ;
+          docker login -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN} ${GH_REGISTRY} ;
         fi ;
         if [[ -n "${CI_REGISTRY}" ]] ; then
           docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY} ;
