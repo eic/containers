@@ -267,7 +267,7 @@ jug_dev:
   script:
     - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY=1 ; fi
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT=1 ; fi
-    - apk add envsubst
+    - apk add envsubst git
     - source spack.sh ; 
       source eic-spack.sh ;
       export SPACK_VERSION ;
@@ -329,6 +329,7 @@ jug_xl:default:
     - version
     - jug_dev
   script:
+    - apk add git
     - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-default
                    ${EXPORT_TAG:+
@@ -372,6 +373,7 @@ jug_xl:nightly:
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
+    - apk add git
     - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-nightly
                    ${EXPORT_TAG:+
