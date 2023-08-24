@@ -235,19 +235,6 @@ base:
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    containers/debian
 
-mirrors:
-  stage: config
-  script:
-    - apk add envsubst
-    - |
-      source spack.sh
-      source eic-spack.sh
-      export SPACK_VERSION
-      cat mirrors.yaml.in | envsubst > mirrors.yaml
-  artifacts:
-    paths:
-      - mirrors.yaml
-
 jug_dev:
   parallel:
     matrix:
@@ -276,14 +263,16 @@ jug_dev:
   stage: jug
   needs:
     - version
-    - mirrors
     - base
   script:
     - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY=1 ; fi
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT=1 ; fi
+    - apk add envsubst
     - source spack.sh ; 
       source eic-spack.sh ;
-      docker buildx build --push ${BUILD_OPTIONS}
+      export SPACK_VERSION ;
+      cat mirrors.yaml.in | envsubst > mirrors.yaml
+    - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
