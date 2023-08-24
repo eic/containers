@@ -236,6 +236,7 @@ base:
                    containers/debian
 
 mirrors:
+  stage: config
   script:
     - apk add envsubst
     - |
@@ -245,7 +246,7 @@ mirrors:
       cat mirrors.yaml.in | envsubst > mirrors.yaml
   artifacts:
     paths:
-      mirrors.yaml
+      - mirrors.yaml
 
 jug_dev:
   parallel:
