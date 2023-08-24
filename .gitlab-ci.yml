@@ -147,9 +147,7 @@ version:
                                       ${GH_REGISTRY} ;
         fi ;
         if [[ -n "${CI_REGISTRY}" ]] ; then
-          ./gitlab-ci/docker_login.sh -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
-                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                      ${CI_REGISTRY} ;
+          docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY} ;
         fi ;
       fi
   after_script:
