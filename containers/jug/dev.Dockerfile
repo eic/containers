@@ -136,21 +136,6 @@ RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
     [ -z "${CACHE_NUKE}" ]                                              \
     || rm -rf /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*
 
-## Extra post-spack steps:
-##   - Python packages
-COPY requirements.txt /usr/local/etc/requirements.txt
-RUN --mount=type=cache,target=/var/cache/pip,sharing=locked,id=${TARGETPLATFORM} \
-    echo "Installing additional python packages"                        \
- && source $SPACK_ROOT/share/spack/setup-env.sh                         \
- && spack env activate --dir ${SPACK_ENV}                               \
- && python -m pip install                                               \
-    --trusted-host pypi.org                                             \
-    --trusted-host files.pythonhosted.org                               \
-    --cache-dir /var/cache/pip                                          \
-    --requirement /usr/local/etc/requirements.txt                       \
-    --no-warn-script-location
-    # ^ Supress not on PATH Warnings
-
 ## Including some small fixes
 RUN echo "Grabbing environment info"                                    \
  && spack env activate --sh --dir ${SPACK_ENV}                          \
