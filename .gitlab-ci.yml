@@ -509,7 +509,12 @@ clean:
     - docker-new
   when: always
   script:
-    ## remove the pipeline specific export from eicweb if needed
+    - apk add curl
+    - for id in 66 68 69 80 83 91 92 ; do
+        for tag in ${INTERNAL_TAG} ${INTERNAL_TAG}-default ${INTERNAL_TAG}-nightly ; do 
+          curl --request DELETE --header "PRIVATE-TOKEN: ${REG_CLEANUP_TOKEN}" ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/registry/repositories/${id}/tags/${tag} ;
+        done ;
+      done
     - echo "Cleaning up pipeline specific docker tags if needed"
     - bash ./gitlab-ci/cleanup_registry.sh -i debian_base -r 66 ${INTERNAL_TAG}
     - bash ./gitlab-ci/cleanup_registry.sh -i ubuntu_base -r 80 ${INTERNAL_TAG}
@@ -536,8 +541,7 @@ clean_unstable_mr:
   variables:
     API: "https://eicweb.phy.anl.gov/api/v4"
   script:
-    - apt update -q
-    - apt install -yq jq
+    - apk add curl jq
     - for registry in
         eicweb
         eicweb.phy.anl.gov:4567/eic/juggler
