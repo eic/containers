@@ -518,12 +518,10 @@ clean_unstable_mr:
   extends: .docker
   stage: finalize
   dependencies:
-    - clean
+    - version
   tags:
     - docker-new
   when: always
-  variables:
-    API: "https://eicweb.phy.anl.gov/api/v4"
   script:
     - apk add curl jq
     - for registry in
@@ -539,8 +537,8 @@ clean_unstable_mr:
           project_id=${BASH_REMATCH[1]} ;
           merge_request_iid=${BASH_REMATCH[2]} ;
           if [[ $(curl --silent -L
-                  "${API}/projects/${project_id}/merge_requests?scope=all&state=merged&per_page=100"
-                  "${API}/projects/${project_id}/merge_requests?scope=all&state=closed&per_page=100"
+                  "${CI_API_V4_URL}/projects/${project_id}/merge_requests?scope=all&state=merged&per_page=100"
+                  "${CI_API_V4_URL}/projects/${project_id}/merge_requests?scope=all&state=closed&per_page=100"
                   | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") =~ ^(merged|closed)$ ]] ; then
             docker rmi $repository:$tag ;
           else
@@ -551,20 +549,20 @@ clean_unstable_mr:
           merge_request_id=${BASH_REMATCH[1]} ;
           suffix=${BASH_REMATCH[2]} ;
           if [[ $(curl --silent -L
-                  "${API}/projects/290/merge_requests?scope=all&state=merged&per_page=100"
-                  "${API}/projects/369/merge_requests?scope=all&state=merged&per_page=100"
-                  "${API}/projects/290/merge_requests?scope=all&state=closed&per_page=100"
-                  "${API}/projects/369/merge_requests?scope=all&state=closed&per_page=100"
+                  "${CI_API_V4_URL}/projects/290/merge_requests?scope=all&state=merged&per_page=100"
+                  "${CI_API_V4_URL}/projects/369/merge_requests?scope=all&state=merged&per_page=100"
+                  "${CI_API_V4_URL}/projects/290/merge_requests?scope=all&state=closed&per_page=100"
+                  "${CI_API_V4_URL}/projects/369/merge_requests?scope=all&state=closed&per_page=100"
                   | jq -r ".[]|select(.id == ${merge_request_id})|.state") =~ ^(merged|closed)$ ]] ; then
             docker rmi $repository:$tag ;
           else
             project_id=$(curl --silent -L
-                        "${API}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
-                        "${API}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
+                        "${CI_API_V4_URL}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
+                        "${CI_API_V4_URL}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
                         | jq -r ".[]|select(.id == ${merge_request_id})|.project_id") ;
             merge_request_iid=$(curl --silent -L 
-                        "${API}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
-                        "${API}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
+                        "${CI_API_V4_URL}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
+                        "${CI_API_V4_URL}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
                         | jq -r ".[]|select(.id == ${merge_request_id})|.iid") ;
             echo "Image $repository:$tag still in use (project ${project_id}, idd ${merge_request_iid})." ;
             if [[ ${project_id} == "" || ${merge_request_iid} == "" ]] ; then
