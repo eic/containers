@@ -500,36 +500,19 @@ benchmarks:physics:nightly:
     strategy: depend
   allow_failure: false
 
-clean:
-  extends: .docker
+clean_internal_tag:
+  image: alpine/curl
   stage: finalize
   dependencies:
     - version
-  tags:
-    - docker-new
   when: always
   script:
-    - apk add curl
     - |
       for id in 66 68 69 80 83 91 92 ; do
         for tag in ${INTERNAL_TAG} ${INTERNAL_TAG}-default ${INTERNAL_TAG}-nightly ; do 
           curl --request DELETE --header "PRIVATE-TOKEN: ${REG_CLEANUP_TOKEN}" ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/registry/repositories/${id}/tags/${tag} ;
         done ;
       done
-    - echo "Cleaning up pipeline specific docker tags if needed"
-    - bash ./gitlab-ci/cleanup_registry.sh -i debian_base -r 66 ${INTERNAL_TAG}
-    - bash ./gitlab-ci/cleanup_registry.sh -i ubuntu_base -r 80 ${INTERNAL_TAG}
-    - bash ./gitlab-ci/cleanup_registry.sh -i debian_testing_base -r 83 ${INTERNAL_TAG}
-    - bash ./gitlab-ci/cleanup_registry.sh -i debian_stable_base -r 92 ${INTERNAL_TAG}
-    - bash ./gitlab-ci/cleanup_registry.sh -i jug_prod -r 91 ${INTERNAL_TAG}
-    - bash ./gitlab-ci/cleanup_registry.sh -i jug_dev -r 68 ${INTERNAL_TAG}
-    - bash ./gitlab-ci/cleanup_registry.sh -i jug_dev -r 68 ${INTERNAL_TAG}-nightly
-    - bash ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${INTERNAL_TAG}
-    - bash ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${INTERNAL_TAG}-nightly
-    - |
-      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
-        bash ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${NIGHTLY_TAG}
-      fi
 
 clean_unstable_mr:
   extends: .docker
