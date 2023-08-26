@@ -510,7 +510,8 @@ clean:
   when: always
   script:
     - apk add curl
-    - for id in 66 68 69 80 83 91 92 ; do
+    - |
+      for id in 66 68 69 80 83 91 92 ; do
         for tag in ${INTERNAL_TAG} ${INTERNAL_TAG}-default ${INTERNAL_TAG}-nightly ; do 
           curl --request DELETE --header "PRIVATE-TOKEN: ${REG_CLEANUP_TOKEN}" ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/registry/repositories/${id}/tags/${tag} ;
         done ;
