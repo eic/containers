@@ -119,7 +119,8 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
  && make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
     SPACK_ENV=${SPACK_ENV}                                              \
     BUILDCACHE_MIRROR="local eics3rw"                                   \
- && ccache --show-stats
+ && ccache --show-stats                                                 \
+ && ccache --zero-stats
 
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack                          \
