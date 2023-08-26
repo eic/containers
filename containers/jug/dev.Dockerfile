@@ -156,10 +156,7 @@ FROM builder as staging
 RUN spack -e ${SPACK_ENV} gc -y
 
 # Garbage collect in git
-RUN du -sh $SPACK_ROOT                                                  \
- && git -C $SPACK_ROOT fetch --depth=1                                  \
- && git -C $SPACK_ROOT gc --prune=all --aggressive                      \
- && du -sh $SPACK_ROOT
+RUN git -C $SPACK_ROOT gc --prune=all --aggressive
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
 ## See
