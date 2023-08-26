@@ -106,7 +106,9 @@ FROM spack as builder
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
 ARG JUGGLER_VERSION="main"
+ADD https://eicweb.phy.anl.gov/api/v4/projects/EIC%2Fjuggler/repository/tree?ref=${JUGGLER_VERSION} /tmp/juggler.json
 ARG EICRECON_VERSION="main"
+ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
