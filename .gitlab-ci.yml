@@ -535,10 +535,11 @@ clean_unstable_mr:
       | sed -n -E 's/unstable-mr-([0-9]+)-([0-9]+)(-nightly|-default){0,1}$/& \1 \2/p'
       | while read id repository tag project_id merge_request_iid ; do
         state=$(curl --silent -L
+                "${CI_API_V4_URL}/projects/${project_id}/merge_requests?scope=all&state=opened&per_page=100"
                 "${CI_API_V4_URL}/projects/${project_id}/merge_requests?scope=all&state=merged&per_page=100"
                 "${CI_API_V4_URL}/projects/${project_id}/merge_requests?scope=all&state=closed&per_page=100"
                 | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") ;
-        echo "Image $repository:$tag is $state (project ${project_id}, iid ${merge_request_iid})." ;
+        echo "Image $repository:$tag is ${state:-undetermined} (project ${project_id}, iid ${merge_request_iid})." ;
         [ "$state" == "merged" ] || echo docker rmi $repository:$tag ;
         [ "$state" == "closed" ] || echo docker rmi $repository:$tag ;
       done
