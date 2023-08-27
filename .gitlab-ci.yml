@@ -544,13 +544,15 @@ clean_unstable_mr:
         if [ "$state" == "closed" ] ; then docker rmi $repository:$tag ; fi ;
       done
     - docker system prune --filter until=24h --force
+    - docker system df
     - docker images
 
 clean_pipeline:
   extends: .docker
-  stage: config
+  stage: finalize
   dependencies:
     - version
+    - clean_internal_tag
   tags:
     - docker-new
   when: always
@@ -575,5 +577,5 @@ clean_pipeline:
         if [ "$status" == "canceled" ] ; then docker rmi $repository:$tag ; fi ;
       done
     - docker system prune --filter until=24h --force
+    - docker system df
     - docker images
-
