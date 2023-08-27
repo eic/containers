@@ -540,8 +540,8 @@ clean_unstable_mr:
                 "${CI_API_V4_URL}/projects/${project_id}/merge_requests?scope=all&state=closed&per_page=100"
                 | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") ;
         echo "Image $repository:$tag is ${state:-undetermined} (project ${project_id}, iid ${merge_request_iid})." ;
-        [ "$state" == "merged" ] && docker rmi $repository:$tag ;
-        [ "$state" == "closed" ] && docker rmi $repository:$tag ;
+        if [ "$state" == "merged" ] ; then docker rmi $repository:$tag ; fi ;
+        if [ "$state" == "closed" ] ; then docker rmi $repository:$tag ; fi ;
       done
     - docker system prune --filter until=24h --force
     - docker images
