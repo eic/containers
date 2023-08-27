@@ -568,7 +568,7 @@ clean_pipeline:
       | while read id repository tag pipeline_id ; do
         status=$(curl --silent -L
                 "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}"
-                | jq -r ".[]|.status") ;
+                | jq -r ".status") ;
         echo "Image $repository:$tag is ${status:-undetermined} (pipeline ${pipeline_id})." ;
         [ "$status" == "success" ] && echo docker rmi $repository:$tag ;
         [ "$status" == "failed" ] && echo docker rmi $repository:$tag ;
