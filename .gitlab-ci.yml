@@ -27,7 +27,7 @@ variables:
   DOCKER_WAIT_TIME: 5
 
   ## Number of jobs to start during container builds
-  JOBS: 64
+  JOBS: 32
 
   ## is this nightly or not?
   NIGHTLY: ""
