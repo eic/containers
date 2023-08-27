@@ -2,9 +2,7 @@ image: alpine
 
 variables:
   ## External images
-  # FIXME:
-  #DOCKER_IMAGE: docker.io/docker:24.0.5
-  DOCKER_IMAGE: eicweb.phy.anl.gov:4567/containers/image_recipes/ubuntu_dind:latest
+  DOCKER_IMAGE: docker.io/docker:24.0.5
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.4
 
   ## Application versions used for the main release 
@@ -133,23 +131,19 @@ version:
 ## base job settings for all docker interactions
 .docker:
   image: ${DOCKER_IMAGE}
+  services: 
+    - docker:dind
   before_script:
     - # Login to registries
       if [[ -n "${EXPORT_TAG}" ]] ; then
         if [[ -n "${DH_REGISTRY}" ]] ; then
-          ./gitlab-ci/docker_login.sh -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN}
-                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                      ${DH_REGISTRY} ;
+          docker login -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN} ${DH_REGISTRY} ;
         fi ;
         if [[ -n "${GH_REGISTRY}" ]] ; then
-          ./gitlab-ci/docker_login.sh -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN}
-                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                      ${GH_REGISTRY} ;
+          docker login -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN} ${GH_REGISTRY} ;
         fi ;
         if [[ -n "${CI_REGISTRY}" ]] ; then
-          ./gitlab-ci/docker_login.sh -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
-                                      -n ${DOCKER_NTRIES} -t ${DOCKER_WAIT_TIME}
-                                      ${CI_REGISTRY} ;
+          docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY} ;
         fi ;
       fi
   after_script:
@@ -273,11 +267,12 @@ jug_dev:
   script:
     - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY=1 ; fi
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT=1 ; fi
+    - apk add envsubst git
     - source spack.sh ; 
       source eic-spack.sh ;
       export SPACK_VERSION ;
-      cat mirrors.yaml.in | envsubst > mirrors.yaml ;
-      docker buildx build --push ${BUILD_OPTIONS}
+      cat mirrors.yaml.in | envsubst > mirrors.yaml
+    - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
@@ -334,6 +329,7 @@ jug_xl:default:
     - version
     - jug_dev
   script:
+    - apk add git
     - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-default
                    ${EXPORT_TAG:+
@@ -377,6 +373,7 @@ jug_xl:nightly:
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
+    - apk add git
     - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-nightly
                    ${EXPORT_TAG:+
@@ -503,7 +500,21 @@ benchmarks:physics:nightly:
     strategy: depend
   allow_failure: false
 
-clean:
+clean_internal_tag:
+  image: alpine/curl
+  stage: finalize
+  dependencies:
+    - version
+  when: always
+  script:
+    - |
+      for id in 66 68 69 80 83 91 92 ; do
+        for tag in ${INTERNAL_TAG} ${INTERNAL_TAG}-default ${INTERNAL_TAG}-nightly ; do 
+          curl --request DELETE --header "PRIVATE-TOKEN: ${REG_CLEANUP_TOKEN}" ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/registry/repositories/${id}/tags/${tag} ;
+        done ;
+      done
+
+clean_unstable_mr:
   extends: .docker
   stage: finalize
   dependencies:
@@ -512,84 +523,25 @@ clean:
     - docker-new
   when: always
   script:
-    ## remove the pipeline specific export from eicweb if needed
-    - echo "Cleaning up pipeline specific docker tags if needed"
-    - ./gitlab-ci/cleanup_registry.sh -i debian_base -r 66 ${INTERNAL_TAG}
-    - ./gitlab-ci/cleanup_registry.sh -i ubuntu_base -r 80 ${INTERNAL_TAG}
-    - ./gitlab-ci/cleanup_registry.sh -i debian_testing_base -r 83 ${INTERNAL_TAG}
-    - ./gitlab-ci/cleanup_registry.sh -i debian_stable_base -r 92 ${INTERNAL_TAG}
-    - ./gitlab-ci/cleanup_registry.sh -i jug_prod -r 91 ${INTERNAL_TAG}
-    - ./gitlab-ci/cleanup_registry.sh -i jug_dev -r 68 ${INTERNAL_TAG}
-    - ./gitlab-ci/cleanup_registry.sh -i jug_dev -r 68 ${INTERNAL_TAG}-nightly
-    - ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${INTERNAL_TAG}
-    - ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${INTERNAL_TAG}-nightly
-    - |
-      if [ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]; then
-        ./gitlab-ci/cleanup_registry.sh -i jug_xl -r 69 ${NIGHTLY_TAG}
-      fi
-
-clean_unstable_mr:
-  extends: .docker
-  stage: finalize
-  dependencies:
-    - clean
-  tags:
-    - docker-new
-  when: always
-  variables:
-    API: "https://eicweb.phy.anl.gov/api/v4"
-  script:
-    - apt update -q
-    - apt install -yq jq
+    - apk add curl jq
     - for registry in
         eicweb
-        eicweb.phy.anl.gov:4567/eic/juggler
         eicweb.phy.anl.gov:4567/containers/eic_container
       ; do 
         docker images 
           --filter=reference=${registry}/*:unstable-mr*
           --format "{{.ID}} {{.Repository}} {{.Tag}}" ;
-      done | while read id repository tag ; do
-        if [[ ${tag} =~ ^unstable-mr-([0-9]+)-([0-9]+)(-nightly){0,1}$ ]] ; then
-          project_id=${BASH_REMATCH[1]} ;
-          merge_request_iid=${BASH_REMATCH[2]} ;
-          if [[ $(curl --silent -L
-                  "${API}/projects/${project_id}/merge_requests?scope=all&state=merged&per_page=100"
-                  "${API}/projects/${project_id}/merge_requests?scope=all&state=closed&per_page=100"
-                  | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") =~ ^(merged|closed)$ ]] ; then
-            docker rmi $repository:$tag ;
-          else
-            echo "Image $repository:$tag still in use (project ${project_id}, idd ${merge_request_iid})." ;
-          fi ;
-        fi ;
-        if [[ ${tag} =~ ^unstable-mr-([0-9]+)(-nightly){0,1}$ ]] ; then
-          merge_request_id=${BASH_REMATCH[1]} ;
-          suffix=${BASH_REMATCH[2]} ;
-          if [[ $(curl --silent -L
-                  "${API}/projects/290/merge_requests?scope=all&state=merged&per_page=100"
-                  "${API}/projects/369/merge_requests?scope=all&state=merged&per_page=100"
-                  "${API}/projects/290/merge_requests?scope=all&state=closed&per_page=100"
-                  "${API}/projects/369/merge_requests?scope=all&state=closed&per_page=100"
-                  | jq -r ".[]|select(.id == ${merge_request_id})|.state") =~ ^(merged|closed)$ ]] ; then
-            docker rmi $repository:$tag ;
-          else
-            project_id=$(curl --silent -L
-                        "${API}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
-                        "${API}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
-                        | jq -r ".[]|select(.id == ${merge_request_id})|.project_id") ;
-            merge_request_iid=$(curl --silent -L 
-                        "${API}/projects/290/merge_requests?scope=all&state=opened&per_page=100"
-                        "${API}/projects/369/merge_requests?scope=all&state=opened&per_page=100"
-                        | jq -r ".[]|select(.id == ${merge_request_id})|.iid") ;
-            echo "Image $repository:$tag still in use (project ${project_id}, idd ${merge_request_iid})." ;
-            if [[ ${project_id} == "" || ${merge_request_iid} == "" ]] ; then
-              echo "$tag not found" ;
-            else
-              docker tag $repository:$tag $repository:unstable-mr-${project_id}-${merge_request_iid}${suffix} ;
-              docker rmi $repository:$tag ;
-            fi ;
-          fi ;
-        fi ;
+      done
+      | sed -n -E 's/unstable-mr-([0-9]+)-([0-9]+)(-nightly|-default){0,1}$/& \1 \2/p'
+      | while read id repository tag project_id merge_request_iid ; do
+        state=$(curl --silent -L
+                "${CI_API_V4_URL}/projects/${project_id}/merge_requests?scope=all&state=opened&per_page=100"
+                "${CI_API_V4_URL}/projects/${project_id}/merge_requests?scope=all&state=merged&per_page=100"
+                "${CI_API_V4_URL}/projects/${project_id}/merge_requests?scope=all&state=closed&per_page=100"
+                | jq -r ".[]|select(.iid == ${merge_request_iid})|.state") ;
+        echo "Image $repository:$tag is ${state:-undetermined} (project ${project_id}, iid ${merge_request_iid})." ;
+        if [ "$state" == "merged" ] ; then docker rmi $repository:$tag ; fi ;
+        if [ "$state" == "closed" ] ; then docker rmi $repository:$tag ; fi ;
       done
     - docker system prune --filter until=24h --force
     - docker images
