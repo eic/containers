@@ -545,3 +545,35 @@ clean_unstable_mr:
       done
     - docker system prune --filter until=24h --force
     - docker images
+
+clean_pipeline:
+  extends: .docker
+  stage: config
+  dependencies:
+    - version
+  tags:
+    - docker-new
+  when: always
+  script:
+    - apk add curl jq
+    - for registry in
+        eicweb
+        eicweb.phy.anl.gov:4567/containers/eic_container
+      ; do 
+        docker images 
+          --filter=reference=${registry}/*:pipeline-*
+          --format "{{.ID}} {{.Repository}} {{.Tag}}" ;
+      done
+      | sed -n -E 's/pipeline-([0-9]+)(-nightly|-default){0,1}$/& \1/p'
+      | while read id repository tag pipeline_id ; do
+        status=$(curl --silent -L
+                "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}"
+                | jq -r ".[]|.status") ;
+        echo "Image $repository:$tag is ${status:-undetermined} (pipeline ${pipeline_id})." ;
+        [ "$status" == "success" ] && echo docker rmi $repository:$tag ;
+        [ "$status" == "failed" ] && echo docker rmi $repository:$tag ;
+        [ "$status" == "canceled" ] && echo docker rmi $repository:$tag ;
+      done
+    - docker system prune --filter until=24h --force
+    - docker images
+
