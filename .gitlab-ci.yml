@@ -570,9 +570,9 @@ clean_pipeline:
                 "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}"
                 | jq -r ".status") ;
         echo "Image $repository:$tag is ${status:-undetermined} (pipeline ${pipeline_id})." ;
-        if [ "$status" == "success" ] ; then echo docker rmi $repository:$tag ; fi ;
-        if [ "$status" == "failed" ] ; then echo docker rmi $repository:$tag ; fi ;
-        if [ "$status" == "canceled" ] ; then echo docker rmi $repository:$tag ; fi ;
+        if [ "$status" == "success" ] ; then docker rmi $repository:$tag ; fi ;
+        if [ "$status" == "failed" ] ; then docker rmi $repository:$tag ; fi ;
+        if [ "$status" == "canceled" ] ; then docker rmi $repository:$tag ; fi ;
       done
     - docker system prune --filter until=24h --force
     - docker images
