@@ -516,7 +516,7 @@ clean_internal_tag:
 
 clean_unstable_mr:
   extends: .docker
-  stage: config
+  stage: finalize
   dependencies:
     - version
   tags:
