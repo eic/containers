@@ -532,7 +532,7 @@ clean_unstable_mr:
           --filter=reference=${registry}/*:unstable-mr*
           --format "{{.ID}} {{.Repository}} {{.Tag}}" ;
       done
-      | sed -n 's/unstable-mr-([0-9]+)-([0-9]+)(-nightly){0,1}$/& \1 \2/'
+      | sed -n -E 's/unstable-mr-([0-9]+)-([0-9]+)(-nightly){0,1}$/& \1 \2/'
       | cat ; echo
       | while read id repository tag project_id merge_request_iid ; do
         state=$(curl --silent -L
