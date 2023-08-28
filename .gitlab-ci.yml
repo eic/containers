@@ -27,7 +27,7 @@ variables:
   DOCKER_WAIT_TIME: 5
 
   ## Number of jobs to start during container builds
-  JOBS: 128
+  JOBS: 32
 
   ## is this nightly or not?
   NIGHTLY: ""
@@ -165,7 +165,6 @@ version:
   extends: .docker 
   rules:
     - when: on_success
-  resource_group: ${CI_COMMIT_REF_NAME}-${VERSION}
   tags:
     - docker-new
   before_script:
