@@ -513,6 +513,15 @@ clean_internal_tag:
         done ;
       done
 
+df:
+  extends: .docker
+  stage: config
+  tags: 
+    - docker-new
+  when: always
+  script:
+    - docker system df -v
+
 clean_unstable_mr:
   extends: .docker
   stage: finalize
