@@ -222,7 +222,7 @@ base:
     - version
   script:
     - docker buildx build ${BUILD_OPTIONS}
-                   ${CI_PUSH:---tag ${BUILD_IMAGE}:${INTERNAL_TAG}}
+                   --tag ${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} --push}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG} --push}
@@ -273,7 +273,7 @@ jug_dev:
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
     - docker buildx build ${BUILD_OPTIONS}
-                   ${CI_PUSH:---tag ${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}}
+                   --tag ${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE} --push}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE} --push}
@@ -332,7 +332,7 @@ jug_xl:default:
   script:
     - apk add git
     - docker buildx build ${BUILD_OPTIONS}
-                   ${CI_PUSH:---tag ${BUILD_IMAGE}:${INTERNAL_TAG}-default}
+                   --tag ${BUILD_IMAGE}:${INTERNAL_TAG}-default
                    ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-default --push}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG} --push}
@@ -377,7 +377,7 @@ jug_xl:nightly:
       fi
     - apk add git
     - docker buildx build ${BUILD_OPTIONS}
-                   ${CI_PUSH:---tag ${BUILD_IMAGE}:${INTERNAL_TAG}-nightly}
+                   --tag ${BUILD_IMAGE}:${INTERNAL_TAG}-nightly
                    ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-nightly --push}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly --push}
