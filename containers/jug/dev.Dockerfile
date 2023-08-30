@@ -115,6 +115,8 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && export CCACHE_DIR=/ccache                                           \
+ && spack buildcache update-index local                                 \
+ && spack buildcache update-index eics3rw                               \
  && spack env activate --dir ${SPACK_ENV}                               \
  && spack add juggler@git.${JUGGLER_VERSION}                            \
  && spack add eicrecon@git.${EICRECON_VERSION}                          \
