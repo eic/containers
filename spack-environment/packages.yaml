@@ -293,3 +293,6 @@ packages:
     require:
     - '@5.5.5'
     - cxxstd=17 -davix +python +scitokens-cpp
+  zlib:
+    require:
+    - '@1.2.13'
