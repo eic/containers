@@ -5,4 +5,4 @@
 #
 concretizer:
   reuse: false
-  unify: true
+  unify: when_possible
