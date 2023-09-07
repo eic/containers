@@ -80,7 +80,7 @@ packages:
     - '@656aa3192b097a631ddd1e0380e80c26fd6644a7'
   edm4eic:
     require:
-    - '@2.1.0'
+    - '@3.0.1'
     - cxxstd=17
   edm4hep:
     require:
@@ -164,7 +164,7 @@ packages:
     - '@3.11.2'
   npsim:
     require:
-    - '@1.2.0'
+    - '@1.3.0'
     - +http
     - any_of: [+geocad, -geocad]
   onnx:
