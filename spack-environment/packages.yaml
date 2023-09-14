@@ -125,6 +125,7 @@ packages:
   graphviz:
     require:
     - '@8.0.1'
+    - +expat
   hepmc3:
     require:
     - '@3.2.6'
