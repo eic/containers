@@ -71,6 +71,7 @@ spack:
     - py-seaborn
     - py-toml
     - py-uproot
+    - py-wurlitzer
     - py-yapf
     - root
     - spdlog
