@@ -267,6 +267,9 @@ packages:
   py-uproot:
     require:
     - '@5.0.5'
+  py-wurlitzer:
+    require:
+    - '@3.0.2'
   py-yapf:
     require:
     - '@0.30.0'
