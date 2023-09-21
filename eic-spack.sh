@@ -8,6 +8,7 @@ EICSPACK_VERSION="v0.20.19"
 ## Space-separated list of eic-spack cherry-picks
 read -r -d '' EICSPACK_CHERRYPICKS <<- \
 --- || true
+7a65a34889327b483643a34fc79bbd86c5cd8ced
 ---
 ## Ref: https://github.com/eic/eic-spack/commit/[hash]
 ## [hash]: [description]
