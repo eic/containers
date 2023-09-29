@@ -296,6 +296,9 @@ packages:
     require:
     - '@2.8.0'
     - -xnnpack
+  valgrind:
+    require:
+    - '@3.20.0'
   xrootd:
     require:
     - '@5.5.5'

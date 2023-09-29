@@ -52,7 +52,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked             \
         poppler-utils                                                   \
         time                                                            \
         unzip                                                           \
-        valgrind                                                        \
         vim-nox                                                         \
         wget                                                            \
  && apt-get -yqq autoremove                                             \
