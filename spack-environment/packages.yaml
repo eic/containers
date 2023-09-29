@@ -198,6 +198,9 @@ packages:
   py-awkward:
     require:
     - '@2.1.1'
+  py-bokeh:
+    require:
+    - '@2.4.3'
   py-boto3:
     require:
     - '@1.26.26'
