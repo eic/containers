@@ -232,6 +232,7 @@ base:
                    --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
+                   --provenance false
                    containers/debian
 
 jug_dev:
@@ -311,7 +312,9 @@ jug_dev:
                    --build-arg jobs=${JOBS}
                    --build-context spack-environment=spack-environment
                    --secret id=mirrors,src=mirrors.yaml
+                   --provenance false
                    containers/jug
+
 
 jug_xl:default:
   parallel:
@@ -344,6 +347,7 @@ jug_xl:default:
                    --build-arg JUG_VERSION=${EXPORT_TAG}-$(git rev-parse HEAD)
                    --build-arg jobs=${JOBS}
                    --build-context detectors=.
+                   --provenance false
                    containers/jug
 
 jug_xl:nightly:
@@ -397,6 +401,7 @@ jug_xl:nightly:
                    --build-arg JUG_VERSION=${EXPORT_TAG}-nightly-$(git rev-parse HEAD)-$(date +%Y-%m-%d_%H-%M-%S)
                    --build-arg NIGHTLY=1
                    --build-context detectors=.
+                   --provenance false
                    containers/jug
 
 
