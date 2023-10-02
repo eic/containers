@@ -464,23 +464,25 @@ benchmarks:detector:default:
     strategy: depend
   allow_failure: true
   
-benchmarks:detector:default:
+benchmarks:detector:nightly:
   stage: benchmarks
+  rules:
+    - !reference ['.nightly', rules]
   needs: 
     - version
-    - jug_xl:default
+    - jug_xl:nightly
   variables:
-    RECO: "eicrecon"
     DETECTOR: "${DETECTOR}"
     DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
     DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
-  allow_failure: false
+  allow_failure: true
+  
 
 benchmarks:reconstruction:default:
   stage: benchmarks
