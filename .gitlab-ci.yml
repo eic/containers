@@ -453,16 +453,16 @@ benchmarks:detector:default:
     - version
     - jug_xl:default
   variables:
-    DETECTOR: "${DETECTOR}"
-    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
-    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
+    DETECTOR: "epic"
+    DETECTOR_CONFIG: epic_craterlake
+    DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
-  allow_failure: true
+      #allow_failure: true
   
     #benchmarks:detector:nightly:
     #  stage: benchmarks
@@ -484,79 +484,79 @@ benchmarks:detector:default:
     #  allow_failure: true
   
 
-    #benchmarks:reconstruction:default:
-    #  stage: benchmarks
-    #  needs: 
-    #    - version
-    #    - jug_xl:default
-    #  variables:
-    #    DETECTOR: "${DETECTOR}"
-    #    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
-    #    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
-    #    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
-    #    BENCHMARKS_CONTAINER: "jug_xl"
-    #    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
-    #  trigger:
-    #    project: EIC/benchmarks/reconstruction_benchmarks
-    #    strategy: depend
-    #  allow_failure: true
-    #  
-    #benchmarks:physics:default:
-    #  stage: benchmarks
-    #  needs: 
-    #    - version
-    #    - jug_xl:default
-    #  variables:
-    #    RECO: "eicrecon"
-    #    DETECTOR: "${DETECTOR}"
-    #    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
-    #    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
-    #    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
-    #    BENCHMARKS_CONTAINER: "jug_xl"
-    #    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
-    #  trigger:
-    #    project: EIC/benchmarks/physics_benchmarks
-    #    strategy: depend
-    #  allow_failure: false
-    #
-    #benchmarks:reconstruction:nightly:
-    #  stage: benchmarks
-    #  rules:
-    #    - !reference ['.nightly', rules]
-    #  needs: 
-    #    - version
-    #    - jug_xl:nightly
-    #  variables:
-    #    DETECTOR: "${DETECTOR}"
-    #    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
-    #    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
-    #    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
-    #    BENCHMARKS_CONTAINER: "jug_xl"
-    #    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
-    #  trigger:
-    #    project: EIC/benchmarks/reconstruction_benchmarks
-    #    strategy: depend
-    #  allow_failure: true
-    #  
-    #benchmarks:physics:nightly:
-    #  stage: benchmarks
-    #  rules:
-    #    - !reference ['.nightly', rules]
-    #  needs: 
-    #    - version
-    #    - jug_xl:nightly
-    #  variables:
-    #    RECO: "eicrecon"
-    #    DETECTOR: "${DETECTOR}"
-    #    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
-    #    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
-    #    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
-    #    BENCHMARKS_CONTAINER: "jug_xl"
-    #    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
-    #  trigger:
-    #    project: EIC/benchmarks/physics_benchmarks
-    #    strategy: depend
-    #  allow_failure: false
+benchmarks:reconstruction:default:
+  stage: benchmarks
+  needs: 
+    - version
+    - jug_xl:default
+  variables:
+    DETECTOR: "${DETECTOR}"
+    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
+    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_CONTAINER: "jug_xl"
+    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
+  trigger:
+    project: EIC/benchmarks/reconstruction_benchmarks
+    strategy: depend
+  allow_failure: true
+  
+benchmarks:physics:default:
+  stage: benchmarks
+  needs: 
+    - version
+    - jug_xl:default
+  variables:
+    RECO: "eicrecon"
+    DETECTOR: "${DETECTOR}"
+    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
+    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_CONTAINER: "jug_xl"
+    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
+  trigger:
+    project: EIC/benchmarks/physics_benchmarks
+    strategy: depend
+  allow_failure: false
+
+benchmarks:reconstruction:nightly:
+  stage: benchmarks
+  rules:
+    - !reference ['.nightly', rules]
+  needs: 
+    - version
+    - jug_xl:nightly
+  variables:
+    DETECTOR: "${DETECTOR}"
+    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
+    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_CONTAINER: "jug_xl"
+    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
+  trigger:
+    project: EIC/benchmarks/reconstruction_benchmarks
+    strategy: depend
+  allow_failure: true
+  
+benchmarks:physics:nightly:
+  stage: benchmarks
+  rules:
+    - !reference ['.nightly', rules]
+  needs: 
+    - version
+    - jug_xl:nightly
+  variables:
+    RECO: "eicrecon"
+    DETECTOR: "${DETECTOR}"
+    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
+    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_CONTAINER: "jug_xl"
+    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
+  trigger:
+    project: EIC/benchmarks/physics_benchmarks
+    strategy: depend
+  allow_failure: false
 
 clean_internal_tag:
   image: alpine/curl
@@ -579,6 +579,7 @@ clean_unstable_mr:
     - version
   tags:
     - docker-new
+  needs: [ "benchmarks:detector:default" ]
   when: always
   script:
     - apk add curl jq
@@ -611,6 +612,7 @@ clean_pipeline:
   dependencies:
     - version
     - clean_internal_tag
+  needs: [ "benchmarks:detector:default" ]
   tags:
     - docker-new
   when: always
