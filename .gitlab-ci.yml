@@ -577,9 +577,9 @@ clean_unstable_mr:
   stage: finalize
   dependencies:
     - version
+    - benchmarks:detector:default
   tags:
     - docker-new
-  needs: [ "benchmarks:detector:default" ]
   when: always
   script:
     - apk add curl jq
@@ -612,7 +612,6 @@ clean_pipeline:
   dependencies:
     - version
     - clean_internal_tag
-  needs: [ "benchmarks:detector:default" ]
   tags:
     - docker-new
   when: always
