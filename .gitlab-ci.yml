@@ -442,36 +442,24 @@ jug_xl:singularity:nightly:
     - version
     - jug_xl:nightly
 
-benchmarks:reconstruction:default:
+benchmarks:detector:default:
   stage: benchmarks
   needs: 
     - version
     - jug_xl:default
   variables:
+    DETECTOR: "epic"
+    DETECTOR_CONFIG: epic_craterlake
+    DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
-    project: EIC/benchmarks/reconstruction_benchmarks
+    project: EIC/benchmarks/detector_benchmarks
     strategy: depend
   allow_failure: true
   
-benchmarks:physics:default:
-  stage: benchmarks
-  needs: 
-    - version
-    - jug_xl:default
-  variables:
-    RECO: "eicrecon"
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
-    BENCHMARKS_CONTAINER: "jug_xl"
-    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
-  trigger:
-    project: EIC/benchmarks/physics_benchmarks
-    strategy: depend
-  allow_failure: false
-
-benchmarks:reconstruction:nightly:
+benchmarks:detector:nightly:
   stage: benchmarks
   rules:
     - !reference ['.nightly', rules]
@@ -479,36 +467,24 @@ benchmarks:reconstruction:nightly:
     - version
     - jug_xl:nightly
   variables:
+    DETECTOR: "epic"
+    DETECTOR_CONFIG: epic_craterlake
+    DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
-    project: EIC/benchmarks/reconstruction_benchmarks
+    project: EIC/benchmarks/detector_benchmarks
     strategy: depend
   allow_failure: true
   
-benchmarks:physics:nightly:
-  stage: benchmarks
-  rules:
-    - !reference ['.nightly', rules]
-  needs: 
-    - version
-    - jug_xl:nightly
-  variables:
-    RECO: "eicrecon"
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
-    BENCHMARKS_CONTAINER: "jug_xl"
-    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
-  trigger:
-    project: EIC/benchmarks/physics_benchmarks
-    strategy: depend
-  allow_failure: false
-
 clean_internal_tag:
   image: alpine/curl
   stage: finalize
-  dependencies:
+  needs:
     - version
+    - benchmarks:detector:default
+    - benchmarks:detector:nightly
   when: always
   script:
     - |
@@ -521,8 +497,10 @@ clean_internal_tag:
 clean_unstable_mr:
   extends: .docker
   stage: finalize
-  dependencies:
+  needs:
     - version
+    - benchmarks:detector:default
+    - benchmarks:detector:nightly
   tags:
     - docker-new
   when: always
@@ -554,7 +532,7 @@ clean_unstable_mr:
 clean_pipeline:
   extends: .docker
   stage: finalize
-  dependencies:
+  needs:
     - version
     - clean_internal_tag
   tags:
