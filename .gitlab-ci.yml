@@ -43,12 +43,6 @@ variables:
   ## Internal tag used for the CI
   INTERNAL_TAG: "pipeline-${CI_PIPELINE_ID}"
 
-  ## Detector and configuration to use for benchmark
-  ## problem: Defining these here mean we can add them as trigger variables later 
-  DETECTOR: epic
-  DETECTOR_CONFIG: epic_craterlake
-  DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
-
 stages:
   - config
   - base            ## base OS image
