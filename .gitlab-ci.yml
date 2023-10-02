@@ -464,24 +464,24 @@ benchmarks:detector:default:
     strategy: depend
   allow_failure: true
   
-benchmarks:detector:nightly:
-  stage: benchmarks
-  rules:
-    - !reference ['.nightly', rules]
-  needs: 
-    - version
-    - jug_xl:nightly
-  variables:
-    DETECTOR: "${DETECTOR}"
-    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
-    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
-    BENCHMARKS_CONTAINER: "jug_xl"
-    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
-  trigger:
-    project: EIC/benchmarks/detector_benchmarks
-    strategy: depend
-  allow_failure: true
+    #benchmarks:detector:nightly:
+    #  stage: benchmarks
+    #  rules:
+    #    - !reference ['.nightly', rules]
+    #  needs: 
+    #    - version
+    #    - jug_xl:nightly
+    #  variables:
+    #    DETECTOR: "${DETECTOR}"
+    #    DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
+    #    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
+    #    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    #    BENCHMARKS_CONTAINER: "jug_xl"
+    #    BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
+    #  trigger:
+    #    project: EIC/benchmarks/detector_benchmarks
+    #    strategy: depend
+    #  allow_failure: true
   
 
 benchmarks:reconstruction:default:
@@ -561,8 +561,6 @@ benchmarks:physics:nightly:
 clean_internal_tag:
   image: alpine/curl
   stage: finalize
-  needs:
-    - benchmarks:detector:default
   dependencies:
     - version
   when: always
@@ -581,8 +579,6 @@ clean_unstable_mr:
     - version
   tags:
     - docker-new
-  needs:
-    - benchmarks:detector:default
   when: always
   script:
     - apk add curl jq
@@ -615,8 +611,6 @@ clean_pipeline:
   dependencies:
     - version
     - clean_internal_tag
-  needs:
-    - benchmarks:detector:default
   tags:
     - docker-new
   when: always
