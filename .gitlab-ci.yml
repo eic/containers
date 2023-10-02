@@ -46,6 +46,7 @@ variables:
   ## Detector and configuration to use for benchmark
   DETECTOR: epic
   DETECTOR_CONFIG: epic_craterlake
+  DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
 
 stages:
   - config
@@ -454,6 +455,7 @@ benchmarks:reconstruction:default:
   variables:
     DETECTOR: "${DETECTOR}"
     DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
+    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
@@ -471,6 +473,7 @@ benchmarks:physics:default:
     RECO: "eicrecon"
     DETECTOR: "${DETECTOR}"
     DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
+    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
@@ -489,6 +492,7 @@ benchmarks:reconstruction:nightly:
   variables:
     DETECTOR: "${DETECTOR}"
     DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
+    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
@@ -508,6 +512,7 @@ benchmarks:physics:nightly:
     RECO: "eicrecon"
     DETECTOR: "${DETECTOR}"
     DETECTOR_CONFIG: "${DETECTOR_CONFIG}"
+    DETECTOR_REPOSITORYURL: "${DETECTOR_REPOSITORYURL}"
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
