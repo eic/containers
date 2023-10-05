@@ -141,7 +141,7 @@ packages:
     - '@2020.3'
   irt:
     require:
-    - '@1.0.6'
+    - '@1.0.7'
   jana2:
     require:
     - '@2.1.1'
