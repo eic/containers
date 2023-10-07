@@ -483,8 +483,6 @@ clean_internal_tag:
   stage: finalize
   needs:
     - version
-    - benchmarks:detector:default
-    - benchmarks:detector:nightly
   when: always
   script:
     - |
@@ -499,8 +497,6 @@ clean_unstable_mr:
   stage: finalize
   needs:
     - version
-    - benchmarks:detector:default
-    - benchmarks:detector:nightly
   tags:
     - docker-new
   when: always
