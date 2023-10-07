@@ -481,10 +481,6 @@ benchmarks:detector:nightly:
 clean_internal_tag:
   image: alpine/curl
   stage: finalize
-  needs:
-    - version
-    - benchmarks:detector:default
-    - benchmarks:detector:nightly
   when: always
   script:
     - |
@@ -497,10 +493,6 @@ clean_internal_tag:
 clean_unstable_mr:
   extends: .docker
   stage: finalize
-  needs:
-    - version
-    - benchmarks:detector:default
-    - benchmarks:detector:nightly
   tags:
     - docker-new
   when: always
