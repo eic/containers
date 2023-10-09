@@ -43,6 +43,10 @@ variables:
   ## Internal tag used for the CI
   INTERNAL_TAG: "pipeline-${CI_PIPELINE_ID}"
 
+  ## Default to empty GitHub trigger callbacks
+  GITHUB_SHA: ""
+  GITHUB_REPOSITORY: ""
+
 stages:
   - status-pending
   - config
