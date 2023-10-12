@@ -88,7 +88,7 @@ packages:
     - cxxstd=17
   eic-smear:
     require:
-    - '@1.1.10'
+    - '@1.1.12'
   eigen:
     require:
     - '@3.4.0'
