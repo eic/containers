@@ -17,7 +17,7 @@ packages:
     - any_of: [build_type=Release, '@:']
   acts:
     require:
-    - '@21.1.1'
+    - '@26.0.0'
     - +dd4hep +examples +fatras +geant4 +identification +json +python +tgeo
   actsvg:
     require:
