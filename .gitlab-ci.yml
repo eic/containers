@@ -272,21 +272,25 @@ jug_dev:
         BASE_IMAGE: debian_stable_base
         BUILD_IMAGE: jug_
         PLATFORM: linux/amd64,linux/arm64/v8
-        ENV: [dev, prod]
+        ENV:
+        - dev
+        - prod
 #      - BUILD_TYPE:
 #        - default
 #        - nightly
 #        BASE_IMAGE: oneapi_base
 #        BUILD_IMAGE: oneapi_
 #        PLATFORM: linux/amd64
-#        ENV: [prod]
+#        ENV:
+#        - prod
 #      - BUILD_TYPE:
 #        - default
 #        - nightly
 #        BASE_IMAGE: cuda_base_new
 #        BUILD_IMAGE: cuda_
 #        PLATFORM: linux/amd64
-#        ENV: [prod]
+#        ENV:
+#        - prod
   extends: .build
   stage: jug
   needs:
@@ -357,7 +361,16 @@ jug_xl:default:
   stage: jug
   needs:
     - version
-    - jug_dev
+    - job: jug_dev
+      parallel:
+        matrix:
+        - BUILD_TYPE:
+          - default
+          BASE_IMAGE: debian_stable_base
+          BUILD_IMAGE: jug_
+          PLATFORM: linux/amd64,linux/arm64/v8
+          ENV:
+          - dev
   script:
     - apk add git
     - docker buildx build --push ${BUILD_OPTIONS}
@@ -397,7 +410,16 @@ jug_xl:nightly:
     - when: never
   needs:
     - version
-    - jug_dev
+    - job: jug_dev
+      parallel:
+        matrix:
+        - BUILD_TYPE:
+          - nightly
+          BASE_IMAGE: debian_stable_base
+          BUILD_IMAGE: jug_
+          PLATFORM: linux/amd64,linux/arm64/v8
+          ENV:
+          - dev
   script:
     - |
       PUSH_NIGHTLY_WITH_DATE=""
