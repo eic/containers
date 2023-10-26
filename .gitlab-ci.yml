@@ -498,8 +498,6 @@ benchmarks:detector:default:
     - version
     - jug_xl:default
   variables:
-    GITHUB_SHA: "${GITHUB_SHA}"
-    GITHUB_REPOSITORY: "${GITHUB_REPOSITORY}"
     DETECTOR: "epic"
     DETECTOR_CONFIG: epic_craterlake
     DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
@@ -519,8 +517,6 @@ benchmarks:detector:nightly:
     - version
     - jug_xl:nightly
   variables:
-    GITHUB_SHA: "${GITHUB_SHA}"
-    GITHUB_REPOSITORY: "${GITHUB_REPOSITORY}"
     DETECTOR: "epic"
     DETECTOR_CONFIG: epic_craterlake
     DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
