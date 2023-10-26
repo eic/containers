@@ -115,6 +115,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     source $SPACK_ROOT/share/spack/setup-env.sh                         \
  && export CCACHE_DIR=/ccache                                           \
+ && rm -rf /var/cache/spack/mirror/v0.20.2/build_cache/linux-debian12-x86_64_v2/gcc-12.2.0/findutils-4.9.0* \
  && spack buildcache update-index local                                 \
  && spack buildcache update-index eics3rw                               \
  && spack env activate --dir ${SPACK_ENV}                               \
