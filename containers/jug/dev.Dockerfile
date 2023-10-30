@@ -31,6 +31,12 @@ ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/
 RUN git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}     \
  && git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}                      \
  && if [ -n "${SPACK_CHERRYPICKS}" ] ; then                             \
+      SPACK_CHERRYPICKS=$(                                              \
+        git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} \
+        | grep -m $(echo ${SPACK_CHERRYPICKS} | wc -w)                  \
+               "${SPACK_CHERRYPICKS}"                                   \
+        | tac                                                           \
+      ) ;                                                               \
       git -C ${SPACK_ROOT} cherry-pick -n ${SPACK_CHERRYPICKS} ;        \
     fi                                                                  \
  && ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash                \
