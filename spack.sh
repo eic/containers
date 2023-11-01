@@ -45,6 +45,13 @@ b99288dcae9fd240a6d483d8b13940e52bfd8575
 3e2d1bd4133b437b10584a5e725d6fee8b5ca294
 f709518916ffe11588cffa3a5821c1e49e94b8d2
 6cd2241e49a393d7ac32b46064a2d2f4e53f7d86
+6f248836eafbee3b2c0612d250e201d3b3a57472
+5400b49ed6dc7001b1645b5d31bbcc7d830c15c2
+73ad3f729e8a5206d717d9d66468a19bb11d2940
+bd58801415dc0acebfd7368f66c43e50563a9891
+c7cca3aa8d11789eaee9bfc80b8417ffea511532
+e1373d5408170047626583916db02911585c133a
+a095c8113d5065bcb3d529269bc1de268df6791f
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -85,3 +92,10 @@ f709518916ffe11588cffa3a5821c1e49e94b8d2
 ## 3e2d1bd4133b437b10584a5e725d6fee8b5ca294: lcio: Add latest version 2.20
 ## f709518916ffe11588cffa3a5821c1e49e94b8d2: podio, edm4hep and lcio: add lib and lib64 to LD_LIBRARY_PATH
 ## 6cd2241e49a393d7ac32b46064a2d2f4e53f7d86: edm4hep: Add 0.10.1 tag and update maintainers
+## 6f248836eafbee3b2c0612d250e201d3b3a57472: dd4hep: restrict podio versions
+## 5400b49ed6dc7001b1645b5d31bbcc7d830c15c2: dd4hep: add LD_LIBRARY_PATH for plugins for Gaudi
+## 73ad3f729e8a5206d717d9d66468a19bb11d2940: dd4hep: add patch to fix missing hits when using LCIO
+## bd58801415dc0acebfd7368f66c43e50563a9891: dd4hep: fix setting LD_LIBRARY_PATH
+## c7cca3aa8d11789eaee9bfc80b8417ffea511532: dd4hep: new version 1.26
+## e1373d5408170047626583916db02911585c133a: dd4hep: make sure to find libraries correctly
+## a095c8113d5065bcb3d529269bc1de268df6791f: dd4hep: Add tag for version 1.27
