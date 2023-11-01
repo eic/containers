@@ -24,6 +24,7 @@ spack:
   - edm4eic
   - edm4hep
   - eic-smear
+  - eicrecon
   - eigen
   - emacs
   - fastjet
@@ -40,6 +41,7 @@ spack:
   - iwyu
   - jana2
   - k4actstracking
+  - juggler
   - k4fwcore
   - lcov
   - lhapdf

@@ -337,8 +337,12 @@ jug_dev:
                    --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
                    --build-arg JUG_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    ${IF_BUILD_DEFAULT:+
-                     --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
-                     --build-arg EICRECON_VERSION=${EICRECON_VERSION}
+                     ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=${JUGGLER_VERSION}}
+                     ${EICRECON_VERSION:+--build-arg EICRECON_VERSION=${EICRECON_VERSION}}
+                   }
+                   ${IF_BUILD_NIGHTLY:+
+                     --build-arg JUGGLER_VERSION=main
+                     --build-arg EICRECON_VERSION=main
                    }
                    --build-arg ENV=${ENV}
                    --build-arg jobs=${JOBS}

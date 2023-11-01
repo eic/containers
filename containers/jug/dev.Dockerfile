@@ -126,10 +126,6 @@ FROM spack as builder
 ## Setup our custom environment (secret mount for write-enabled mirror)
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
-ARG JUGGLER_VERSION="main"
-ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/juggler.json
-ARG EICRECON_VERSION="main"
-ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
@@ -139,12 +135,36 @@ set -e
 export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -atime +7 -delete
-JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
-EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
-spack add juggler@git.${JUGGLER_VERSION}
-spack add eicrecon@git.${EICRECON_VERSION}
+spack concretize --fresh --force --quiet
+make --jobs ${jobs} --keep-going --directory /opt/spack-environment SPACK_ENV=${SPACK_ENV} BUILDCACHE_MIRROR="local eics3rw"
+ccache --show-stats
+ccache --zero-stats
+EOF
+
+## Setup our custom environment with custom versions (on top of cached layer)
+ARG JUGGLER_VERSION=""
+ARG EICRECON_VERSION=""
+ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/juggler.json
+ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
+RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
+    --mount=type=cache,target=/var/cache/spack                          \
+    --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    <<EOF
+source $SPACK_ROOT/share/spack/setup-env.sh
+export CCACHE_DIR=/ccache
+spack buildcache update-index local
+spack buildcache update-index eics3rw
+spack env activate --dir ${SPACK_ENV}
+if [ -n ${JUGGLER_VERSION} ] ; then
+  export JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
+  spack rm juggler && spack add juggler@git.${JUGGLER_VERSION}
+fi
+if [ -n ${EICRECON_VERSION} ] ; then
+  export EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
+  spack rm eicrecon && spack add eicrecon@git.${EICRECON_VERSION}
+fi
 spack concretize --fresh --force --quiet
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
