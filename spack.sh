@@ -96,6 +96,7 @@ a095c8113d5065bcb3d529269bc1de268df6791f
 ## 5400b49ed6dc7001b1645b5d31bbcc7d830c15c2: dd4hep: add LD_LIBRARY_PATH for plugins for Gaudi
 ## 73ad3f729e8a5206d717d9d66468a19bb11d2940: dd4hep: add patch to fix missing hits when using LCIO
 ## bd58801415dc0acebfd7368f66c43e50563a9891: dd4hep: fix setting LD_LIBRARY_PATH
-## c7cca3aa8d11789eaee9bfc80b8417ffea511532: dd4hep: new version 1.26
-## e1373d5408170047626583916db02911585c133a: dd4hep: make sure to find libraries correctly
-## a095c8113d5065bcb3d529269bc1de268df6791f: dd4hep: Add tag for version 1.27
+## // Following disabled due to https://github.com/spack/spack/pull/37372
+## // c7cca3aa8d11789eaee9bfc80b8417ffea511532: dd4hep: new version 1.26
+## // e1373d5408170047626583916db02911585c133a: dd4hep: make sure to find libraries correctly
+## // a095c8113d5065bcb3d529269bc1de268df6791f: dd4hep: Add tag for version 1.27
