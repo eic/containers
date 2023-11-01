@@ -27,6 +27,9 @@ ed76eab6943221f17776fd8d128ade6ba69e492c
 6c5d125cb06a86ce05bec27ae9fb9b07103bc1c5
 e3e7609af4903be7df42b6ae5ccf9a20293503d2
 df4a2457a41e7ab634e86d3148d8b22a9f433a6a
+5ba4a2b83a0fabbfd221328a3c96955e9395b6ca
+eea743de461feca88fabf8c87e8fe617a368250c
+29835ac3437a7f975f7fdd22fac864b3273ff7d5
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
