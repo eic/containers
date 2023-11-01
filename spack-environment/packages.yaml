@@ -69,7 +69,7 @@ packages:
     - '@1_54a'
   dd4hep:
     require:
-    - '@1.26'
+    - '@1.27'
     - +ddg4 +ddcad +hepmc3 +xercesc
     - any_of: [+ddeve, -ddeve]
   dpmjet:
