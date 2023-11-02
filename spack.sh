@@ -33,6 +33,10 @@ c17fc3c0c1ecbebcfbf57214bf2724e26e6e1883
 ef4b35ea6361e83b243b375fc4e2a28cfc25bc8f
 36dd3251876895167270e26b14d16181895d6ace
 518da168331fd0e58c6c3a611b52507d1750b13a
+5ba4a2b83a0fabbfd221328a3c96955e9395b6ca
+eea743de461feca88fabf8c87e8fe617a368250c
+29835ac3437a7f975f7fdd22fac864b3273ff7d5
+581f45b63908dda8429b63c32047fd5295a95507
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -62,3 +66,7 @@ ef4b35ea6361e83b243b375fc4e2a28cfc25bc8f
 ## 36dd3251876895167270e26b14d16181895d6ace: gaudi: new versions 36.[11-14]
 ## // e51748ee8f89e0d3db4e426e3d04157129a45622: zlib-api: new virtual with zlib/zlib-ng as providers
 ## 518da168331fd0e58c6c3a611b52507d1750b13a: Gaudi: Add a few versions and a dependency on tbb after 37.1
+## 5ba4a2b83a0fabbfd221328a3c96955e9395b6ca: podio: bump minimal version of catch2
+## eea743de461feca88fabf8c87e8fe617a368250c: podio: Add py-tabulate as new run and test dependency
+## 29835ac3437a7f975f7fdd22fac864b3273ff7d5: podio: add 0.16.6 tag and mark older releases as deprecated
+## 581f45b63908dda8429b63c32047fd5295a95507: podio: Add latest tags and variants and update dependencies accordingly
