@@ -75,6 +75,7 @@ spack:
     - py-wurlitzer
     - py-yapf
     - root
+    - snakemake
     - spdlog
     - stow
     - tensorflow-lite
