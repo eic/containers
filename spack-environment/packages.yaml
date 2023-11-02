@@ -183,7 +183,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@0.16.5'
+    - '@0.16.7'
   prmon:
     require:
     - '@3.0.2'
