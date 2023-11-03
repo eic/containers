@@ -102,6 +102,15 @@ RUN git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSP
     fi                                                                  \
  && spack repo add --scope site "${EICSPACK_ROOT}"
 
+## Setup key4hep-spack
+ENV KEY4HEPSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/key4hep-spack
+ARG KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
+ARG KEY4HEPSPACK_VERSION="main"
+ADD https://api.github.com/repos/${KEY4HEPSPACK_ORGREPO}/commits/${KEY4HEPSPACK_VERSION} /tmp/key4hep-spack.json
+RUN git clone --filter=tree:0 https://github.com/${KEY4HEPSPACK_ORGREPO}.git ${KEY4HEPSPACK_ROOT} \
+ && git -C ${KEY4HEPSPACK_ROOT} checkout ${KEY4HEPSPACK_VERSION}        \
+ && spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
+
 ## ========================================================================================
 ## STAGE1: builder
 ## EIC builder image with spack environment
