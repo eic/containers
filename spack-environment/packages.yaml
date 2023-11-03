@@ -210,6 +210,9 @@ packages:
   py-deepdiff:
     require:
     - '@6.3.0'
+  py-epic-capybara:
+    require:
+    - '@main'
   py-ipython:
     require:
     - '@8.11.0'

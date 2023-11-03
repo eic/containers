@@ -3,7 +3,7 @@ EICSPACK_ORGREPO="eic/eic-spack"
 
 ## EIC spack commit hash or github version, e.g. v0.19.7
 ## note: nightly builds could use a branch e.g. releases/v0.19
-EICSPACK_VERSION="47645083690b46a2cebd54f92b4648752be5c24d"
+EICSPACK_VERSION="1d2956a5f87ada2bf04ed1bdee761baf81b85feb"
 
 ## Space-separated list of eic-spack cherry-picks
 read -r -d '' EICSPACK_CHERRYPICKS <<- \
