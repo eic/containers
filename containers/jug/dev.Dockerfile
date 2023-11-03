@@ -123,7 +123,7 @@ EOF
 ## ========================================================================================
 FROM spack as builder
 
-## Setup our custom environment (secret mount for write-enabled mirror)
+## 1. Setup our default environment (secret mount for write-enabled mirror)
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
@@ -143,7 +143,7 @@ ccache --show-stats
 ccache --zero-stats
 EOF
 
-## Setup our custom environment with custom versions (on top of cached layer)
+## 2. Setup our environment with custom versions (on top of cached layer)
 ARG JUGGLER_VERSION=""
 ARG EICRECON_VERSION=""
 ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/juggler.json
