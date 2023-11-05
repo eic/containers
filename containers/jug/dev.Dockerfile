@@ -159,11 +159,11 @@ spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 if [ -n ${JUGGLER_VERSION} ] ; then
   export JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
-  spack config add "packages:juggler:require:['@git.${JUGGLER_VERSION}']"
+  spack config add "packages:juggler::require:['@git.${JUGGLER_VERSION}']"
 fi
 if [ -n ${EICRECON_VERSION} ] ; then
   export EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
-  spack config add "packages:eicrecon:require:['@git.${EICRECON_VERSION}']"
+  spack config add "packages:eicrecon::require:['@git.${EICRECON_VERSION}']"
 fi
 spack concretize --fresh --force --quiet
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
