@@ -45,8 +45,8 @@ apt-get -yqq install --no-install-recommends                            \
         less                                                            \
         libcbor-xs-perl                                                 \
         libjson-xs-perl                                                 \
-        libopengl0                                                      \
-        libglx0                                                         \
+        libopengl-dev                                                   \
+        libglx-dev                                                      \
         locales                                                         \
         lua-posix                                                       \
         make                                                            \
