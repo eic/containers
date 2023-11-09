@@ -31,6 +31,15 @@ df4a2457a41e7ab634e86d3148d8b22a9f433a6a
 eea743de461feca88fabf8c87e8fe617a368250c
 29835ac3437a7f975f7fdd22fac864b3273ff7d5
 581f45b63908dda8429b63c32047fd5295a95507
+cf031e83f0149cd2c43d04f877dc26cc9d9e7894
+dd747c5c4892fd0c8f6831786c2140198394cc4b
+aa9eb331080a3edeb876dd80552bb59243c69783
+f0658243c06119f6d0bf9bf72b162bb7be129344
+b25f8643ff6f28d9ca0c23d4eb46aadb840683cf
+c9e1e7d90c9880b158e29bf6e721065416d21b90
+537ab481670bad654225f488fb4ec92d25f148a8
+2a797f90b431d33f609dc1d92b2908f5734f4d50
+a9e78dc7d897c146b11a93fd8c0176d0e886f2b4
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -57,3 +66,12 @@ eea743de461feca88fabf8c87e8fe617a368250c
 ## eea743de461feca88fabf8c87e8fe617a368250c: podio: Add py-tabulate as new run and test dependency
 ## 29835ac3437a7f975f7fdd22fac864b3273ff7d5: podio: add 0.16.6 tag and mark older releases as deprecated
 ## 581f45b63908dda8429b63c32047fd5295a95507: podio: Add latest tags and variants and update dependencies accordingly
+## cf031e83f0149cd2c43d04f877dc26cc9d9e7894: compilers/gcc.py: support cxx{20,23}_flag
+## dd747c5c4892fd0c8f6831786c2140198394cc4b: xerces-c: support variant cxxstd=20
+## aa9eb331080a3edeb876dd80552bb59243c69783: boost: support variant cxxstd=20
+## f0658243c06119f6d0bf9bf72b162bb7be129344: clhep: support variant cxxstd=20
+## b25f8643ff6f28d9ca0c23d4eb46aadb840683cf: geant4, vecgeom: support variant cxxstd=20
+## c9e1e7d90c9880b158e29bf6e721065416d21b90: acts: impose cxxstd variant on geant4 dependency
+## 537ab481670bad654225f488fb4ec92d25f148a8: acts: use f-strings
+## 2a797f90b431d33f609dc1d92b2908f5734f4d50: acts: add v28.1.0:30.3.2
+## a9e78dc7d897c146b11a93fd8c0176d0e886f2b4: acts: new variant +binaries when +examples
