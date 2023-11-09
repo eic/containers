@@ -46,6 +46,11 @@ c9e1e7d90c9880b158e29bf6e721065416d21b90
 537ab481670bad654225f488fb4ec92d25f148a8
 2a797f90b431d33f609dc1d92b2908f5734f4d50
 a9e78dc7d897c146b11a93fd8c0176d0e886f2b4
+6b51bfb713b7f9d6203b69ef79a198758c99de94
+b99288dcae9fd240a6d483d8b13940e52bfd8575
+3e2d1bd4133b437b10584a5e725d6fee8b5ca294
+f709518916ffe11588cffa3a5821c1e49e94b8d2
+6cd2241e49a393d7ac32b46064a2d2f4e53f7d86
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -88,3 +93,8 @@ a9e78dc7d897c146b11a93fd8c0176d0e886f2b4
 ## 537ab481670bad654225f488fb4ec92d25f148a8: acts: use f-strings
 ## 2a797f90b431d33f609dc1d92b2908f5734f4d50: acts: add v28.1.0:30.3.2
 ## a9e78dc7d897c146b11a93fd8c0176d0e886f2b4: acts: new variant +binaries when +examples
+## 6b51bfb713b7f9d6203b69ef79a198758c99de94: edm4hep: Add tag for version 0.10 and deprecate older versions
+## b99288dcae9fd240a6d483d8b13940e52bfd8575: edm4hep: add edm4hep to PYTHONPATH
+## 3e2d1bd4133b437b10584a5e725d6fee8b5ca294: lcio: Add latest version 2.20
+## f709518916ffe11588cffa3a5821c1e49e94b8d2: podio, edm4hep and lcio: add lib and lib64 to LD_LIBRARY_PATH
+## 6cd2241e49a393d7ac32b46064a2d2f4e53f7d86: edm4hep: Add 0.10.1 tag and update maintainers
