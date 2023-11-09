@@ -149,6 +149,9 @@ packages:
   lcov:
     require:
     - '@1.16'
+  libglx:
+    require:
+    - opengl
   lhapdf:
     require:
     - '@6.5.1'
@@ -159,7 +162,7 @@ packages:
   mesa:
     require:
     - '@22.1.6'
-    - +glx -llvm +opengl +opengles +osmesa
+    - +glx +llvm +opengl +opengles +osmesa
   nlohmann-json:
     require:
     - '@3.11.2'
@@ -175,6 +178,10 @@ packages:
     require:
     - '@7.7.1'
     - +application_framework -vtk
+  opengl:
+    externals:
+    - spec: opengl@4.6
+      prefix: /usr
   osg-ca-certs:
     require:
     - '@1.109.igtf.1.117'

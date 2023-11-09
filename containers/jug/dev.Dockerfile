@@ -56,6 +56,7 @@ declare -A target=(["linux/amd64"]="x86_64_v2" ["linux/arm64"]="aarch64")
 target=${target[${TARGETPLATFORM}]}
 spack config --scope site add "packages:all:require:[target=${target}]"
 spack config --scope site add "packages:all:target:[${target}]"
+spack external find --scope site llvm
 spack config blame packages
 spack config --scope user add "config:suppress_gpg_warnings:true"
 spack config --scope user add "config:build_jobs:${jobs}"
