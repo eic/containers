@@ -28,6 +28,11 @@ ed76eab6943221f17776fd8d128ade6ba69e492c
 e3e7609af4903be7df42b6ae5ccf9a20293503d2
 df4a2457a41e7ab634e86d3148d8b22a9f433a6a
 53a45c820c983867e8b05cab3df34e98b468f932
+dca3d071d778cb7ca85166028acb5b866124157c
+c17fc3c0c1ecbebcfbf57214bf2724e26e6e1883
+ef4b35ea6361e83b243b375fc4e2a28cfc25bc8f
+36dd3251876895167270e26b14d16181895d6ace
+518da168331fd0e58c6c3a611b52507d1750b13a
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -51,3 +56,9 @@ df4a2457a41e7ab634e86d3148d8b22a9f433a6a
 ## e3e7609af4903be7df42b6ae5ccf9a20293503d2: edm4hep: Add version 0.9
 ## df4a2457a41e7ab634e86d3148d8b22a9f433a6a: Fix broken semver regex
 ## 53a45c820c983867e8b05cab3df34e98b468f932: docker entrypoint.sh: fail multi-line RUN on first error with set -e
+## dca3d071d778cb7ca85166028acb5b866124157c: gaudi: fix issue with fmt::format
+## c17fc3c0c1ecbebcfbf57214bf2724e26e6e1883: gaudi: add gaudi to LD_LIBRARY_PATH
+## ef4b35ea6361e83b243b375fc4e2a28cfc25bc8f: gaudi: remove the py-qmtest dependency
+## 36dd3251876895167270e26b14d16181895d6ace: gaudi: new versions 36.[11-14]
+## // e51748ee8f89e0d3db4e426e3d04157129a45622: zlib-api: new virtual with zlib/zlib-ng as providers
+## 518da168331fd0e58c6c3a611b52507d1750b13a: Gaudi: Add a few versions and a dependency on tbb after 37.1
