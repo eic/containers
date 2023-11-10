@@ -17,8 +17,7 @@ ARG jobs=8
 ## the date
 ARG JUG_VERSION=1
 
-RUN cd /tmp                                                                     \
- && echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info
+RUN echo " - jug_xl: ${JUG_VERSION}" >> /etc/jug_info
 
 ## also install detector/ip geometries into opt
 ARG NIGHTLY=''
@@ -31,11 +30,11 @@ ADD https://api.github.com/repos/eic/ip6 /tmp/ip6.json
 ADD https://api.github.com/repos/eic/epic /tmp/epic.json
 COPY setup_detectors.py /tmp
 COPY --from=detectors detectors.yaml /tmp
-RUN --mount=type=cache,target=/ccache/,sharing=locked,id=${TARGETPLATFORM}      \
-    cd /tmp                                                                     \
- && export CCACHE_DIR=/ccache                                                   \
- && [ "z$NIGHTLY" = "z1" ] && NIGHTLY_FLAG="--nightly" || NIGHTLY_FLAG=""       \
- && /tmp/setup_detectors.py --prefix /opt/detector --config /tmp/detectors.yaml \
-                         $NIGHTLY_FLAG                                          \
- && ccache --show-stats                                                         \
- && rm /tmp/setup_detectors.py
+RUN --mount=type=cache,target=/ccache/,sharing=locked,id=${TARGETPLATFORM} <<EOF
+cd /tmp
+export CCACHE_DIR=/ccache
+[ "z$NIGHTLY" = "z1" ] && NIGHTLY_FLAG="--nightly" || NIGHTLY_FLAG=""
+/tmp/setup_detectors.py --prefix /opt/detector --config /tmp/detectors.yaml $NIGHTLY_FLAG
+ccache --show-stats
+rm /tmp/setup_detectors.py
+EOF
