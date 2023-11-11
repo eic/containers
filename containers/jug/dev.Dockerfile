@@ -253,6 +253,7 @@ COPY --from=staging /etc/profile.d /etc/profile.d
 COPY --from=staging /etc/jug_info /etc/jug_info
 COPY --from=staging /etc/eic-env.sh /etc/eic-env.sh
 COPY --from=staging /.singularity.d /.singularity.d
+COPY --from=staging /usr/bin/docker-shell /usr/bin/docker-shell
 
 ## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
 SHELL ["docker-shell"]
