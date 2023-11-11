@@ -128,10 +128,6 @@ EOF
 ## ========================================================================================
 FROM spack as builder
 
-## With heredocs for multi-line scripts, we want to fail on error and the print failing line.
-## Ref: https://docs.docker.com/engine/reference/builder/#example-running-a-multi-line-script
-SHELL ["bash", "-ex", "-c"]
-
 ## Setup our custom environment (secret mount for write-enabled mirror)
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
@@ -144,7 +140,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
-source $SPACK_ROOT/share/spack/setup-env.sh
+set -ex
 export CCACHE_DIR=/ccache
 spack buildcache update-index local
 spack buildcache update-index eics3rw
@@ -158,7 +154,7 @@ EOF
 
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
-source $SPACK_ROOT/share/spack/setup-env.sh
+set -ex
 spack env activate --dir ${SPACK_ENV}
 rm -r /usr/local
 spack env view enable /usr/local
@@ -168,13 +164,13 @@ EOF
 ## This is useful when going to completely different containers,
 ## or intermittently to keep the buildcache step from taking too much time
 ARG CACHE_NUKE=""
-RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
-    [ -z "${CACHE_NUKE}" ]                                              \
-    || rm -rf /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*
+RUN --mount=type=cache,target=/var/cache/spack,sharing=locked <<EOF
+[ -z "${CACHE_NUKE}" ] || rm -rf /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*
+EOF
 
 ## Store environment
 RUN <<EOF
-source $SPACK_ROOT/share/spack/setup-env.sh
+set -ex
 spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
 EOF
 
@@ -258,6 +254,9 @@ COPY --from=staging /etc/jug_info /etc/jug_info
 COPY --from=staging /etc/eic-env.sh /etc/eic-env.sh
 COPY --from=staging /.singularity.d /.singularity.d
 
+## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
+SHELL ["docker-shell"]
+
 ## ensure /usr/local link is pointing to the right view
 RUN <<EOF
 set -ex
@@ -271,7 +270,6 @@ EOF
 ENV SPACK_DISABLE_LOCAL_CONFIG="true"
 RUN <<EOF
 set -ex
-. /opt/spack/share/spack/setup-env.sh
 spack config --scope site add "config:install_tree:root:~/spack"
 spack config --scope site add "config:source_cache:~/.spack/cache"
 spack config --scope site add "config:binary_index_root:~/.spack"
