@@ -173,7 +173,10 @@ RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
     || rm -rf /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*
 
 ## Store environment
-RUN spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
+RUN <<EOF
+source $SPACK_ROOT/share/spack/setup-env.sh
+spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
+EOF
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
