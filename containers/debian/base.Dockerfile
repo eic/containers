@@ -10,6 +10,10 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 
 COPY bashrc /root/.bashrc
 
+## With heredocs for multi-line scripts, we want to fail on error and the print failing line.
+## Ref: https://docs.docker.com/engine/reference/builder/#example-running-a-multi-line-script
+SHELL ["bash", "-ex", "-c"]
+
 ENV CLICOLOR_FORCE=1                                                    \
     LANGUAGE=en_US.UTF-8                                                \
     LANG=en_US.UTF-8                                                    \

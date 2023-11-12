@@ -27,6 +27,7 @@ ed76eab6943221f17776fd8d128ade6ba69e492c
 6c5d125cb06a86ce05bec27ae9fb9b07103bc1c5
 e3e7609af4903be7df42b6ae5ccf9a20293503d2
 df4a2457a41e7ab634e86d3148d8b22a9f433a6a
+53a45c820c983867e8b05cab3df34e98b468f932
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -49,3 +50,4 @@ df4a2457a41e7ab634e86d3148d8b22a9f433a6a
 ## 6c5d125cb06a86ce05bec27ae9fb9b07103bc1c5: cernlib: new variant shared
 ## e3e7609af4903be7df42b6ae5ccf9a20293503d2: edm4hep: Add version 0.9
 ## df4a2457a41e7ab634e86d3148d8b22a9f433a6a: Fix broken semver regex
+## 53a45c820c983867e8b05cab3df34e98b468f932: docker entrypoint.sh: fail multi-line RUN on first error with set -e

@@ -10,6 +10,10 @@ ARG INTERNAL_TAG="testing"
 FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as spack
 ARG TARGETPLATFORM
 
+## With heredocs for multi-line scripts, we want to fail on error and the print failing line.
+## Ref: https://docs.docker.com/engine/reference/builder/#example-running-a-multi-line-script
+SHELL ["bash", "-ex", "-c"]
+
 ## install some extra spack dependencies
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM} \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=${TARGETPLATFORM} <<EOF
@@ -41,11 +45,13 @@ ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/interactive-shell
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/spack-env
 EOF
 
+## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
 SHELL ["docker-shell"]
 
 ## Setup build configuration
 ARG jobs=64
 RUN <<EOF
+set -ex
 declare -A target=(["linux/amd64"]="x86_64_v2" ["linux/arm64"]="aarch64")
 target=${target[${TARGETPLATFORM}]}
 spack config --scope site add "packages:all:require:[target=${target}]"
@@ -64,6 +70,7 @@ EOF
 
 ## Setup local buildcache mirrors
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
+set -ex
 spack mirror add local /var/cache/spack/mirror/${SPACK_VERSION}
 spack buildcache update-index local
 spack mirror list
@@ -75,6 +82,7 @@ EOF
 ARG S3_ACCESS_KEY=""
 ARG S3_SECRET_KEY=""
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
+set -ex
 if [ -n "${S3_ACCESS_KEY}" ] ; then
   spack mirror add --scope site                                         \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
@@ -92,6 +100,7 @@ ARG EICSPACK_VERSION="$SPACK_VERSION"
 ARG EICSPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
 RUN <<EOF
+set -ex
 git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
 git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}
 if [ -n "${EICSPACK_CHERRYPICKS}" ] ; then
@@ -106,10 +115,12 @@ ARG KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
 ARG KEY4HEPSPACK_VERSION="main"
 ADD https://api.github.com/repos/${KEY4HEPSPACK_ORGREPO}/commits/${KEY4HEPSPACK_VERSION} /tmp/key4hep-spack.json
 RUN <<EOF
+set -ex
 git clone --filter=tree:0 https://github.com/${KEY4HEPSPACK_ORGREPO}.git ${KEY4HEPSPACK_ROOT}
 git -C ${KEY4HEPSPACK_ROOT} checkout ${KEY4HEPSPACK_VERSION}
 spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
 EOF
+
 
 ## ========================================================================================
 ## STAGE1: builder
@@ -129,7 +140,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
-source $SPACK_ROOT/share/spack/setup-env.sh
+set -ex
 export CCACHE_DIR=/ccache
 spack buildcache update-index local
 spack buildcache update-index eics3rw
@@ -143,7 +154,7 @@ EOF
 
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
-source $SPACK_ROOT/share/spack/setup-env.sh
+set -ex
 spack env activate --dir ${SPACK_ENV}
 rm -r /usr/local
 spack env view enable /usr/local
@@ -153,18 +164,22 @@ EOF
 ## This is useful when going to completely different containers,
 ## or intermittently to keep the buildcache step from taking too much time
 ARG CACHE_NUKE=""
-RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
-    [ -z "${CACHE_NUKE}" ]                                              \
-    || rm -rf /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*
+RUN --mount=type=cache,target=/var/cache/spack,sharing=locked <<EOF
+[ -z "${CACHE_NUKE}" ] || rm -rf /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*
+EOF
 
 ## Store environment
-RUN spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
+RUN <<EOF
+set -ex
+spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
+EOF
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
 CMD ["bash", "--rcfile", "/etc/profile", "-l"]
 USER 0
 WORKDIR /
+
 
 ## ========================================================================================
 ## STAGE 2: staging image with unnecessariy packages removed and stripped binaries
@@ -182,18 +197,20 @@ RUN git -C $SPACK_ROOT gc --prune=all --aggressive
 #https://askubuntu.com/questions/1034313/ubuntu-18-4-libqt5core-so-5-cannot-open-shared-object-file-no-such-file-or-dir
 ## and links therin for more info
 RUN <<EOF
+set -ex
 if [ -f /usr/local/lib/libQt5Core.so ] ; then
   strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
 fi
 EOF
 
 RUN <<EOF
+set -ex
 spack debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" >> /etc/jug_info
 spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
 spack graph --dot --installed > /opt/spack-environment/env.dot
 EOF
 
-
+## Copy custom content
 COPY eic-shell /usr/local/bin/eic-shell
 COPY eic-info /usr/local/bin/eic-info
 COPY entrypoint.sh /usr/local/sbin/entrypoint.sh
@@ -206,6 +223,7 @@ COPY singularity.d /.singularity.d
 ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc-amd64
 ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-arm64/mc /usr/local/bin/mc-arm64
 RUN <<EOF
+set -ex
 declare -A target=(["linux/amd64"]="amd64" ["linux/arm64"]="arm64")
 mv /usr/local/bin/mc-${target[${TARGETPLATFORM}]} /usr/local/bin/mc
 unset target[${TARGETPLATFORM}]
@@ -213,6 +231,7 @@ for t in ${target[*]} ; do
   rm /usr/local/bin/mc-${t}
 done
 EOF
+
 
 ## ========================================================================================
 ## STAGE 3
@@ -234,9 +253,15 @@ COPY --from=staging /etc/profile.d /etc/profile.d
 COPY --from=staging /etc/jug_info /etc/jug_info
 COPY --from=staging /etc/eic-env.sh /etc/eic-env.sh
 COPY --from=staging /.singularity.d /.singularity.d
+COPY --from=staging /usr/bin/docker-shell /usr/bin/docker-shell
+
+## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
+ENV SPACK_ROOT=/opt/spack
+SHELL ["docker-shell"]
 
 ## ensure /usr/local link is pointing to the right view
 RUN <<EOF
+set -ex
 rm -rf /usr/local
 PREFIX_PATH=$(realpath $(ls /usr/._local/ | tail -n1))
 echo "Found spack true prefix path to be $PREFIX_PATH"
@@ -246,7 +271,7 @@ EOF
 ## set the local spack configuration
 ENV SPACK_DISABLE_LOCAL_CONFIG="true"
 RUN <<EOF
-. /opt/spack/share/spack/setup-env.sh
+set -ex
 spack config --scope site add "config:install_tree:root:~/spack"
 spack config --scope site add "config:source_cache:~/.spack/cache"
 spack config --scope site add "config:binary_index_root:~/.spack"
@@ -259,10 +284,7 @@ EOF
 
 ## set the jug_dev version and add the afterburner
 ARG JUG_VERSION=1
-RUN <<EOF
-echo "" >> /etc/jug_info
-echo " - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
-EOF
+RUN echo -e "\n - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
 
 ## eicweb shortcut
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
@@ -278,6 +300,7 @@ ADD ${EICWEB}/399/repository/tree?ref=${BENCHMARK_DET_VERSION} /tmp/399.json
 ADD ${EICWEB}/408/repository/tree?ref=${BENCHMARK_REC_VERSION} /tmp/408.json 
 ADD ${EICWEB}/400/repository/tree?ref=${BENCHMARK_PHY_VERSION} /tmp/400.json
 RUN <<EOF
+set -ex
 mkdir -p /opt/benchmarks
 cd /opt/benchmarks
 git clone -b ${BENCHMARK_COM_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git
@@ -300,6 +323,7 @@ ADD https://api.github.com/repos/eic/simulation_campaign_hepmc3/commits/${CAMPAI
 ADD https://api.github.com/repos/eic/job_submission_condor/commits/${CAMPAIGNS_CONDOR_VERSION} /tmp/job_submission_condor.json
 ADD https://api.github.com/repos/eic/job_submission_slurm/commits/${CAMPAIGNS_SLURM_VERSION} /tmp/job_submission_slurm.json
 RUN <<EOF
+set -ex
 mkdir -p /opt/campaigns
 cd /opt/campaigns
 git clone -b ${CAMPAIGNS_SINGLE_VERSION} --depth 1 https://github.com/eic/simulation_campaign_single.git single
