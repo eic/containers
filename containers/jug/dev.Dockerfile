@@ -256,6 +256,7 @@ COPY --from=staging /.singularity.d /.singularity.d
 COPY --from=staging /usr/bin/docker-shell /usr/bin/docker-shell
 
 ## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
+ENV SPACK_ROOT=/opt/spack
 SHELL ["docker-shell"]
 
 ## ensure /usr/local link is pointing to the right view
