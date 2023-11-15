@@ -51,7 +51,7 @@ SHELL ["docker-shell"]
 ## Setup build configuration
 ARG jobs=64
 RUN <<EOF
-set -ex
+set -e
 declare -A target=(["linux/amd64"]="x86_64_v2" ["linux/arm64"]="aarch64")
 target=${target[${TARGETPLATFORM}]}
 spack config --scope site add "packages:all:require:[target=${target}]"
@@ -70,7 +70,7 @@ EOF
 
 ## Setup local buildcache mirrors
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
-set -ex
+set -e
 spack mirror add local /var/cache/spack/mirror/${SPACK_VERSION}
 spack buildcache update-index local
 spack mirror list
@@ -82,7 +82,7 @@ EOF
 ARG S3_ACCESS_KEY=""
 ARG S3_SECRET_KEY=""
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
-set -ex
+set -e
 if [ -n "${S3_ACCESS_KEY}" ] ; then
   spack mirror add --scope site                                         \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
@@ -100,7 +100,7 @@ ARG EICSPACK_VERSION="$SPACK_VERSION"
 ARG EICSPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
 RUN <<EOF
-set -ex
+set -e
 git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
 git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}
 if [ -n "${EICSPACK_CHERRYPICKS}" ] ; then
@@ -115,7 +115,7 @@ ARG KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
 ARG KEY4HEPSPACK_VERSION="main"
 ADD https://api.github.com/repos/${KEY4HEPSPACK_ORGREPO}/commits/${KEY4HEPSPACK_VERSION} /tmp/key4hep-spack.json
 RUN <<EOF
-set -ex
+set -e
 git clone --filter=tree:0 https://github.com/${KEY4HEPSPACK_ORGREPO}.git ${KEY4HEPSPACK_ROOT}
 git -C ${KEY4HEPSPACK_ROOT} checkout ${KEY4HEPSPACK_VERSION}
 spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
@@ -140,13 +140,14 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
-set -ex
+set -e
 export CCACHE_DIR=/ccache
 spack buildcache update-index local
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 spack add juggler@git.${JUGGLER_VERSION}
 spack add eicrecon@git.${EICRECON_VERSION}
+spack concretize --fresh --force --quiet
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment SPACK_ENV=${SPACK_ENV} BUILDCACHE_MIRROR="local eics3rw"
 ccache --show-stats
 ccache --zero-stats
@@ -154,7 +155,7 @@ EOF
 
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
-set -ex
+set -e
 spack env activate --dir ${SPACK_ENV}
 rm -r /usr/local
 spack env view enable /usr/local
@@ -170,7 +171,7 @@ EOF
 
 ## Store environment
 RUN <<EOF
-set -ex
+set -e
 spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
 EOF
 
