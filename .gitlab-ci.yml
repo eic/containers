@@ -7,7 +7,7 @@ variables:
 
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
-  EICRECON_VERSION: "acts-upgrade-26"
+  EICRECON_VERSION: "v1.8.0"
 
   ## Local registry
   CI_PUSH: 1
