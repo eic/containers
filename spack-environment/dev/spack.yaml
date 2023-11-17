@@ -16,7 +16,7 @@ spack:
     - cppcoro
     - dawn
     - dawncut
-    - dd4hep
+    - dd4hep +ddeve
     - dpmjet
     - east
     - edm4eic

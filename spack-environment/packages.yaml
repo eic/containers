@@ -293,8 +293,8 @@ packages:
   root:
     require:
     - '@6.28.04'
-    - cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc -webgui +xrootd +ssl
-    - any_of: [+opengl +x, -opengl -x]
+    - cxxstd=17 +fftw +fortran +gdml +http -ipo +mlp +pythia8 +root7 +tmva +vc +xrootd +ssl
+    - any_of: [+opengl +webgui +x, -opengl -webgui -x]
   snakemake:
     require:
     - '@7.22.0'
