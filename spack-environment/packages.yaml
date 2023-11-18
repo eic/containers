@@ -48,7 +48,7 @@ packages:
   clhep:
     require:
     - '@2.4.6.4'
-    - cxxstd=17
+    - cxxstd=20
   cli11:
     require:
     - '@2.3.2'
