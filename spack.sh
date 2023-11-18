@@ -56,6 +56,7 @@ f709518916ffe11588cffa3a5821c1e49e94b8d2
 73ad3f729e8a5206d717d9d66468a19bb11d2940
 bd58801415dc0acebfd7368f66c43e50563a9891
 e1373d5408170047626583916db02911585c133a
+a65f13f79f617b6aa0b235aa5db612473b6d8c0e
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -111,3 +112,5 @@ e1373d5408170047626583916db02911585c133a
 ## // c7cca3aa8d11789eaee9bfc80b8417ffea511532: dd4hep: new version 1.26
 ## e1373d5408170047626583916db02911585c133a: dd4hep: make sure to find libraries correctly
 ## // a095c8113d5065bcb3d529269bc1de268df6791f: dd4hep: Add tag for version 1.27
+## a65f13f79f617b6aa0b235aa5db612473b6d8c0e: root: add latest available tag
+
