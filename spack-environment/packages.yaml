@@ -317,4 +317,4 @@ packages:
   xrootd:
     require:
     - '@5.5.5'
-    - cxxstd=17 -davix +python +scitokens-cpp
+    - cxxstd=20 -davix +python +scitokens-cpp
