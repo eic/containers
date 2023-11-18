@@ -7,6 +7,7 @@ variables:
 
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
+  JUGGLER_VERSION: "acts-upgrade"
   EICRECON_VERSION: "v1.8.0"
 
   ## Local registry
@@ -336,6 +337,7 @@ jug_dev:
                    --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
                    --build-arg JUG_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    ${IF_BUILD_DEFAULT:+
+                     --build-arg JUGGLER_VERSION=${JUGGLER_VERSION}
                      --build-arg EICRECON_VERSION=${EICRECON_VERSION}
                    }
                    --build-arg ENV=${ENV}

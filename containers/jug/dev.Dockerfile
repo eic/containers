@@ -132,6 +132,8 @@ FROM spack as builder
 ## Setup our custom environment (secret mount for write-enabled mirror)
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
+ARG JUGGLER_VERSION="main"
+ADD https://eicweb.phy.anl.gov/api/v4/projects/EIC%2Fjuggler/repository/tree?ref=${JUGGLER_VERSION} /tmp/juggler.json
 ARG EICRECON_VERSION="main"
 ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
@@ -144,6 +146,7 @@ export CCACHE_DIR=/ccache
 spack buildcache update-index local
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
+spack add juggler@git.${JUGGLER_VERSION}
 spack add eicrecon@git.${EICRECON_VERSION}
 spack concretize --fresh --force --quiet
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment SPACK_ENV=${SPACK_ENV} BUILDCACHE_MIRROR="local eics3rw"
