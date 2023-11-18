@@ -120,7 +120,7 @@ packages:
   geant4:
     require:
     - '@11.1.3.east'
-    - cxxstd=17 -vecgeom +threads -vtk
+    - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   graphviz:
     require:
