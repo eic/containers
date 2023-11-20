@@ -94,7 +94,7 @@ packages:
     - '@1.1.12'
   eicrecon:
     require:
-    - '@1.6.1'
+    - '@1.8.0'
   eigen:
     require:
     - '@3.4.0'
@@ -163,7 +163,7 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@10.1.0'
+    - '@11.0.0'
     - cxxstd=20
   k4actstracking:
     require:
