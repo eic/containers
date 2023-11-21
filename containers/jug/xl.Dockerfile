@@ -31,6 +31,7 @@ ADD https://api.github.com/repos/eic/epic /tmp/epic.json
 COPY setup_detectors.py /tmp
 COPY --from=detectors detectors.yaml /tmp
 RUN --mount=type=cache,target=/ccache/,sharing=locked,id=${TARGETPLATFORM} <<EOF
+set -e
 cd /tmp
 export CCACHE_DIR=/ccache
 [ "z$NIGHTLY" = "z1" ] && NIGHTLY_FLAG="--nightly" || NIGHTLY_FLAG=""
