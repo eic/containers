@@ -34,6 +34,7 @@ ARG SPACK_VERSION="releases/v0.20"
 ARG SPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
 RUN <<EOF
+git config --global advice.detachedHead false
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
 if [ -n "${SPACK_CHERRYPICKS}" ] ; then
@@ -305,12 +306,12 @@ RUN <<EOF
 set -ex
 mkdir -p /opt/benchmarks
 cd /opt/benchmarks
-git clone -b ${BENCHMARK_COM_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git
-git clone -b ${BENCHMARK_DET_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git
+git clone --filter=tree:0 -b ${BENCHMARK_COM_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git
+git clone --filter=tree:0 -b ${BENCHMARK_DET_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git
 ln -sf ../common_bench detector_benchmarks/.local
-git clone -b ${BENCHMARK_REC_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git
+git clone --filter=tree:0 -b ${BENCHMARK_REC_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git
 ln -sf ../common_bench reconstruction_benchmarks/.local
-git clone -b ${BENCHMARK_PHY_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git
+git clone --filter=tree:0 -b ${BENCHMARK_PHY_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git
 ln -sf ../common_bench physics_benchmarks/.local
 EOF
 
@@ -328,10 +329,10 @@ RUN <<EOF
 set -ex
 mkdir -p /opt/campaigns
 cd /opt/campaigns
-git clone -b ${CAMPAIGNS_SINGLE_VERSION} --depth 1 https://github.com/eic/simulation_campaign_single.git single
-git clone -b ${CAMPAIGNS_HEPMC3_VERSION} --depth 1 https://github.com/eic/simulation_campaign_hepmc3.git hepmc3
-git clone -b ${CAMPAIGNS_CONDOR_VERSION} --depth 1 https://github.com/eic/job_submission_condor.git condor
-git clone -b ${CAMPAIGNS_SLURM_VERSION} --depth 1 https://github.com/eic/job_submission_slurm.git slurm
+git clone --filter=tree:0 -b ${CAMPAIGNS_SINGLE_VERSION} --depth 1 https://github.com/eic/simulation_campaign_single.git single
+git clone --filter=tree:0 -b ${CAMPAIGNS_HEPMC3_VERSION} --depth 1 https://github.com/eic/simulation_campaign_hepmc3.git hepmc3
+git clone --filter=tree:0 -b ${CAMPAIGNS_CONDOR_VERSION} --depth 1 https://github.com/eic/job_submission_condor.git condor
+git clone --filter=tree:0 -b ${CAMPAIGNS_SLURM_VERSION} --depth 1 https://github.com/eic/job_submission_slurm.git slurm
 EOF
 
 ## make sure we have the entrypoints setup correctly
