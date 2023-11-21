@@ -9,22 +9,36 @@ detectors:
       version: 23.06.0
       patches:
       - https://github.com/eic/epic/pull/449.patch
+      - https://github.com/eic/epic/pull/520.patch
     23.06.1:
       version: 23.06.1
       patches:
       - https://github.com/eic/epic/pull/449.patch
+      - https://github.com/eic/epic/pull/520.patch
     23.07.0:
       version: 23.07.0
+      patches:
+      - https://github.com/eic/epic/pull/520.patch
     23.07.1:
       version: 23.07.1
+      patches:
+      - https://github.com/eic/epic/pull/520.patch
     23.07.2:
       version: 23.07.2
+      patches:
+      - https://github.com/eic/epic/pull/520.patch
     23.08.0:
       version: 23.08.0
+      patches:
+      - https://github.com/eic/epic/pull/520.patch
     23.09.0:
       version: 23.09.0
+      patches:
+      - https://github.com/eic/epic/pull/520.patch
     23.09.1:
       version: 23.09.1
+      patches:
+      - https://github.com/eic/epic/pull/520.patch
     23.10.0:
       version: 23.10.0
     23.11.0:
