@@ -94,7 +94,7 @@ packages:
     - '@1.1.12'
   eicrecon:
     require:
-    - '@1.8.0'
+    - '@1.8.1'
   eigen:
     require:
     - '@3.4.0'
