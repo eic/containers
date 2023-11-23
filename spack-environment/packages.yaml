@@ -227,7 +227,7 @@ packages:
     - '@2.1.1'
   py-bokeh:
     require:
-    - '@2.4.3'
+    - '@3.3.1'
   py-boto3:
     require:
     - '@1.26.26'
@@ -282,6 +282,9 @@ packages:
   py-pre-commit:
     require:
     - '@2.20.0'
+  py-pygithub:
+    require:
+    - '@2.1.1'
   py-pycairo:
     require:
     - '@1.20.0'
