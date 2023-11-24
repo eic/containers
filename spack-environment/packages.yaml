@@ -220,7 +220,7 @@ packages:
     - '@6.3.0'
   py-epic-capybara:
     require:
-    - '@git.badc6ffba420e5c8a598647000c7d55e9a453e7b'
+    - '@git.3a6e6a9c75630fd5e7375a8bd7f9b5c20eb227cd'
   py-ipython:
     require:
     - '@8.11.0'
