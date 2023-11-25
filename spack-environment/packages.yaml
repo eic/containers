@@ -142,6 +142,9 @@ packages:
   irt:
     require:
     - '@1.0.7'
+  iwyu:
+    require:
+    - '@0.18'
   jana2:
     require:
     - '@2.1.1'

@@ -81,7 +81,6 @@ if [ "${ID}" = "ubuntu" ] ; then
   apt-get -yqq update
   apt-get -yqq install gcc${GCC} g++${GCC} gfortran${GCC}
   apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG}
-  apt-get -yqq install iwyu
   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc${GCC} 100
   update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++${GCC} 100
   update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran${GCC} 100
@@ -91,7 +90,6 @@ else
   apt-get -yqq update
   apt-get -yqq install gcc g++ gfortran
   apt-get -yqq install clang clang-tidy clang-format
-  apt-get -yqq install iwyu
 fi
 apt-get -yqq autoremove
 gcc --version
