@@ -96,7 +96,7 @@ echo "deb http://apt.llvm.org/${VERSION_CODENAME} llvm-toolchain-${VERSION_CODEN
 # Install packages
 apt-get -yqq update
 apt-get -yqq install gcc${GCC} g++${GCC} gfortran${GCC}
-apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG}
+apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev
 apt-get -yqq autoremove
 # Ensure alternatives without version tags
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc${GCC} 100
