@@ -147,7 +147,7 @@ packages:
     - '@0.18'
   jana2:
     require:
-    - '@2.1.1'
+    - '@2.1.2'
     - -ipo +podio +root +zmq
   lcov:
     require:
