@@ -72,28 +72,39 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 . /etc/os-release
 mkdir -p /etc/apt/source.list.d
-if [ "${ID}" = "ubuntu" ] ; then
-  echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/ppa/ubuntu/${VERSION_CODENAME} main" > /etc/apt/source.list.d/ubuntu-toolchain.list
-  if [ "${VERSION_ID}" = "20.04" ] ; then GCC="-10" CLANG="-12" ; fi
-  if [ "${VERSION_ID}" = "22.04" ] ; then GCC="-12" CLANG="-14" ; fi
-  curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-  echo "deb http://apt.llvm.org/${VERSION_CODENAME} llvm-toolchain-${VERSION_CODENAME}${CLANG} main" > /etc/apt/source.list.d/llvm.list
-  apt-get -yqq update
-  apt-get -yqq install gcc${GCC} g++${GCC} gfortran${GCC}
-  apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG}
-  apt-get -yqq install iwyu
-  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc${GCC} 100
-  update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++${GCC} 100
-  update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran${GCC} 100
-  update-alternatives --install /usr/bin/clang clang /usr/bin/clang${CLANG} 100
-  update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++${CLANG} 100
-else
-  apt-get -yqq update
-  apt-get -yqq install gcc g++ gfortran
-  apt-get -yqq install clang clang-tidy clang-format
-  apt-get -yqq install iwyu
-fi
+# GCC version and repository
+case ${ID} in
+  debian)
+    case ${VERSION_CODENAME} in
+      bookworm) GCC="-12" ;;
+      trixie) GCC="-13" ;;
+      *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
+    esac ;;
+  ubuntu)
+    echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/ppa/ubuntu/${VERSION_CODENAME} main" > /etc/apt/source.list.d/ubuntu-toolchain.list
+    case ${VERSION_CODENAME} in
+      focal) GCC="-10" ;;
+      jammy) GCC="-12" ;;
+      *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
+    esac ;;
+  *) echo "Unsupported ID=${ID}" ; exit 1 ;;
+esac
+# Clang version and repository
+CLANG="-14"
+curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+echo "deb http://apt.llvm.org/${VERSION_CODENAME} llvm-toolchain-${VERSION_CODENAME}${CLANG} main" > /etc/apt/source.list.d/llvm.list
+# Install packages
+apt-get -yqq update
+apt-get -yqq install gcc${GCC} g++${GCC} gfortran${GCC}
+apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev
 apt-get -yqq autoremove
+# Ensure alternatives without version tags
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc${GCC} 100
+update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++${GCC} 100
+update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran${GCC} 100
+update-alternatives --install /usr/bin/clang clang /usr/bin/clang${CLANG} 100
+update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++${CLANG} 100
+# Check versions
 gcc --version
 clang --version
 EOF
