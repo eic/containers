@@ -92,7 +92,7 @@ esac
 # Clang version and repository
 CLANG="-16"
 curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-echo "deb http://apt.llvm.org/${VERSION_CODENAME} llvm-toolchain-${VERSION_CODENAME}${CLANG} main" > /etc/apt/source.list.d/llvm.list
+echo "deb http://apt.llvm.org/${VERSION_CODENAME} llvm-toolchain-${VERSION_CODENAME}${CLANG} main" > /etc/apt/sources.list.d/llvm.list
 # Install packages
 apt-get -yqq update
 apt-get -yqq install gcc${GCC} g++${GCC} gfortran${GCC}
