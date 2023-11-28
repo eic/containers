@@ -91,9 +91,12 @@ case ${ID} in
 esac
 # Clang version and repository
 CLANG="-16"
-if [ ${VERSION_CODENAME} = trixie ] ; then VERSION_CODENAME=unstable ; fi
 curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-echo "deb http://apt.llvm.org/${VERSION_CODENAME} llvm-toolchain-${VERSION_CODENAME}${CLANG} main" > /etc/apt/sources.list.d/llvm.list
+if [ ${VERSION_CODENAME} = trixie ] ; then
+  echo "deb http://apt.llvm.org/unstable llvm-toolchain${CLANG} main" > /etc/apt/sources.list.d/llvm.list
+else
+  echo "deb http://apt.llvm.org/${VERSION_CODENAME} llvm-toolchain-${VERSION_CODENAME}${CLANG} main" > /etc/apt/sources.list.d/llvm.list
+fi
 # Install packages
 apt-get -yqq update
 apt-get -yqq install gcc${GCC} g++${GCC} gfortran${GCC}
