@@ -57,6 +57,8 @@ f709518916ffe11588cffa3a5821c1e49e94b8d2
 bd58801415dc0acebfd7368f66c43e50563a9891
 e1373d5408170047626583916db02911585c133a
 a65f13f79f617b6aa0b235aa5db612473b6d8c0e
+ed8ecc469e7b87842a876323878831e301f136a2
+4991a60eacb5df289383f755e40702b720ed0513
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -113,4 +115,5 @@ a65f13f79f617b6aa0b235aa5db612473b6d8c0e
 ## e1373d5408170047626583916db02911585c133a: dd4hep: make sure to find libraries correctly
 ## // a095c8113d5065bcb3d529269bc1de268df6791f: dd4hep: Add tag for version 1.27
 ## a65f13f79f617b6aa0b235aa5db612473b6d8c0e: root: add latest available tag
-
+## ed8ecc469e7b87842a876323878831e301f136a2: podio: Add the latest tag (0.17.2)
+## 4991a60eacb5df289383f755e40702b720ed0513: podio: Add latest tag 0.17.3

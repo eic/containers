@@ -147,7 +147,7 @@ packages:
     - '@0.18'
   jana2:
     require:
-    - '@2.1.1'
+    - '@2.1.2'
     - -ipo +podio +root +zmq
   lcov:
     require:
@@ -193,7 +193,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@0.16.7'
+    - '@0.17.3'
     - cxxstd=20
   prmon:
     require:
