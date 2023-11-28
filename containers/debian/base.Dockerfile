@@ -91,6 +91,7 @@ case ${ID} in
 esac
 # Clang version and repository
 CLANG="-16"
+if [ ${VERSION_CODENAME} = trixie ] ; then VERSION_CODENAME=unstable ; fi
 curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
 echo "deb http://apt.llvm.org/${VERSION_CODENAME} llvm-toolchain-${VERSION_CODENAME}${CLANG} main" > /etc/apt/sources.list.d/llvm.list
 # Install packages
