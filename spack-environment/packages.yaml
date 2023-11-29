@@ -149,6 +149,9 @@ packages:
     require:
     - '@2.1.2'
     - -ipo +podio +root +zmq
+  juggler:
+    require:
+    - cxxstd=20
   lcov:
     require:
     - '@1.16'
