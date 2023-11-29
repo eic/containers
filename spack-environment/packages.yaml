@@ -158,6 +158,9 @@ packages:
   juggler:
     require:
     - cxxstd=20
+  k4fwcore:
+    require:
+    - '@1.0pre17'
   lapack:
     require:
     - openblas
