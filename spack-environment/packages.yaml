@@ -87,7 +87,7 @@ packages:
     - cxxstd=20
   edm4hep:
     require:
-    - '@0.10'
+    - '@0.10.2'
     - cxxstd=20
   eic-smear:
     require:
