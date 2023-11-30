@@ -119,3 +119,5 @@ c485709f625429a88a184a099373d76c9438f8e3
 ## ed8ecc469e7b87842a876323878831e301f136a2: podio: Add the latest tag (0.17.2)
 ## 4991a60eacb5df289383f755e40702b720ed0513: podio: Add latest tag 0.17.3
 ## c485709f625429a88a184a099373d76c9438f8e3: iwyu: new versions up 0.21 (depends_on llvm-17)
+## 81e73b4dd4ea0bf6c6947359d3cee9d4270df13d: root: new version 6.30.00
+## 6f08daf67020289e6a5ed1df9783ac5b2919e477: root: add a webgui patch
