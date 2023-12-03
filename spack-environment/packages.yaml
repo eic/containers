@@ -299,7 +299,7 @@ packages:
     - +opengl
   root:
     require:
-    - '@6.28.06'
+    - '@6.28.10'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +root7 +tmva +vc +xrootd +ssl
     - any_of: [+opengl +webgui +x, -opengl -webgui -x]
   snakemake:
