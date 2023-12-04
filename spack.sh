@@ -60,6 +60,9 @@ a65f13f79f617b6aa0b235aa5db612473b6d8c0e
 ed8ecc469e7b87842a876323878831e301f136a2
 4991a60eacb5df289383f755e40702b720ed0513
 c485709f625429a88a184a099373d76c9438f8e3
+e91db7793038b4e7235c8ec7c82244afbb9dfc9e
+81e73b4dd4ea0bf6c6947359d3cee9d4270df13d
+6f08daf67020289e6a5ed1df9783ac5b2919e477
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -119,3 +122,6 @@ c485709f625429a88a184a099373d76c9438f8e3
 ## ed8ecc469e7b87842a876323878831e301f136a2: podio: Add the latest tag (0.17.2)
 ## 4991a60eacb5df289383f755e40702b720ed0513: podio: Add latest tag 0.17.3
 ## c485709f625429a88a184a099373d76c9438f8e3: iwyu: new versions up 0.21 (depends_on llvm-17)
+## e91db7793038b4e7235c8ec7c82244afbb9dfc9e: root: Add package name to all conflict messages
+## 81e73b4dd4ea0bf6c6947359d3cee9d4270df13d: root: new version 6.30.00
+## 6f08daf67020289e6a5ed1df9783ac5b2919e477: root: add a webgui patch
