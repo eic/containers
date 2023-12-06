@@ -272,7 +272,7 @@ packages:
     - '@1.16-33-g3788bb4'
   py-numpy:
     require:
-    - '@1.23.4'
+    - '@1.26.1'
   py-pandas:
     require:
     - '@1.5.3'
@@ -293,7 +293,7 @@ packages:
     - '@6.0'
   py-scipy:
     require:
-    - '@1.10.1'
+    - '@1.11.3'
   py-seaborn:
     require:
     - '@0.12.2'
