@@ -208,7 +208,7 @@ packages:
     - +fastjet +root
   python:
     require:
-    - '@3.10.10'
+    - '@3.11.6'
   py-awkward:
     require:
     - '@2.1.1'
