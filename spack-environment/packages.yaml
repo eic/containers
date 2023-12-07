@@ -303,6 +303,9 @@ packages:
   py-toml:
     require:
     - '@0.10.2'
+  py-torch:
+    require:
+    - '@2.0.0'  
   py-uproot:
     require:
     - '@5.0.5'
