@@ -295,7 +295,6 @@ packages:
   py-onnxruntime:
     require:
     - '@1.7.2'
-    - +cuda
   py-pandas:
     require:
     - '@1.5.3'
