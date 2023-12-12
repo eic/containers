@@ -33,6 +33,9 @@ packages:
   algorithms:
     require:
     - '@git.a1e6f0def343c2ddea5df7158c52a30376099a13'
+  blas:
+    require:
+    - openblas
   cairo:
     require:
     - '@1.16.0'
@@ -101,6 +104,9 @@ packages:
   fjcontrib:
     require:
     - '@1.051'
+  flame:
+    require:
+    - libflame
   fmt:
     require:
     - '@9.1.0'
@@ -152,6 +158,9 @@ packages:
   juggler:
     require:
     - cxxstd=20
+  lapack:
+    require:
+    - openblas
   lcov:
     require:
     - '@1.16'
