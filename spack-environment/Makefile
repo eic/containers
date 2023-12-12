@@ -22,7 +22,7 @@ $(SPACK_ENV)/push: $(addprefix $(SPACK_ENV)/push/,$($(SPACK_ENV)/SPACK_PACKAGE_I
 
 $(SPACK_ENV)/push/%: $(SPACK_ENV)/install/%
 	@mkdir -p $(dir $@)
-	$(foreach buildcache, $(BUILDCACHE_MIRROR), $(SPACK) buildcache create --allow-root --only=package --unsigned $(buildcache) /$(HASH) ;) # push $(SPEC)
+	$(foreach buildcache, $(BUILDCACHE_MIRROR), $(SPACK) buildcache push --only=package --unsigned $(buildcache) /$(HASH) ;) # push $(SPEC)
 	@touch $@
 
 $(SPACK_ENV)/spack.lock: $(SPACK_ENV)/spack.yaml Makefile
