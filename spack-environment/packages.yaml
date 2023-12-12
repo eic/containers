@@ -203,6 +203,7 @@ packages:
   pcre:
     require:
     - build_system=cmake
+    - cflags=-fPIC cxxflags=-fPIC 
   phonebook-cli:
     require:
     - '@1.0.0'
