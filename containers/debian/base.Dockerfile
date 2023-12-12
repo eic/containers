@@ -103,6 +103,7 @@ apt-get -yqq install gcc${GCC} g++${GCC} gfortran${GCC}
 apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev
 apt-get -yqq autoremove
 # Ensure alternatives without version tags
+update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp${GCC} 100
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc${GCC} 100
 update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++${GCC} 100
 update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran${GCC} 100
