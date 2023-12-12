@@ -14,6 +14,7 @@ ed8ecc469e7b87842a876323878831e301f136a2
 81e73b4dd4ea0bf6c6947359d3cee9d4270df13d
 c485709f625429a88a184a099373d76c9438f8e3
 6f08daf67020289e6a5ed1df9783ac5b2919e477
+60dbce90a62a87f3491078028b239575053dc8df
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -23,3 +24,4 @@ c485709f625429a88a184a099373d76c9438f8e3
 ## 81e73b4dd4ea0bf6c6947359d3cee9d4270df13d: root: new version 6.30.00
 ## c485709f625429a88a184a099373d76c9438f8e3: iwyu: new versions up 0.21 (depends_on llvm-17)
 ## 6f08daf67020289e6a5ed1df9783ac5b2919e477: root: add a webgui patch
+## 60dbce90a62a87f3491078028b239575053dc8df: hepmc3: fix from_variant -> self.define
