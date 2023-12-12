@@ -200,6 +200,9 @@ packages:
   osg-ca-certs:
     require:
     - '@1.109.igtf.1.117'
+  pcre:
+    require:
+    - build_system=cmake
   phonebook-cli:
     require:
     - '@1.0.0'
