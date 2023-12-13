@@ -132,6 +132,7 @@ FROM spack as builder
 
 ## Setup our custom environment (secret mount for write-enabled mirror)
 COPY --from=spack-environment . /opt/spack-environment/
+ENV SPACK_ROOT=/opt/spack
 ARG ENV=dev
 ARG JUGGLER_VERSION="main"
 ADD https://eicweb.phy.anl.gov/api/v4/projects/EIC%2Fjuggler/repository/tree?ref=${JUGGLER_VERSION} /tmp/juggler.json
@@ -188,6 +189,7 @@ WORKDIR /
 ## STAGE 2: staging image with unnecessariy packages removed and stripped binaries
 ## ========================================================================================
 FROM builder as staging
+ENV SPACK_ROOT=/opt/spack
 
 # Garbage collect in environment
 RUN spack -e ${SPACK_ENV} gc -y
