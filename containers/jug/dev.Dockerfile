@@ -146,7 +146,6 @@ set -e
 export CCACHE_DIR=/ccache
 spack buildcache update-index local
 spack buildcache update-index eics3rw
-rm -f /var/cache/spack/mirror/v0.21.0/build_cache/linux-debian12-x86_64_v2/gcc-12.2.0/git-2.42.0/linux-debian12-x86_64_v2-gcc-12.2.0-git-2.42.0-7ueexn6a53e5wtvm3doiioe5akalubo5.spack
 spack env activate --dir ${SPACK_ENV}
 spack add juggler@git.${JUGGLER_VERSION}
 spack add eicrecon@git.${EICRECON_VERSION}
