@@ -16,6 +16,7 @@ c485709f625429a88a184a099373d76c9438f8e3
 6f08daf67020289e6a5ed1df9783ac5b2919e477
 50051b56199992eb4395b8ff22913c1995311a8c
 f01774f1d41781bc4b9e5abb5469e234168da663
+cfa2f19f48699a762af77ece8a9c5bc4db3a75d5
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -27,3 +28,4 @@ f01774f1d41781bc4b9e5abb5469e234168da663
 ## 6f08daf67020289e6a5ed1df9783ac5b2919e477: root: add a webgui patch
 ## 50051b56199992eb4395b8ff22913c1995311a8c: geant4: new version 11.1.3
 ## f01774f1d41781bc4b9e5abb5469e234168da663: hepmc3: fix from_variant -> self.define
+## cfa2f19f48699a762af77ece8a9c5bc4db3a75d5: py-htgettoken: use os.environ, avoid AttributeError
