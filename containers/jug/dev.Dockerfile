@@ -135,6 +135,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
 set -e
+ls -ltu /var/cache/spack/blobs/sha256/
 export CCACHE_DIR=/ccache
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
