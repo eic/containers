@@ -7,7 +7,8 @@ export SPACK_COLOR = always
 
 SPACK_ENV ?= dev
 
-BUILDCACHE_MIRROR :=
+BUILDCACHE_MIRROR_ONLY_PACKAGE :=
+BUILDCACHE_MIRROR_DEPENDENCIES :=
 
 .PHONY: all clean
 
@@ -18,11 +19,13 @@ include $(SPACK_ENV)/spack.mk
 endif
 
 $(SPACK_ENV)/push: $(addprefix $(SPACK_ENV)/push/,$($(SPACK_ENV)/SPACK_PACKAGE_IDS))
-	$(foreach buildcache, $(BUILDCACHE_MIRROR), $(SPACK) buildcache update-index $(buildcache) ;)
+	$(foreach buildcache, $(BUILDCACHE_MIRROR_ONLY_PACKAGE), $(SPACK) buildcache update-index $(buildcache) ;)
+	$(foreach buildcache, $(BUILDCACHE_MIRROR_DEPENDENCIES), $(SPACK) buildcache update-index $(buildcache) ;)
 
 $(SPACK_ENV)/push/%: $(SPACK_ENV)/install/%
 	@mkdir -p $(dir $@)
-	$(foreach buildcache, $(BUILDCACHE_MIRROR), $(SPACK) buildcache push --only=package --unsigned $(buildcache) /$(HASH) ;) # push $(SPEC)
+	$(foreach buildcache, $(BUILDCACHE_MIRROR_ONLY_PACKAGE), $(SPACK) buildcache push --only=package --unsigned $(buildcache) /$(HASH) ;) # push $(SPEC)
+	$(foreach buildcache, $(BUILDCACHE_MIRROR_DEPENDENCIES), $(SPACK) buildcache push --unsigned $(buildcache) /$(HASH) ;) # push $(SPEC)
 	@touch $@
 
 $(SPACK_ENV)/spack.lock: $(SPACK_ENV)/spack.yaml Makefile
