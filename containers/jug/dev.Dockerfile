@@ -150,7 +150,7 @@ spack env activate --dir ${SPACK_ENV}
 spack add juggler@git.${JUGGLER_VERSION}
 spack add eicrecon@git.${EICRECON_VERSION}
 spack concretize --fresh --force --quiet
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment SPACK_ENV=${SPACK_ENV} BUILDCACHE_MIRROR="local eics3rw"
+make --jobs ${jobs} --keep-going --directory /opt/spack-environment SPACK_ENV=${SPACK_ENV} BUILDCACHE_MIRROR="local eicweb eics3rw"
 ccache --show-stats
 ccache --zero-stats
 EOF
