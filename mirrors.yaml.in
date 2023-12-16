@@ -1,6 +1,6 @@
 mirrors:
   eicweb:
-    url: oci://eicweb.phy.anl.gov:4567/containers/eic_container/spack-${SPACK_VERSION}
+    url: oci://${CI_REGISTRY}/${CI_PROJECT_PATH}/spack-${SPACK_VERSION}
     push:
       access_pair:
       - ${CI_REGISTRY_USER}
