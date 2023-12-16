@@ -9,8 +9,8 @@ mirrors:
     url: oci://ghcr.io/eic/spack-${SPACK_VERSION}
     push:
       access_pair:
-      - ${GH_REGISTRY_USER}
-      - ${GH_REGISTRY_TOKEN}
+      - ${GITHUB_REGISTRY_USER}
+      - ${GITHUB_REGISTRY_TOKEN}
   eics3rw:
     fetch:
       url: s3://eictest/EPIC/spack/${SPACK_VERSION}
