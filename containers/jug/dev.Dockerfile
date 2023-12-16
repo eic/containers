@@ -70,14 +70,6 @@ spack compiler find --scope site
 spack config blame compilers
 EOF
 
-## Setup local buildcache mirrors
-RUN --mount=type=cache,target=/var/cache/spack <<EOF
-set -e
-spack mirror add local /var/cache/spack/mirror/${SPACK_VERSION}
-spack buildcache update-index local
-spack mirror list
-EOF
-
 ## Setup eics3 buildcache mirrors
 ## - this always adds the read-only mirror to the container
 ## - the write-enabled mirror is provided later as a secret mount
@@ -144,13 +136,12 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-spack buildcache update-index local
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 spack add juggler@git.${JUGGLER_VERSION}
 spack add eicrecon@git.${EICRECON_VERSION}
 spack concretize --fresh --force --quiet
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment SPACK_ENV=${SPACK_ENV} BUILDCACHE_MIRROR_ONLY_PACKAGE="local eics3rw" BUILDCACHE_MIRROR_DEPENDENCIES="eicweb ghcr"
+make --jobs ${jobs} --keep-going --directory /opt/spack-environment SPACK_ENV=${SPACK_ENV} BUILDCACHE_MIRROR_ONLY_PACKAGE="eics3rw" BUILDCACHE_MIRROR_DEPENDENCIES="eicweb ghcr"
 ccache --show-stats
 ccache --zero-stats
 EOF
