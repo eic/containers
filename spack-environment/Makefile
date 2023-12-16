@@ -9,7 +9,7 @@ SPACK_ENV ?= dev
 
 BUILDCACHE_MIRROR_ONLY_PACKAGE :=
 BUILDCACHE_MIRROR_DEPENDENCIES :=
-BUILDCACHE_OCI_BASE_IMAGE := amd64/debian:stable-slim
+BUILDCACHE_OCI_BASE_IMAGE := ghcr.io/eic/debian:stable-slim
 
 .PHONY: all clean
 
