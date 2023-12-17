@@ -158,9 +158,8 @@ EOF
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
-spack env activate --dir ${SPACK_ENV}
 rm -r /usr/local
-spack env view enable /usr/local
+spack -e ${SPACK_ENV} env view enable /usr/local
 EOF
 
 ## Optional, nuke the buildcache after install, before (re)caching
