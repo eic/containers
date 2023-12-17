@@ -39,6 +39,7 @@ spack:
   - irt
   - iwyu
   - jana2
+  - k4fwcore
   - lcov
   - lhapdf
   - madx
