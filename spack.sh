@@ -18,6 +18,8 @@ c485709f625429a88a184a099373d76c9438f8e3
 f01774f1d41781bc4b9e5abb5469e234168da663
 cfa2f19f48699a762af77ece8a9c5bc4db3a75d5
 2433f503b73bb515b2e1a7615ae01fea59d2290e
+16f4c53cd4cfb4bc6c9390f6e65217fc9ccc58c9
+d171f314c77ba61b3cd780f159afe6abced5707d
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -31,3 +33,5 @@ cfa2f19f48699a762af77ece8a9c5bc4db3a75d5
 ## f01774f1d41781bc4b9e5abb5469e234168da663: hepmc3: fix from_variant -> self.define
 ## cfa2f19f48699a762af77ece8a9c5bc4db3a75d5: py-htgettoken: use os.environ, avoid AttributeError
 ## 2433f503b73bb515b2e1a7615ae01fea59d2290e: py-htgettoken: allow for undefined variables
+## 16f4c53cd4cfb4bc6c9390f6e65217fc9ccc58c9: py-bokeh: new version 3.3.1, and supporting packages
+## d171f314c77ba61b3cd780f159afe6abced5707d: py-pygithub: new versions, dependencies
