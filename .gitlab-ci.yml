@@ -542,7 +542,7 @@ df:
     - docker buildx prune --force
     - docker buildx du --verbose
     - docker system df -v
-    - docker system prune --force
+    - docker system prune --all --force
     - docker system prune --volumes --force
     - docker system df -v
 
