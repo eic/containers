@@ -536,6 +536,8 @@ df:
   needs: 
     - version
   script:
+    - docker buildx ls
+    - docker buildx inspect
     - docker buildx du
     - docker system df -v
 
