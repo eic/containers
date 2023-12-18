@@ -537,7 +537,7 @@ df:
     - version
   script:
     - docker buildx du
-    - docker system df -
+    - docker system df -v
 
 clean_internal_tag:
   image: alpine/curl
