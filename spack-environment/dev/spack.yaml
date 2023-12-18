@@ -75,6 +75,7 @@ spack:
   - py-scipy
   - py-seaborn
   - py-toml
+  - py-torch
   - py-uproot
   - py-wurlitzer
   - py-yapf

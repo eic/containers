@@ -128,6 +128,9 @@ packages:
     - '@11.1.3.east'
     - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
+  gloo:
+    require:
+    - '@2023-05-19'
   graphviz:
     require:
     - '@8.0.1'
@@ -303,6 +306,9 @@ packages:
   py-toml:
     require:
     - '@0.10.2'
+  py-torch:
+    require:
+    - '@2.1.0'
   py-uproot:
     require:
     - '@5.0.5'
