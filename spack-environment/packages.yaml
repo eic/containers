@@ -286,6 +286,9 @@ packages:
   py-numpy:
     require:
     - '@1.26.1'
+  py-onnx:
+    require:
+    - '@1.13.1'
   py-pandas:
     require:
     - '@1.5.3'
