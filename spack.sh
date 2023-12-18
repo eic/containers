@@ -21,6 +21,7 @@ d171f314c77ba61b3cd780f159afe6abced5707d
 b111064e221aae83e62226672cd8bf9a7524423d
 3c54177c5d9032cb36cf154b553d739cbeb2d024
 c07ddf83c32b7129247fe90eed486dd844047087
+00875fbc749a7e4e979c35d59c0a8d60d32d4cd7
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -37,3 +38,4 @@ c07ddf83c32b7129247fe90eed486dd844047087
 ## b111064e221aae83e62226672cd8bf9a7524423d: py-htgettoken: use os.environ, avoid AttributeError
 ## 3c54177c5d9032cb36cf154b553d739cbeb2d024: edm4hep: add latest tag for 0.10.2
 ## c07ddf83c32b7129247fe90eed486dd844047087: py-torch: set env OpenBLAS_HOME
+## 00875fbc749a7e4e979c35d59c0a8d60d32d4cd7: py-torch: patch for ${OpenBLAS_HOME}/include/openblas
