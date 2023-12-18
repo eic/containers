@@ -528,6 +528,17 @@ benchmarks:detector:nightly:
     strategy: depend
   allow_failure: true
   
+df:
+  extends: .docker
+  stage: config
+  tags:
+    - docker-new
+  needs: 
+    - version
+  script:
+    - docker buildx du
+    - docker system df -
+
 clean_internal_tag:
   image: alpine/curl
   stage: finalize
