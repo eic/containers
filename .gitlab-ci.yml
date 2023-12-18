@@ -539,6 +539,10 @@ df:
     - docker buildx ls
     - docker buildx inspect
     - docker buildx du --verbose
+    - docker buildx prune --force
+    - docker buildx du --verbose
+    - docker system df -v
+    - docker system prune --force
     - docker system df -v
 
 clean_internal_tag:
