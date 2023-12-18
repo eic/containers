@@ -538,7 +538,7 @@ df:
   script:
     - docker buildx ls
     - docker buildx inspect
-    - docker buildx du -v
+    - docker buildx du --verbose
     - docker system df -v
 
 clean_internal_tag:
