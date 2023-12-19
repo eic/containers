@@ -138,7 +138,7 @@ find /var/cache/spack/blobs/sha256/ -atime +7 -delete
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 spack concretize --fresh --force --quiet
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment SPACK_ENV=${SPACK_ENV} BUILDCACHE_MIRROR="local eics3rw"
+make --jobs ${jobs} --keep-going --directory /opt/spack-environment SPACK_ENV=${SPACK_ENV} BUILDCACHE_MIRROR_ONLY_PACKAGE="eics3rw" BUILDCACHE_MIRROR_DEPENDENCIES="eicweb ghcr"
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -154,7 +154,6 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     <<EOF
 source $SPACK_ROOT/share/spack/setup-env.sh
 export CCACHE_DIR=/ccache
-spack buildcache update-index local
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 if [ -n ${JUGGLER_VERSION} ] ; then
