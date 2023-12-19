@@ -161,6 +161,9 @@ packages:
   juggler:
     require:
     - cxxstd=20
+  k4actstracking:
+    require:
+    - '@main'
   k4fwcore:
     require:
     - '@1.0pre17'
