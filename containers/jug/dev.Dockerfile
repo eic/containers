@@ -173,7 +173,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
-source ${SPACK_ROOT}/share/spack/setup-env.sh
+set -e
 export CCACHE_DIR=/ccache
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
@@ -214,7 +214,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
-source $SPACK_ROOT/share/spack/setup-env.sh
+set -e
 export CCACHE_DIR=/ccache
 spack buildcache update-index eics3rw
 spack env activate --dir /opt/spack-environment/epic
