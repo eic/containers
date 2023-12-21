@@ -507,7 +507,7 @@ benchmarks:detector:default:
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
-  allow_failure: true
+  allow_failure: false
   
 benchmarks:detector:nightly:
   stage: benchmarks
@@ -526,7 +526,7 @@ benchmarks:detector:nightly:
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
-  allow_failure: true
+  allow_failure: false
   
 clean_internal_tag:
   image: alpine/curl
