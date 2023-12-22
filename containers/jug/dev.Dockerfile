@@ -126,7 +126,7 @@ FROM spack as builder
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
 ARG JUGGLER_VERSION="main"
-ADD https://eicweb.phy.anl.gov/api/v4/projects/EIC%2Fjuggler/repository/tree?ref=${JUGGLER_VERSION} /tmp/juggler.json
+ADD https://eicweb.phy.anl.gov/api/v4/projects/EIC%2Fjuggler/repository/commits/${JUGGLER_VERSION} /tmp/juggler.json
 ARG EICRECON_VERSION="main"
 ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
@@ -289,10 +289,10 @@ ARG BENCHMARK_DET_VERSION="master"
 ARG BENCHMARK_REC_VERSION="master"
 ARG BENCHMARK_PHY_VERSION="master"
 ## cache bust when updated repositories
-ADD ${EICWEB}/458/repository/tree?ref=${BENCHMARK_COM_VERSION} /tmp/485.json
-ADD ${EICWEB}/399/repository/tree?ref=${BENCHMARK_DET_VERSION} /tmp/399.json
-ADD ${EICWEB}/408/repository/tree?ref=${BENCHMARK_REC_VERSION} /tmp/408.json 
-ADD ${EICWEB}/400/repository/tree?ref=${BENCHMARK_PHY_VERSION} /tmp/400.json
+ADD ${EICWEB}/458/repository/commits/${BENCHMARK_COM_VERSION} /tmp/485.json
+ADD ${EICWEB}/399/repository/commits/${BENCHMARK_DET_VERSION} /tmp/399.json
+ADD ${EICWEB}/408/repository/commits/${BENCHMARK_REC_VERSION} /tmp/408.json 
+ADD ${EICWEB}/400/repository/commits/${BENCHMARK_PHY_VERSION} /tmp/400.json
 RUN <<EOF
 set -ex
 mkdir -p /opt/benchmarks
