@@ -20,6 +20,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM}
 rm -f /etc/apt/apt.conf.d/docker-clean
 apt-get -yqq update
 apt-get -yqq install --no-install-recommends                            \
+        jq                                                              \
         python3                                                         \
         python3-dev                                                     \
         python3-distutils                                               \
@@ -137,6 +138,8 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
 set -e
 export CCACHE_DIR=/ccache
 find /var/cache/spack/blobs/sha256/ -atime +7 -delete
+JUGGLER_VERSION=$(jq -r .id /tmp/juggler.json)
+EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 spack add juggler@git.${JUGGLER_VERSION}
