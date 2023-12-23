@@ -144,8 +144,8 @@ ccache --zero-stats
 EOF
 
 ## 2. Setup our environment with custom versions (on top of cached layer)
-ARG JUGGLER_VERSION=""
-ARG EICRECON_VERSION=""
+ARG JUGGLER_VERSION="0"
+ARG EICRECON_VERSION="0"
 ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/juggler.json
 ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
@@ -156,11 +156,11 @@ source $SPACK_ROOT/share/spack/setup-env.sh
 export CCACHE_DIR=/ccache
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
-if [ -n ${JUGGLER_VERSION} ] ; then
+if [ "${JUGGLER_VERSION}" != "0" ] ; then
   export JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
   spack config add "packages:juggler::require:['@git.${JUGGLER_VERSION}']"
 fi
-if [ -n ${EICRECON_VERSION} ] ; then
+if [ "${EICRECON_VERSION}" != "0" ] ; then
   export EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
   spack config add "packages:eicrecon::require:['@git.${EICRECON_VERSION}']"
 fi
