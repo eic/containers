@@ -133,6 +133,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
+source ${SPACK_ROOT}/share/spack/setup-env.sh
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -atime +7 -delete
 spack buildcache update-index eics3rw
@@ -153,7 +154,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
-source $SPACK_ROOT/share/spack/setup-env.sh
+source ${SPACK_ROOT}/share/spack/setup-env.sh
 export CCACHE_DIR=/ccache
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
