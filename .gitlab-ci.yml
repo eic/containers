@@ -7,7 +7,7 @@ variables:
 
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
-  JUGGLER_VERSION: "v11.0.0"
+  JUGGLER_VERSION: "v13.0.0"
   EICRECON_VERSION: "v1.9.0"
 
   ## Local registry
