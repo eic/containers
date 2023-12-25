@@ -312,6 +312,7 @@ packages:
   py-torch:
     require:
     - '@2.1.0'
+    - -mkldnn
   py-uproot:
     require:
     - '@5.0.5'
