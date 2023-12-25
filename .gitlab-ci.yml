@@ -536,6 +536,8 @@ df:
   needs: 
     - version
   script:
+    - docker ps --size
+    - docker stats --all
     - docker buildx ls
     - docker buildx inspect
     - docker buildx du --verbose
