@@ -539,8 +539,7 @@ df:
     - docker buildx ls
     - docker buildx inspect
     - docker buildx du --verbose
-    - docker buildx --builder builder-541700 du --verbose
-    - docker buildx prune --force
+    - docker buildx prune --all --force
     - docker buildx du --verbose
     - docker system df --verbose
     - docker system prune --all --force
