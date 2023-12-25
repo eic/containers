@@ -127,7 +127,7 @@ FROM spack as builder
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
 ARG JUGGLER_VERSION="main"
-ADD https://eicweb.phy.anl.gov/api/v4/projects/EIC%2Fjuggler/repository/commits/${JUGGLER_VERSION} /tmp/juggler.json
+ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/juggler.json
 ARG EICRECON_VERSION="main"
 ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
@@ -138,7 +138,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
 set -e
 export CCACHE_DIR=/ccache
 find /var/cache/spack/blobs/sha256/ -atime +7 -delete
-JUGGLER_VERSION=$(jq -r .id /tmp/juggler.json)
+JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
 EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
