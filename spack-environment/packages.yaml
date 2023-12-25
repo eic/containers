@@ -17,7 +17,7 @@ packages:
     - any_of: [build_type=Release, '@:']
   acts:
     require:
-    - '@30.3.2'
+    - '@31.2.0'
     - cxxstd=20 +binaries +dd4hep +examples +fatras +geant4 +identification +json +python +tgeo
   actsvg:
     require:
