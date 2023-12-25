@@ -24,6 +24,7 @@ c07ddf83c32b7129247fe90eed486dd844047087
 00875fbc749a7e4e979c35d59c0a8d60d32d4cd7
 64cf67822471ec2d3df2625a6d713f80cbe7ff43
 7a0c4e8017033430e5f15ed628be6b539e935ba9
+48fcfda1e7c1781cab4cada6d099823b263ab0cc
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -43,3 +44,4 @@ c07ddf83c32b7129247fe90eed486dd844047087
 ## 00875fbc749a7e4e979c35d59c0a8d60d32d4cd7: py-torch: patch for ${OpenBLAS_HOME}/include/openblas
 ## 64cf67822471ec2d3df2625a6d713f80cbe7ff43: py-torch: move patch before def patch
 ## 7a0c4e8017033430e5f15ed628be6b539e935ba9: acts: new versions 31.*
+## 48fcfda1e7c1781cab4cada6d099823b263ab0cc: setup-env.sh: if exe contains qemu, use /proc/$$/comm instead
