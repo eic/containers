@@ -539,12 +539,13 @@ df:
     - docker buildx ls
     - docker buildx inspect
     - docker buildx du --verbose
+    - docker buildx --builder builder-541700 du --verbose
     - docker buildx prune --force
     - docker buildx du --verbose
-    - docker system df -v
+    - docker system df --verbose
     - docker system prune --all --force
     - docker system prune --volumes --force
-    - docker system df -v
+    - docker system df --verbose
 
 clean_internal_tag:
   image: alpine/curl
