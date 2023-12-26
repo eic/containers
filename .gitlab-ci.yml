@@ -527,12 +527,12 @@ benchmarks:detector:nightly:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
   allow_failure: true
-  
-df:
+
+df:silicon:
   extends: .docker
   stage: config
   tags:
-    - docker-new
+    - silicon
   needs: 
     - version
   script:
