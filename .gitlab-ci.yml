@@ -537,9 +537,8 @@ df:
     - version
   script:
     - docker ps --size
-    - docker volume ls --filter 'name=buildx_buildkit_builder-*' --format 'table {{.Name}}' | grep -v buildx_buildkit_builder0_state | while read volume ; do
-        docker volume rm --force ${volume} ;
-      done
+    - docker volume ls --filter 'name=buildx_buildkit_builder-*'
+    - docker volume rm --force buildx_buildkit_wdconinc-master-patch-168800_state
     - docker stats --all --no-stream --no-trunc > docker-stats-all.txt
     - docker context ls
     - docker buildx ls
