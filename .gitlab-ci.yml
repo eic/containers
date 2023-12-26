@@ -542,11 +542,11 @@ df:
     - docker buildx ls
     - docker buildx inspect
     - docker buildx du --verbose
-    - docker buildx prune --all --force
+    - docker buildx prune --all --force --filter=until=24h --verbose
     - docker buildx du --verbose
     - docker system df --verbose
-    - docker system prune --all --force
-    - docker system prune --volumes --force
+    - docker system prune --all --force --filter=until=24h
+    - docker system prune --volumes --force --filter=until=24h
     - docker system df --verbose
   artifacts:
     paths:
