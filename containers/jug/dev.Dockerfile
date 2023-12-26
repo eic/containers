@@ -76,7 +76,6 @@ set -e
 spack mirror add local /var/cache/spack/mirror/${SPACK_VERSION}
 spack buildcache update-index local
 spack mirror list
-find /var/cache/spack/mirror -atime +30 -delete
 EOF
 
 ## Setup eics3 buildcache mirrors
