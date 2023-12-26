@@ -2,8 +2,8 @@ image: alpine
 
 variables:
   ## External images
-  DOCKER_IMAGE: docker.io/docker:24.0.5
-  SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.4
+  DOCKER_IMAGE: docker.io/docker:24.0.7
+  SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
   ## Application versions used for the main release 
   ## note: nightly builds will always use the master/main branch
