@@ -158,7 +158,7 @@ status:pending:
 
 ## base job settings for all docker interactions
 .docker:
-  image: ${DOCKER_IMAGE}
+  #image: ${DOCKER_IMAGE}
   services: 
     - docker:dind
   before_script:
