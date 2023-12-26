@@ -528,11 +528,11 @@ benchmarks:detector:nightly:
     strategy: depend
   allow_failure: true
 
-df:silicon:
-  extends: .docker
+df:
+  extends: .build
   stage: config
   tags:
-    - docker
+    - docker-new
   needs: 
     - version
   script:
