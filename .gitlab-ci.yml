@@ -537,7 +537,7 @@ df:
     - version
   script:
     - docker ps --size
-    - docker volume ls --filter 'name=buildx_buildkit_builder-*' --format 'table {{.Name}}' | grep -v buildx_buildkit_builder0-state
+    - docker volume ls --filter 'name=buildx_buildkit_builder-*' --format 'table {{.Name}}' | grep -v buildx_buildkit_builder0_state
     - docker stats --all --no-stream --no-trunc > docker-stats-all.txt
     - docker context ls
     - docker buildx ls
