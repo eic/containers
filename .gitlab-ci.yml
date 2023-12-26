@@ -537,7 +537,7 @@ df:
     - version
   script:
     - docker ps --size
-    - docker stats --all > docker-stats-all.txt
+    - docker stats --all --no-stream --no-trunc > docker-stats-all.txt
     - docker context ls
     - docker buildx ls
     - docker buildx inspect
