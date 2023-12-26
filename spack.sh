@@ -16,10 +16,15 @@ c485709f625429a88a184a099373d76c9438f8e3
 6f08daf67020289e6a5ed1df9783ac5b2919e477
 50051b56199992eb4395b8ff22913c1995311a8c
 f01774f1d41781bc4b9e5abb5469e234168da663
-cfa2f19f48699a762af77ece8a9c5bc4db3a75d5
-2433f503b73bb515b2e1a7615ae01fea59d2290e
 16f4c53cd4cfb4bc6c9390f6e65217fc9ccc58c9
 d171f314c77ba61b3cd780f159afe6abced5707d
+b111064e221aae83e62226672cd8bf9a7524423d
+3c54177c5d9032cb36cf154b553d739cbeb2d024
+c07ddf83c32b7129247fe90eed486dd844047087
+00875fbc749a7e4e979c35d59c0a8d60d32d4cd7
+64cf67822471ec2d3df2625a6d713f80cbe7ff43
+7a0c4e8017033430e5f15ed628be6b539e935ba9
+48fcfda1e7c1781cab4cada6d099823b263ab0cc
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -31,7 +36,12 @@ d171f314c77ba61b3cd780f159afe6abced5707d
 ## 6f08daf67020289e6a5ed1df9783ac5b2919e477: root: add a webgui patch
 ## 50051b56199992eb4395b8ff22913c1995311a8c: geant4: new version 11.1.3
 ## f01774f1d41781bc4b9e5abb5469e234168da663: hepmc3: fix from_variant -> self.define
-## cfa2f19f48699a762af77ece8a9c5bc4db3a75d5: py-htgettoken: use os.environ, avoid AttributeError
-## 2433f503b73bb515b2e1a7615ae01fea59d2290e: py-htgettoken: allow for undefined variables
 ## 16f4c53cd4cfb4bc6c9390f6e65217fc9ccc58c9: py-bokeh: new version 3.3.1, and supporting packages
 ## d171f314c77ba61b3cd780f159afe6abced5707d: py-pygithub: new versions, dependencies
+## b111064e221aae83e62226672cd8bf9a7524423d: py-htgettoken: use os.environ, avoid AttributeError
+## 3c54177c5d9032cb36cf154b553d739cbeb2d024: edm4hep: add latest tag for 0.10.2
+## c07ddf83c32b7129247fe90eed486dd844047087: py-torch: set env OpenBLAS_HOME
+## 00875fbc749a7e4e979c35d59c0a8d60d32d4cd7: py-torch: patch for ${OpenBLAS_HOME}/include/openblas
+## 64cf67822471ec2d3df2625a6d713f80cbe7ff43: py-torch: move patch before def patch
+## 7a0c4e8017033430e5f15ed628be6b539e935ba9: acts: new versions 31.*
+## 48fcfda1e7c1781cab4cada6d099823b263ab0cc: setup-env.sh: if exe contains qemu, use /proc/$$/comm instead

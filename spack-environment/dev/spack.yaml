@@ -39,6 +39,8 @@ spack:
   - irt
   - iwyu
   - jana2
+  - k4actstracking
+  - k4fwcore
   - lcov
   - lhapdf
   - madx
@@ -74,6 +76,7 @@ spack:
   - py-scipy
   - py-seaborn
   - py-toml
+  - py-torch
   - py-uproot
   - py-wurlitzer
   - py-yapf

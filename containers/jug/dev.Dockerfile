@@ -20,6 +20,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM}
 rm -f /etc/apt/apt.conf.d/docker-clean
 apt-get -yqq update
 apt-get -yqq install --no-install-recommends                            \
+        jq                                                              \
         python3                                                         \
         python3-dev                                                     \
         python3-distutils                                               \
@@ -68,14 +69,6 @@ spack config --scope user add "config:ccache:true"
 spack config blame config
 spack compiler find --scope site
 spack config blame compilers
-EOF
-
-## Setup local buildcache mirrors
-RUN --mount=type=cache,target=/var/cache/spack <<EOF
-set -e
-spack mirror add local /var/cache/spack/mirror/${SPACK_VERSION}
-spack buildcache update-index local
-spack mirror list
 EOF
 
 ## Setup eics3 buildcache mirrors
@@ -134,7 +127,7 @@ FROM spack as builder
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
 ARG JUGGLER_VERSION="main"
-ADD https://eicweb.phy.anl.gov/api/v4/projects/EIC%2Fjuggler/repository/tree?ref=${JUGGLER_VERSION} /tmp/juggler.json
+ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/juggler.json
 ARG EICRECON_VERSION="main"
 ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
@@ -144,13 +137,19 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-spack buildcache update-index local
+find /var/cache/spack/blobs/sha256/ -atime +7 -delete
+JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
+EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 spack add juggler@git.${JUGGLER_VERSION}
 spack add eicrecon@git.${EICRECON_VERSION}
 spack concretize --fresh --force --quiet
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment SPACK_ENV=${SPACK_ENV} BUILDCACHE_MIRROR="local eics3rw"
+make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
+  SPACK_ENV=${SPACK_ENV} \
+  BUILDCACHE_OCI_PROMPT="eicweb" \
+  BUILDCACHE_OCI_FINAL="ghcr" \
+  BUILDCACHE_S3_FINAL="eics3rw"
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -158,9 +157,8 @@ EOF
 ## Create view at /usr/local
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
-spack env activate --dir ${SPACK_ENV}
 rm -r /usr/local
-spack env view enable /usr/local
+spack -e ${SPACK_ENV} env view enable /usr/local
 EOF
 
 ## Optional, nuke the buildcache after install, before (re)caching
@@ -298,10 +296,10 @@ ARG BENCHMARK_DET_VERSION="master"
 ARG BENCHMARK_REC_VERSION="master"
 ARG BENCHMARK_PHY_VERSION="master"
 ## cache bust when updated repositories
-ADD ${EICWEB}/458/repository/tree?ref=${BENCHMARK_COM_VERSION} /tmp/485.json
-ADD ${EICWEB}/399/repository/tree?ref=${BENCHMARK_DET_VERSION} /tmp/399.json
-ADD ${EICWEB}/408/repository/tree?ref=${BENCHMARK_REC_VERSION} /tmp/408.json 
-ADD ${EICWEB}/400/repository/tree?ref=${BENCHMARK_PHY_VERSION} /tmp/400.json
+ADD ${EICWEB}/458/repository/commits/${BENCHMARK_COM_VERSION} /tmp/485.json
+ADD ${EICWEB}/399/repository/commits/${BENCHMARK_DET_VERSION} /tmp/399.json
+ADD ${EICWEB}/408/repository/commits/${BENCHMARK_REC_VERSION} /tmp/408.json 
+ADD ${EICWEB}/400/repository/commits/${BENCHMARK_PHY_VERSION} /tmp/400.json
 RUN <<EOF
 set -ex
 mkdir -p /opt/benchmarks
