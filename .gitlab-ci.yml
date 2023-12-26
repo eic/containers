@@ -537,7 +537,8 @@ df:
     - version
   script:
     - docker ps --size
-    - docker stats --all
+    - docker stats --all > docker-stats-all.txt
+    - docker context ls
     - docker buildx ls
     - docker buildx inspect
     - docker buildx du --verbose
@@ -547,6 +548,10 @@ df:
     - docker system prune --all --force
     - docker system prune --volumes --force
     - docker system df --verbose
+  artifacts:
+    paths:
+      - docker-stats-all.txt
+
 
 clean_internal_tag:
   image: alpine/curl
