@@ -165,13 +165,13 @@ status:pending:
     - # Login to registries
       if [[ -n "${EXPORT_TAG}" ]] ; then
         if [[ -n "${DH_REGISTRY}" ]] ; then
-          docker login -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN} ${DH_REGISTRY} ;
+          echo ${DH_EICWEB_TOKEN} | docker login -u ${DH_REGISTRY_USER} --password-stdin ${DH_REGISTRY} ;
         fi ;
         if [[ -n "${GH_REGISTRY}" ]] ; then
-          docker login -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN} ${GH_REGISTRY} ;
+          echo ${GITHUB_REGISTRY_TOKEN} | docker login -u ${GITHUB_REGISTRY_USER} --password-stdin ${GH_REGISTRY} ;
         fi ;
         if [[ -n "${CI_REGISTRY}" ]] ; then
-          docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY} ;
+          echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY} ;
         fi ;
       fi
   after_script:
