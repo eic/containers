@@ -532,7 +532,7 @@ df:silicon:
   extends: .docker
   stage: config
   tags:
-    - sodium
+    - docker
   needs: 
     - version
   script:
