@@ -537,23 +537,23 @@ df:
     - version
   script:
     - docker ps --size
-    - docker volume ls --filter 'name=buildx_buildkit_builder-*'
-    - docker volume rm --force buildx_buildkit_wdconinc-master-patch-168800_state
+    - docker volume ls --filter 'name=buildx_buildkit_builder*'
     - docker stats --all --no-stream --no-trunc > docker-stats-all.txt
     - docker context ls
     - docker buildx ls
     - docker buildx inspect
-    - docker buildx du --verbose
     - docker buildx prune --all --force --filter=until=24h --verbose
-    - docker buildx du --verbose
-    - docker system df --verbose
+    - docker buildx du
+    - docker buildx du --verbose > docker-buildx-du-verbose.txt
     - docker system prune --all --force --filter=until=24h
     - docker system prune --volumes --force
-    - docker system df --verbose
+    - docker system df
+    - docker system df --verbose > docker-system-df-verbose.txt
   artifacts:
     paths:
       - docker-stats-all.txt
-
+      - docker-buildx-du-verbose.txt
+      - docker-system-df-verbose.txt
 
 clean_internal_tag:
   image: alpine/curl
