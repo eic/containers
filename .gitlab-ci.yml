@@ -158,8 +158,8 @@ status:pending:
 
 ## base job settings for all docker interactions
 .docker:
-  #image: ${DOCKER_IMAGE}
-  services: 
+  image: ${DOCKER_IMAGE}
+  services:
     - docker:dind
   before_script:
     - # Login to registries
@@ -532,7 +532,7 @@ df:silicon:
   extends: .docker
   stage: config
   tags:
-    - silicon
+    - sodium
   needs: 
     - version
   script:
