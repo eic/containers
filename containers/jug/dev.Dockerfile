@@ -166,6 +166,7 @@ if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; the
   export EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
   spack config add "packages:eicrecon::require:['@git.${EICRECON_VERSION}']"
 fi
+spack config blame
 spack concretize --fresh --force --quiet
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
