@@ -27,6 +27,7 @@ c07ddf83c32b7129247fe90eed486dd844047087
 48fcfda1e7c1781cab4cada6d099823b263ab0cc
 8c29e90fa9962f4a44f39f47217b46c85176af28
 1255620a14afa3ad4aad681a847a3a1704141976
+0fed2d66bf0eec799707dd1b88ac9419f6ae14e1
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -49,3 +50,4 @@ c07ddf83c32b7129247fe90eed486dd844047087
 ## 48fcfda1e7c1781cab4cada6d099823b263ab0cc: setup-env.sh: if exe contains qemu, use /proc/$$/comm instead
 ## 8c29e90fa9962f4a44f39f47217b46c85176af28: Build cache: make signed/unsigned a mirror property
 ## 1255620a14afa3ad4aad681a847a3a1704141976: Fix infinite recursion when computing concretization errors
+## 0fed2d66bf0eec799707dd1b88ac9419f6ae14e1: (py-)onnx: new version 1.14.{0,1}, 1.15.0
