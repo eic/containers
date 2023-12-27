@@ -137,6 +137,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
+mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -atime +7 -delete
 JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
 EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)

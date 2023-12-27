@@ -159,19 +159,19 @@ status:pending:
 ## base job settings for all docker interactions
 .docker:
   image: ${DOCKER_IMAGE}
-  services: 
+  services:
     - docker:dind
   before_script:
     - # Login to registries
       if [[ -n "${EXPORT_TAG}" ]] ; then
         if [[ -n "${DH_REGISTRY}" ]] ; then
-          docker login -u ${DH_REGISTRY_USER} -p ${DH_EICWEB_TOKEN} ${DH_REGISTRY} ;
+          echo ${DH_EICWEB_TOKEN} | docker login -u ${DH_REGISTRY_USER} --password-stdin ${DH_REGISTRY} ;
         fi ;
         if [[ -n "${GH_REGISTRY}" ]] ; then
-          docker login -u ${GITHUB_REGISTRY_USER} -p ${GITHUB_REGISTRY_TOKEN} ${GH_REGISTRY} ;
+          echo ${GITHUB_REGISTRY_TOKEN} | docker login -u ${GITHUB_REGISTRY_USER} --password-stdin ${GH_REGISTRY} ;
         fi ;
         if [[ -n "${CI_REGISTRY}" ]] ; then
-          docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY} ;
+          echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY} ;
         fi ;
       fi
   after_script:
@@ -527,7 +527,50 @@ benchmarks:detector:nightly:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
   allow_failure: false
-  
+
+df:
+  extends: .build
+  stage: config
+  tags:
+    - docker-new
+  needs: 
+    - version
+  script:
+    - docker images
+    - docker ps --size
+    - docker stats --all --no-stream --no-trunc > docker-stats-all.txt
+    - docker context ls
+    - docker volume ls
+    - docker volume ls --filter=name=buildx_buildkit_builder
+    - docker buildx ls
+    - docker buildx inspect
+    - docker buildx du
+    - docker buildx du --verbose > docker-buildx-du-verbose.txt
+    - docker system df
+    - docker system df --verbose > docker-system-df-verbose.txt
+  artifacts:
+    paths:
+      - docker-stats-all.txt
+      - docker-buildx-du-verbose.txt
+      - docker-system-df-verbose.txt
+
+prune: 
+  extends: .build
+  stage: finalize
+  tags:
+    - docker-new
+  needs:
+    - clean_internal_tag
+    - clean_unstable_mr
+    - clean_pipeline
+  rules:
+    - when: manual
+  script:
+    - docker buildx prune --all --force --filter=until=24h --verbose
+    - docker system prune --all --force --filter=until=24h
+    - docker system prune --volumes --force
+  allow_failure: true
+
 clean_internal_tag:
   image: alpine/curl
   stage: finalize
@@ -567,9 +610,6 @@ clean_unstable_mr:
         if [ "$state" == "merged" ] ; then docker rmi $repository:$tag ; fi ;
         if [ "$state" == "closed" ] ; then docker rmi $repository:$tag ; fi ;
       done
-    - docker system prune --filter until=24h --force
-    - docker system df
-    - docker images
 
 clean_pipeline:
   extends: .docker
@@ -600,9 +640,6 @@ clean_pipeline:
         if [ "$status" == "failed" ] ; then docker rmi $repository:$tag ; fi ;
         if [ "$status" == "canceled" ] ; then docker rmi $repository:$tag ; fi ;
       done
-    - docker system prune --filter until=24h --force
-    - docker system df
-    - docker images
 
 status:success:
   stage: status-report
