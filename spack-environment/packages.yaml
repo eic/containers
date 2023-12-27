@@ -294,7 +294,7 @@ packages:
     - '@1.5.3'
   py-pip:
     require:
-    - '@23.1.2'
+    - any_of: ['@23.1.2', '@23.0']
   py-pre-commit:
     require:
     - '@2.20.0'
