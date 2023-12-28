@@ -156,18 +156,10 @@ ccache --zero-stats
 EOF
 
 ## Create view at /usr/local
-RUN --mount=type=cache,target=/var/cache/spack <<EOF
+RUN <<EOF
 set -e
 rm -r /usr/local
 spack -e ${SPACK_ENV} env view enable /usr/local
-EOF
-
-## Optional, nuke the buildcache after install, before (re)caching
-## This is useful when going to completely different containers,
-## or intermittently to keep the buildcache step from taking too much time
-ARG CACHE_NUKE=""
-RUN --mount=type=cache,target=/var/cache/spack,sharing=locked <<EOF
-[ -z "${CACHE_NUKE}" ] || rm -rf /var/cache/spack/mirror/${SPACK_VERSION}/build_cache/*
 EOF
 
 ## Store environment
