@@ -160,12 +160,12 @@ spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   export JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
-  spack config add "packages:juggler::require:['@git.${JUGGLER_VERSION}']"
+  spack config add "packages:juggler::require:['@git.${JUGGLER_VERSION}=main']"
   spack deconcretize -y juggler
 fi
 if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; then
   export EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
-  spack config add "packages:eicrecon::require:['@git.${EICRECON_VERSION}']"
+  spack config add "packages:eicrecon::require:['@git.${EICRECON_VERSION}=main']"
   spack deconcretize -y eicrecon
 fi
 cat ${SPACK_ENV}/spack.yaml
