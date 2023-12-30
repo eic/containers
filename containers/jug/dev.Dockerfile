@@ -86,7 +86,7 @@ if [ -n "${S3_ACCESS_KEY}" ] ; then
       eics3 s3://eictest/EPIC/spack/${SPACK_VERSION}
 fi
 spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
-spack mirror add --scope site --unsigned ghcr-${SPACK_VERSION} url: oci://ghcr.io/eic/spack-${SPACK_VERSION}
+spack mirror add --scope site --unsigned ghcr-${SPACK_VERSION} oci://ghcr.io/eic/spack-${SPACK_VERSION}
 spack mirror list
 EOF
 
