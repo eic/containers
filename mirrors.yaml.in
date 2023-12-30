@@ -1,17 +1,20 @@
 mirrors:
   eicweb:
     url: oci://${CI_REGISTRY}/${CI_PROJECT_PATH}/spack-${SPACK_VERSION}
+    signed: false
     push:
       access_pair:
       - ${CI_REGISTRY_USER}
       - ${CI_REGISTRY_PASSWORD}
   ghcr:
     url: oci://ghcr.io/eic/spack-${SPACK_VERSION}
+    signed: false
     push:
       access_pair:
       - ${GITHUB_REGISTRY_USER}
       - ${GITHUB_REGISTRY_TOKEN}
   eics3rw:
+    signed: false
     fetch:
       url: s3://eictest/EPIC/spack/${SPACK_VERSION}
       access_pair:
