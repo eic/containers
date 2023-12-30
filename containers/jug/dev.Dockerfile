@@ -79,7 +79,7 @@ ARG S3_SECRET_KEY=""
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
 if [ -n "${S3_ACCESS_KEY}" ] ; then
-  spack mirror add --scope site                                         \
+  spack mirror add --scope site --unsigned                              \
       --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
       --s3-access-key-id "${S3_ACCESS_KEY}"                             \
       --s3-access-key-secret "${S3_SECRET_KEY}"                         \
