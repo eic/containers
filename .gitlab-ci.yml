@@ -268,7 +268,7 @@ jug_dev:
         - nightly
         BASE_IMAGE: debian_stable_base
         BUILD_IMAGE: jug_
-        PLATFORM: linux/amd64,linux/arm64/v8
+        PLATFORM: linux/amd64
         ENV:
         - dev
         - prod
@@ -369,7 +369,7 @@ jug_xl:default:
           - default
           BASE_IMAGE: debian_stable_base
           BUILD_IMAGE: jug_
-          PLATFORM: linux/amd64,linux/arm64/v8
+          PLATFORM: linux/amd64
           ENV:
           - dev
   script:
@@ -418,7 +418,7 @@ jug_xl:nightly:
           - nightly
           BASE_IMAGE: debian_stable_base
           BUILD_IMAGE: jug_
-          PLATFORM: linux/amd64,linux/arm64/v8
+          PLATFORM: linux/amd64
           ENV:
           - dev
   script:
