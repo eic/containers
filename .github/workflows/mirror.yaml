@@ -29,6 +29,7 @@ jobs:
         username: ${{ secrets.GITLAB_USERNAME }}
         ciskip: true
     - name: Trigger EICweb
+      if: github.event_name == 'pull_request'
       uses: eic/trigger-gitlab-ci@v2
       with:
         url: https://eicweb.phy.anl.gov
