@@ -201,7 +201,7 @@ packages:
     - any_of: [+geocad, -geocad]
   onnx:
     require:
-    - '@1.13.1'
+    - '@1.15.0'
   opencascade:
     require:
     - '@7.7.1'
