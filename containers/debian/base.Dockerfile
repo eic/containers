@@ -34,6 +34,7 @@ apt-get -yqq install --no-install-recommends                            \
         ccache                                                          \
         curl                                                            \
         file                                                            \
+        gawk                                                            \
         gdb                                                             \
         ghostscript                                                     \
         git                                                             \
