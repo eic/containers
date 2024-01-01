@@ -174,8 +174,6 @@ if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; the
   spack config add "packages:eicrecon::require:['@git.${EICRECON_VERSION}=main']"
   spack deconcretize -y eicrecon
 fi
-cat ${SPACK_ENV}/spack.yaml
-cat ${SPACK_ENV}/../packages.yaml
 spack concretize --fresh --force --quiet
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
