@@ -70,6 +70,7 @@ spack:
   - py-mplhep
   - py-htgettoken
   - py-numpy
+  - py-onnx
   - py-pandas
   - py-pip
   - py-pre-commit

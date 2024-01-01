@@ -179,7 +179,7 @@ make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
   BUILDCACHE_OCI_FINAL="ghcr" \
-  BUILDCACHE_S3_FINAL="eics3rw"
+  BUILDCACHE_S3_PROMPT="eics3rw"
 ccache --show-stats
 ccache --zero-stats
 EOF

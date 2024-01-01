@@ -201,7 +201,7 @@ packages:
     - any_of: [+geocad, -geocad]
   onnx:
     require:
-    - '@1.13.1'
+    - '@1.15.0'
   opencascade:
     require:
     - '@7.7.1'
@@ -234,7 +234,7 @@ packages:
     - +fastjet +root
   python:
     require:
-    - '@3.11.6'
+    - '@3.10.13'
   py-awkward:
     require:
     - '@2.1.1'
@@ -286,12 +286,15 @@ packages:
   py-numpy:
     require:
     - '@1.26.1'
+  py-onnx:
+    require:
+    - '@1.15.0'
   py-pandas:
     require:
     - '@1.5.3'
   py-pip:
     require:
-    - '@23.1.2'
+    - any_of: ['@23.1.2', '@23.0']
   py-pre-commit:
     require:
     - '@2.20.0'
