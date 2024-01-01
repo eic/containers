@@ -294,7 +294,7 @@ packages:
     - '@1.15.0'
   py-onnxruntime:
     require:
-    - '@1.7.2'
+    - '@1.10.0'
   py-pandas:
     require:
     - '@1.5.3'
