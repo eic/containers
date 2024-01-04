@@ -297,7 +297,7 @@ packages:
     - any_of: ['@23.1.2', '@23.0']
   py-pre-commit:
     require:
-    - '@2.20.0'
+    - '@3.3.3'
   py-pygithub:
     require:
     - '@2.1.1'
