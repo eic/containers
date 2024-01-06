@@ -33,6 +33,7 @@ d3c796f2ce1da2dda198707def297aeab702d33c
 19c20563cc86140aaf352d72079bd9de292be0ac
 d50f8d7b19e07f25a3ce8de28ff9b352fd926d7f
 9e4fab277b8a5b9ec5587c8a8b6514f12c8042a4
+8f4f691e2b2a6263f661fb0a455bcaf73e90036a
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -66,3 +67,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 19c20563cc86140aaf352d72079bd9de292be0ac: Initial License Checkin
 ## d50f8d7b19e07f25a3ce8de28ff9b352fd926d7f: root: sha256 change on latest versions
 ## 9e4fab277b8a5b9ec5587c8a8b6514f12c8042a4: [root] New variants, patches
+## 8f4f691e2b2a6263f661fb0a455bcaf73e90036a: hepmc3: add v3.2.7

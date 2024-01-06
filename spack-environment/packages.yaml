@@ -140,7 +140,7 @@ packages:
     - +expat
   hepmc3:
     require:
-    - '@3.2.6'
+    - '@3.2.7'
     - +python +rootio
   heppdt:
     require:
