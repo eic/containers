@@ -30,18 +30,13 @@ EOF
 
 ## Setup spack
 ENV SPACK_ROOT=/opt/spack
-ARG SPACK_ORGREPO="spack/spack"
-ARG SPACK_VERSION="releases/v0.20"
-ARG SPACK_CHERRYPICKS=""
+ARG SPACK_ORGREPO="eic/spack"
+ARG SPACK_VERSION="releases/v0.21.0"
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
 RUN <<EOF
 git config --global advice.detachedHead false
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
-if [ -n "${SPACK_CHERRYPICKS}" ] ; then
-  SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo ${SPACK_CHERRYPICKS} | wc -w)  "${SPACK_CHERRYPICKS}" | tac)
-  git -C ${SPACK_ROOT} cherry-pick -n ${SPACK_CHERRYPICKS}
-fi
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/docker-shell
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/interactive-shell
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/spack-env
@@ -94,15 +89,11 @@ EOF
 ENV EICSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/eic-spack
 ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="$SPACK_VERSION"
-ARG EICSPACK_CHERRYPICKS=""
 ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
 RUN <<EOF
 set -e
 git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
 git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}
-if [ -n "${EICSPACK_CHERRYPICKS}" ] ; then
-  git -C ${EICSPACK_ROOT} cherry-pick -n ${EICSPACK_CHERRYPICKS}
-fi
 spack repo add --scope site "${EICSPACK_ROOT}"
 EOF
 
