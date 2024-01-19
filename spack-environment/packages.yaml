@@ -336,7 +336,7 @@ packages:
   root:
     require:
     - '@6.28.06'
-    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +sofie +tmva +vc +xrootd +ssl
+    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +xrootd +ssl
     - any_of: [+opengl +webgui +x, -opengl -webgui -x]
   snakemake:
     require:
