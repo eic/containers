@@ -230,7 +230,7 @@ packages:
     - +plot
   pythia8:
     require:
-    - '@8.309'
+    - '@8.310'
     - +fastjet +root
   python:
     require:
