@@ -43,7 +43,7 @@ if [ -n "${SPACK_CHERRYPICKS}" ] ; then
   SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo ${SPACK_CHERRYPICKS} | wc -w)  "${SPACK_CHERRYPICKS}" | tac)
   eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
   for hash in ${SPACK_CHERRYPICKS} ; do
-    if [ -n ${SPACK_CHERRYPICKS_FILES_ARRAY["${hash}"]+found} ] ; then
+    if [ -n "${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
       git -C ${SPACK_ROOT} show ${hash} -- ${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]//,/ } | patch -p1 -d ${SPACK_ROOT}
     else
       git -C ${SPACK_ROOT} cherry-pick -n ${hash}
