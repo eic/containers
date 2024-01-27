@@ -325,6 +325,7 @@ jug_dev:
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
                    --build-arg SPACK_VERSION=${SPACK_VERSION}
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
+                   --build-arg SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES}"
                    --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
                    --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
                    --build-arg EICSPACK_CHERRYPICKS="${EICSPACK_CHERRYPICKS}"

@@ -30,6 +30,11 @@ c07ddf83c32b7129247fe90eed486dd844047087
 0fed2d66bf0eec799707dd1b88ac9419f6ae14e1
 963e2ca82883cdc1287f1035c15d1a7e9a6fe612
 ---
+## Optional hash table with comma-separated file list
+read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
+--- || true
+[19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/pythia8/package.py
+---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
 ## ed8ecc469e7b87842a876323878831e301f136a2: podio: Add the latest tag (0.17.2)
@@ -53,3 +58,4 @@ c07ddf83c32b7129247fe90eed486dd844047087
 ## 1255620a14afa3ad4aad681a847a3a1704141976: Fix infinite recursion when computing concretization errors
 ## 0fed2d66bf0eec799707dd1b88ac9419f6ae14e1: (py-)onnx: new version 1.14.{0,1}, 1.15.0
 ## 963e2ca82883cdc1287f1035c15d1a7e9a6fe612: edm4hep: add latest tag 0.10.3
+## 19c20563cc86140aaf352d72079bd9de292be0ac: Initial License Checkin
