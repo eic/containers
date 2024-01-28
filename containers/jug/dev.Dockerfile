@@ -45,8 +45,9 @@ if [ -n "${SPACK_CHERRYPICKS}" ] ; then
   for hash in ${SPACK_CHERRYPICKS} ; do
     if [ -n "${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
       git -C ${SPACK_ROOT} show ${hash} -- ${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]//,/ } | patch -p1 -d ${SPACK_ROOT}
+      git -C ${SPACK_ROOT} commit --message "$(git show --no-patch --pretty=format:%s ${hash})"
     else
-      git -C ${SPACK_ROOT} cherry-pick -n ${hash}
+      git -C ${SPACK_ROOT} cherry-pick ${hash}
     fi
   done
 fi
