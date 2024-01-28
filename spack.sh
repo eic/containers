@@ -30,6 +30,12 @@ c07ddf83c32b7129247fe90eed486dd844047087
 0fed2d66bf0eec799707dd1b88ac9419f6ae14e1
 963e2ca82883cdc1287f1035c15d1a7e9a6fe612
 d3c796f2ce1da2dda198707def297aeab702d33c
+19c20563cc86140aaf352d72079bd9de292be0ac
+---
+## Optional hash table with comma-separated file list
+read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
+--- || true
+[19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/hepmc3/package.py,var/spack/repos/builtin/packages/pythia8/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -55,3 +61,4 @@ d3c796f2ce1da2dda198707def297aeab702d33c
 ## 0fed2d66bf0eec799707dd1b88ac9419f6ae14e1: (py-)onnx: new version 1.14.{0,1}, 1.15.0
 ## 963e2ca82883cdc1287f1035c15d1a7e9a6fe612: edm4hep: add latest tag 0.10.3
 ## d3c796f2ce1da2dda198707def297aeab702d33c: pythia8: new version 8.310
+## 19c20563cc86140aaf352d72079bd9de292be0ac: Initial License Checkin
