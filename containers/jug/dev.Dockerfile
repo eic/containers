@@ -36,6 +36,8 @@ ARG SPACK_CHERRYPICKS=""
 ARG SPACK_CHERRYPICKS_FILES=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
 RUN <<EOF
+git config --global user.email "gitlab@eicweb.phy.anl.gov"
+git config --global user.name "EIC Container Build Service"
 git config --global advice.detachedHead false
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
