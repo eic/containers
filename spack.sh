@@ -31,6 +31,7 @@ c07ddf83c32b7129247fe90eed486dd844047087
 963e2ca82883cdc1287f1035c15d1a7e9a6fe612
 d3c796f2ce1da2dda198707def297aeab702d33c
 19c20563cc86140aaf352d72079bd9de292be0ac
+d50f8d7b19e07f25a3ce8de28ff9b352fd926d7f
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -62,3 +63,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 963e2ca82883cdc1287f1035c15d1a7e9a6fe612: edm4hep: add latest tag 0.10.3
 ## d3c796f2ce1da2dda198707def297aeab702d33c: pythia8: new version 8.310
 ## 19c20563cc86140aaf352d72079bd9de292be0ac: Initial License Checkin
+## d50f8d7b19e07f25a3ce8de28ff9b352fd926d7f: root: sha256 change on latest versions
