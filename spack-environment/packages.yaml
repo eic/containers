@@ -42,7 +42,7 @@ packages:
     - +fc+ft+X+pdf+gobject
   catch2:
     require:
-    - '@3.0.1'
+    - '@3.4.0'
     - -ipo
   cernlib:
     require:
@@ -230,7 +230,7 @@ packages:
     - +plot
   pythia8:
     require:
-    - '@8.309'
+    - '@8.310'
     - +fastjet +root
   python:
     require:
@@ -335,7 +335,7 @@ packages:
     - +opengl
   root:
     require:
-    - '@6.28.06'
+    - '@6.30.02'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +xrootd +ssl
     - any_of: [+opengl +webgui +x, -opengl -webgui -x]
   snakemake:

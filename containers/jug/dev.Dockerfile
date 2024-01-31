@@ -33,14 +33,25 @@ ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="releases/v0.20"
 ARG SPACK_CHERRYPICKS=""
+ARG SPACK_CHERRYPICKS_FILES=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
 RUN <<EOF
+git config --global user.email "gitlab@eicweb.phy.anl.gov"
+git config --global user.name "EIC Container Build Service"
 git config --global advice.detachedHead false
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
 if [ -n "${SPACK_CHERRYPICKS}" ] ; then
   SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo ${SPACK_CHERRYPICKS} | wc -w)  "${SPACK_CHERRYPICKS}" | tac)
-  git -C ${SPACK_ROOT} cherry-pick -n ${SPACK_CHERRYPICKS}
+  eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
+  for hash in ${SPACK_CHERRYPICKS} ; do
+    if [ -n "${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
+      git -C ${SPACK_ROOT} show ${hash} -- ${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]//,/ } | patch -p1 -d ${SPACK_ROOT}
+      git -C ${SPACK_ROOT} commit --all --message "$(git -C ${SPACK_ROOT} show --no-patch --pretty=format:%s ${hash})"
+    else
+      git -C ${SPACK_ROOT} cherry-pick ${hash}
+    fi
+  done
 fi
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/docker-shell
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/interactive-shell
