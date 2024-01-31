@@ -32,6 +32,7 @@ c07ddf83c32b7129247fe90eed486dd844047087
 d3c796f2ce1da2dda198707def297aeab702d33c
 19c20563cc86140aaf352d72079bd9de292be0ac
 d50f8d7b19e07f25a3ce8de28ff9b352fd926d7f
+9e4fab277b8a5b9ec5587c8a8b6514f12c8042a4
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -64,3 +65,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## d3c796f2ce1da2dda198707def297aeab702d33c: pythia8: new version 8.310
 ## 19c20563cc86140aaf352d72079bd9de292be0ac: Initial License Checkin
 ## d50f8d7b19e07f25a3ce8de28ff9b352fd926d7f: root: sha256 change on latest versions
+## 9e4fab277b8a5b9ec5587c8a8b6514f12c8042a4: [root] New variants, patches
