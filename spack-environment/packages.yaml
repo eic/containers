@@ -25,7 +25,7 @@ packages:
     - +examples
   acts-dd4hep:
     require:
-    - '@1.0.1'7.2
+    - '@1.0.1'
   afterburner:
     require:
     - '@0.1.2'
