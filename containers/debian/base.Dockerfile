@@ -44,9 +44,10 @@ apt-get -yqq install --no-install-recommends                            \
         iputils-ping                                                    \
         iputils-tracepath                                               \
         less                                                            \
+        libc6-dbg                                                       \
         libcbor-xs-perl                                                 \
         libjson-xs-perl                                                 \
-        libgl-dev                                                      \
+        libgl-dev                                                       \
         libglx-dev                                                      \
         libopengl-dev                                                   \
         locales                                                         \
