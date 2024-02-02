@@ -32,7 +32,7 @@ packages:
     - +root +zlib
   algorithms:
     require:
-    - '@git.00d83fe3f414135b8c1c8f79bf03d77f2bd83f73'
+    - '@git.6a0e78e3463004bacd78fcb234019f6db5257a9a'
   blas:
     require:
     - openblas
