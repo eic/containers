@@ -1,3 +1,4 @@
+# Only retain last 6 months of epic geometry versions
 detectors:
   epic:
     nightly:
