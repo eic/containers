@@ -485,6 +485,7 @@ jug_xl:nightly:
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}-nightly
                    --build-arg JUG_VERSION=${EXPORT_TAG}-nightly-$(git rev-parse HEAD)-$(date +%Y-%m-%d_%H-%M-%S)
                    --build-arg NIGHTLY=1
+                   --build-arg jobs=${JOBS}
                    --build-context detectors=.
                    --provenance false
                    containers/jug

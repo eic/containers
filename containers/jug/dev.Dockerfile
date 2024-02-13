@@ -62,7 +62,7 @@ EOF
 SHELL ["docker-shell"]
 
 ## Setup build configuration
-ARG jobs=64
+ARG jobs=1
 RUN <<EOF
 set -e
 declare -A target=(["linux/amd64"]="x86_64_v2" ["linux/arm64"]="aarch64")

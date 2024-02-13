@@ -11,7 +11,7 @@ FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG}
 ARG TARGETPLATFORM
 
 ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
-ARG jobs=8
+ARG jobs=1
 
 ## version will automatically bust cache for nightly, as it includes
 ## the date
