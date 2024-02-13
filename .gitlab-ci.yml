@@ -317,6 +317,22 @@ jug_dev:
                        }
                      }
                    }
+                   ${EXPORT_TAG:+
+                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                   }
+                   ${IF_BUILD_NIGHTLY:+
+                     ${NIGHLTY:+
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}${ENV}:${NIGHTLY_TAG}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}${ENV}:${NIGHTLY_TAG}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}${ENV}:${NIGHTLY_TAG}}
+                       ${PUSH_NIGHTLY_WITH_DATE:+
+                         ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                         ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                       }
+                     }
+                   }
                    --file containers/jug/dev.Dockerfile
                    --platform ${PLATFORM}
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
@@ -380,6 +396,11 @@ jug_xl:default:
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                    }
+                   ${EXPORT_TAG:+
+                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}}
+                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}}
+                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}}
+                   }
                    --file containers/jug/xl.Dockerfile
                    --platform ${PLATFORM}
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
@@ -441,6 +462,20 @@ jug_xl:nightly:
                      ${PUSH_NIGHTLY_WITH_DATE:+
                        ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
                        ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                     }
+                   }
+                   ${EXPORT_TAG:+
+                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}-nightly}
+                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}-nightly}
+                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}-nightly}
+                   }
+                   ${NIGHTLY:+
+                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}}
+                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}}
+                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}}
+                     ${PUSH_NIGHTLY_WITH_DATE:+
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
                      }
                    }
                    --file containers/jug/xl.Dockerfile
