@@ -101,7 +101,7 @@ else
 fi
 # Install packages
 apt-get -yqq update
-apt-get -yqq install gcc${GCC} g++${GCC} gfortran${GCC}
+apt-get -yqq install cpp${GCC} gcc${GCC} g++${GCC} gfortran${GCC}
 apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev
 apt-get -yqq autoremove
 # Ensure alternatives without version tags
