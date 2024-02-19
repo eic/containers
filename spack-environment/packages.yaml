@@ -255,7 +255,7 @@ packages:
     - '@6.3.0'
   py-epic-capybara:
     require:
-    - '@git.3a6e6a9c75630fd5e7375a8bd7f9b5c20eb227cd'
+    - '@git.190a2e87b9d089092a0b582e65a9be38055809e1'
   py-ipython:
     require:
     - '@8.11.0'
