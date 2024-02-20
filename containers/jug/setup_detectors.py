@@ -85,22 +85,23 @@ if __name__ == '__main__':
             ## build and install
             print('    - {}-{}'.format(det, cfg['version']))
             ## cleanup
-            cmd = ['rm -rf /tmp/build /tmp/det']
+            cmd = [f'rm -rf /tmp/build-{version} /tmp/det-{version}']
             print(' '.join(cmd))
             subprocess.check_call(' '.join(cmd), shell=True)
             ## clone
             cmd = [
-                'git clone --depth 1 -b {version} {repo_grp}/{detector}.git /tmp/det'.format(
-                    version=cfg['version'],
+                'git clone --depth 1 -b {branch} {repo_grp}/{detector}.git /tmp/det-{version}'.format(
+                    branch=cfg['version'],
                     repo_grp=DETECTOR_REPO_GROUP,
-                    detector=det)
+                    detector=det,
+                    version=version)
             ]
             print(' '.join(cmd))
             subprocess.check_call(' '.join(cmd), shell=True)
             ## patches
             if cfg.get('patches'):
                 for patch in cfg['patches']:
-                    cmd = [f'curl -L {patch} | patch -p1 -d/tmp/det']
+                    cmd = [f'curl -L {patch} | patch -p1 -d/tmp/det-{version}']
                     print(' '.join(cmd))
                     subprocess.check_call(' '.join(cmd), shell=True)
             ## build
@@ -110,7 +111,7 @@ if __name__ == '__main__':
             if cfg.get('cxxflags'):
                 cxxflags = cfg['cxxflags']
             cmd = [
-                f'cmake -B /tmp/build -S /tmp/det -DCMAKE_CXX_STANDARD=17',
+                f'cmake -B /tmp/build-{version} -S /tmp/det-{version} -DCMAKE_CXX_STANDARD=17',
                 f'-DCMAKE_CXX_FLAGS="-Wno-psabi {cxxflags}"',
                 f'-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache',
                 f'-DCMAKE_INSTALL_PREFIX={prefix}'
@@ -119,13 +120,13 @@ if __name__ == '__main__':
             subprocess.check_call(' '.join(cmd), shell=True)
             ## install
             cmd = [
-                'cmake --build /tmp/build -j$(($(($(nproc)/4))+1)) -- install'
+                f'cmake --build /tmp/build-{version} -j$(($(($(nproc)/4))+1)) -- install'
             ]
             print(' '.join(cmd))
             subprocess.check_output(' '.join(cmd), shell=True)
             ## write version info to jug_info if available
             if os.path.exists('/etc/jug_info'):
-                cmd = ['cd /tmp/det',
+                cmd = [f'cd /tmp/det-{version}',
                         '&&',
                         'echo " - {detector}/{branch}: {version}-$(git rev-parse HEAD)"'.format(
                             detector=det,
@@ -137,7 +138,7 @@ if __name__ == '__main__':
                 print(' '.join(cmd))
                 subprocess.check_call(' '.join(cmd), shell=True)
             ## cleanup
-            cmd = 'rm -rf /tmp/det /tmp/build'
+            cmd = f'rm -rf /tmp/det-{version} /tmp/build-{version}'
             print(cmd)
             subprocess.check_call(cmd, shell=True)
             # be resilient against failures
