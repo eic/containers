@@ -90,10 +90,11 @@ if __name__ == '__main__':
             subprocess.check_call(' '.join(cmd), shell=True)
             ## clone
             cmd = [
-                'git clone --depth 1 -b {version} {repo_grp}/{detector}.git /tmp/det-{version}'.format(
-                    version=cfg['version'],
+                'git clone --depth 1 -b {branch} {repo_grp}/{detector}.git /tmp/det-{version}'.format(
+                    branch=cfg['version'],
                     repo_grp=DETECTOR_REPO_GROUP,
-                    detector=det)
+                    detector=det,
+                    version=version)
             ]
             print(' '.join(cmd))
             subprocess.check_call(' '.join(cmd), shell=True)
