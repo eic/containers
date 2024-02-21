@@ -163,7 +163,7 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@13.0.0'
+    - '@14.0.0'
     - cxxstd=20
   k4actstracking:
     require:
