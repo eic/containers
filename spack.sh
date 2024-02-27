@@ -45,7 +45,7 @@ bcc5ded2051788d8d0800391d09379417c1caeb7
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
-[19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/hepmc3/package.py,var/spack/repos/builtin/packages/pythia8/package.py
+[19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/dd4hep/package.py,var/spack/repos/builtin/packages/hepmc3/package.py,var/spack/repos/builtin/packages/pythia8/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
