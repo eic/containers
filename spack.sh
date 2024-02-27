@@ -36,6 +36,10 @@ d50f8d7b19e07f25a3ce8de28ff9b352fd926d7f
 8f4f691e2b2a6263f661fb0a455bcaf73e90036a
 ef4274ed2ee9545eab399a6249346b56b66415a4
 42b739d6d5b69b825e7992cd88b0b076a9bf0a9e
+c264cf12a21c44358739fbe1fa674d2cb497ab5d
+2d71c6bb8e9816464f14f8878d1777e209784ad3
+a0cd63c21067af59d6a976cc3e7b26c723e49373
+c5e0270ef006b2b04d2f3f89bcaa6bf4d492faae
 bcc5ded2051788d8d0800391d09379417c1caeb7
 ---
 ## Optional hash table with comma-separated file list
@@ -73,4 +77,8 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 8f4f691e2b2a6263f661fb0a455bcaf73e90036a: hepmc3: add v3.2.7
 ## ef4274ed2ee9545eab399a6249346b56b66415a4: podio: Add latest tag 0.17.4
 ## 42b739d6d5b69b825e7992cd88b0b076a9bf0a9e: podio: depends_on py-graphviz type run (for podio-vis)
+## c264cf12a21c44358739fbe1fa674d2cb497ab5d: dd4hep: avoid IndexError in setup_run_environment
+## 2d71c6bb8e9816464f14f8878d1777e209784ad3: dd4hep: add v1.27.1
+## a0cd63c21067af59d6a976cc3e7b26c723e49373: dd4hep: new version 1.27.2
+## c5e0270ef006b2b04d2f3f89bcaa6bf4d492faae: dd4hep: remove self-referential dependencies
 ## bcc5ded2051788d8d0800391d09379417c1caeb7: dd4hep: new version 1.28
