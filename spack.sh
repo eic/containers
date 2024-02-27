@@ -36,6 +36,7 @@ d50f8d7b19e07f25a3ce8de28ff9b352fd926d7f
 8f4f691e2b2a6263f661fb0a455bcaf73e90036a
 ef4274ed2ee9545eab399a6249346b56b66415a4
 42b739d6d5b69b825e7992cd88b0b076a9bf0a9e
+bcc5ded2051788d8d0800391d09379417c1caeb7
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -72,3 +73,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 8f4f691e2b2a6263f661fb0a455bcaf73e90036a: hepmc3: add v3.2.7
 ## ef4274ed2ee9545eab399a6249346b56b66415a4: podio: Add latest tag 0.17.4
 ## 42b739d6d5b69b825e7992cd88b0b076a9bf0a9e: podio: depends_on py-graphviz type run (for podio-vis)
+## bcc5ded2051788d8d0800391d09379417c1caeb7: dd4hep: new version 1.28
