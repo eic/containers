@@ -206,6 +206,7 @@ EOF
 RUN <<EOF
 touch ${SPACK_ROOT}/.cvmfscatalog
 touch /opt/software/.cvmfscatalog
+find /opt/software -mindepth 2 -maxdepth 3 -type d -exec touch {}/.cvmfscatalog \;
 touch /usr/local/.cvmfscatalog
 EOF
 
