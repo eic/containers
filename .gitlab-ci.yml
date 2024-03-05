@@ -101,6 +101,9 @@ version:
         NIGHTLY_TAG="${VERSION}-nightly"
         EXPORT_TAG="${VERSION}"
         DH_PUSH=""
+      elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ]; then
+        VERSION="${CI_COMMIT_BRANCH}"
+        DH_PUSH=""
       elif [[ "$CI_COMMIT_TAG" =~ ^v[0-9.]+\.[0-9]+\.[0-9]+ ]]; then
         VERSION="${CI_COMMIT_TAG:1}"
         EXPORT_TAG="${VERSION}"
