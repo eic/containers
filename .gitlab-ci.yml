@@ -680,6 +680,7 @@ clean_pipeline:
 
 status:success:
   stage: status-report
+  dependencies: []
   extends: .status
   variables:
     STATE: "success"
@@ -688,6 +689,7 @@ status:success:
 
 status:failure:
   stage: status-report
+  dependencies: []
   extends: .status
   variables:
     STATE: "failure"
