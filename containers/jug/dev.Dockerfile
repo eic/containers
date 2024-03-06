@@ -301,13 +301,14 @@ COPY --from=staging /usr/bin/docker-shell /usr/bin/docker-shell
 ENV SPACK_ROOT=/opt/spack
 SHELL ["docker-shell"]
 
-## ensure /usr/local link is pointing to the right view
+## ensure /usr/local is the view, not a symlink
 RUN <<EOF
 set -ex
 rm -rf /usr/local
 PREFIX_PATH=$(realpath $(ls /usr/._local/ | tail -n1))
 echo "Found spack true prefix path to be $PREFIX_PATH"
-ln -s /usr/._local/${PREFIX_PATH} /usr/local
+mv /usr/._local/${PREFIX_PATH} /usr/local
+ln -s /usr/local /usr/._local/${PREFIX_PATH}
 EOF
 
 ## set the local spack configuration
