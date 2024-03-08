@@ -41,6 +41,11 @@ c264cf12a21c44358739fbe1fa674d2cb497ab5d
 a0cd63c21067af59d6a976cc3e7b26c723e49373
 c5e0270ef006b2b04d2f3f89bcaa6bf4d492faae
 bcc5ded2051788d8d0800391d09379417c1caeb7
+eb57d96ea94b0543a8d5ba943444e77e414cc82e
+16d1ed35914262eea27cf41a2c99aea497adc17d
+c352db764598cc4d04299913646bb55d7613eb8a
+c31a998abb9f0b82a59bbfbf55b8111847aac8cb
+c5b8d5c92a88707d0c949b2bd507b2dfc1b79506
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -82,3 +87,8 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## a0cd63c21067af59d6a976cc3e7b26c723e49373: dd4hep: new version 1.27.2
 ## c5e0270ef006b2b04d2f3f89bcaa6bf4d492faae: dd4hep: remove self-referential dependencies
 ## bcc5ded2051788d8d0800391d09379417c1caeb7: dd4hep: new version 1.28
+## eb57d96ea94b0543a8d5ba943444e77e414cc82e: geant4/geant4-data: add v10.0.4
+## 16d1ed35914262eea27cf41a2c99aea497adc17d: geant4: new version 11.2.0
+## c352db764598cc4d04299913646bb55d7613eb8a: vecgeom: Use correct checksum for version 1.2.5
+## c31a998abb9f0b82a59bbfbf55b8111847aac8cb: VecGeom: new version 1.2.7 and fix URLs
+## c5b8d5c92a88707d0c949b2bd507b2dfc1b79506: geant4: new version v11.2.1
