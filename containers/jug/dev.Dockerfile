@@ -216,6 +216,14 @@ set -e
 spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
 EOF
 
+## Setup ld.so.conf with what could go in LD_LIBRARY_PATH (but lower priority)
+## Ref: https://man7.org/linux/man-pages/man8/ld.so.8.html
+RUN <<EOF
+set -e
+echo /usr/local/lib/root > /etc/ld.so.conf.d/eic-shell.conf
+ldconfig
+EOF
+
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT []
 CMD ["bash", "--rcfile", "/etc/profile", "-l"]
