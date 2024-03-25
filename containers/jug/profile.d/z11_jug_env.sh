@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# FIXME: add ROOT libraries to LD_LIBRARY_PATH until removal can be tested 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/root
-
 if [ ! -z ${EIC_SHELL_PREFIX} ]; then
   if [  "$LD_LIBRARY_PATH" != *"${EIC_SHELL_PREFIX}/lib"* ]; then
     export LD_LIBRARY_PATH=$EIC_SHELL_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
