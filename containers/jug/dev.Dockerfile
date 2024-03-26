@@ -148,7 +148,7 @@ set -e
 export CCACHE_DIR=/ccache
 source ${SPACK_ROOT}/share/spack/setup-env.sh
 mkdir -p /var/cache/spack/blobs/sha256/
-find /var/cache/spack/blobs/sha256/ -atime +7 -delete
+find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 spack concretize --fresh --force --quiet
