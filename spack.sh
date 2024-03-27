@@ -46,13 +46,13 @@ c352db764598cc4d04299913646bb55d7613eb8a
 c31a998abb9f0b82a59bbfbf55b8111847aac8cb
 c5b8d5c92a88707d0c949b2bd507b2dfc1b79506
 d7e756a26b9450d7f4e94dac1747a729011e2140
-80f3888cc80954243195a4373d80d07d4b6908ca
+70fb0b35e55f8f9b3182b091bc8c40b8770041b7
 98162aa2e1574b2e8a2a43976ad27eda92e5c65e
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
-[80f3888cc80954243195a4373d80d07d4b6908ca]=var/spack/repos/builtin/packages/py-fsspec/package.py
+[70fb0b35e55f8f9b3182b091bc8c40b8770041b7]=var/spack/repos/builtin/packages/py-fsspec/package.py
 [19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/abseil-cpp/package.py,var/spack/repos/builtin/packages/dd4hep/package.py,var/spack/repos/builtin/packages/hepmc3/package.py,var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/pythia8/package.py,var/spack/repos/builtin/packages/py-aiobotocore/package.py,var/spack/repos/builtin/packages/py-cdsapi/package.py,var/spack/repos/builtin/packages/py-cfgrib/package.py,var/spack/repos/builtin/packages/py-chex/package.py,var/spack/repos/builtin/packages/py-dm-haiku/package.py,var/spack/repos/builtin/packages/py-etils/package.py,var/spack/repos/builtin/packages/py-flit-core/package.py,var/spack/repos/builtin/packages/py-fsspec/package.py,var/spack/repos/builtin/packages/py-gcsfs/package.py,var/spack/repos/builtin/packages/py-h5netcdf/package.py,var/spack/repos/builtin/packages/py-importlib-metadata/package.py,var/spack/repos/builtin/packages/py-jax/package.py,var/spack/repos/builtin/packages/py-jaxlib/package.py,var/spack/repos/builtin/packages/py-netcdf4/package.py,var/spack/repos/builtin/packages/py-onnx/package.py,var/spack/repos/builtin/packages/py-onnxruntime/package.py,var/spack/repos/builtin/packages/py-pytest-asyncio/package.py,var/spack/repos/builtin/packages/py-pytest-timeout/package.py,var/spack/repos/builtin/packages/py-python-dotenv/package.py,var/spack/repos/builtin/packages/py-s3fs/package.py,var/spack/repos/builtin/packages/py-zarr/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
@@ -95,5 +95,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## c31a998abb9f0b82a59bbfbf55b8111847aac8cb: VecGeom: new version 1.2.7 and fix URLs
 ## c5b8d5c92a88707d0c949b2bd507b2dfc1b79506: geant4: new version v11.2.1
 ## d7e756a26b9450d7f4e94dac1747a729011e2140: onnxruntime: fix the call to as_string() operator
-## 80f3888cc80954243195a4373d80d07d4b6908ca: py-pytorch-lightning: add +extra variant
+## 70fb0b35e55f8f9b3182b091bc8c40b8770041b7: py-transformers: add v4.35.2
 ## 98162aa2e1574b2e8a2a43976ad27eda92e5c65e: py-earth2mip: add new package
