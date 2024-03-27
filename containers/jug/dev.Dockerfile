@@ -232,7 +232,7 @@ FROM builder as staging
 RUN spack -e ${SPACK_ENV} gc -y
 
 # Garbage collect in git
-RUN git -C $SPACK_ROOT gc --prune=all --aggressive
+#RUN git -C $SPACK_ROOT gc --prune=all --aggressive
 
 ## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
 ## See
