@@ -314,6 +314,13 @@ EOF
 ## set ROOT TFile forward compatibility
 RUN sed -i 's/# \(TFile.v630forwardCompatibility:\) no/\1 yes/' /usr/local/etc/root/system.rootrc
 
+## Setup ld.so.conf with what could go in LD_LIBRARY_PATH (but lower priority)
+## Ref: https://man7.org/linux/man-pages/man8/ld.so.8.html
+COPY <<EOF /etc/ld.so.conf.d/eic-shell.conf
+/usr/local/lib/root
+EOF
+RUN ldconfig
+
 ## set the local spack configuration
 ENV SPACK_DISABLE_LOCAL_CONFIG="true"
 RUN <<EOF
