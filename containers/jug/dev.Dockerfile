@@ -311,6 +311,9 @@ mv /usr/._local/${PREFIX_PATH} /usr/local
 ln -s /usr/local /usr/._local/${PREFIX_PATH}
 EOF
 
+## set ROOT TFile forward compatibility
+RUN sed -i 's/# \(TFile.v630forwardCompatibility:\) no/\1 yes/' /usr/local/etc/root/system.rootrc
+
 ## set the local spack configuration
 ENV SPACK_DISABLE_LOCAL_CONFIG="true"
 RUN <<EOF
