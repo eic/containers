@@ -46,6 +46,7 @@ c352db764598cc4d04299913646bb55d7613eb8a
 c31a998abb9f0b82a59bbfbf55b8111847aac8cb
 c5b8d5c92a88707d0c949b2bd507b2dfc1b79506
 d7e756a26b9450d7f4e94dac1747a729011e2140
+6986e708775afbddbe6e8239fb2d8745931a0410
 70fb0b35e55f8f9b3182b091bc8c40b8770041b7
 86730c7b175369ac0490b096401a2912f087a6e9
 b6d69bfad215a62b9d8078c6216ec50931f848eb
@@ -100,6 +101,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## c31a998abb9f0b82a59bbfbf55b8111847aac8cb: VecGeom: new version 1.2.7 and fix URLs
 ## c5b8d5c92a88707d0c949b2bd507b2dfc1b79506: geant4: new version v11.2.1
 ## d7e756a26b9450d7f4e94dac1747a729011e2140: onnxruntime: fix the call to as_string() operator
+## 6986e708775afbddbe6e8239fb2d8745931a0410: [abseil-cpp] New version 20230802.1
 ## 70fb0b35e55f8f9b3182b091bc8c40b8770041b7: py-transformers: add v4.35.2
 ## 86730c7b175369ac0490b096401a2912f087a6e9: py-fsspec: fix import tests
 ## b6d69bfad215a62b9d8078c6216ec50931f848eb: py-flit-core: fix import tests
