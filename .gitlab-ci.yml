@@ -264,7 +264,7 @@ base:
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    --provenance false
                    containers/debian
-                   &2>1 | tee build.log
+                   2>&1 | tee build.log
 
 
 jug_dev:
@@ -372,7 +372,7 @@ jug_dev:
                    --secret id=mirrors,src=mirrors.yaml
                    --provenance false
                    containers/jug
-                   &2>1 | tee build.log
+                   2>&1 | tee build.log
 
 
 jug_xl:default:
@@ -422,7 +422,7 @@ jug_xl:default:
                    --build-context detectors=.
                    --provenance false
                    containers/jug
-                   &2>1 | tee build.log
+                   2>&1 | tee build.log
 
 
 jug_xl:nightly:
@@ -502,7 +502,7 @@ jug_xl:nightly:
                    --build-context detectors=.
                    --provenance false
                    containers/jug
-                   &2>1 | tee build.log
+                   2>&1 | tee build.log
 
 
 .singularity:
