@@ -27,7 +27,6 @@ c07ddf83c32b7129247fe90eed486dd844047087
 48fcfda1e7c1781cab4cada6d099823b263ab0cc
 8c29e90fa9962f4a44f39f47217b46c85176af28
 1255620a14afa3ad4aad681a847a3a1704141976
-0fed2d66bf0eec799707dd1b88ac9419f6ae14e1
 963e2ca82883cdc1287f1035c15d1a7e9a6fe612
 d3c796f2ce1da2dda198707def297aeab702d33c
 19c20563cc86140aaf352d72079bd9de292be0ac
@@ -46,11 +45,22 @@ eb57d96ea94b0543a8d5ba943444e77e414cc82e
 c352db764598cc4d04299913646bb55d7613eb8a
 c31a998abb9f0b82a59bbfbf55b8111847aac8cb
 c5b8d5c92a88707d0c949b2bd507b2dfc1b79506
+d7e756a26b9450d7f4e94dac1747a729011e2140
+6986e708775afbddbe6e8239fb2d8745931a0410
+70fb0b35e55f8f9b3182b091bc8c40b8770041b7
+86730c7b175369ac0490b096401a2912f087a6e9
+b6d69bfad215a62b9d8078c6216ec50931f848eb
+ba753ac380ef7f2a626a00fd15612913fb21ac4c
+5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe
+98162aa2e1574b2e8a2a43976ad27eda92e5c65e
+85c6d6dbab88f4cb40a20cf13204263c59c640e9
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
-[19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/dd4hep/package.py,var/spack/repos/builtin/packages/hepmc3/package.py,var/spack/repos/builtin/packages/pythia8/package.py
+[70fb0b35e55f8f9b3182b091bc8c40b8770041b7]=var/spack/repos/builtin/packages/py-fsspec/package.py
+[5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe]=var/spack/repos/builtin/packages/py-jax/package.py,var/spack/repos/builtin/packages/py-jaxlib/package.py
+[19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/abseil-cpp/package.py,var/spack/repos/builtin/packages/dd4hep/package.py,var/spack/repos/builtin/packages/hepmc3/package.py,var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/pythia8/package.py,var/spack/repos/builtin/packages/py-aiobotocore/package.py,var/spack/repos/builtin/packages/py-cdsapi/package.py,var/spack/repos/builtin/packages/py-cfgrib/package.py,var/spack/repos/builtin/packages/py-chex/package.py,var/spack/repos/builtin/packages/py-dm-haiku/package.py,var/spack/repos/builtin/packages/py-etils/package.py,var/spack/repos/builtin/packages/py-flit-core/package.py,var/spack/repos/builtin/packages/py-fsspec/package.py,var/spack/repos/builtin/packages/py-gcsfs/package.py,var/spack/repos/builtin/packages/py-h5netcdf/package.py,var/spack/repos/builtin/packages/py-importlib-metadata/package.py,var/spack/repos/builtin/packages/py-jax/package.py,var/spack/repos/builtin/packages/py-jaxlib/package.py,var/spack/repos/builtin/packages/py-netcdf4/package.py,var/spack/repos/builtin/packages/py-onnx/package.py,var/spack/repos/builtin/packages/py-onnxruntime/package.py,var/spack/repos/builtin/packages/py-pytest-asyncio/package.py,var/spack/repos/builtin/packages/py-pytest-timeout/package.py,var/spack/repos/builtin/packages/py-python-dotenv/package.py,var/spack/repos/builtin/packages/py-s3fs/package.py,var/spack/repos/builtin/packages/py-zarr/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -73,7 +83,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 48fcfda1e7c1781cab4cada6d099823b263ab0cc: setup-env.sh: if exe contains qemu, use /proc/$$/comm instead
 ## 8c29e90fa9962f4a44f39f47217b46c85176af28: Build cache: make signed/unsigned a mirror property
 ## 1255620a14afa3ad4aad681a847a3a1704141976: Fix infinite recursion when computing concretization errors
-## 0fed2d66bf0eec799707dd1b88ac9419f6ae14e1: (py-)onnx: new version 1.14.{0,1}, 1.15.0
 ## 963e2ca82883cdc1287f1035c15d1a7e9a6fe612: edm4hep: add latest tag 0.10.3
 ## d3c796f2ce1da2dda198707def297aeab702d33c: pythia8: new version 8.310
 ## 19c20563cc86140aaf352d72079bd9de292be0ac: Initial License Checkin
@@ -92,3 +101,12 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## c352db764598cc4d04299913646bb55d7613eb8a: vecgeom: Use correct checksum for version 1.2.5
 ## c31a998abb9f0b82a59bbfbf55b8111847aac8cb: VecGeom: new version 1.2.7 and fix URLs
 ## c5b8d5c92a88707d0c949b2bd507b2dfc1b79506: geant4: new version v11.2.1
+## d7e756a26b9450d7f4e94dac1747a729011e2140: onnxruntime: fix the call to as_string() operator
+## 6986e708775afbddbe6e8239fb2d8745931a0410: [abseil-cpp] New version 20230802.1
+## 70fb0b35e55f8f9b3182b091bc8c40b8770041b7: py-transformers: add v4.35.2
+## 86730c7b175369ac0490b096401a2912f087a6e9: py-fsspec: fix import tests
+## b6d69bfad215a62b9d8078c6216ec50931f848eb: py-flit-core: fix import tests
+## ba753ac380ef7f2a626a00fd15612913fb21ac4c: Make things easier to concretize
+## 5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe: py-keras: add v3.0.5
+## 98162aa2e1574b2e8a2a43976ad27eda92e5c65e: py-earth2mip: add new package
+## 85c6d6dbab88f4cb40a20cf13204263c59c640e9: (py-)onnx: new version 1.14.{0,1}, 1.15.0
