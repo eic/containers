@@ -53,6 +53,7 @@ b6d69bfad215a62b9d8078c6216ec50931f848eb
 ba753ac380ef7f2a626a00fd15612913fb21ac4c
 5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe
 98162aa2e1574b2e8a2a43976ad27eda92e5c65e
+85c6d6dbab88f4cb40a20cf13204263c59c640e9
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -108,3 +109,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## ba753ac380ef7f2a626a00fd15612913fb21ac4c: Make things easier to concretize
 ## 5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe: py-keras: add v3.0.5
 ## 98162aa2e1574b2e8a2a43976ad27eda92e5c65e: py-earth2mip: add new package
+## 85c6d6dbab88f4cb40a20cf13204263c59c640e9: (py-)onnx: new version 1.14.{0,1}, 1.15.0
