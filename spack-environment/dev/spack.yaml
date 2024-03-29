@@ -72,6 +72,7 @@ spack:
   - py-htgettoken
   - py-numpy
   - py-onnx
+  - py-onnxruntime
   - py-pandas
   - py-pip
   - py-pre-commit
