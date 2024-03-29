@@ -89,7 +89,6 @@ spack:
   - snakemake
   - spdlog
   - stow
-  - tensorflow-lite
   - valgrind
   - xrootd
   view: false
