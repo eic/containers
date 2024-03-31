@@ -3,7 +3,7 @@ SPACK_ORGREPO="spack/spack"
 
 ## Spack github version, e.g. v0.18.1 or commit hash
 ## note: nightly builds will use e.g. releases/v0.19
-SPACK_VERSION="v0.21.0"
+SPACK_VERSION="v0.21.2"
 
 ## Space-separated list of spack cherry-picks
 read -r -d '' SPACK_CHERRYPICKS <<- \
@@ -13,7 +13,6 @@ ed8ecc469e7b87842a876323878831e301f136a2
 4991a60eacb5df289383f755e40702b720ed0513
 81e73b4dd4ea0bf6c6947359d3cee9d4270df13d
 c485709f625429a88a184a099373d76c9438f8e3
-6f08daf67020289e6a5ed1df9783ac5b2919e477
 50051b56199992eb4395b8ff22913c1995311a8c
 f01774f1d41781bc4b9e5abb5469e234168da663
 16f4c53cd4cfb4bc6c9390f6e65217fc9ccc58c9
@@ -26,7 +25,6 @@ c07ddf83c32b7129247fe90eed486dd844047087
 7a0c4e8017033430e5f15ed628be6b539e935ba9
 48fcfda1e7c1781cab4cada6d099823b263ab0cc
 8c29e90fa9962f4a44f39f47217b46c85176af28
-1255620a14afa3ad4aad681a847a3a1704141976
 963e2ca82883cdc1287f1035c15d1a7e9a6fe612
 d3c796f2ce1da2dda198707def297aeab702d33c
 9c47ecaeb25300ac2a6a2609628ecd4c928fcf49
@@ -48,7 +46,6 @@ c31a998abb9f0b82a59bbfbf55b8111847aac8cb
 c5b8d5c92a88707d0c949b2bd507b2dfc1b79506
 d7e756a26b9450d7f4e94dac1747a729011e2140
 6986e708775afbddbe6e8239fb2d8745931a0410
-70fb0b35e55f8f9b3182b091bc8c40b8770041b7
 86730c7b175369ac0490b096401a2912f087a6e9
 b6d69bfad215a62b9d8078c6216ec50931f848eb
 ba753ac380ef7f2a626a00fd15612913fb21ac4c
@@ -71,7 +68,6 @@ c2eef8bab26adb00b250992e29d697b4706356a0
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
-[70fb0b35e55f8f9b3182b091bc8c40b8770041b7]=var/spack/repos/builtin/packages/py-fsspec/package.py
 [5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe]=var/spack/repos/builtin/packages/py-jax/package.py,var/spack/repos/builtin/packages/py-jaxlib/package.py
 [9c47ecaeb25300ac2a6a2609628ecd4c928fcf49]=lib/spack/spack/directives.py
 [19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/abseil-cpp/package.py,var/spack/repos/builtin/packages/acts/package.py,var/spack/repos/builtin/packages/actsvg/package.py,var/spack/repos/builtin/packages/dd4hep/package.py,var/spack/repos/builtin/packages/fontconfig/package.py,var/spack/repos/builtin/packages/hepmc3/package.py,var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/pythia8/package.py,var/spack/repos/builtin/packages/py-aiobotocore/package.py,var/spack/repos/builtin/packages/py-cdsapi/package.py,var/spack/repos/builtin/packages/py-cfgrib/package.py,var/spack/repos/builtin/packages/py-chex/package.py,var/spack/repos/builtin/packages/py-dm-haiku/package.py,var/spack/repos/builtin/packages/py-etils/package.py,var/spack/repos/builtin/packages/py-flit-core/package.py,var/spack/repos/builtin/packages/py-fsspec/package.py,var/spack/repos/builtin/packages/py-gcsfs/package.py,var/spack/repos/builtin/packages/py-h5netcdf/package.py,var/spack/repos/builtin/packages/py-importlib-metadata/package.py,var/spack/repos/builtin/packages/py-jax/package.py,var/spack/repos/builtin/packages/py-jaxlib/package.py,var/spack/repos/builtin/packages/py-netcdf4/package.py,var/spack/repos/builtin/packages/py-onnx/package.py,var/spack/repos/builtin/packages/py-onnxruntime/package.py,var/spack/repos/builtin/packages/py-pytest-asyncio/package.py,var/spack/repos/builtin/packages/py-pytest-timeout/package.py,var/spack/repos/builtin/packages/py-python-dotenv/package.py,var/spack/repos/builtin/packages/py-s3fs/package.py,var/spack/repos/builtin/packages/py-zarr/package.py,var/spack/repos/builtin/packages/xrootd/package.py
@@ -85,7 +81,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 4991a60eacb5df289383f755e40702b720ed0513: podio: Add latest tag 0.17.3
 ## 81e73b4dd4ea0bf6c6947359d3cee9d4270df13d: root: new version 6.30.00
 ## c485709f625429a88a184a099373d76c9438f8e3: iwyu: new versions up 0.21 (depends_on llvm-17)
-## 6f08daf67020289e6a5ed1df9783ac5b2919e477: root: add a webgui patch
 ## 50051b56199992eb4395b8ff22913c1995311a8c: geant4: new version 11.1.3
 ## f01774f1d41781bc4b9e5abb5469e234168da663: hepmc3: fix from_variant -> self.define
 ## 16f4c53cd4cfb4bc6c9390f6e65217fc9ccc58c9: py-bokeh: new version 3.3.1, and supporting packages
@@ -98,7 +93,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 7a0c4e8017033430e5f15ed628be6b539e935ba9: acts: new versions 31.*
 ## 48fcfda1e7c1781cab4cada6d099823b263ab0cc: setup-env.sh: if exe contains qemu, use /proc/$$/comm instead
 ## 8c29e90fa9962f4a44f39f47217b46c85176af28: Build cache: make signed/unsigned a mirror property
-## 1255620a14afa3ad4aad681a847a3a1704141976: Fix infinite recursion when computing concretization errors
 ## 963e2ca82883cdc1287f1035c15d1a7e9a6fe612: edm4hep: add latest tag 0.10.3
 ## d3c796f2ce1da2dda198707def297aeab702d33c: pythia8: new version 8.310
 ## 9c47ecaeb25300ac2a6a2609628ecd4c928fcf49: directives: add checked_by field to license(), add some license checks
@@ -120,7 +114,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## c5b8d5c92a88707d0c949b2bd507b2dfc1b79506: geant4: new version v11.2.1
 ## d7e756a26b9450d7f4e94dac1747a729011e2140: onnxruntime: fix the call to as_string() operator
 ## 6986e708775afbddbe6e8239fb2d8745931a0410: [abseil-cpp] New version 20230802.1
-## 70fb0b35e55f8f9b3182b091bc8c40b8770041b7: py-transformers: add v4.35.2
 ## 86730c7b175369ac0490b096401a2912f087a6e9: py-fsspec: fix import tests
 ## b6d69bfad215a62b9d8078c6216ec50931f848eb: py-flit-core: fix import tests
 ## ba753ac380ef7f2a626a00fd15612913fb21ac4c: Make things easier to concretize
