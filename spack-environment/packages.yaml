@@ -337,7 +337,7 @@ packages:
     - '@0.30.0'
   qt:
     require:
-    - '@5.15.9'
+    - '@5.15.11'
     - +opengl
   root:
     require:
