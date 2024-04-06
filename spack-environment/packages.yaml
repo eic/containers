@@ -94,7 +94,7 @@ packages:
     - '@1.1.12'
   eicrecon:
     require:
-    - '@git.onnxruntime'
+    - '@1.11.0'
   eigen:
     require:
     - '@3.4.0'
