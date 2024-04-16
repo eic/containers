@@ -29,6 +29,7 @@ c07ddf83c32b7129247fe90eed486dd844047087
 1255620a14afa3ad4aad681a847a3a1704141976
 963e2ca82883cdc1287f1035c15d1a7e9a6fe612
 d3c796f2ce1da2dda198707def297aeab702d33c
+9c47ecaeb25300ac2a6a2609628ecd4c928fcf49
 19c20563cc86140aaf352d72079bd9de292be0ac
 d50f8d7b19e07f25a3ce8de28ff9b352fd926d7f
 9e4fab277b8a5b9ec5587c8a8b6514f12c8042a4
@@ -54,13 +55,18 @@ ba753ac380ef7f2a626a00fd15612913fb21ac4c
 5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe
 98162aa2e1574b2e8a2a43976ad27eda92e5c65e
 85c6d6dbab88f4cb40a20cf13204263c59c640e9
+72f8611d3e6296691c128ced4f55776042813cc0
+9ffe1799346fce7615eb03483545a08d7023b2ce
+e8ae9a403ca7db7738d36bf41bf99977b9c88a84
+5a52780f7cf09973c431f89713db1c571ddd2ccc
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
 [70fb0b35e55f8f9b3182b091bc8c40b8770041b7]=var/spack/repos/builtin/packages/py-fsspec/package.py
 [5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe]=var/spack/repos/builtin/packages/py-jax/package.py,var/spack/repos/builtin/packages/py-jaxlib/package.py
-[19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/abseil-cpp/package.py,var/spack/repos/builtin/packages/dd4hep/package.py,var/spack/repos/builtin/packages/hepmc3/package.py,var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/pythia8/package.py,var/spack/repos/builtin/packages/py-aiobotocore/package.py,var/spack/repos/builtin/packages/py-cdsapi/package.py,var/spack/repos/builtin/packages/py-cfgrib/package.py,var/spack/repos/builtin/packages/py-chex/package.py,var/spack/repos/builtin/packages/py-dm-haiku/package.py,var/spack/repos/builtin/packages/py-etils/package.py,var/spack/repos/builtin/packages/py-flit-core/package.py,var/spack/repos/builtin/packages/py-fsspec/package.py,var/spack/repos/builtin/packages/py-gcsfs/package.py,var/spack/repos/builtin/packages/py-h5netcdf/package.py,var/spack/repos/builtin/packages/py-importlib-metadata/package.py,var/spack/repos/builtin/packages/py-jax/package.py,var/spack/repos/builtin/packages/py-jaxlib/package.py,var/spack/repos/builtin/packages/py-netcdf4/package.py,var/spack/repos/builtin/packages/py-onnx/package.py,var/spack/repos/builtin/packages/py-onnxruntime/package.py,var/spack/repos/builtin/packages/py-pytest-asyncio/package.py,var/spack/repos/builtin/packages/py-pytest-timeout/package.py,var/spack/repos/builtin/packages/py-python-dotenv/package.py,var/spack/repos/builtin/packages/py-s3fs/package.py,var/spack/repos/builtin/packages/py-zarr/package.py
+[9c47ecaeb25300ac2a6a2609628ecd4c928fcf49]=lib/spack/spack/directives.py
+[19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/abseil-cpp/package.py,var/spack/repos/builtin/packages/acts/package.py,var/spack/repos/builtin/packages/actsvg/package.py,var/spack/repos/builtin/packages/dd4hep/package.py,var/spack/repos/builtin/packages/hepmc3/package.py,var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/pythia8/package.py,var/spack/repos/builtin/packages/py-aiobotocore/package.py,var/spack/repos/builtin/packages/py-cdsapi/package.py,var/spack/repos/builtin/packages/py-cfgrib/package.py,var/spack/repos/builtin/packages/py-chex/package.py,var/spack/repos/builtin/packages/py-dm-haiku/package.py,var/spack/repos/builtin/packages/py-etils/package.py,var/spack/repos/builtin/packages/py-flit-core/package.py,var/spack/repos/builtin/packages/py-fsspec/package.py,var/spack/repos/builtin/packages/py-gcsfs/package.py,var/spack/repos/builtin/packages/py-h5netcdf/package.py,var/spack/repos/builtin/packages/py-importlib-metadata/package.py,var/spack/repos/builtin/packages/py-jax/package.py,var/spack/repos/builtin/packages/py-jaxlib/package.py,var/spack/repos/builtin/packages/py-netcdf4/package.py,var/spack/repos/builtin/packages/py-onnx/package.py,var/spack/repos/builtin/packages/py-onnxruntime/package.py,var/spack/repos/builtin/packages/py-pytest-asyncio/package.py,var/spack/repos/builtin/packages/py-pytest-timeout/package.py,var/spack/repos/builtin/packages/py-python-dotenv/package.py,var/spack/repos/builtin/packages/py-s3fs/package.py,var/spack/repos/builtin/packages/py-zarr/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -85,6 +91,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 1255620a14afa3ad4aad681a847a3a1704141976: Fix infinite recursion when computing concretization errors
 ## 963e2ca82883cdc1287f1035c15d1a7e9a6fe612: edm4hep: add latest tag 0.10.3
 ## d3c796f2ce1da2dda198707def297aeab702d33c: pythia8: new version 8.310
+## 9c47ecaeb25300ac2a6a2609628ecd4c928fcf49: directives: add checked_by field to license(), add some license checks
 ## 19c20563cc86140aaf352d72079bd9de292be0ac: Initial License Checkin
 ## d50f8d7b19e07f25a3ce8de28ff9b352fd926d7f: root: sha256 change on latest versions
 ## 9e4fab277b8a5b9ec5587c8a8b6514f12c8042a4: [root] New variants, patches
@@ -110,3 +117,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe: py-keras: add v3.0.5
 ## 98162aa2e1574b2e8a2a43976ad27eda92e5c65e: py-earth2mip: add new package
 ## 85c6d6dbab88f4cb40a20cf13204263c59c640e9: (py-)onnx: new version 1.14.{0,1}, 1.15.0
+## 72f8611d3e6296691c128ced4f55776042813cc0: acts: new version 32.0.0
+## 9ffe1799346fce7615eb03483545a08d7023b2ce: acts: fix self-referential dependencies
+## e8ae9a403ca7db7738d36bf41bf99977b9c88a84: acts: depends_on py-onnxruntime when +onnx for @23.3:
+## 5a52780f7cf09973c431f89713db1c571ddd2ccc: acts: new version 33.1.0
