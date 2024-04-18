@@ -312,7 +312,7 @@ ln -s /usr/local /usr/._local/${PREFIX_PATH}
 EOF
 
 ## set ROOT TFile forward compatibility
-RUN sed -i 's/# \(TFile.v630forwardCompatibility:\) no/\1 yes/' /usr/local/etc/root/system.rootrc
+RUN sed --in-place --follow-symlinks 's/# \(TFile.v630forwardCompatibility:\) no/\1 yes/' /usr/local/etc/root/system.rootrc
 
 ## Setup ld.so.conf with what could go in LD_LIBRARY_PATH (but lower priority)
 ## Ref: https://man7.org/linux/man-pages/man8/ld.so.8.html
