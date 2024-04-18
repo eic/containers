@@ -101,9 +101,11 @@ version:
         NIGHTLY_TAG="${VERSION}-nightly"
         EXPORT_TAG="${VERSION}"
         DH_PUSH=""
+        GH_PUSH=""
       elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ]; then
         VERSION="${CI_COMMIT_BRANCH}"
         DH_PUSH=""
+        GH_PUSH=""
       elif [[ "$CI_COMMIT_TAG" =~ ^v[0-9.]+\.[0-9]+\.[0-9]+ ]]; then
         VERSION="${CI_COMMIT_TAG:1}"
         EXPORT_TAG="${VERSION}"
@@ -125,6 +127,7 @@ version:
       echo "NIGHTLY_TAG=$NIGHTLY_TAG" >> build.env
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
       echo "DH_PUSH=$DH_PUSH" >> build.env
+      echo "GH_PUSH=$GH_PUSH" >> build.env
       cat build.env
   artifacts:
     reports:
