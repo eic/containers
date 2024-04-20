@@ -6,16 +6,14 @@ spack:
     unify: when_possible
   specs:
     - 'epic-eic@git.main'
-    - 'epic-eic@git.23.03.0'
-    - 'epic-eic@git.23.05.0'
-    - 'epic-eic@git.23.05.1'
-    - 'epic-eic@git.23.05.2'
-    - 'epic-eic@git.23.06.0'
-    - 'epic-eic@git.23.06.1'
-    - 'epic-eic@git.23.07.0'
-    - 'epic-eic@git.23.07.1'
-    - 'epic-eic@git.23.07.2'
-    - 'epic-eic@git.23.08.0'
+    - 'epic-eic@git.23.10.0'
+    - 'epic-eic@git.23.11.0'
+    - 'epic-eic@git.23.12.0'
+    - 'epic-eic@git.24.02.0'
+    - 'epic-eic@git.24.02.1'
+    - 'epic-eic@git.24.03.0'
+    - 'epic-eic@git.24.03.1'
+    - 'epic-eic@git.24.04.0'
   view:
     detector:
       root: /opt/detector
