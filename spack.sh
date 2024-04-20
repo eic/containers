@@ -59,6 +59,7 @@ ba753ac380ef7f2a626a00fd15612913fb21ac4c
 9ffe1799346fce7615eb03483545a08d7023b2ce
 e8ae9a403ca7db7738d36bf41bf99977b9c88a84
 5a52780f7cf09973c431f89713db1c571ddd2ccc
+28d02dff6090b72e070c5b9497cd1f4372b4723f
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -121,3 +122,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 9ffe1799346fce7615eb03483545a08d7023b2ce: acts: fix self-referential dependencies
 ## e8ae9a403ca7db7738d36bf41bf99977b9c88a84: acts: depends_on py-onnxruntime when +onnx for @23.3:
 ## 5a52780f7cf09973c431f89713db1c571ddd2ccc: acts: new version 33.1.0
+## 28d02dff6090b72e070c5b9497cd1f4372b4723f: pythia8: new version 8.311
