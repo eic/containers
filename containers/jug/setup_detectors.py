@@ -159,11 +159,13 @@ if __name__ == '__main__':
                         version=cfg['version'],
                         branch=branch),
                         file=f)
+
                 ## run once inside global prefix to initialize artifacts in /opt/detectors
-                os.environ['DETECTOR_PATH'] = args.prefix
-                cmd = f'cd {args.prefix} && source {prefix}/setup.sh && ddsim --compactFile {prefix}/share/{det}/{det}.xml --printLevel DEBUG -G -N1'
-                print(cmd)
-                process_list.append(subprocess.Popen(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.STDOUT))
+                # os.environ['DETECTOR_PATH'] = args.prefix
+                # cmd = f'cd {args.prefix} && source {prefix}/setup.sh && ddsim --compactFile {prefix}/share/{det}/{det}.xml --printLevel DEBUG -G -N1'
+                # print(cmd)
+                # process_list.append(subprocess.Popen(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.STDOUT))
+
                 ## run once inside specific prefix to initialize artifacts in $DETECTOR_PATH
                 os.environ['DETECTOR_PATH'] = args.prefix
                 cmd = f'cd {prefix}/share/{det} && source {prefix}/setup.sh && ddsim --compactFile {prefix}/share/{det}/{det}.xml --printLevel DEBUG -G -N1'
