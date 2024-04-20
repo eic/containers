@@ -7,8 +7,9 @@ variables:
 
   ## Default versions are specified in packages.yaml but can be overridden
   ## note: nightly builds will always use the master/main branch
-  JUGGLER_VERSION: ""
+  EDM4EIC_VERSION: ""
   EICRECON_VERSION: ""
+  JUGGLER_VERSION: ""
 
   ## Local registry
   CI_PUSH: 1
@@ -362,12 +363,14 @@ jug_dev:
                    --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
                    --build-arg JUG_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    ${IF_BUILD_DEFAULT:+
-                     ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=${JUGGLER_VERSION}}
+                     ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION}}
                      ${EICRECON_VERSION:+--build-arg EICRECON_VERSION=${EICRECON_VERSION}}
+                     ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=${JUGGLER_VERSION}}
                    }
                    ${IF_BUILD_NIGHTLY:+
-                     --build-arg JUGGLER_VERSION=main
+                     --build-arg EDM4EIC_VERSION=main
                      --build-arg EICRECON_VERSION=main
+                     --build-arg JUGGLER_VERSION=main
                    }
                    --build-arg ENV=${ENV}
                    --build-arg jobs=${JOBS}
