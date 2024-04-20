@@ -163,12 +163,12 @@ if __name__ == '__main__':
                 os.environ['DETECTOR_PATH'] = args.prefix
                 cmd = f'cd {args.prefix} && source {prefix}/setup.sh && ddsim --compactFile {prefix}/share/{det}/{det}.xml --printLevel DEBUG -G -N1'
                 print(cmd)
-                process_list.append(subprocess.Popen(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.STDOUT))
+                process_list.append(subprocess.Popen(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE))
                 ## run once inside specific prefix to initialize artifacts in $DETECTOR_PATH
                 os.environ['DETECTOR_PATH'] = args.prefix
                 cmd = f'cd {prefix}/share/{det} && source {prefix}/setup.sh && ddsim --compactFile {prefix}/share/{det}/{det}.xml --printLevel DEBUG -G -N1'
                 print(cmd)
-                process_list.append(subprocess.Popen(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.STDOUT))
+                process_list.append(subprocess.Popen(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 
     while len(process_list) > 0:
         now = datetime.now()
