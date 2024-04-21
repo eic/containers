@@ -150,13 +150,18 @@ source ${SPACK_ROOT}/share/spack/setup-env.sh
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 spack buildcache update-index eics3rw
-spack env activate --dir ${SPACK_ENV}
+spack env activate --dir ${SPACK_ENV} --without-view
 spack concretize --fresh --force --quiet
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
   BUILDCACHE_OCI_FINAL="ghcr" \
   BUILDCACHE_S3_FINAL="eics3rw"
+spack find --implicit --no-groups \
+| sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
+| uniq -d | grep -v py-pip | grep -v py-cython \
+| tee /tmp/duplicates.txt
+test -s /tmp/duplicates.txt && exit 1
 ccache --show-stats
 ccache --zero-stats
 EOF
