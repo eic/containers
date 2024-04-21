@@ -1,8 +1,10 @@
-# This file contains the preferences for the concretizer
-# - we disable reuse of build cache products during concretization
-#   (but build cache products will get used if available during install)
-# - we want unified environments that can be installed in a simple view
+# This file contains the preferences for the concretizer:
+# - We disable reuse of build cache products during concretization
+#   (but build cache products will get used if available during install).
+# - We want unified environments that can be installed in a simple view,
+#   but unfortunately that prevents multiple geometry versions. We use
+#   when_possible and consider duplicate dependencies an error.
 #
 concretizer:
   reuse: false
-  unify: true
+  unify: when_possible

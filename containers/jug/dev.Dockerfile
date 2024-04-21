@@ -173,10 +173,10 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
-set -e
+source ${SPACK_ROOT}/share/spack/setup-env.sh
 export CCACHE_DIR=/ccache
 spack buildcache update-index eics3rw
-spack env activate --dir ${SPACK_ENV}
+spack env activate --dir ${SPACK_ENV} --without-view
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
   spack config add "packages:edm4eic::require:['@git.${EDM4EIC_VERSION}=main']"
@@ -198,6 +198,11 @@ make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   BUILDCACHE_OCI_PROMPT="eicweb" \
   BUILDCACHE_OCI_FINAL="ghcr" \
   BUILDCACHE_S3_PROMPT="eics3rw"
+spack find --implicit --no-groups \
+| sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
+| uniq -d | grep -v py-pip | grep -v py-cython \
+| tee /tmp/duplicates.txt
+test -s /tmp/duplicates.txt && exit 1
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -207,25 +212,6 @@ RUN <<EOF
 set -e
 rm -r /usr/local
 spack -e ${SPACK_ENV} env view enable /usr/local
-EOF
-
-## Setup our geometry environment
-RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
-    --mount=type=cache,target=/var/cache/spack                          \
-    --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
-    <<EOF
-set -e
-export CCACHE_DIR=/ccache
-spack buildcache update-index eics3rw
-spack env activate --dir /opt/spack-environment/epic
-spack concretize --reuse --force --quiet
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=/opt/spack-environment/epic \
-  BUILDCACHE_OCI_PROMPT="eicweb" \
-  BUILDCACHE_OCI_FINAL="ghcr" \
-  BUILDCACHE_S3_PROMPT="eics3rw"
-ccache --show-stats
-ccache --zero-stats
 EOF
 
 ## Place cvmfs catalogs

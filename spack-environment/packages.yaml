@@ -101,6 +101,9 @@ packages:
   emacs:
     require:
     - '@28.2'
+  epic-eic:
+    require:
+    - 'artifacts=epic_craterlake'
   fastjet:
     require:
     - '@3.4.0'

@@ -10,6 +10,7 @@ spack:
   - dd4hep -ddeve
   - edm4eic
   - eicrecon
+  - epic-eic
   - fastjet
   - fjcontrib
   - gaudi
@@ -26,4 +27,15 @@ spack:
   - py-pip
   - root -opengl
   - xrootd
-  view: false
+  view:
+    default:
+      root: /usr/local
+      exclude: [epic-eic]
+      link_type: symlink
+    detector:
+      root: /opt/detectors
+      select: [epic-eic]
+      projections:
+        all: '{name}-{version}'
+      link: roots
+      link_type: symlink

@@ -27,6 +27,15 @@ spack:
   - eicrecon
   - eigen
   - emacs
+  - epic-eic@main
+  - epic-eic@23.10.0
+  - epic-eic@23.11.0
+  - epic-eic@23.12.0
+  - epic-eic@24.02.0
+  - epic-eic@24.02.1
+  - epic-eic@24.03.0
+  - epic-eic@24.03.1
+  - epic-eic@24.04.0
   - fastjet
   - fjcontrib
   - fmt
@@ -92,4 +101,15 @@ spack:
   - valgrind
   - xrootd
   - xeyes
-  view: false
+  view:
+    default:
+      root: /usr/local
+      exclude: [epic-eic]
+      link_type: symlink
+    detector:
+      root: /opt/detectors
+      select: [epic-eic]
+      projections:
+        all: '{name}-{version}'
+      link: roots
+      link_type: symlink
