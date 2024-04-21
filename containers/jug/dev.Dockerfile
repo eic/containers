@@ -136,6 +136,9 @@ EOF
 ## ========================================================================================
 FROM spack as builder
 
+## 0. Ensure /usr/local is absent
+RUN rm -r /usr/local
+
 ## 1. Setup our default environment (secret mount for write-enabled mirror)
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
@@ -215,7 +218,6 @@ EOF
 ## Create view at /usr/local
 RUN <<EOF
 set -e
-rm -r /usr/local
 spack -e ${SPACK_ENV} env view enable /usr/local
 EOF
 
