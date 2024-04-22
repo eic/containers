@@ -217,15 +217,15 @@ EOF
 RUN <<EOF
 set -e
 rm -r /usr/local
-spack config --scope env:default add "view:default:root:/usr/local"
-spack config --scope env:default add "view:default:exclude:[epic-eic]"
-spack config --scope env:default add "view:default:link_type:symlink"
+spack config --scope env:${SPACK_ENV} add "view:default:root:/usr/local"
+spack config --scope env:${SPACK_ENV} add "view:default:exclude:[epic-eic]"
+spack config --scope env:${SPACK_ENV} add "view:default:link_type:symlink"
 spack -e ${SPACK_ENV} env view enable /usr/local
-spack config --scope env:default add "view:detector:root:/opt/detectors"
-spack config --scope env:default add "view:detector:select:[epic-eic]"
-spack config --scope env:default add "view:detector:projections:all:'{name}-{version}'"
-spack config --scope env:default add "view:detector:link:roots"
-spack config --scope env:default add "view:detector:link_type:symlink"
+spack config --scope env:${SPACK_ENV} add "view:detector:root:/opt/detectors"
+spack config --scope env:${SPACK_ENV} add "view:detector:select:[epic-eic]"
+spack config --scope env:${SPACK_ENV} add "view:detector:projections:all:'{name}-{version}'"
+spack config --scope env:${SPACK_ENV} add "view:detector:link:roots"
+spack config --scope env:${SPACK_ENV} add "view:detector:link_type:symlink"
 spack -e ${SPACK_ENV} env view enable /opt/detectors
 EOF
 
