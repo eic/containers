@@ -216,12 +216,6 @@ ccache --show-stats
 ccache --zero-stats
 EOF
 
-## Create view at /usr/local
-RUN <<EOF
-set -e
-spack -e ${SPACK_ENV} env view enable /usr/local
-EOF
-
 ## Place cvmfs catalogs
 RUN <<EOF
 touch ${SPACK_ROOT}/.cvmfscatalog
