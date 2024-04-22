@@ -8,5 +8,5 @@
       select: [epic-eic]
       projections:
         all: '{name}-{version}'
-      link:roots
+      link: roots
       link_type: symlink
