@@ -678,6 +678,7 @@ clean_pipeline:
   when: always
   script:
     - apk add curl jq
+    - docker images --filter=reference=${registry}/*:pipeline-* --format "{{.ID}} {{.Repository}} {{.Tag}}"
     - for registry in
         eicweb
         eicweb.phy.anl.gov:4567/containers/eic_container
@@ -689,6 +690,8 @@ clean_pipeline:
       | grep -v ${CI_PIPELINE_ID}
       | sed -n -E 's/pipeline-([0-9]+)(-.*){0,1}$/& \1/p'
       | while read id repository tag pipeline_id ; do
+        echo "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}" ;
+        curl --silent -L "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}" | jq . ;
         status=$(curl --silent -L
                 "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}"
                 | jq -r ".status") ;
