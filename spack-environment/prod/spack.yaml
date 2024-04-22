@@ -27,4 +27,3 @@ spack:
   - py-pip
   - root -opengl
   - xrootd
-  view: false

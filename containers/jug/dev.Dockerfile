@@ -150,6 +150,7 @@ source ${SPACK_ROOT}/share/spack/setup-env.sh
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 spack buildcache update-index eics3rw
+echo "  view: false" >> ${SPACK_ENV}/spack.yaml
 spack env activate --dir ${SPACK_ENV}
 spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
@@ -217,15 +218,9 @@ EOF
 RUN <<EOF
 set -e
 rm -r /usr/local
-spack config --scope env:${SPACK_ENV} add "view:default:root:/usr/local"
-spack config --scope env:${SPACK_ENV} add "view:default:exclude:[epic-eic]"
-spack config --scope env:${SPACK_ENV} add "view:default:link_type:symlink"
+sed -i -e '/view: false/d' ${SPACK_ENV}/spack.yaml
+cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/spack.yaml
 spack -e ${SPACK_ENV} env view enable /usr/local
-spack config --scope env:${SPACK_ENV} add "view:detector:root:/opt/detectors"
-spack config --scope env:${SPACK_ENV} add "view:detector:select:[epic-eic]"
-spack config --scope env:${SPACK_ENV} add "view:detector:projections:all:'{name}-{version}'"
-spack config --scope env:${SPACK_ENV} add "view:detector:link:roots"
-spack config --scope env:${SPACK_ENV} add "view:detector:link_type:symlink"
 spack -e ${SPACK_ENV} env view enable /opt/detectors
 EOF
 

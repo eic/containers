@@ -17,4 +17,3 @@ spack:
   - irt build_type=Debug
   - jana2 build_type=Debug
   - valgrind
-  view: false
