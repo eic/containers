@@ -32,6 +32,7 @@ EOF
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="releases/v0.20"
+ENV SPACK_PYTHON=/usr/bin/python3
 ARG SPACK_CHERRYPICKS=""
 ARG SPACK_CHERRYPICKS_FILES=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
@@ -169,7 +170,6 @@ EOF
 
 ## 2. Setup our environment with custom versions (on top of cached layer)
 ## Note: these default versions are just the very first commit.
-ENV SPACK_PYTHON=/usr/bin/python3
 ARG EDM4EIC_VERSION="8aeb507f93a93257c99985efbce0ec1371e0b331"
 ARG EICRECON_VERSION="28108da4a1e8919a05dfdb5f11e114800a2cbe96"
 ARG JUGGLER_VERSION="df87bf1f8643afa8e80bece9d36d6dc26dfe8132"
