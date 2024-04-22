@@ -202,7 +202,7 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   spack config add "packages:juggler::require:['@git.${JUGGLER_VERSION}=main']"
   spack deconcretize -y --all juggler
 fi
-spack concretize --fresh --force --quiet
+spack concretize --reuse --force --quiet
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
