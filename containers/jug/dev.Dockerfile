@@ -220,8 +220,8 @@ set -e
 rm -r /usr/local
 sed -i -e '/view: false/d' ${SPACK_ENV}/spack.yaml
 cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/spack.yaml
-spack -e ${SPACK_ENV} env view enable /usr/local
-spack -e ${SPACK_ENV} env view enable /opt/detectors
+spack -e ${SPACK_ENV} env view regenerate /usr/local
+spack -e ${SPACK_ENV} env view regenerate /opt/detectors
 EOF
 
 ## Place cvmfs catalogs
