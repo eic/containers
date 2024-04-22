@@ -150,7 +150,7 @@ source ${SPACK_ROOT}/share/spack/setup-env.sh
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 spack buildcache update-index eics3rw
-echo "  view: false" >> ${SPACK_ENV}/spack.yaml
+echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
 spack env activate --dir ${SPACK_ENV}
 spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
