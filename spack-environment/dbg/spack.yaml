@@ -17,15 +17,4 @@ spack:
   - irt build_type=Debug
   - jana2 build_type=Debug
   - valgrind
-  view:
-    default:
-      root: /usr/local
-      exclude: [epic-eic]
-      link_type: symlink
-    detector:
-      root: /opt/detectors
-      select: [epic-eic]
-      projections:
-        all: '{name}-{version}'
-      link: roots
-      link_type: symlink
+  view: false

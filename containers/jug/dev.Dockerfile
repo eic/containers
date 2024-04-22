@@ -136,9 +136,6 @@ EOF
 ## ========================================================================================
 FROM spack as builder
 
-## 0. Ensure /usr/local is absent
-RUN rm -r /usr/local
-
 ## 1. Setup our default environment (secret mount for write-enabled mirror)
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
@@ -214,6 +211,22 @@ spack find --implicit --no-groups \
 test -s /tmp/duplicates.txt && exit 1
 ccache --show-stats
 ccache --zero-stats
+EOF
+
+## Create views at /usr/local and /opt/detectors
+RUN <<EOF
+set -e
+rm -r /usr/local
+spack config --scope env:default add "view:default:root:/usr/local"
+spack config --scope env:default add "view:default:exclude:[epic-eic]"
+spack config --scope env:default add "view:default:link_type:symlink"
+spack -e ${SPACK_ENV} env view enable /usr/local
+spack config --scope env:default add "view:detector:root:/opt/detectors"
+spack config --scope env:default add "view:detector:select:[epic-eic]"
+spack config --scope env:default add "view:detector:projections:all:'{name}-{version}'"
+spack config --scope env:default add "view:detector:link:roots"
+spack config --scope env:default add "view:detector:link_type:symlink"
+spack -e ${SPACK_ENV} env view enable /opt/detectors
 EOF
 
 ## Place cvmfs catalogs
