@@ -251,7 +251,7 @@ WORKDIR /
 FROM builder as staging
 
 # Garbage collect in environment
-RUN spack -e ${SPACK_ENV} gc -y
+RUN spack -d -e ${SPACK_ENV} gc -y
 
 # Garbage collect in git
 #RUN git -C $SPACK_ROOT gc --prune=all --aggressive
