@@ -251,6 +251,22 @@ WORKDIR /
 FROM builder as staging
 
 # Garbage collect in environment
+COPY <<EOF /tmp/package_base.patch
+diff --git a/lib/spack/spack/package_base.py b/lib/spack/spack/package_base.py
+index 416b16ce..876f95b5 100644
+--- a/lib/spack/spack/package_base.py
++++ b/lib/spack/spack/package_base.py
+@@ -2480,7 +2480,7 @@ class PackageStillNeededError(InstallError):
+     """Raised when package is still needed by another on uninstall."""
+ 
+     def __init__(self, spec, dependents):
+-        super().__init__("Cannot uninstall %s" % spec)
++        super().__init__("Cannot uninstall %s, needed by %s" % (spec, dependents))
+         self.spec = spec
+         self.dependents = dependents
+ 
+EOF
+RUN patch -p1 -d ${SPACK_ROOT} < /tmp/package_base.patch
 RUN spack -d -e ${SPACK_ENV} gc -y
 
 # Garbage collect in git
