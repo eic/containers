@@ -60,6 +60,7 @@ ba753ac380ef7f2a626a00fd15612913fb21ac4c
 e8ae9a403ca7db7738d36bf41bf99977b9c88a84
 5a52780f7cf09973c431f89713db1c571ddd2ccc
 28d02dff6090b72e070c5b9497cd1f4372b4723f
+6008ae0c607560e4320dad5dcb35aaa4e1bc5d50
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -123,3 +124,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## e8ae9a403ca7db7738d36bf41bf99977b9c88a84: acts: depends_on py-onnxruntime when +onnx for @23.3:
 ## 5a52780f7cf09973c431f89713db1c571ddd2ccc: acts: new version 33.1.0
 ## 28d02dff6090b72e070c5b9497cd1f4372b4723f: pythia8: new version 8.311
+## 6008ae0c607560e4320dad5dcb35aaa4e1bc5d50: geant4-data: fix versions for 11.2
