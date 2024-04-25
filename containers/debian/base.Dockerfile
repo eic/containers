@@ -63,6 +63,7 @@ apt-get -yqq install --no-install-recommends                            \
         unzip                                                           \
         vim-nox                                                         \
         wget
+        xterm
 apt-get -yqq autoremove
 localedef -i en_US -f UTF-8 en_US.UTF-8
 EOF
