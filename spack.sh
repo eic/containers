@@ -61,6 +61,7 @@ e8ae9a403ca7db7738d36bf41bf99977b9c88a84
 5a52780f7cf09973c431f89713db1c571ddd2ccc
 28d02dff6090b72e070c5b9497cd1f4372b4723f
 6008ae0c607560e4320dad5dcb35aaa4e1bc5d50
+62132919e1465a40e3522e40278e4bbc8ec32978
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
