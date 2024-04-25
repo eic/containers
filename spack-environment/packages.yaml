@@ -259,6 +259,9 @@ packages:
   py-epic-capybara:
     require:
     - '@git.b4a249ca6f3dc184295fab83f43a85ba1ca8b000'
+  py-hatchling:
+    require:
+    - '^py-pip@23.1.2'
   py-ipython:
     require:
     - '@8.11.0'
