@@ -126,3 +126,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 5a52780f7cf09973c431f89713db1c571ddd2ccc: acts: new version 33.1.0
 ## 28d02dff6090b72e070c5b9497cd1f4372b4723f: pythia8: new version 8.311
 ## 6008ae0c607560e4320dad5dcb35aaa4e1bc5d50: geant4-data: fix versions for 11.2
+## 62132919e1465a40e3522e40278e4bbc8ec32978: xrootd: new version 5.6.9
