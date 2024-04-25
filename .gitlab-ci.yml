@@ -678,7 +678,14 @@ clean_pipeline:
   when: always
   script:
     - apk add curl jq
-    - docker images --filter=reference=${registry}/*:pipeline-* --format "{{.ID}} {{.Repository}} {{.Tag}}"
+    - for registry in
+        eicweb
+        eicweb.phy.anl.gov:4567/containers/eic_container
+      ; do 
+        docker images
+          --filter=reference=${registry}/*:pipeline-*
+          --format "{{.ID}} {{.Repository}} {{.Tag}}" ;
+      done
     - for registry in
         eicweb
         eicweb.phy.anl.gov:4567/containers/eic_container
