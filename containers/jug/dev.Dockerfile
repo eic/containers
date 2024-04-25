@@ -199,7 +199,7 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   sed -i "/# JUGGLER_VERSION$/ s/@\(\S*\)/@git.${JUGGLER_VERSION}=main/" ${SPACK_ENV}/spack.yaml
   spack deconcretize -y --all juggler
 fi
-spack concretize --reuse --force
+spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
