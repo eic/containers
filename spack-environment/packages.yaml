@@ -244,12 +244,18 @@ packages:
   py-awkward:
     require:
     - '@2.1.1'
+  py-beniget:
+    require:
+    - '^py-pip@23.1.2'
   py-bokeh:
     require:
     - '@3.3.1'
   py-boto3:
     require:
     - '@1.26.26'
+  py-cppy:
+    require:
+    - '^py-pip@23.1.2'
   py-dask:
     require:
     - '@2023.4.1'
