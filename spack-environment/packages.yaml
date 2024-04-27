@@ -215,7 +215,7 @@ packages:
       prefix: /usr
   osg-ca-certs:
     require:
-    - '@1.110.igtf.1.119'
+    - '@1.119.igtf.1.128'
   pcre:
     require:
     - build_system=cmake
