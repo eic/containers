@@ -11,8 +11,8 @@
 #
 packages:
   all:
-    compiler: [gcc]
     require:
+    - '%gcc'
     - any_of: [+ipo, '@:']
     - any_of: [build_type=Release, '@:']
     - any_of: [^py-pip@23.1.2, '@:']
