@@ -68,6 +68,7 @@ f1ec4859c8bfd47ff1565d1eb74bcaab22a7ea16
 bbcd4224fa1edfa1fb91e101b58596f30b79b85f
 c2eef8bab26adb00b250992e29d697b4706356a0
 d088391b400158b20d6c1bfb506c301f6df57f26
+7e6aaea9824c23e23943278ac6441509c23877ae
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -141,3 +142,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## bbcd4224fa1edfa1fb91e101b58596f30b79b85f: py-matplotlib: add v3.8.4
 ## c2eef8bab26adb00b250992e29d697b4706356a0: fontconfig: depends_on gperf when 2.11.1:
 ## d088391b400158b20d6c1bfb506c301f6df57f26: clang: support cxx20_flag and cxx23_flag
+## 7e6aaea9824c23e23943278ac6441509c23877ae: clang: support cxx20_flag and cxx23_flag
