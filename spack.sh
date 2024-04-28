@@ -64,6 +64,7 @@ e8ae9a403ca7db7738d36bf41bf99977b9c88a84
 62132919e1465a40e3522e40278e4bbc8ec32978
 946c539dbd95cd78ababda66e58a1c3f8953c95a
 519dd0a6ff9f76384b3f19fa884fd6397cf79ac9
+df938969e24a0333230c41515e163231db083044
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -131,3 +132,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 62132919e1465a40e3522e40278e4bbc8ec32978: xrootd: new version 5.6.9
 ## 946c539dbd95cd78ababda66e58a1c3f8953c95a: osg-ca-certs: new version osg-1.119 igtf-1.128
 ## 519dd0a6ff9f76384b3f19fa884fd6397cf79ac9: pythia8: patch latest 8.311 for upstream bug
+## df938969e24a0333230c41515e163231db083044: fontconfig: depends_on gperf when 2.11.1:
