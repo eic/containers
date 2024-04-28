@@ -63,6 +63,7 @@ e8ae9a403ca7db7738d36bf41bf99977b9c88a84
 6008ae0c607560e4320dad5dcb35aaa4e1bc5d50
 62132919e1465a40e3522e40278e4bbc8ec32978
 946c539dbd95cd78ababda66e58a1c3f8953c95a
+519dd0a6ff9f76384b3f19fa884fd6397cf79ac9
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -129,3 +130,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 6008ae0c607560e4320dad5dcb35aaa4e1bc5d50: geant4-data: fix versions for 11.2
 ## 62132919e1465a40e3522e40278e4bbc8ec32978: xrootd: new version 5.6.9
 ## 946c539dbd95cd78ababda66e58a1c3f8953c95a: osg-ca-certs: new version osg-1.119 igtf-1.128
+## 519dd0a6ff9f76384b3f19fa884fd6397cf79ac9: pythia8: patch latest 8.311 for upstream bug
