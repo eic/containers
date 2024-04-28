@@ -186,17 +186,17 @@ spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
-  sed -i "/# EDM4EIC_VERSION$/ s/@\(\S*\)/@git.${EDM4EIC_VERSION}=main/" ${SPACK_ENV}/spack.yaml
+  sed -i "/# EDM4EIC_VERSION$/ s/@\(\S*\)/@git.${EDM4EIC_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all edm4eic
 fi
 if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; then
   export EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
-  sed -i "/# EICRECON_VERSION$/ s/@\(\S*\)/@git.${EICRECON_VERSION}=main/" ${SPACK_ENV}/spack.yaml
+  sed -i "/# EICRECON_VERSION$/ s/@\(\S*\)/@git.${EICRECON_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all eicrecon
 fi
 if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   export JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
-  sed -i "/# JUGGLER_VERSION$/ s/@\(\S*\)/@git.${JUGGLER_VERSION}=main/" ${SPACK_ENV}/spack.yaml
+  sed -i "/# JUGGLER_VERSION$/ s/@\(\S*\)/@git.${JUGGLER_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all juggler
 fi
 spack concretize --fresh --force
