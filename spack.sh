@@ -65,6 +65,7 @@ e8ae9a403ca7db7738d36bf41bf99977b9c88a84
 946c539dbd95cd78ababda66e58a1c3f8953c95a
 519dd0a6ff9f76384b3f19fa884fd6397cf79ac9
 f1ec4859c8bfd47ff1565d1eb74bcaab22a7ea16
+bbcd4224fa1edfa1fb91e101b58596f30b79b85f
 df938969e24a0333230c41515e163231db083044
 ---
 ## Optional hash table with comma-separated file list
@@ -75,6 +76,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 [9c47ecaeb25300ac2a6a2609628ecd4c928fcf49]=lib/spack/spack/directives.py
 [19c20563cc86140aaf352d72079bd9de292be0ac]=var/spack/repos/builtin/packages/abseil-cpp/package.py,var/spack/repos/builtin/packages/acts/package.py,var/spack/repos/builtin/packages/actsvg/package.py,var/spack/repos/builtin/packages/dd4hep/package.py,var/spack/repos/builtin/packages/fontconfig/package.py,var/spack/repos/builtin/packages/hepmc3/package.py,var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/pythia8/package.py,var/spack/repos/builtin/packages/py-aiobotocore/package.py,var/spack/repos/builtin/packages/py-cdsapi/package.py,var/spack/repos/builtin/packages/py-cfgrib/package.py,var/spack/repos/builtin/packages/py-chex/package.py,var/spack/repos/builtin/packages/py-dm-haiku/package.py,var/spack/repos/builtin/packages/py-etils/package.py,var/spack/repos/builtin/packages/py-flit-core/package.py,var/spack/repos/builtin/packages/py-fsspec/package.py,var/spack/repos/builtin/packages/py-gcsfs/package.py,var/spack/repos/builtin/packages/py-h5netcdf/package.py,var/spack/repos/builtin/packages/py-importlib-metadata/package.py,var/spack/repos/builtin/packages/py-jax/package.py,var/spack/repos/builtin/packages/py-jaxlib/package.py,var/spack/repos/builtin/packages/py-netcdf4/package.py,var/spack/repos/builtin/packages/py-onnx/package.py,var/spack/repos/builtin/packages/py-onnxruntime/package.py,var/spack/repos/builtin/packages/py-pytest-asyncio/package.py,var/spack/repos/builtin/packages/py-pytest-timeout/package.py,var/spack/repos/builtin/packages/py-python-dotenv/package.py,var/spack/repos/builtin/packages/py-s3fs/package.py,var/spack/repos/builtin/packages/py-zarr/package.py,var/spack/repos/builtin/packages/xrootd/package.py
 [f1ec4859c8bfd47ff1565d1eb74bcaab22a7ea16]=var/spack/repos/builtin/packages/fontconfig/package.py
+[bbcd4224fa1edfa1fb91e101b58596f30b79b85f]=var/spack/repos/builtin/packages/fontconfig/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -135,4 +137,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 946c539dbd95cd78ababda66e58a1c3f8953c95a: osg-ca-certs: new version osg-1.119 igtf-1.128
 ## 519dd0a6ff9f76384b3f19fa884fd6397cf79ac9: pythia8: patch latest 8.311 for upstream bug
 ## f1ec4859c8bfd47ff1565d1eb74bcaab22a7ea16: unmaintained packages: add new versions
+## bbcd4224fa1edfa1fb91e101b58596f30b79b85f: py-matplotlib: add v3.8.4
 ## df938969e24a0333230c41515e163231db083044: fontconfig: depends_on gperf when 2.11.1:
