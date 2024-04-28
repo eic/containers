@@ -271,6 +271,9 @@ packages:
   py-hatchling:
     require:
     - '^py-pip@23.1.2'
+  py-hatch-vcs:
+    require:
+    - '^py-pip@23.1.2'
   py-ipython:
     require:
     - '@8.11.0'
