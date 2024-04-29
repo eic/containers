@@ -101,4 +101,3 @@ spack:
   - valgrind
   - xrootd
   - xeyes
-  view: false
