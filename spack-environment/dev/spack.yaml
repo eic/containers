@@ -91,5 +91,5 @@ spack:
   - stow
   - valgrind
   - xrootd
-  - xterm
+  - xeyes
   view: false
