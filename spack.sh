@@ -66,7 +66,7 @@ e8ae9a403ca7db7738d36bf41bf99977b9c88a84
 519dd0a6ff9f76384b3f19fa884fd6397cf79ac9
 f1ec4859c8bfd47ff1565d1eb74bcaab22a7ea16
 bbcd4224fa1edfa1fb91e101b58596f30b79b85f
-df938969e24a0333230c41515e163231db083044
+c2eef8bab26adb00b250992e29d697b4706356a0
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -138,4 +138,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 519dd0a6ff9f76384b3f19fa884fd6397cf79ac9: pythia8: patch latest 8.311 for upstream bug
 ## f1ec4859c8bfd47ff1565d1eb74bcaab22a7ea16: unmaintained packages: add new versions
 ## bbcd4224fa1edfa1fb91e101b58596f30b79b85f: py-matplotlib: add v3.8.4
-## df938969e24a0333230c41515e163231db083044: fontconfig: depends_on gperf when 2.11.1:
+## c2eef8bab26adb00b250992e29d697b4706356a0: fontconfig: depends_on gperf when 2.11.1:
