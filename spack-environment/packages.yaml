@@ -102,7 +102,7 @@ packages:
   emacs:
     require:
     - '@28.2'
-  epic-eic:
+  epic:
     require:
     - 'artifacts=epic_craterlake'
   fastjet:
