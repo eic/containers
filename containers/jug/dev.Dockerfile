@@ -313,6 +313,7 @@ COPY --from=staging /opt/spack /opt/spack
 COPY --from=staging /opt/spack-environment /opt/spack-environment
 COPY --from=staging /opt/software /opt/software
 COPY --from=staging /usr/._local /usr/._local
+COPY --from=staging /opt/._detectors /opt/._detectors
 COPY --from=staging /etc/profile.d /etc/profile.d
 COPY --from=staging /etc/jug_info /etc/jug_info
 COPY --from=staging /etc/eic-env.sh /etc/eic-env.sh
@@ -326,11 +327,13 @@ SHELL ["docker-shell"]
 ## ensure /usr/local is the view, not a symlink
 RUN <<EOF
 set -ex
-rm -rf /usr/local
-PREFIX_PATH=$(realpath $(ls /usr/._local/ | tail -n1))
-echo "Found spack true prefix path to be $PREFIX_PATH"
-mv /usr/._local/${PREFIX_PATH} /usr/local
-ln -s /usr/local /usr/._local/${PREFIX_PATH}
+rm -rf /usr/local /opt/detectors
+LOCAL_PREFIX_PATH=$(realpath $(ls /usr/._local/ | tail -n1))
+mv /usr/._local/${LOCAL_PREFIX_PATH} /usr/local
+ln -s /usr/local /usr/._local/${LOCAL_PREFIX_PATH}
+DETECTORS_PREFIX_PATH=$(realpath $(ls /opt/._detectors/ | tail -n1))
+mv /opt/._detectors/${DETECTORS_PREFIX_PATH} /opt/detectors
+ln -s /opt/detectors /opt/._detectors/${DETECTORS_PREFIX_PATH}
 EOF
 
 ## set ROOT TFile forward compatibility
