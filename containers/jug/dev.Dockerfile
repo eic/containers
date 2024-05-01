@@ -32,6 +32,7 @@ EOF
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="releases/v0.20"
+ENV SPACK_PYTHON=/usr/bin/python3
 ARG SPACK_CHERRYPICKS=""
 ARG SPACK_CHERRYPICKS_FILES=""
 ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
@@ -150,13 +151,19 @@ source ${SPACK_ROOT}/share/spack/setup-env.sh
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 spack buildcache update-index eics3rw
+echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
 spack env activate --dir ${SPACK_ENV}
-spack concretize --fresh --force --quiet
+spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
   BUILDCACHE_OCI_FINAL="ghcr" \
   BUILDCACHE_S3_FINAL="eics3rw"
+spack find --implicit --no-groups \
+| sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
+| uniq -d | grep -v py-pip | grep -v py-cython \
+| tee /tmp/duplicates.txt
+test -s /tmp/duplicates.txt && exit 1
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -173,40 +180,48 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
-source ${SPACK_ROOT}/share/spack/setup-env.sh
+set -e
 export CCACHE_DIR=/ccache
 spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
-  spack config add "packages:edm4eic::require:['@git.${EDM4EIC_VERSION}=main']"
+  sed -i "/# EDM4EIC_VERSION$/ s/@[^\s']*/@git.${EDM4EIC_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all edm4eic
 fi
 if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; then
   export EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
-  spack config add "packages:eicrecon::require:['@git.${EICRECON_VERSION}=main']"
+  sed -i "/# EICRECON_VERSION$/ s/@[^\s']*/@git.${EICRECON_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all eicrecon
 fi
 if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   export JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
-  spack config add "packages:juggler::require:['@git.${JUGGLER_VERSION}=main']"
+  sed -i "/# JUGGLER_VERSION$/ s/@[^\s']*/@git.${JUGGLER_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all juggler
 fi
-spack concretize --fresh --force --quiet
+spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
   BUILDCACHE_OCI_FINAL="ghcr" \
   BUILDCACHE_S3_PROMPT="eics3rw"
+spack find --implicit --no-groups \
+| sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
+| uniq -d | grep -v py-pip | grep -v py-cython \
+| tee /tmp/duplicates.txt
+test -s /tmp/duplicates.txt && exit 1
 ccache --show-stats
 ccache --zero-stats
 EOF
 
-## Create view at /usr/local
+## Create views at /usr/local and /opt/detectors
 RUN <<EOF
 set -e
 rm -r /usr/local
-spack -e ${SPACK_ENV} env view enable /usr/local
+sed -i -e '/view: false/d' ${SPACK_ENV}/spack.yaml
+cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/spack.yaml
+spack -e ${SPACK_ENV} env view regenerate /usr/local
+spack -e ${SPACK_ENV} env view regenerate /opt/detectors
 EOF
 
 ## Place cvmfs catalogs
@@ -298,6 +313,7 @@ COPY --from=staging /opt/spack /opt/spack
 COPY --from=staging /opt/spack-environment /opt/spack-environment
 COPY --from=staging /opt/software /opt/software
 COPY --from=staging /usr/._local /usr/._local
+COPY --from=staging /opt/._detectors /opt/._detectors
 COPY --from=staging /etc/profile.d /etc/profile.d
 COPY --from=staging /etc/jug_info /etc/jug_info
 COPY --from=staging /etc/eic-env.sh /etc/eic-env.sh
@@ -311,11 +327,13 @@ SHELL ["docker-shell"]
 ## ensure /usr/local is the view, not a symlink
 RUN <<EOF
 set -ex
-rm -rf /usr/local
-PREFIX_PATH=$(realpath $(ls /usr/._local/ | tail -n1))
-echo "Found spack true prefix path to be $PREFIX_PATH"
-mv /usr/._local/${PREFIX_PATH} /usr/local
-ln -s /usr/local /usr/._local/${PREFIX_PATH}
+rm -rf /usr/local /opt/detectors
+LOCAL_PREFIX_PATH=$(realpath $(ls /usr/._local/ | tail -n1))
+mv /usr/._local/${LOCAL_PREFIX_PATH} /usr/local
+ln -s /usr/local /usr/._local/${LOCAL_PREFIX_PATH}
+DETECTORS_PREFIX_PATH=$(realpath $(ls /opt/._detectors/ | tail -n1))
+mv /opt/._detectors/${DETECTORS_PREFIX_PATH} /opt/detectors
+ln -s /opt/detectors /opt/._detectors/${DETECTORS_PREFIX_PATH}
 EOF
 
 ## set ROOT TFile forward compatibility

@@ -11,10 +11,11 @@
 #
 packages:
   all:
-    compiler: [gcc]
     require:
+    - '%gcc'
     - any_of: [+ipo, '@:']
     - any_of: [build_type=Release, '@:']
+    - any_of: [^py-pip@23.1.2, '@:']
   acts:
     require:
     - '@31.2.0'
@@ -83,7 +84,7 @@ packages:
     - '@656aa3192b097a631ddd1e0380e80c26fd6644a7'
   edm4eic:
     require:
-    - '@5.0.0'
+    - '@5.0.0' # EDM4EIC_VERSION
     - cxxstd=20
   edm4hep:
     require:
@@ -94,13 +95,16 @@ packages:
     - '@1.1.12'
   eicrecon:
     require:
-    - '@1.12.0'
+    - '@1.12.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
   emacs:
     require:
     - '@28.2'
+  epic:
+    require:
+    - 'artifacts=epic_craterlake'
   fastjet:
     require:
     - '@3.4.0'
@@ -163,7 +167,7 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@14.0.0'
+    - '@14.0.0' # JUGGLER_VERSION
     - cxxstd=20
   k4actstracking:
     require:

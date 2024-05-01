@@ -1,0 +1,12 @@
+  view:
+    default:
+      root: /usr/local
+      exclude: [epic]
+      link_type: symlink
+    detectors:
+      root: /opt/detectors
+      select: [epic]
+      projections:
+        all: '{name}-{version}'
+      link: roots
+      link_type: symlink
