@@ -676,6 +676,7 @@ clean_pipeline:
     - docker-new
   when: always
   script:
+    - set +o pipefail
     - apk add curl jq
     - for registry in
         eicweb
