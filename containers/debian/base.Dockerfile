@@ -111,6 +111,8 @@ update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++${GCC} 100
 update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran${GCC} 100
 update-alternatives --install /usr/bin/clang clang /usr/bin/clang${CLANG} 100
 update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++${CLANG} 100
+update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format${CLANG} 100
+update-alternatives --install /usr/bin/clang-format-diff clang-format-diff /usr/bin/clang-format-diff${CLANG} 100
 update-alternatives --install /usr/bin/clang-tidy-diff clang-tidy-diff /usr/bin/clang-tidy-diff${CLANG}.py 100
 update-alternatives --install /usr/bin/run-clang-tidy run-clang-tidy /usr/bin/run-clang-tidy${CLANG}.py 100
 # Default to gcc
