@@ -201,6 +201,9 @@ packages:
   nano:
     require:
     - '@7.2'
+  nopayloadclient:
+    require:
+    - '@0.0.3'
   npsim:
     require:
     - '@1.4.1'

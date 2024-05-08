@@ -67,6 +67,7 @@ e8ae9a403ca7db7738d36bf41bf99977b9c88a84
 f1ec4859c8bfd47ff1565d1eb74bcaab22a7ea16
 bbcd4224fa1edfa1fb91e101b58596f30b79b85f
 c2eef8bab26adb00b250992e29d697b4706356a0
+0df27bc0f7c45cee4009f1b8894b45b7e6bfd888
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -139,3 +140,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## f1ec4859c8bfd47ff1565d1eb74bcaab22a7ea16: unmaintained packages: add new versions
 ## bbcd4224fa1edfa1fb91e101b58596f30b79b85f: py-matplotlib: add v3.8.4
 ## c2eef8bab26adb00b250992e29d697b4706356a0: fontconfig: depends_on gperf when 2.11.1:
+## 0df27bc0f7c45cee4009f1b8894b45b7e6bfd888: nopayloadclient: new package
