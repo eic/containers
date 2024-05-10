@@ -637,6 +637,7 @@ clean_internal_tag:
           curl --request DELETE --header "PRIVATE-TOKEN: ${REG_CLEANUP_TOKEN}" ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/registry/repositories/${id}/tags/${tag} ;
         done ;
       done
+  allow_failure: true
 
 clean_unstable_mr:
   extends: .docker
@@ -665,6 +666,7 @@ clean_unstable_mr:
         if [ "$state" == "merged" ] ; then docker rmi $repository:$tag ; fi ;
         if [ "$state" == "closed" ] ; then docker rmi $repository:$tag ; fi ;
       done
+  allow_failure: true
 
 clean_pipeline:
   extends: .docker
@@ -706,6 +708,7 @@ clean_pipeline:
         if [ "$status" == "failed" ] ; then docker rmi $repository:$tag ; fi ;
         if [ "$status" == "canceled" ] ; then docker rmi $repository:$tag ; fi ;
       done
+  allow_failure: true
 
 status:success:
   stage: status-report
