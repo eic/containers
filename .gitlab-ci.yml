@@ -207,6 +207,18 @@ status:pending:
     - docker context create context
     - docker context use context
     - docker buildx create --name builder --driver docker-container --bootstrap --use context
+  after_script:
+    - !reference [.docker, after_script]
+    - if grep "inconsistent graph state" build.log ; then
+        exit 126
+      fi
+    - if grep "unknown blob" build.log ; then
+        exit 127
+      fi
+    - exit 1
+  retry:
+    max: 1
+    exit_codes: 1
   artifacts:
     paths:
       - build.log
