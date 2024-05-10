@@ -210,10 +210,10 @@ status:pending:
   after_script:
     - !reference [.docker, after_script]
     - if grep "inconsistent graph state" build.log ; then
-        exit 126
+        exit 126 ;
       fi
     - if grep "unknown blob" build.log ; then
-        exit 127
+        exit 127 ;
       fi
     - exit 1
   retry:
