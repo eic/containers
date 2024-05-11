@@ -379,6 +379,7 @@ jug_dev:
                    2>&1 | tee build.log
     - if grep "inconsistent graph state" build.log ; then exit 126 ; fi
     - if grep "unknown blob" build.log ; then exit 127 ; fi
+    - docker image inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
   retry:
     max: 1
     exit_codes: [126, 127]
