@@ -31,7 +31,7 @@ variables:
   NIGHTLY_TAG: "nightly"
 
   ## Additional options for docker build (e.g. --no-cache)
-  BUILD_OPTIONS: ""
+  BUILD_OPTIONS: "--no-cache"
 
   ## Version to be set by external trigger
   VERSION: ""
@@ -280,9 +280,9 @@ jug_dev:
         BUILD_IMAGE: jug_
         PLATFORM: linux/amd64
         ENV:
-        - dbg
+#        - dbg
         - dev
-        - prod
+#        - prod
 #      - BUILD_TYPE:
 #        - default
 #        - nightly
