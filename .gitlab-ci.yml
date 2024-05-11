@@ -590,6 +590,8 @@ df:
     - docker-new
   needs: 
     - version
+  rules:
+    - when: manual
   script:
     - docker images
     - docker ps --size
