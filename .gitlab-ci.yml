@@ -31,7 +31,7 @@ variables:
   NIGHTLY_TAG: "nightly"
 
   ## Additional options for docker build (e.g. --no-cache)
-  BUILD_OPTIONS: ""
+  BUILD_OPTIONS: "--no-cache"
 
   ## Version to be set by external trigger
   VERSION: ""
@@ -234,15 +234,15 @@ status:pending:
 base:
   parallel:
     matrix:
-      - BASE_IMAGE: debian:testing-slim
-        BUILD_IMAGE: debian_testing_base
-        PLATFORM: linux/amd64,linux/arm64/v8
+#      - BASE_IMAGE: debian:testing-slim
+#        BUILD_IMAGE: debian_testing_base
+#        PLATFORM: linux/amd64,linux/arm64/v8
       - BASE_IMAGE: debian:stable-slim
         BUILD_IMAGE: debian_stable_base
-        PLATFORM: linux/amd64,linux/arm64/v8
-      - BASE_IMAGE: ubuntu:22.04
-        BUILD_IMAGE: ubuntu_base
-        PLATFORM: linux/amd64,linux/arm64/v8
+        PLATFORM: linux/amd64
+#      - BASE_IMAGE: ubuntu:22.04
+#        BUILD_IMAGE: ubuntu_base
+#        PLATFORM: linux/amd64,linux/arm64/v8
 #      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
 #        BUILD_IMAGE: oneapi_base
 #        PLATFORM: linux/amd64
@@ -280,9 +280,9 @@ jug_dev:
         BUILD_IMAGE: jug_
         PLATFORM: linux/amd64
         ENV:
-        - dbg
+#        - dbg
         - dev
-        - prod
+#        - prod
 #      - BUILD_TYPE:
 #        - default
 #        - nightly

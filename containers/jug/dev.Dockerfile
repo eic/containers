@@ -150,7 +150,6 @@ export CCACHE_DIR=/ccache
 source ${SPACK_ROOT}/share/spack/setup-env.sh
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
-spack buildcache update-index eics3rw
 echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
 spack env activate --dir ${SPACK_ENV}
 spack concretize --fresh --force
@@ -182,7 +181,6 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-spack buildcache update-index eics3rw
 spack env activate --dir ${SPACK_ENV}
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
