@@ -51,7 +51,6 @@ d7e756a26b9450d7f4e94dac1747a729011e2140
 70fb0b35e55f8f9b3182b091bc8c40b8770041b7
 86730c7b175369ac0490b096401a2912f087a6e9
 b6d69bfad215a62b9d8078c6216ec50931f848eb
-ba753ac380ef7f2a626a00fd15612913fb21ac4c
 5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe
 98162aa2e1574b2e8a2a43976ad27eda92e5c65e
 85c6d6dbab88f4cb40a20cf13204263c59c640e9
@@ -124,7 +123,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 70fb0b35e55f8f9b3182b091bc8c40b8770041b7: py-transformers: add v4.35.2
 ## 86730c7b175369ac0490b096401a2912f087a6e9: py-fsspec: fix import tests
 ## b6d69bfad215a62b9d8078c6216ec50931f848eb: py-flit-core: fix import tests
-## ba753ac380ef7f2a626a00fd15612913fb21ac4c: Make things easier to concretize
 ## 5140a9b6a3588d9e44a98a6a1f3993e7687ef2fe: py-keras: add v3.0.5
 ## 98162aa2e1574b2e8a2a43976ad27eda92e5c65e: py-earth2mip: add new package
 ## 85c6d6dbab88f4cb40a20cf13204263c59c640e9: (py-)onnx: new version 1.14.{0,1}, 1.15.0
