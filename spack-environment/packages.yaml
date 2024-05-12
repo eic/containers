@@ -358,7 +358,6 @@ packages:
   spdlog:
     require:
     - '@1.11.0'
-    - +fmt_external
   stow:
     require:
     - '@2.3.1'
