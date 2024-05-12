@@ -212,16 +212,16 @@ ccache --show-stats
 ccache --zero-stats
 EOF
 
-## Create views at /usr/local and /opt/detectors
+## Create views at /usr/local and /opt/detector
 RUN <<EOF
 set -e
 rm -r /usr/local
 sed -i -e '/view: false/d' ${SPACK_ENV}/spack.yaml
 cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/spack.yaml
 spack -e ${SPACK_ENV} env view regenerate /usr/local
-spack -e ${SPACK_ENV} env view regenerate /opt/detectors
-if [[ -n $NIGHTLY && -f /opt/detectors/epic ]] ; then
-  ln -s /opt/detectors/epic-main/setup.sh /opt/detectors/setup.sh
+spack -e ${SPACK_ENV} env view regenerate /opt/detector
+if [[ -n $NIGHTLY && -f /opt/detector/epic ]] ; then
+  ln -s /opt/detector/epic-main/setup.sh /opt/detector/setup.sh
 fi
 EOF
 
@@ -314,7 +314,7 @@ COPY --from=staging /opt/spack /opt/spack
 COPY --from=staging /opt/spack-environment /opt/spack-environment
 COPY --from=staging /opt/software /opt/software
 COPY --from=staging /usr/._local /usr/._local
-COPY --from=staging /opt/._detectors /opt/._detectors
+COPY --from=staging /opt/._detector /opt/._detector
 COPY --from=staging /etc/profile.d /etc/profile.d
 COPY --from=staging /etc/jug_info /etc/jug_info
 COPY --from=staging /etc/eic-env.sh /etc/eic-env.sh
@@ -328,13 +328,13 @@ SHELL ["docker-shell"]
 ## ensure /usr/local is the view, not a symlink
 RUN <<EOF
 set -ex
-rm -rf /usr/local /opt/detectors
+rm -rf /usr/local /opt/detector
 LOCAL_PREFIX_PATH=$(realpath $(ls /usr/._local/ | tail -n1))
 mv /usr/._local/${LOCAL_PREFIX_PATH} /usr/local
 ln -s /usr/local /usr/._local/${LOCAL_PREFIX_PATH}
-DETECTORS_PREFIX_PATH=$(realpath $(ls /opt/._detectors/ | tail -n1))
-mv /opt/._detectors/${DETECTORS_PREFIX_PATH} /opt/detectors
-ln -s /opt/detectors /opt/._detectors/${DETECTORS_PREFIX_PATH}
+DETECTOR_PREFIX_PATH=$(realpath $(ls /opt/._detector/ | tail -n1))
+mv /opt/._detector/${DETECTOR_PREFIX_PATH} /opt/detector
+ln -s /opt/detector /opt/._detector/${DETECTOR_PREFIX_PATH}
 EOF
 
 ## set ROOT TFile forward compatibility
