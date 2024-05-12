@@ -163,7 +163,7 @@ packages:
     - '@0.20'
   jana2:
     require:
-    - '@2.2.0'
+    - '@2.2.1-rc1'
     - -ipo +podio +root +zmq
   juggler:
     require:
