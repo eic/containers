@@ -21,7 +21,7 @@ env:
   ## GitHub registry
   GH_REGISTRY: ghcr.io
   GH_REGISTRY_USER: eic
-  GH_PUSH: 0
+  GH_PUSH: 1
 
 jobs:
   base:
@@ -62,10 +62,9 @@ jobs:
           file: containers/debian/base.Dockerfile
           context: containers/debian
           platforms: ${{ matrix.PLATFORM }}
-          push: false
+          push: true
           tags: |
-            eicweb/${{ matrix.BUILD_IMAGE }}:gha
-            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:gha
+            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:gha-${{ github.run_id }}
           build-args: |
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
@@ -136,6 +135,7 @@ jobs:
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
+            INTERNAL_TAG=gha-${{ github.run_id }}
             SPACK_ORGREPO=${{ steps.spack.outputs.orgrepo }}
             SPACK_VERSION=${{ steps.spack.outputs.version }}
             SPACK_CHERRYPICKS=${{ steps.spack.outputs.cherrypicks }}
