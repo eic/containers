@@ -23,6 +23,12 @@ env:
   GH_REGISTRY_USER: eic
   GH_PUSH: 1
 
+  ## Number of jobs to start during container builds
+  JOBS: 4
+
+  ## Internal tag used for the CI
+  INTERNAL_TAG: pipeline-${{ github.run_id }}
+
 jobs:
   base:
     runs-on: ubuntu-latest
@@ -64,7 +70,7 @@ jobs:
           platforms: ${{ matrix.PLATFORM }}
           push: true
           tags: |
-            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:gha-${{ github.run_id }}
+            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:${{ env.INTERNAL_TAG }}
           build-args: |
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
@@ -139,12 +145,12 @@ jobs:
           platforms: ${{ matrix.PLATFORM }}
           push: true
           tags: |
-            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:gha
+            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:${{ env.INTERNAL_TAG }}
           build-args: |
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
-            INTERNAL_TAG=gha-${{ github.run_id }}
+            INTERNAL_TAG=${{ env.INTERNAL_TAG }}
             SPACK_ORGREPO=${{ steps.spack.outputs.orgrepo }}
             SPACK_VERSION=${{ steps.spack.outputs.version }}
             SPACK_CHERRYPICKS=${{ steps.spack.outputs.cherrypicks }}
@@ -154,5 +160,6 @@ jobs:
             EICSPACK_CHERRYPICKS=${{ steps.eic-spack.outputs.cherrypicks }}
             S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
             S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+            jobs=${{ env.JOBS }}
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}
