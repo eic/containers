@@ -94,9 +94,9 @@ jobs:
           echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks_files=${SPACK_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
       - name: Load eic-spack version and cherry-picks
-        id: eicspack
+        id: eic-spack
         run: |
-          source eicspack.sh
+          source eic-spack.sh
           echo "orgrepo=${EICSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
           echo "version=${EICSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks=${EICSPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
@@ -138,9 +138,9 @@ jobs:
             SPACK_VERSION=${{ steps.spack.outputs.version }}
             SPACK_CHERRYPICKS=${{ steps.spack.outputs.cherrypicks }}
             SPACK_CHERRYPICKS_FILES=${{ steps.spack.outputs.cherrypicks_files }}
-            EICSPACK_ORGREPO=${{ steps.eicspack.outputs.orgrepo }}
-            EICSPACK_VERSION=${{ steps.eicspack.outputs.version }}
-            EICSPACK_CHERRYPICKS=${{ steps.eicspack.outputs.cherrypicks }}
+            EICSPACK_ORGREPO=${{ steps.eic-spack.outputs.orgrepo }}
+            EICSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
+            EICSPACK_CHERRYPICKS=${{ steps.eic-spack.outputs.cherrypicks }}
           build-contexts: |
             spack=.
           cache-from: type=gha,scope=${{ github.workflow }}
