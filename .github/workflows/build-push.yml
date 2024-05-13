@@ -99,6 +99,14 @@ jobs:
           echo "orgrepo=${EICSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
           echo "version=${EICSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks=${EICSPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
+      - name: Load secrets into mirrors.yaml
+        id: mirrors
+        run: |
+          source spack.sh
+          export SPACK_VERSION
+          export GITHUB_REGISTRY_USER=${{ secrets.GHCR_REGISTRY_USER }}
+          export GITHUB_REGISTRY_TOKEN=${{ secrets.GHCR_REGISTRY_TOKEN }}
+          cat mirrors.yaml.in | envsubst > mirrors.yaml
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -126,6 +134,8 @@ jobs:
           context: containers/jug
           build-contexts: |
             spack-environment=spack-environment
+          secret-files: |
+            mirrors=mirrors.yaml
           platforms: ${{ matrix.PLATFORM }}
           push: true
           tags: |
