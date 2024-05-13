@@ -112,6 +112,8 @@ jobs:
           export SPACK_VERSION
           export GITHUB_REGISTRY_USER=${{ secrets.GHCR_REGISTRY_USER }}
           export GITHUB_REGISTRY_TOKEN=${{ secrets.GHCR_REGISTRY_TOKEN }}
+          export S3RW_ACCESS_KEY=${{ secrets.S3RW_ACCESS_KEY }}
+          export S3RW_SECRET_KEY=${{ secrets.S3RW_SECRET_KEY }}
           cat mirrors.yaml.in | envsubst > mirrors.yaml
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
