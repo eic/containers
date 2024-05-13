@@ -117,8 +117,8 @@ jobs:
         if: ${{ env.GH_PUSH == '1' }}
         with:
           registry: ${{ env.GH_REGISTRY }}
-          username: ${{ env.GH_REGISTRY_USER }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.GHCR_REGISTRY_USER }}
+          password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -127,9 +127,8 @@ jobs:
           build-contexts: |
             spack-environment=spack-environment
           platforms: ${{ matrix.PLATFORM }}
-          push: false
+          push: true
           tags: |
-            eicweb/${{ matrix.BUILD_IMAGE }}:gha
             ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:gha
           build-args: |
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
