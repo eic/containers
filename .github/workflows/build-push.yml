@@ -77,7 +77,7 @@ jobs:
     strategy:
       matrix:
         include:
-        - BASE_IMAGE: debian_testing_base
+        - BASE_IMAGE: debian_stable_base
           BUILD_IMAGE: jug_dev
           PLATFORM: linux/amd64
     steps:
