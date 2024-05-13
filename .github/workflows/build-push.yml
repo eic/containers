@@ -143,7 +143,5 @@ jobs:
             EICSPACK_ORGREPO=${{ steps.eic-spack.outputs.orgrepo }}
             EICSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
             EICSPACK_CHERRYPICKS=${{ steps.eic-spack.outputs.cherrypicks }}
-          build-contexts: |
-            spack=.
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}
