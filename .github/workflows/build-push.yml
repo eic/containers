@@ -54,8 +54,8 @@ jobs:
         if: ${{ env.GH_PUSH == '1' }}
         with:
           registry: ${{ env.GH_REGISTRY }}
-          username: ${{ env.GH_REGISTRY_USER }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.GHCR_REGISTRY_USER }}
+          password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
