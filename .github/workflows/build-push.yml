@@ -63,6 +63,15 @@ jobs:
           platforms: linux/amd64,linux/arm64
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}
+          tags: |
+            ${{ env.INTERNAL_TAG }}
+            type=schedule
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ env.DH_PUSH == '1' }}
@@ -84,8 +93,8 @@ jobs:
           context: containers/debian
           platforms: ${{ matrix.PLATFORM }}
           push: true
-          tags: |
-            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:${{ env.INTERNAL_TAG }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
@@ -99,8 +108,9 @@ jobs:
       matrix:
         include:
         - BASE_IMAGE: debian_stable_base
-          BUILD_IMAGE: jug_dev
+          BUILD_IMAGE: dev
           PLATFORM: linux/amd64
+          ENV: dev
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
@@ -145,6 +155,15 @@ jobs:
           platforms: linux/amd64
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/eic/eic_${{ matrix.BUILD_IMAGE }}
+          tags: |
+            ${{ env.INTERNAL_TAG }}
+            type=schedule,pattern={{date 'YYYY-MM-DD'}}
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ env.DH_PUSH == '1' }}
@@ -170,12 +189,12 @@ jobs:
             mirrors=mirrors.yaml
           platforms: ${{ matrix.PLATFORM }}
           push: true
-          tags: |
-            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:${{ env.INTERNAL_TAG }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
-            BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
+            BUILD_IMAGE=eic_${{ matrix.BUILD_IMAGE }}
             INTERNAL_TAG=${{ env.INTERNAL_TAG }}
             SPACK_ORGREPO=${{ steps.spack.outputs.orgrepo }}
             SPACK_VERSION=${{ steps.spack.outputs.version }}
@@ -196,8 +215,8 @@ jobs:
     strategy:
       matrix:
         include:
-        - BASE_IMAGE: jug_dev
-          BUILD_IMAGE: jug_xl
+        - BASE_IMAGE: dev
+          BUILD_IMAGE: xl
           PLATFORM: linux/amd64
     steps:
       - name: Free Disk Space (Ubuntu)
@@ -213,6 +232,15 @@ jobs:
           platforms: linux/amd64
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/eic/eic_${{ matrix.BUILD_IMAGE }}
+          tags: |
+            ${{ env.INTERNAL_TAG }}
+            type=schedule,pattern={{date 'YYYY-MM-DD'}}
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ env.DH_PUSH == '1' }}
@@ -236,12 +264,12 @@ jobs:
             detectors=.
           platforms: ${{ matrix.PLATFORM }}
           push: true
-          tags: |
-            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}:${{ env.INTERNAL_TAG }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
-            BASE_IMAGE=${{ matrix.BASE_IMAGE }}
-            BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
+            BASE_IMAGE=eic_${{ matrix.BASE_IMAGE }}
+            BUILD_IMAGE=eic_${{ matrix.BUILD_IMAGE }}
             INTERNAL_TAG=${{ env.INTERNAL_TAG }}
             jobs=${{ env.JOBS }}
           cache-from: type=gha,scope=${{ github.workflow }}
