@@ -110,6 +110,10 @@ jobs:
         run: |
           source spack.sh
           export SPACK_VERSION
+          export CI_REGISTRY=ghcr.io
+          export CI_PROJECT_PATH=eic
+          export CI_REGISTRY_USER=${{ secrets.GHCR_REGISTRY_USER }}
+          export CI_REGISTRY_PASSWORD=${{ secrets.GHCR_REGISTRY_TOKEN }}
           export GITHUB_REGISTRY_USER=${{ secrets.GHCR_REGISTRY_USER }}
           export GITHUB_REGISTRY_TOKEN=${{ secrets.GHCR_REGISTRY_TOKEN }}
           export S3RW_ACCESS_KEY=${{ secrets.S3RW_ACCESS_KEY }}
