@@ -2,6 +2,20 @@ name: build-push
 
 on:
   push:
+  workflow_dispatch:
+    inputs:
+      EDM4EIC_VERSION:
+        required: false
+        default: ''
+        type: string
+      EICRECON_VERSION:
+        required: false
+        default: ''
+        type: string
+      JUGGLER_VERSION:
+        required: false
+        default: ''
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -10,9 +24,9 @@ concurrency:
 env:
   ## Default versions are specified in packages.yaml but can be overridden
   ## note: nightly builds will always use the master/main branch
-  EDM4EIC_VERSION: ""
-  EICRECON_VERSION: ""
-  JUGGLER_VERSION: ""
+  EDM4EIC_VERSION: ${{ inputs.EDM4EIC_VERSION }}
+  EICRECON_VERSION: ${{ inputs.EICRECON_VERSION }}
+  JUGGLER_VERSION: ${{ inputs.JUGGLER_VERSION }}
 
   ## Dockerhub registry
   DH_REGISTRY: docker.io
