@@ -166,6 +166,7 @@ jobs:
             ${{ env.INTERNAL_TAG }}
             type=schedule,pattern={{date 'YYYY-MM-DD'}}
             type=ref,prefix=unstable-pr-,event=pr
+            type=match,pattern=^v(\d+\.\d+\.\d+-.*)$,group=1
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ env.DH_PUSH == '1' }}
@@ -244,6 +245,7 @@ jobs:
             ${{ env.INTERNAL_TAG }}
             type=schedule,pattern={{date 'YYYY-MM-DD'}}
             type=ref,prefix=unstable-pr-,event=pr
+            type=match,pattern=^v(\d+\.\d+\.\d+-.*)$,group=1
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ env.DH_PUSH == '1' }}
