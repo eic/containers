@@ -1,6 +1,8 @@
 name: build-push
 
 on:
+  schedule:
+    - cron: "30 */6 * * *"
   push:
   workflow_dispatch:
     inputs:
@@ -52,7 +54,6 @@ jobs:
         - BASE_IMAGE: debian:stable-slim
           BUILD_IMAGE: debian_stable_base
           PLATFORM: linux/amd64
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
