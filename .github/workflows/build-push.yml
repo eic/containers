@@ -72,6 +72,7 @@ jobs:
           tags: |
             ${{ env.INTERNAL_TAG }}
             type=schedule
+            type=ref,prefix=unstable-pr-,event=pr
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ env.DH_PUSH == '1' }}
@@ -164,6 +165,7 @@ jobs:
           tags: |
             ${{ env.INTERNAL_TAG }}
             type=schedule,pattern={{date 'YYYY-MM-DD'}}
+            type=ref,prefix=unstable-pr-,event=pr
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ env.DH_PUSH == '1' }}
@@ -241,6 +243,7 @@ jobs:
           tags: |
             ${{ env.INTERNAL_TAG }}
             type=schedule,pattern={{date 'YYYY-MM-DD'}}
+            type=ref,prefix=unstable-pr-,event=pr
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ env.DH_PUSH == '1' }}
