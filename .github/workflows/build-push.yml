@@ -33,7 +33,7 @@ env:
   ## Dockerhub registry
   DH_REGISTRY: docker.io
   DH_REGISTRY_USER: eicweb
-  DH_PUSH: 0
+  DH_PUSH: 1
   ## GitHub registry
   GH_REGISTRY: ghcr.io
   GH_REGISTRY_USER: eic
@@ -68,7 +68,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/eic/${{ matrix.BUILD_IMAGE }}
+            name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }},enable=${{ env.DH_PUSH != 0 }}
+            name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }},enable=${{ env.GH_PUSH != 0 }}
           tags: |
             ${{ env.INTERNAL_TAG }}
             type=schedule
@@ -161,7 +162,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/eic/eic_${{ matrix.BUILD_IMAGE }}
+            name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/eic_${{ matrix.BUILD_IMAGE }},enable=${{ env.DH_PUSH != 0 }}
+            name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/eic_${{ matrix.BUILD_IMAGE }},enable=${{ env.GH_PUSH != 0 }}
           tags: |
             ${{ env.INTERNAL_TAG }}
             type=schedule,pattern={{date 'YYYY-MM-DD'}}
@@ -240,7 +242,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/eic/eic_${{ matrix.BUILD_IMAGE }}
+            name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/eic_${{ matrix.BUILD_IMAGE }},enable=${{ env.DH_PUSH != 0 }}
+            name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/eic_${{ matrix.BUILD_IMAGE }},enable=${{ env.GH_PUSH != 0 }}
           tags: |
             ${{ env.INTERNAL_TAG }}
             type=schedule,pattern={{date 'YYYY-MM-DD'}}
