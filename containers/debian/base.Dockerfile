@@ -46,6 +46,7 @@ apt-get -yqq install --no-install-recommends                            \
         less                                                            \
         libc6-dbg                                                       \
         libcbor-xs-perl                                                 \
+        libegl-dev                                                      \
         libjson-xs-perl                                                 \
         libgl-dev                                                       \
         libglx-dev                                                      \
