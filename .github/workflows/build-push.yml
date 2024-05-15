@@ -33,7 +33,7 @@ env:
   ## Dockerhub registry
   DH_REGISTRY: docker.io
   DH_REGISTRY_USER: eicweb
-  DH_PUSH: 1
+  DH_PUSH: 0
   ## GitHub registry
   GH_REGISTRY: ghcr.io
   GH_REGISTRY_USER: eic
