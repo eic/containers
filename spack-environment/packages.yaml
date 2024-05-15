@@ -90,6 +90,11 @@ packages:
     require:
     - '@0.10.3'
     - cxxstd=20
+  egl:
+    buildable: False
+    externals:
+    - spec: egl@1.5.0
+      prefix: /usr
   eic-smear:
     require:
     - '@1.1.12'
@@ -217,6 +222,7 @@ packages:
     - '@7.7.1'
     - +application_framework -vtk
   opengl:
+    buildable: False
     externals:
     - spec: opengl@4.6
       prefix: /usr
