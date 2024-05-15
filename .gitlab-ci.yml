@@ -195,7 +195,7 @@ status:pending:
   rules:
     - when: on_success
   tags:
-    - docker-new
+    - docker-new2
   before_script:
     - !reference [.docker, before_script]
     - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
@@ -583,7 +583,7 @@ df:
   extends: .build
   stage: config
   tags:
-    - docker-new
+    - docker-new2
   needs: 
     - version
   script:
@@ -609,7 +609,7 @@ prune:
   extends: .build
   stage: finalize
   tags:
-    - docker-new
+    - docker-new2
   needs:
     - clean_internal_tag
     - clean_unstable_mr
@@ -639,7 +639,7 @@ clean_unstable_mr:
   extends: .docker
   stage: finalize
   tags:
-    - docker-new
+    - docker-new2
   when: always
   script:
     - apk add curl jq
@@ -671,7 +671,7 @@ clean_pipeline:
     - version
     - clean_internal_tag
   tags:
-    - docker-new
+    - docker-new2
   when: always
   script:
     - apk add curl jq
