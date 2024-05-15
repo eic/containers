@@ -4,7 +4,7 @@
       exclude: [epic]
       link_type: symlink
     detectors:
-      root: /opt/detectors
+      root: /opt/detector
       select: [epic]
       projections:
         all: '{name}-{version}'
