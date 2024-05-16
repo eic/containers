@@ -13,7 +13,7 @@ variables:
 
   ## Local registry
   CI_PUSH: 1
-  CI_REGISTRY: eicweb2.linux.phy.anl.gov:4567 # override using internal name of eicweb
+  #CI_REGISTRY: eicweb2.linux.phy.anl.gov:4567 # override using internal name of eicweb
   ## Dockerhub registry
   DH_REGISTRY: docker.io
   DH_REGISTRY_USER: eicweb
