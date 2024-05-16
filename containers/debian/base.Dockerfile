@@ -49,6 +49,7 @@ apt-get -yqq install --no-install-recommends                            \
         libegl-dev                                                      \
         libjson-xs-perl                                                 \
         libgl-dev                                                       \
+        libglew-dev                                                     \
         libglx-dev                                                      \
         libopengl-dev                                                   \
         locales                                                         \
