@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "30 */6 * * *"
   push:
+    branches:
+    - master  
+  pull_request:
+    branches:
+    - master
   workflow_dispatch:
     inputs:
       EDM4EIC_VERSION:
