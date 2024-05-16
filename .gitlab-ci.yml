@@ -165,6 +165,9 @@ status:pending:
   services:
     - docker:dind
   before_script:
+    - # redefine CI_REGISTRY to use internal URL
+      export CI_REGISTRY=${CI_REGISTRY/eicweb.phy.anl.gov/eicweb2.linux.phy.anl.gov}
+      echo $CI_REGISTRY
     - # Login to local registry
       echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY}
     - # Login to remote registries
@@ -195,9 +198,10 @@ status:pending:
   rules:
     - when: on_success
   tags:
-    - docker-new2
+    - docker-new
   before_script:
     - !reference [.docker, before_script]
+    - echo $CI_REGISTRY
     - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
       for arch in aarch64 ; do
         if ! grep -q enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
@@ -254,6 +258,7 @@ base:
   needs:
     - version
   script:
+    - echo $CI_REGISTRY
     - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
@@ -583,7 +588,7 @@ df:
   extends: .build
   stage: config
   tags:
-    - docker-new2
+    - docker-new
   needs: 
     - version
   script:
@@ -609,7 +614,7 @@ prune:
   extends: .build
   stage: finalize
   tags:
-    - docker-new2
+    - docker-new
   needs:
     - clean_internal_tag
     - clean_unstable_mr
@@ -639,7 +644,7 @@ clean_unstable_mr:
   extends: .docker
   stage: finalize
   tags:
-    - docker-new2
+    - docker-new
   when: always
   script:
     - apk add curl jq
@@ -671,7 +676,7 @@ clean_pipeline:
     - version
     - clean_internal_tag
   tags:
-    - docker-new2
+    - docker-new
   when: always
   script:
     - apk add curl jq
