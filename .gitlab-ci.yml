@@ -203,7 +203,7 @@ status:pending:
     - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
       for arch in aarch64 ; do
         if ! grep -q enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
-          docker run --rm --privileged multiarch/qemu-user-static --persistent yes ;
+          docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes ;
         fi ;
       done
     - docker context create context
