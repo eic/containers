@@ -137,6 +137,8 @@ version:
 .status:
   image: curlimages/curl:latest
   before_script: []
+  tags:
+    - docker-new2
   script:
     - |
       if [ -n "${GITHUB_SHA}" ] ; then
