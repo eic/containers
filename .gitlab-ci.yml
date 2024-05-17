@@ -13,7 +13,7 @@ variables:
 
   ## Local registry
   CI_PUSH: 1
-  #CI_REGISTRY: eicweb2.linux.phy.anl.gov:4567 # override using internal name of eicweb
+  LC_REGISTRY: eicweb2.linux.phy.anl.gov:4567 # override using internal name of eicweb
   ## Dockerhub registry
   DH_REGISTRY: docker.io
   DH_REGISTRY_USER: eicweb
@@ -137,8 +137,6 @@ version:
 .status:
   image: curlimages/curl:latest
   before_script: []
-  tags:
-    - docker-new2
   script:
     - |
       if [ -n "${GITHUB_SHA}" ] ; then
@@ -168,7 +166,8 @@ status:pending:
   services:
     - docker:dind
   before_script:
-    -  echo $CI_REGISTRY
+    -  echo $LC_REGISTRY
+    - git clone https://eicweb2.linux.phy.anl.gov/containers/eic_container.git test
     - # Login to local registry
       echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY}
     - # Login to remote registries
