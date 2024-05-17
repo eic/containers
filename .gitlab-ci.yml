@@ -13,7 +13,7 @@ variables:
 
   ## Local registry
   CI_PUSH: 1
-  LC_REGISTRY: eicweb2.linux.phy.anl.gov:4567 # override using internal name of eicweb
+  LC_REGISTRY: 192.168.1.1:4567 # direct link to eicweb
   ## Dockerhub registry
   DH_REGISTRY: docker.io
   DH_REGISTRY_USER: eicweb
@@ -166,11 +166,8 @@ status:pending:
   services:
     - docker:dind
   before_script:
-    -  echo $LC_REGISTRY
-    - ip addr
-    - git clone http://192.168.1.1/containers/eic_container.git test
     - # Login to local registry
-      echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY}
+      echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} --password-stdin ${LC_REGISTRY}
     - # Login to remote registries
       if [[ -n "${EXPORT_TAG}" ]] ; then
         if [[ -n "${DH_REGISTRY}" ]] ; then
@@ -182,7 +179,7 @@ status:pending:
       fi
   after_script:
     - # Logout from local registry
-      docker logout ${CI_REGISTRY}
+      docker logout ${LC_REGISTRY}
     - # Logout from remote registries
       if [[ -n "${EXPORT_TAG}" ]] ; then
         if [[ -n "${DH_REGISTRY}" ]] ; then
@@ -259,9 +256,9 @@ base:
     - version
   script:
     - docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+                   --tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                    }
@@ -317,15 +314,15 @@ jug_dev:
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
     - docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
+                   --tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                     ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
                    }
                    ${IF_BUILD_NIGHTLY:+
                      ${NIGHLTY:+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                       ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
                        ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
                        ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
                        ${PUSH_NIGHTLY_WITH_DATE:+
@@ -335,13 +332,13 @@ jug_dev:
                      }
                    }
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                     ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
                    }
                    ${IF_BUILD_NIGHTLY:+
                      ${NIGHLTY:+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}${ENV}:${NIGHTLY_TAG}}
+                       ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}${ENV}:${NIGHTLY_TAG}}
                        ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}${ENV}:${NIGHTLY_TAG}}
                        ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}${ENV}:${NIGHTLY_TAG}}
                        ${PUSH_NIGHTLY_WITH_DATE:+
@@ -352,7 +349,7 @@ jug_dev:
                    }
                    --file containers/jug/dev.Dockerfile
                    --platform ${PLATFORM}
-                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
+                   --build-arg DOCKER_REGISTRY=${LC_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
@@ -410,20 +407,20 @@ jug_xl:default:
   script:
     - apk add git
     - docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-default
+                   --tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-default
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                     ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                    }
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}}
+                     ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}}
                    }
                    --file containers/jug/xl.Dockerfile
                    --platform ${PLATFORM}
-                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
+                   --build-arg DOCKER_REGISTRY=${LC_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}-default
                    --build-arg JUG_VERSION=${EXPORT_TAG}-$(git rev-parse HEAD)
@@ -469,14 +466,14 @@ jug_xl:nightly:
       fi
     - apk add git
     - docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-nightly
+                   --tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-nightly
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
+                     ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
                    }
                    ${NIGHTLY:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
+                     ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
                      ${PUSH_NIGHTLY_WITH_DATE:+
@@ -485,12 +482,12 @@ jug_xl:nightly:
                      }
                    }
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}-nightly}
+                     ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}-nightly}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}-nightly}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}-nightly}
                    }
                    ${NIGHTLY:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}}
+                     ${CI_PUSH:+--tag ${LC_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}}
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}}
                      ${PUSH_NIGHTLY_WITH_DATE:+
@@ -500,7 +497,7 @@ jug_xl:nightly:
                    }
                    --file containers/jug/xl.Dockerfile
                    --platform ${PLATFORM}
-                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
+                   --build-arg DOCKER_REGISTRY=${LC_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}-nightly
                    --build-arg JUG_VERSION=${EXPORT_TAG}-nightly-$(git rev-parse HEAD)-$(date +%Y-%m-%d_%H-%M-%S)
