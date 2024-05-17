@@ -167,7 +167,7 @@ status:pending:
     - docker:dind
   before_script:
     -  echo $LC_REGISTRY
-    - git clone https://eicweb2.linux.phy.anl.gov/containers/eic_container.git test
+    - git clone https://192.168.1.1/containers/eic_container.git test
     - # Login to local registry
       echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY}
     - # Login to remote registries
