@@ -54,6 +54,7 @@ if [ -n "${SPACK_CHERRYPICKS}" ] ; then
     fi
   done
 fi
+sed -i 's/timeout=60/timeout=None/' $SPACK_ROOT/lib/spack/spack/stage.py
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/docker-shell
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/interactive-shell
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/spack-env
