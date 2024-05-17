@@ -140,6 +140,9 @@ packages:
     - '@11.2.1.east'
     - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
+  glew:
+    require:
+    - gl=glx
   gloo:
     require:
     - '@2023-05-19'
