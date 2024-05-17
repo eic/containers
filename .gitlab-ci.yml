@@ -23,7 +23,7 @@ variables:
   GH_PUSH: 1
 
   ## Number of jobs to start during container builds
-  JOBS: 8
+  JOBS: 1
 
   ## is this nightly or not?
   NIGHTLY: ""
