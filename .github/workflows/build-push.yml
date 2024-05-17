@@ -134,14 +134,14 @@ jobs:
           source spack.sh
           echo "orgrepo=${SPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
           echo "version=${SPACK_VERSION}" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks_files=${SPACK_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
+          echo "cherrypicks=${SPACK_CHERRYPICKS[@]}" | tee -a $GITHUB_OUTPUT
+          echo "cherrypicks_files=${SPACK_CHERRYPICKS_FILES[@]}" | tee -a $GITHUB_OUTPUT
       - name: Load key4hep-spack version
         id: key4hep-spack
         run: |
           source key4hep-spack.sh
           echo "orgrepo=${KEY4HEPSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=${KEY4HEPSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
+          echo "version=${KEY4HEPSPACK_VERSION}" | tee -a $GITHUB_OUTPUT   
       - name: Load eic-spack version
         id: eic-spack
         run: |
