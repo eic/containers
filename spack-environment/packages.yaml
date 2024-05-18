@@ -128,7 +128,7 @@ packages:
     - +shared cxxstd=17
   gaudi:
     require:
-    - '@37.1'
+    - '@38.1'
     - +aida
   gdb:
     require:
