@@ -37,6 +37,9 @@ packages:
   blas:
     require:
     - openblas
+  boost:
+    require:
+    - '@1.84.0'
   cairo:
     require:
     - '@1.16.0'
