@@ -129,7 +129,7 @@ packages:
   gaudi:
     require:
     - '@38.1'
-    - +aida
+    - +aida +gaudialg
   gdb:
     require:
     - '@12.1'
