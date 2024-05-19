@@ -63,6 +63,7 @@ spack:
   - opencascade
   - osg-ca-certs
   - phonebook-cli
+  - podio
   - prmon
   - pythia8
   - py-awkward
