@@ -171,9 +171,11 @@ EOF
 ## Note: these default versions are just the very first commit.
 ARG EDM4EIC_VERSION="8aeb507f93a93257c99985efbce0ec1371e0b331"
 ARG EICRECON_VERSION="28108da4a1e8919a05dfdb5f11e114800a2cbe96"
+ARG EPIC_VERSION="c1827f05430b2051df8a0b421db1cbab87165e0b"
 ARG JUGGLER_VERSION="df87bf1f8643afa8e80bece9d36d6dc26dfe8132"
 ADD https://api.github.com/repos/eic/edm4eic/commits/${EDM4EIC_VERSION} /tmp/edm4eic.json
 ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
+ADD https://api.github.com/repos/eic/epic/commits/${EPIC_VERSION} /tmp/epic.json
 ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/juggler.json
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
@@ -191,6 +193,12 @@ if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; the
   export EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
   sed -i "/# EICRECON_VERSION$/ s/@[^\s']*/@git.${EICRECON_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all eicrecon
+fi
+if [ "${EPIC_VERSION}" != "c1827f05430b2051df8a0b421db1cbab87165e0b" ] ; then
+  export EPIC_VERSION=$(jq -r .sha /tmp/epic.json)
+  sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/spack.yaml
+  sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/spack.yaml
+  spack deconcretize -y --all epic
 fi
 if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   export JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)

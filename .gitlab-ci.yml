@@ -9,6 +9,7 @@ variables:
   ## note: nightly builds will always use the master/main branch
   EDM4EIC_VERSION: ""
   EICRECON_VERSION: ""
+  EPIC_VERSION: ""
   JUGGLER_VERSION: ""
 
   ## Local registry
@@ -366,11 +367,13 @@ jug_dev:
                    ${IF_BUILD_DEFAULT:+
                      ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION}}
                      ${EICRECON_VERSION:+--build-arg EICRECON_VERSION=${EICRECON_VERSION}}
+                     ${EPIC_VERSION:+--build-arg EPIC_VERSION=${EPIC_VERSION}}
                      ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=${JUGGLER_VERSION}}
                    }
                    ${IF_BUILD_NIGHTLY:+
                      --build-arg EDM4EIC_VERSION=main
                      --build-arg EICRECON_VERSION=main
+                     --build-arg EPIC_VERSION=main
                      --build-arg JUGGLER_VERSION=main
                    }
                    --build-arg ENV=${ENV}
