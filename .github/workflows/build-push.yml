@@ -135,13 +135,18 @@ jobs:
           echo "version=${SPACK_VERSION}" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks_files=${SPACK_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
-      - name: Load eic-spack version and cherry-picks
+      - name: Load key4hep-spack version
+        id: key4hep-spack
+        run: |
+          source key4hep-spack.sh
+          echo "orgrepo=${KEY4HEPSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
+          echo "version=${KEY4HEPSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
+      - name: Load eic-spack version
         id: eic-spack
         run: |
           source eic-spack.sh
           echo "orgrepo=${EICSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
           echo "version=${EICSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks=${EICSPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
       - name: Load secrets into mirrors.yaml
         id: mirrors
         run: |
@@ -210,9 +215,12 @@ jobs:
             SPACK_VERSION=${{ steps.spack.outputs.version }}
             SPACK_CHERRYPICKS=${{ steps.spack.outputs.cherrypicks }}
             SPACK_CHERRYPICKS_FILES=${{ steps.spack.outputs.cherrypicks_files }}
+            KEY4HEPSPACK_ORGREPO=${{ steps.eic-spack.outputs.orgrepo }}
+            KEY4HEPSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
             EICSPACK_ORGREPO=${{ steps.eic-spack.outputs.orgrepo }}
             EICSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
-            EICSPACK_CHERRYPICKS=${{ steps.eic-spack.outputs.cherrypicks }}
+            KEY4HEPSPACK_ORGREPO=${{ steps.key4hep-spack.outputs.orgrepo }}
+            KEY4HEPSPACK_VERSION=${{ steps.key4hep-spack.outputs.version }}
             S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
             S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
             jobs=${{ env.JOBS }}
