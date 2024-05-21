@@ -288,6 +288,14 @@ COPY profile.d/a00_cleanup.sh /etc/profile.d
 COPY profile.d/z11_jug_env.sh /etc/profile.d
 COPY singularity.d /.singularity.d
 
+## Fixup /opt/detector/epic-git.fcf90937193c983c0af2acf1251e01f2e2c3a259_main
+RUN <<EOF
+shopt -s nullglob
+for detector in /opt/detector/epic-git.*_* ; do
+  ln -s ${detector} /opt/detector/epic-${detector/*_/}
+done
+EOF
+
 ## Add minio client into /usr/local/bin
 ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc-amd64
 ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-arm64/mc /usr/local/bin/mc-arm64
