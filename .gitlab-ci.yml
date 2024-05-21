@@ -456,7 +456,7 @@ benchmarks:detector:default:
     DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
     BENCHMARKS_CONTAINER: "jug_xl"
-    BENCHMARKS_REGISTRY: "eicweb:4567"
+    BENCHMARKS_REGISTRY: "eicweb:4567/containers/eic_container"
     PIPELINE_NAME: "$PIPELINE_NAME_CONTAINER"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
@@ -476,7 +476,7 @@ benchmarks:detector:nightly:
     DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
     BENCHMARKS_CONTAINER: "jug_xl"
-    BENCHMARKS_REGISTRY: "eicweb:4567"
+    BENCHMARKS_REGISTRY: "eicweb:4567/containers/eic_container"
     PIPELINE_NAME: "$PIPELINE_NAME_CONTAINER"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
