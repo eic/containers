@@ -167,7 +167,7 @@ status:pending:
     - docker:dind
   before_script:
     - echo "192.168.1.1      eicweb2.linux.phy.anl.gov" >> /etc/hosts
-      # Login to local registry
+    - # Login to local registry
       echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} --password-stdin ${LC_REGISTRY}
     - # Login to remote registries
       if [[ -n "${EXPORT_TAG}" ]] ; then
