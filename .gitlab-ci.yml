@@ -281,7 +281,7 @@ base:
       done
 
 
-jug_dev:
+jug_xl:
   parallel:
     matrix:
       - BUILD_TYPE:
@@ -292,8 +292,8 @@ jug_dev:
         PLATFORM: linux/amd64
         ENV:
 #        - dbg
-        - dev
 #        - prod
+        - xl
 #      - BUILD_TYPE:
 #        - default
 #        - nightly
@@ -316,6 +316,11 @@ jug_dev:
     - version
     - base
   script:
+    - |
+      PUSH_NIGHTLY_WITH_DATE=""
+      if [ "$CI_COMMIT_BRANCH" == "master" ]; then
+        PUSH_NIGHTLY_WITH_DATE="1"
+      fi
     - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY=1 ; fi
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT=1 ; fi
     - apk add envsubst git
@@ -402,146 +407,6 @@ jug_dev:
         fi
       done
 
-jug_xl:default:
-  parallel:
-    matrix:
-      - BASE_IMAGE: jug_dev
-        BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64
-#      - BASE_IMAGE: jug_dev_oneapi
-#        BUILD_IMAGE: jug_xl_oneapi
-#        PLATFORM: linux/amd64
-  extends: .build
-  stage: jug
-  needs:
-    - version
-    - job: jug_dev
-      parallel:
-        matrix:
-        - BUILD_TYPE:
-          - default
-          BASE_IMAGE: debian_stable_base
-          BUILD_IMAGE: jug_
-          PLATFORM: linux/amd64
-          ENV:
-          - dev
-  script:
-    - apk add git
-    - while ! 
-      docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-default
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                   }
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}}
-                   }
-                   --file containers/jug/xl.Dockerfile
-                   --platform ${PLATFORM}
-                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
-                   --build-arg BASE_IMAGE=${BASE_IMAGE}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}-default
-                   --build-arg JUG_VERSION=${EXPORT_TAG}-$(git rev-parse HEAD)
-                   --provenance false
-                   containers/jug
-                   2>&1 | tee build.log
-      ; do
-        if grep "unknown blob" build.log ; then
-          BUILD_OPTIONS="--no-cache ${BUILD_OPTIONS}" ;
-        else
-          exit 1 ;
-        fi
-      done
-
-jug_xl:nightly:
-  parallel:
-    matrix:
-      - BASE_IMAGE: jug_dev
-        BUILD_IMAGE: jug_xl
-        PLATFORM: linux/amd64
-#      - BASE_IMAGE: jug_dev_oneapi
-#        BUILD_IMAGE: jug_xl_oneapi
-#        PLATFORM: linux/amd64
-  extends: .build
-  stage: jug
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: on_success
-    - when: never
-  needs:
-    - version
-    - job: jug_dev
-      parallel:
-        matrix:
-        - BUILD_TYPE:
-          - nightly
-          BASE_IMAGE: debian_stable_base
-          BUILD_IMAGE: jug_
-          PLATFORM: linux/amd64
-          ENV:
-          - dev
-  script:
-    - |
-      PUSH_NIGHTLY_WITH_DATE=""
-      if [ "$CI_COMMIT_BRANCH" == "master" ]; then
-        PUSH_NIGHTLY_WITH_DATE="1"
-      fi
-    - apk add git
-    - while !
-      docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-nightly
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}-nightly}
-                   }
-                   ${NIGHTLY:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}}
-                     ${PUSH_NIGHTLY_WITH_DATE:+
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                     }
-                   }
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}-nightly}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}-nightly}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${EXPORT_TAG}-nightly}
-                   }
-                   ${NIGHTLY:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}}
-                     ${PUSH_NIGHTLY_WITH_DATE:+
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/jug/eic}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                     }
-                   }
-                   --file containers/jug/xl.Dockerfile
-                   --platform ${PLATFORM}
-                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
-                   --build-arg BASE_IMAGE=${BASE_IMAGE}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}-nightly
-                   --build-arg JUG_VERSION=${EXPORT_TAG}-nightly-$(git rev-parse HEAD)-$(date +%Y-%m-%d_%H-%M-%S)
-                   --build-arg NIGHTLY=1
-                   --provenance false
-                   containers/jug
-                   2>&1 | tee build.log
-      ; do
-        if grep "unknown blob" build.log ; then
-          BUILD_OPTIONS="--no-cache ${BUILD_OPTIONS}" ;
-        else
-          exit 1 ;
-        fi
-      done
-
 .singularity:
   image:
     name: ${SINGULARITY_IMAGE}
@@ -567,7 +432,7 @@ jug_xl:singularity:default:
     BUILD_IMAGE: jug_xl
   needs:
     - version
-    - jug_xl:default
+    - jug_xl
 
 # eic-shell expects build/jug_xl.sif from the job with name 'jug_xl:singularity:nightly'
 jug_xl:singularity:nightly:
@@ -577,13 +442,14 @@ jug_xl:singularity:nightly:
     BUILD_IMAGE: jug_xl
   needs:
     - version
-    - jug_xl:nightly
+    - jug_xl
+
 
 benchmarks:detector:default:
   stage: benchmarks
   needs: 
     - version
-    - jug_xl:default
+    - jug_xl
   variables:
     DETECTOR: "epic"
     DETECTOR_CONFIG: epic_craterlake
@@ -603,7 +469,7 @@ benchmarks:detector:nightly:
     - !reference ['.nightly', rules]
   needs: 
     - version
-    - jug_xl:nightly
+    - jug_xl
   variables:
     DETECTOR: "epic"
     DETECTOR_CONFIG: epic_craterlake
