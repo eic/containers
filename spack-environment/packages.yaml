@@ -116,6 +116,7 @@ packages:
   fastjet:
     require:
     - '@3.4.0'
+    - plugins=cxx
   fjcontrib:
     require:
     - '@1.051'
