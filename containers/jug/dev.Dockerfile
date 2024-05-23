@@ -54,6 +54,7 @@ if [ -n "${SPACK_CHERRYPICKS}" ] ; then
     fi
   done
 fi
+sed -i 's/timeout=60/timeout=None/' $SPACK_ROOT/lib/spack/spack/stage.py
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/docker-shell
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/interactive-shell
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/spack-env
@@ -182,12 +183,12 @@ export CCACHE_DIR=/ccache
 spack env activate --dir ${SPACK_ENV}
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
-  sed -i "/# EDM4EIC_VERSION$/ s/@[^\s']*/@git.${EDM4EIC_VERSION}=main/" /opt/spack-environment/packages.yaml
+  sed -i "/# EDM4EIC_VERSION$/ s/@[^' ]*/@git.${EDM4EIC_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all edm4eic
 fi
 if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; then
   export EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
-  sed -i "/# EICRECON_VERSION$/ s/@[^\s']*/@git.${EICRECON_VERSION}=main/" /opt/spack-environment/packages.yaml
+  sed -i "/# EICRECON_VERSION$/ s/@[^' ]*/@git.${EICRECON_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all eicrecon
 fi
 if [ "${EPIC_VERSION}" != "c1827f05430b2051df8a0b421db1cbab87165e0b" ] ; then
@@ -198,14 +199,13 @@ if [ "${EPIC_VERSION}" != "c1827f05430b2051df8a0b421db1cbab87165e0b" ] ; then
 fi
 if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   export JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
-  sed -i "/# JUGGLER_VERSION$/ s/@[^\s']*/@git.${JUGGLER_VERSION}=main/" /opt/spack-environment/packages.yaml
+  sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all juggler
 fi
 spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_FINAL="eicweb" \
-  BUILDCACHE_OCI_FINAL="ghcr" \
   BUILDCACHE_S3_FINAL="eics3rw"
 spack find --implicit --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
@@ -276,7 +276,7 @@ RUN <<EOF
 set -ex
 spack debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" >> /etc/jug_info
 spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
-spack graph --dot --installed > /opt/spack-environment/env.dot
+spack graph --dot > /opt/spack-environment/env.dot
 EOF
 
 ## Copy custom content

@@ -37,6 +37,9 @@ packages:
   blas:
     require:
     - openblas
+  boost:
+    require:
+    - '@1.84.0'
   cairo:
     require:
     - '@1.16.0'
@@ -58,7 +61,7 @@ packages:
     - '@2.3.2'
   cmake:
     require:
-    - '@3.27.7'
+    - '@3.27.9'
   cnpy:
     require:
     - '@master'
@@ -74,7 +77,7 @@ packages:
   dd4hep:
     require:
     - '@1.28'
-    - +ddg4 +ddcad +hepmc3 +xercesc
+    - +ddg4 +ddcad +hepmc3 +utilityapps +xercesc
     - any_of: [+ddeve, -ddeve]
   dpmjet:
     require:
@@ -90,6 +93,11 @@ packages:
     require:
     - '@0.10.3'
     - cxxstd=20
+  egl:
+    buildable: False
+    externals:
+    - spec: egl@1.5.0
+      prefix: /usr
   eic-smear:
     require:
     - '@1.1.12'
@@ -120,8 +128,8 @@ packages:
     - +shared cxxstd=17
   gaudi:
     require:
-    - '@37.1'
-    - +aida
+    - '@38.1'
+    - +aida +gaudialg
   gdb:
     require:
     - '@12.1'
@@ -135,6 +143,9 @@ packages:
     - '@11.2.1.east'
     - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
+  glew:
+    require:
+    - gl=glx
   gloo:
     require:
     - '@2023-05-19'
@@ -167,14 +178,14 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@14.0.0' # JUGGLER_VERSION
+    - '@14.0.3' # JUGGLER_VERSION
     - cxxstd=20
   k4actstracking:
     require:
     - '@main'
   k4fwcore:
     require:
-    - '@1.0pre17'
+    - '@1.0pre19'
   lapack:
     require:
     - openblas
@@ -217,6 +228,7 @@ packages:
     - '@7.7.1'
     - +application_framework -vtk
   opengl:
+    buildable: False
     externals:
     - spec: opengl@4.6
       prefix: /usr
@@ -232,7 +244,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@0.17.3'
+    - '@0.99'
     - cxxstd=20
   prmon:
     require:
@@ -358,7 +370,6 @@ packages:
   spdlog:
     require:
     - '@1.11.0'
-    - +fmt_external
   stow:
     require:
     - '@2.3.1'
