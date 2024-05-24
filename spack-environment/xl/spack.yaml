@@ -10,7 +10,6 @@ spack:
   - cairo
   - catch2
   - celeritas
-  - cernlib
   - cli11
   - cmake
   - cnpy
