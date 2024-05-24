@@ -56,8 +56,7 @@ stages:
 ## nightly builds are now part of the regular master build in order to keep
 ## all artifacts available at all times.
 workflow:
-  # would like to use PIPELINE_NAME but there is a bug https://gitlab.com/gitlab-org/gitlab/-/issues/441777
-  name: '$PIPELINE_NAME_CONTAINER'
+  name: '$PIPELINE_NAME'
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
@@ -457,7 +456,7 @@ benchmarks:detector:default:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
-    PIPELINE_NAME: "$PIPELINE_NAME_CONTAINER"
+    PIPELINE_NAME: "$PIPELINE_NAME"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
@@ -477,7 +476,7 @@ benchmarks:detector:nightly:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
     BENCHMARKS_CONTAINER: "jug_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
-    PIPELINE_NAME: "$PIPELINE_NAME_CONTAINER"
+    PIPELINE_NAME: "$PIPELINE_NAME"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
