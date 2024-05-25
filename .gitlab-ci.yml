@@ -286,7 +286,8 @@ eic:
       - BUILD_TYPE:
         - default
         - nightly
-        BASE_IMAGE: debian_stable_base
+        BUILDER_IMAGE: debian_stable_base
+        RUNTIME_IMAGE: debian_stable_base
         BUILD_IMAGE: eic_
         PLATFORM: linux/amd64
         ENV:
@@ -296,7 +297,8 @@ eic:
 #      - BUILD_TYPE:
 #        - default
 #        - nightly
-#        BASE_IMAGE: oneapi_base
+#        BUILDER_IMAGE: oneapi_base
+#        RUNTIME_IMAGE: oneapi_base
 #        BUILD_IMAGE: oneapi_
 #        PLATFORM: linux/amd64
 #        ENV:
@@ -304,7 +306,8 @@ eic:
 #      - BUILD_TYPE:
 #        - default
 #        - nightly
-#        BASE_IMAGE: cuda_base_new
+#        BUILDER_IMAGE: cuda_base_new
+#        RUNTIME_IMAGE: cuda_base_new
 #        BUILD_IMAGE: cuda_
 #        PLATFORM: linux/amd64
 #        ENV:
@@ -367,7 +370,8 @@ eic:
                    --file containers/jug/dev.Dockerfile
                    --platform ${PLATFORM}
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
-                   --build-arg BASE_IMAGE=${BASE_IMAGE}
+                   --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
+                   --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
                    --build-arg SPACK_VERSION=${SPACK_VERSION}

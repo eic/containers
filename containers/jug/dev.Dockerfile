@@ -1,13 +1,14 @@
 #syntax=docker/dockerfile:1.4
 ARG DOCKER_REGISTRY="eicweb/"
-ARG BASE_IMAGE="debian_stable_base"
+ARG BUILDER_IMAGE="debian_stable_base"
+ARG RUNTIME_IMAGE="debian_stable_base"
 ARG INTERNAL_TAG="testing"
 
 ## ========================================================================================
 ## STAGE0: spack image
 ## EIC spack image with spack and eic-spack repositories
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as spack
+FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} as spack
 ARG TARGETPLATFORM
 
 ## With heredocs for multi-line scripts, we want to fail on error and the print failing line.
@@ -314,7 +315,7 @@ EOF
 ## STAGE 3
 ## Lean target image
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${BASE_IMAGE}:${INTERNAL_TAG} as export
+FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} as runtime
 ARG TARGETPLATFORM
 
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \

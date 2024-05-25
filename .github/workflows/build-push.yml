@@ -114,7 +114,8 @@ jobs:
     strategy:
       matrix:
         include:
-        - BASE_IMAGE: debian_stable_base
+        - BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
           BUILD_IMAGE: dev
           PLATFORM: linux/amd64
           ENV: dev
@@ -208,7 +209,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
-            BASE_IMAGE=${{ matrix.BASE_IMAGE }}
+            BUILDER_IMAGE=${{ matrix.BUILDER_IMAGE }}
+            RUNTIME_IMAGE=${{ matrix.RUNTIME_IMAGE }}
             BUILD_IMAGE=eic_${{ matrix.BUILD_IMAGE }}
             INTERNAL_TAG=${{ env.INTERNAL_TAG }}
             SPACK_ORGREPO=${{ steps.spack.outputs.orgrepo }}
