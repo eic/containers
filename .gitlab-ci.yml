@@ -540,7 +540,8 @@ prune:
 clean_internal_tag:
   image: alpine/curl
   stage: finalize
-  when: always
+  rules:
+    - when: manual
   script:
     - |
       for id in 66 68 69 80 83 91 92 97 ; do
@@ -596,7 +597,7 @@ clean_pipeline:
       ; do 
         docker images
           --filter=reference=${registry}/*:pipeline-*
-          --format "{{.ID}} {{.Repository}} {{.Tag}}" ;
+          --format "{{.ID}} {{.Repository}} {{.Tag}} {{.CreatedSince}}" ;
       done
     - for registry in
         eicweb
@@ -604,11 +605,12 @@ clean_pipeline:
       ; do 
         docker images 
           --filter=reference=${registry}/*:pipeline-*
-          --format "{{.ID}} {{.Repository}} {{.Tag}}" ;
+          --format "{{.ID}} {{.Repository}} {{.Tag}} {{.CreatedSince}}" ;
       done
       | grep -v ${CI_PIPELINE_ID}
-      | sed -n -E 's/pipeline-([0-9]+)(-.*){0,1}$/& \1/p'
-      | while read id repository tag pipeline_id ; do
+      | grep -v "hours ago"
+      | sed -n -E 's/pipeline-([0-9]+)(-.*){0,1}\s+.*$/\1 &/p'
+      | while read id repository pipeline_id tag N durations ago ; do
         echo "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}" ;
         curl --silent -L "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}" | jq . ;
         status=$(curl --silent -L
