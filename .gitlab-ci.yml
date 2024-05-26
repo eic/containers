@@ -248,9 +248,9 @@ base:
 #      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
 #        BUILD_IMAGE: oneapi_base
 #        PLATFORM: linux/amd64
-#      - BASE_IMAGE: nvidia/cuda:11.8.0-devel-ubuntu20.04
-#        BUILD_IMAGE: cuda_base
-#        PLATFORM: linux/amd64
+      - BASE_IMAGE: nvidia/cuda:12.4.1-devel-ubuntu22.04
+        BUILD_IMAGE: cuda_base
+        PLATFORM: linux/amd64
   extends: .build
   stage: base
   needs:
@@ -303,15 +303,15 @@ eic:
 #        PLATFORM: linux/amd64
 #        ENV:
 #        - prod
-#      - BUILD_TYPE:
-#        - default
-#        - nightly
-#        BUILDER_IMAGE: cuda_base_new
-#        RUNTIME_IMAGE: cuda_base_new
-#        BUILD_IMAGE: cuda_
-#        PLATFORM: linux/amd64
-#        ENV:
-#        - prod
+      - BUILD_TYPE:
+        - default
+        BUILDER_IMAGE: cuda_base
+        RUNTIME_IMAGE: cuda_base
+        BASE_IMAGE: cuda_base
+        BUILD_IMAGE: cuda_
+        PLATFORM: linux/amd64
+        ENV:
+        - xl
   extends: .build
   stage: eic
   needs:
