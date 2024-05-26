@@ -225,9 +225,6 @@ sed -i -e '/view: false/d' ${SPACK_ENV}/spack.yaml
 cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/spack.yaml
 spack -e ${SPACK_ENV} env view regenerate /usr/local
 spack -e ${SPACK_ENV} env view regenerate /opt/detector
-if [[ -n $NIGHTLY && -f /opt/detector/epic ]] ; then
-  ln -s /opt/detector/epic-main/setup.sh /opt/detector/setup.sh
-fi
 EOF
 
 ## Place cvmfs catalogs
