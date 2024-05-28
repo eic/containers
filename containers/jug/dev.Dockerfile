@@ -72,6 +72,7 @@ declare -A target=(["linux/amd64"]="x86_64_v2" ["linux/arm64"]="aarch64")
 target=${target[${TARGETPLATFORM}]}
 spack config --scope site add "packages:all:require:[target=${target}]"
 spack config --scope site add "packages:all:target:[${target}]"
+spack external find --not-buildable --scope site --path /usr/local/cuda/bin cuda
 spack external find --not-buildable --scope site llvm
 spack config blame packages
 spack config --scope user add "config:suppress_gpg_warnings:true"
@@ -217,13 +218,13 @@ ccache --show-stats
 ccache --zero-stats
 EOF
 
-## Create views at /usr/local and /opt/detector
+## Create views at /opt/local and /opt/detector
 RUN <<EOF
 set -e
-rm -r /usr/local
+rm -rf /opt/local
 sed -i -e '/view: false/d' ${SPACK_ENV}/spack.yaml
 cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/spack.yaml
-spack -e ${SPACK_ENV} env view regenerate /usr/local
+spack -e ${SPACK_ENV} env view regenerate /opt/local
 spack -e ${SPACK_ENV} env view regenerate /opt/detector
 EOF
 
@@ -232,7 +233,7 @@ RUN <<EOF
 touch ${SPACK_ROOT}/.cvmfscatalog
 touch /opt/software/.cvmfscatalog
 find /opt/software -mindepth 2 -maxdepth 3 -type d -exec touch {}/.cvmfscatalog \;
-touch /usr/local/.cvmfscatalog
+touch /opt/local/.cvmfscatalog
 EOF
 
 ## Store environment
@@ -265,8 +266,8 @@ RUN spack -e ${SPACK_ENV} gc -y
 ## and links therin for more info
 RUN <<EOF
 set -ex
-if [ -f /usr/local/lib/libQt5Core.so ] ; then
-  strip --remove-section=.note.ABI-tag /usr/local/lib/libQt5Core.so
+if [ -f /opt/local/lib/libQt5Core.so ] ; then
+  strip --remove-section=.note.ABI-tag /opt/local/lib/libQt5Core.so
 fi
 EOF
 
@@ -278,9 +279,9 @@ spack graph --dot > /opt/spack-environment/env.dot
 EOF
 
 ## Copy custom content
-COPY eic-shell /usr/local/bin/eic-shell
-COPY eic-info /usr/local/bin/eic-info
-COPY entrypoint.sh /usr/local/sbin/entrypoint.sh
+COPY eic-shell /opt/local/bin/eic-shell
+COPY eic-info /opt/local/bin/eic-info
+COPY entrypoint.sh /opt/local/sbin/entrypoint.sh
 COPY eic-env.sh /etc/eic-env.sh
 COPY profile.d/a00_cleanup.sh /etc/profile.d
 COPY profile.d/z11_jug_env.sh /etc/profile.d
@@ -294,16 +295,16 @@ for detector in /opt/detector/epic-git.*_* ; do
 done
 EOF
 
-## Add minio client into /usr/local/bin
-ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc-amd64
-ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-arm64/mc /usr/local/bin/mc-arm64
+## Add minio client into /opt/local/bin
+ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-amd64/mc /opt/local/bin/mc-amd64
+ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-arm64/mc /opt/local/bin/mc-arm64
 RUN <<EOF
 set -ex
 declare -A target=(["linux/amd64"]="amd64" ["linux/arm64"]="arm64")
-mv /usr/local/bin/mc-${target[${TARGETPLATFORM}]} /usr/local/bin/mc
+mv /opt/local/bin/mc-${target[${TARGETPLATFORM}]} /opt/local/bin/mc
 unset target[${TARGETPLATFORM}]
 for t in ${target[*]} ; do
-  rm /usr/local/bin/mc-${t}
+  rm /opt/local/bin/mc-${t}
 done
 EOF
 
@@ -323,7 +324,7 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
 COPY --from=staging /opt/spack /opt/spack
 COPY --from=staging /opt/spack-environment /opt/spack-environment
 COPY --from=staging /opt/software /opt/software
-COPY --from=staging /usr/._local /usr/._local
+COPY --from=staging /opt/._local /opt/._local
 COPY --from=staging /opt/._detector /opt/._detector
 COPY --from=staging /etc/profile.d /etc/profile.d
 COPY --from=staging /etc/jug_info /etc/jug_info
@@ -335,25 +336,25 @@ COPY --from=staging /usr/bin/docker-shell /usr/bin/docker-shell
 ENV SPACK_ROOT=/opt/spack
 SHELL ["docker-shell"]
 
-## ensure /usr/local is the view, not a symlink
+## ensure /opt/local is the view, not a symlink
 RUN <<EOF
 set -ex
-rm -rf /usr/local /opt/detector
-LOCAL_PREFIX_PATH=$(realpath $(ls /usr/._local/ | tail -n1))
-mv /usr/._local/${LOCAL_PREFIX_PATH} /usr/local
-ln -s /usr/local /usr/._local/${LOCAL_PREFIX_PATH}
+rm -rf /opt/local /opt/detector
+LOCAL_PREFIX_PATH=$(realpath $(ls /opt/._local/ | tail -n1))
+mv /opt/._local/${LOCAL_PREFIX_PATH} /opt/local
+ln -s /opt/local /opt/._local/${LOCAL_PREFIX_PATH}
 DETECTOR_PREFIX_PATH=$(realpath $(ls /opt/._detector/ | tail -n1))
 mv /opt/._detector/${DETECTOR_PREFIX_PATH} /opt/detector
 ln -s /opt/detector /opt/._detector/${DETECTOR_PREFIX_PATH}
 EOF
 
 ## set ROOT TFile forward compatibility
-RUN sed --in-place --follow-symlinks 's/# \(TFile.v630forwardCompatibility:\) no/\1 yes/' /usr/local/etc/root/system.rootrc
+RUN sed --in-place --follow-symlinks 's/# \(TFile.v630forwardCompatibility:\) no/\1 yes/' /opt/local/etc/root/system.rootrc
 
 ## Setup ld.so.conf with what could go in LD_LIBRARY_PATH (but lower priority)
 ## Ref: https://man7.org/linux/man-pages/man8/ld.so.8.html
 COPY <<EOF /etc/ld.so.conf.d/eic-shell.conf
-/usr/local/lib/root
+/opt/local/lib/root
 EOF
 RUN ldconfig
 
@@ -422,15 +423,15 @@ git clone --filter=tree:0 -b ${CAMPAIGNS_SLURM_VERSION} --depth 1 https://github
 EOF
 
 ## make sure we have the entrypoints setup correctly
-ENTRYPOINT ["/usr/local/sbin/entrypoint.sh"]
+ENTRYPOINT ["/opt/local/sbin/entrypoint.sh"]
 CMD ["bash", "--rcfile", "/etc/profile", "-l"]
 USER 0
 WORKDIR /
-SHELL ["/usr/local/bin/eic-shell"]
+SHELL ["/opt/local/bin/eic-shell"]
 
 ## eic-news
-COPY --chmod=0755 eic-news /usr/local/bin/eic-news
-RUN echo "test -f $HOME/.eic-news && source /usr/local/bin/eic-news" > /etc/profile.d/z13_eic-news.sh 
+COPY --chmod=0755 eic-news /opt/local/bin/eic-news
+RUN echo "test -f $HOME/.eic-news && source /opt/local/bin/eic-news" > /etc/profile.d/z13_eic-news.sh 
 
 ## Hotfix for misbehaving OSG nodes
 RUN mkdir /hadoop /localscratch

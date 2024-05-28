@@ -1,6 +1,6 @@
   view:
     default:
-      root: /usr/local
+      root: /opt/local
       exclude: [epic]
       link_type: symlink
     detectors:
