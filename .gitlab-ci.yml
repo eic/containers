@@ -88,6 +88,15 @@ workflow:
 ## caching strategy for dispatch to multiple nodes and to avoid
 ##  --> try this strategy: https://medium.com/titansoft-engineering/docker-build-cache-sharing-on-multi-hosts-with-buildkit-and-buildx-eb8f7005918e
 
+nvidia-smi:
+  stage: config
+  image: nvidia/cuda:11.3.1-base-ubuntu20.04
+  tags:
+    - gpu
+  script:
+    - |
+      nvidia-smi
+
 ## Default version and tags
 ## - internal tag used for the CI. Also temporarily tagged
 ##   on eicweb to communicate between jobs (removed in cleanup job)
