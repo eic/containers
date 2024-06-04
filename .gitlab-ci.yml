@@ -32,7 +32,7 @@ variables:
   NIGHTLY_TAG: "nightly"
 
   ## Additional options for docker build (e.g. --no-cache)
-  BUILD_OPTIONS: ""
+  BUILD_OPTIONS: "--no-cache"
 
   ## Version to be set by external trigger
   VERSION: ""
@@ -268,8 +268,7 @@ base:
   needs:
     - version
   script:
-    - while !
-      docker buildx build --push ${BUILD_OPTIONS}
+    - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -283,13 +282,6 @@ base:
                    --provenance false
                    containers/debian
                    2>&1 | tee build.log
-      ; do
-        if grep "unknown blob" build.log ; then
-          BUILD_OPTIONS="--no-cache ${BUILD_OPTIONS}" ;
-        else
-          exit 1 ;
-        fi
-      done
 
 
 eic:
@@ -352,8 +344,7 @@ eic:
       source eic-spack.sh ;
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
-    - while !
-      docker buildx build --push ${BUILD_OPTIONS}
+    - docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
@@ -424,13 +415,7 @@ eic:
                    --provenance false
                    containers/jug
                    2>&1 | tee build.log
-      ; do
-        if grep "unknown blob" build.log ; then
-          BUILD_OPTIONS="--no-cache ${BUILD_OPTIONS}" ;
-        else
-          exit 1 ;
-        fi
-      done
+
 
 .singularity:
   image:
