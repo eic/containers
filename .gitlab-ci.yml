@@ -473,8 +473,19 @@ jug_xl:singularity:nightly:
 .benchmarks:
   stage: benchmarks
   needs: 
-    - version
-    - eic
+    - job: version
+    - job: eic
+      parallel:
+        matrix:
+          - BUILD_TYPE:
+            - default
+            - nightly
+            BUILDER_IMAGE: debian_stable_base
+            RUNTIME_IMAGE: debian_stable_base
+            BUILD_IMAGE: eic_
+            PLATFORM: linux/amd64
+            ENV:
+            - xl
   variables:
     DETECTOR: "epic"
     DETECTOR_CONFIG: epic_craterlake
