@@ -141,7 +141,7 @@ jobs:
         run: |
           source key4hep-spack.sh
           echo "orgrepo=${KEY4HEPSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=${KEY4HEPSPACK_VERSION}" | tee -a $GITHUB_OUTPUT   
+          echo "version=${KEY4HEPSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
       - name: Load eic-spack version
         id: eic-spack
         run: |
