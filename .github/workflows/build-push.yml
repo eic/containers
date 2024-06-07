@@ -200,7 +200,7 @@ jobs:
           file: containers/jug/dev.Dockerfile
           context: containers/jug
           build-contexts: |
-            spack-environment=spack-environment
+            spack-environment=${{ github.workspace }}/spack-environment
           secret-files: |
             mirrors=mirrors.yaml
           platforms: ${{ matrix.PLATFORM }}
