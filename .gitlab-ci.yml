@@ -344,8 +344,8 @@ eic:
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
-    - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY=1 ; fi
-    - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT=1 ; fi
+    - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY= ; fi
+    - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT= ; fi
     - apk add envsubst git
     - source spack.sh ; 
       source key4hep-spack.sh ;
@@ -357,11 +357,18 @@ eic:
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                     ${IF_BUILD_DEFAULT+
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                     }
+                     ${IF_BUILD_DEFAULT-
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                     }
                    }
-                   ${IF_BUILD_NIGHTLY:+
+                   ${IF_BUILD_NIGHTLY+
                      ${NIGHTLY:+
                        ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
                        ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
@@ -373,11 +380,18 @@ eic:
                      }
                    }
                    ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                     ${IF_BUILD_DEFAULT+
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}}
+                     }
+                     ${IF_BUILD_DEFAULT-
+                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                     }
                    }
-                   ${IF_BUILD_NIGHTLY:+
+                   ${IF_BUILD_NIGHTLY+
                      ${NIGHTLY:+
                        ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}}
                        ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}}
@@ -405,13 +419,13 @@ eic:
                    --build-arg S3_ACCESS_KEY=${S3_ACCESS_KEY}
                    --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
                    --build-arg JUG_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
-                   ${IF_BUILD_DEFAULT:+
+                   ${IF_BUILD_DEFAULT+
                      ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION}}
                      ${EICRECON_VERSION:+--build-arg EICRECON_VERSION=${EICRECON_VERSION}}
                      ${EPIC_VERSION:+--build-arg EPIC_VERSION=${EPIC_VERSION}}
                      ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=${JUGGLER_VERSION}}
                    }
-                   ${IF_BUILD_NIGHTLY:+
+                   ${IF_BUILD_NIGHTLY+
                      --build-arg EDM4EIC_VERSION=main
                      --build-arg EICRECON_VERSION=main
                      --build-arg EPIC_VERSION=main
