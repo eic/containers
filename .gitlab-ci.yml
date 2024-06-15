@@ -410,8 +410,8 @@ eic:
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
                    --build-arg SPACK_VERSION=${SPACK_VERSION}
-                   --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
-                   --build-arg SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES}"
+                   --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS[@]}"
+                   --build-arg SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES[@]}"
                    --build-arg KEY4HEPSPACK_ORGREPO=${KEY4HEPSPACK_ORGREPO}
                    --build-arg KEY4HEPSPACK_VERSION=${KEY4HEPSPACK_VERSION}
                    --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
