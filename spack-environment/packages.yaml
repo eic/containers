@@ -270,12 +270,9 @@ packages:
   py-dask:
     require:
     - '@2023.4.1'
-  py-deepdiff:
-    require:
-    - '@6.3.0'
   py-epic-capybara:
     require:
-    - '@git.b4a249ca6f3dc184295fab83f43a85ba1ca8b000'
+    - '@git.c388cecce90d06f2db75e45bb0427816db04c836'
   py-ipython:
     require:
     - '@8.11.0'
