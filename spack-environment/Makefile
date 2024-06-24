@@ -25,7 +25,7 @@ $(SPACK_ENV)/push: $(addprefix $(SPACK_ENV)/push/,$($(SPACK_ENV)/SPACK_PACKAGE_I
 	$(foreach buildcache, $(BUILDCACHE_S3_FINAL), $(SPACK) buildcache push --unsigned $(buildcache) ;)
 	$(foreach buildcache, $(BUILDCACHE_S3_FINAL), $(SPACK) buildcache update-index $(buildcache) ;)
 	$(foreach buildcache, $(BUILDCACHE_S3_PROMPT), $(SPACK) buildcache update-index $(buildcache) ;)
-	$(foreach buildcache, $(BUILDCACHE_OCI_FINAL), $(SPACK) buildcache push --unsigned --base-image $(BUILDCACHE_OCI_BASE_IMAGE) $(buildcache) ;)
+	$(foreach buildcache, $(BUILDCACHE_OCI_FINAL), $(SPACK) buildcache push --unsigned --base-image $(BUILDCACHE_OCI_BASE_IMAGE) $(buildcache) | grep -v "Using cached archive" ;)
 
 $(SPACK_ENV)/push/%: $(SPACK_ENV)/install/%
 	@mkdir -p $(dir $@)
