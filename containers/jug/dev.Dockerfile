@@ -290,8 +290,9 @@ COPY singularity.d /.singularity.d
 ## Fixup /opt/detector/epic-git.fcf90937193c983c0af2acf1251e01f2e2c3a259_main
 RUN <<EOF
 shopt -s nullglob
-for detector in /opt/detector/epic-git.*_* ; do
-  ln -s ${detector} /opt/detector/epic-${detector/*_/}
+cd /opt/detector
+for detector in epic-git.*_* ; do
+  ln -s ${detector} epic-${detector/*_/}
 done
 EOF
 
