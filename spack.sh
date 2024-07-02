@@ -29,6 +29,8 @@ d3bf1e04fca844abb7c1eeac38dda4e126c81b67
 737b70cbbfacb3fba8054426e9b5bf8ede6d8faf
 a66586d749197841bd74e289802126f2359287a8
 7503a417731910d918a7863d1862f62c9b76429d
+092dc96e6c87a9c043e4421e1a524e23ec649f60
+1dc63dbea6c1d42aabf0e14b51439dcc46423e79
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -57,3 +59,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 737b70cbbfacb3fba8054426e9b5bf8ede6d8faf: Buildcache: remove deprecated --allow-root and preview subcommand
 ## a66586d749197841bd74e289802126f2359287a8: spack buildcache push: best effort
 ## 7503a417731910d918a7863d1862f62c9b76429d: cuda: add v12.4.1
+## 092dc96e6c87a9c043e4421e1a524e23ec649f60: acts: pass cuda_arch to CMAKE_CUDA_ARCHITECTURES
+## 1dc63dbea6c1d42aabf0e14b51439dcc46423e79: acts: add v34.1.0, v35.0.0 (identification, sycl variants changes)
