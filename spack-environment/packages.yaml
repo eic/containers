@@ -19,7 +19,7 @@ packages:
   acts:
     require:
     - '@34.1.0'
-    - cxxstd=20 +binaries +dd4hep +edm4hep +examples +fatras +geant4 +identification +json +onnx +podio +python +tgeo
+    - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +identification +json +onnx +podio +python +tgeo
   actsvg:
     require:
     - '@0.4.26'
