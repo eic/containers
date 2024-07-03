@@ -96,6 +96,7 @@ nvidia-smi:
   script:
     - |
       nvidia-smi
+  allow_failure: true
 
 ## Default version and tags
 ## - internal tag used for the CI. Also temporarily tagged
