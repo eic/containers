@@ -47,6 +47,7 @@ packages:
     - +fc+ft+X+pdf+gobject
   catch2:
     require:
+    - '%gcc'
     - '@3.4.0'
     - -ipo
   cernlib:
@@ -117,10 +118,12 @@ packages:
     - 'artifacts=epic_craterlake'
   fastjet:
     require:
+    - '%gcc'
     - '@3.4.0'
     - plugins=cxx
   fjcontrib:
     require:
+    - '%gcc'
     - '@1.051'
   flame:
     require:
