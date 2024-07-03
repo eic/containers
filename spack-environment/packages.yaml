@@ -18,6 +18,7 @@ packages:
     - any_of: [^py-pip@23.1.2, '@:']
   acts:
     require:
+    - '%clang'
     - '@34.1.0'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +identification +json +onnx +podio +python +tgeo
   actsvg:
