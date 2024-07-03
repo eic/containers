@@ -104,6 +104,7 @@ packages:
     - '@1.1.12'
   eicrecon:
     require:
+    - '%clang'
     - '@git.acts-upgrade' # EICRECON_VERSION
   eigen:
     require:
