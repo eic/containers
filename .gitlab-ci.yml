@@ -512,6 +512,8 @@ jug_xl:singularity:nightly:
 
 benchmarks:detector:default:
   extends: .benchmarks
+  rules:
+   - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
@@ -521,6 +523,7 @@ benchmarks:detector:default:
 benchmarks:detector:nightly:
   extends: .benchmarks
   rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
@@ -530,6 +533,8 @@ benchmarks:detector:nightly:
 
 benchmarks:phyiscs:default:
   extends: .benchmarks
+  rules:
+   - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
@@ -539,6 +544,7 @@ benchmarks:phyiscs:default:
 benchmarks:physics:nightly:
   extends: .benchmarks
   rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
@@ -548,6 +554,8 @@ benchmarks:physics:nightly:
 
 benchmarks:reconstruction:default:
   extends: .benchmarks
+  rules:
+   - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
@@ -557,6 +565,7 @@ benchmarks:reconstruction:default:
 benchmarks:reconstruction:nightly:
   extends: .benchmarks
   rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
