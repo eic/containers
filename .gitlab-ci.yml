@@ -276,29 +276,15 @@ base:
     - attempts=0
     - nocache=""
     - while !
-      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                   }
-                   --file containers/debian/base.Dockerfile
-                   --platform ${PLATFORM}
-                   --build-arg BASE_IMAGE=${BASE_IMAGE}
-                   --build-arg BUILD_IMAGE=${BUILD_IMAGE}
-                   --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
-                   --build-arg SPACK_VERSION=${SPACK_VERSION}
-                   --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
-                   --build-arg SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES}"
-                   --build-arg KEY4HEPSPACK_ORGREPO=${KEY4HEPSPACK_ORGREPO}
-                   --build-arg KEY4HEPSPACK_VERSION=${KEY4HEPSPACK_VERSION}
-                   --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
-                   --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
-                   --build-arg jobs=${JOBS}
-                   --provenance false
-                   containers/debian
-                   2>&1 | tee build.log
+      docker buildx bake --print ${BUILD_OPTIONS} ${nocache}
+        ${EXPORT_TAG:+
+          ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+          ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+          ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+        }
+        --build-arg jobs=${JOBS}
+        --file containers/debian/base.hcl
+        2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
           nocache="--no-cache" ;
