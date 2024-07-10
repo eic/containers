@@ -270,14 +270,7 @@ base:
     - version
   script:
     - while !
-      docker buildx bake --print ${BUILD_OPTIONS}
-        ${EXPORT_TAG:+
-          ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-          ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-          ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-        }
-        --file containers/debian/base.hcl
-        2>&1 | tee build.log
+      docker buildx bake ${BUILD_OPTIONS} --push --file containers/debian/base.hcl 2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
           BUILD_OPTIONS="--no-cache ${BUILD_OPTIONS}" ;

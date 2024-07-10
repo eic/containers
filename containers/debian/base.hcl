@@ -17,13 +17,10 @@ variable "EXPORT_TAG" {
 target "default" {
   context = "containers/debian"
   dockerfile = "containers/debian/base.Dockerfile"
-  platforms = [
-    "linux/amd64"
-  ]
+  platforms = [ "linux/amd64" ]
   BASE_IMAGE = "${BASE_IMAGE}"
   BUILD_IMAGE = "${BUILD_IMAGE}"
   tags = [
     "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}",
-    ""
   ]
 }
