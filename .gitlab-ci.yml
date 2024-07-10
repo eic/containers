@@ -270,20 +270,14 @@ base:
     - version
   script:
     - while !
-      docker buildx build --push ${BUILD_OPTIONS}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                   }
-                   --file containers/debian/base.Dockerfile
-                   --platform ${PLATFORM}
-                   --build-arg BASE_IMAGE=${BASE_IMAGE}
-                   --build-arg BUILD_IMAGE=${BUILD_IMAGE}
-                   --provenance false
-                   containers/debian
-                   2>&1 | tee build.log
+      docker buildx bake --print ${BUILD_OPTIONS}
+        ${EXPORT_TAG:+
+          ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+          ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+          ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+        }
+        --file containers/debian/base.hcl
+        2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
           BUILD_OPTIONS="--no-cache ${BUILD_OPTIONS}" ;
