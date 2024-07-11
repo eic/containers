@@ -37,6 +37,6 @@ target "default" {
     BUILD_IMAGE = "${BUILD_IMAGE}"
   }
   tags = [
-    "{registry}/${BUILD_IMAGE}:${INTERNAL_TAG}",
+    "${registry}/${BUILD_IMAGE}:${INTERNAL_TAG}",
   ]
 }
