@@ -1,4 +1,7 @@
 target "default" {
+  attest = [
+    "type=provenance,disabled=true"
+  ]
   context = "containers/debian"
   dockerfile = "base.Dockerfile"
   platforms = [ "linux/amd64" ]

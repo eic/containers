@@ -273,13 +273,11 @@ base:
         --print
         --file containers/variables.hcl
         --file containers/debian/base.hcl
-        --provenance false
     - while !
       docker buildx bake ${BUILD_OPTIONS}
         --push
         --file containers/variables.hcl
         --file containers/debian/base.hcl
-        --provenance false
         2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
@@ -352,13 +350,11 @@ eic:
         --print
         --file containers/variables.hcl
         --file containers/jug/dev.hcl
-        --provenance false
     - while !
       docker buildx bake ${BUILD_OPTIONS}
         --push
         --file containers/variables.hcl
         --file containers/debian/dev.hcl
-        --provenance false
         2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
