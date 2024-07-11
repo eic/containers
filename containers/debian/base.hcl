@@ -2,7 +2,7 @@ target "default" {
   matrix = {
     registry = registries
   }
-  name = "${replace(registry,"/","-")}"
+  name = "${regex_replace(registry,"[^a-zA-Z0-9_-]","-")}"
   context = "containers/debian"
   dockerfile = "containers/debian/base.Dockerfile"
   platforms = [ "linux/amd64" ]
