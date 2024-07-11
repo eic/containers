@@ -28,16 +28,12 @@ variable "JUGGLER_VERSION" { default = null }
 variable "CI_COMMIT_SHA" { default = null }
 
 image_name = BUILD_TYPE == "default" ? "${BUILD_IMAGE}${ENV}" : "${BUILD_IMAGE}${ENV}-${BUILD_TYPE}"
+image_names = [
+  image_name,
+  replace(image_name,"eic","jug")
+]
 
 target "default" {
-  matrix = {
-    registry = registries,
-    image_names = [
-      image_name,
-      replace(image_name,"eic","jug")
-    ]
-  }
-  name = "${regex_replace(join("-",[registry,image_names]),"[^${printable}]","-")}"
   context = "containers/jug"
   contexts = {
     spack-environment = "spack-environment"
@@ -66,8 +62,11 @@ target "default" {
     EPIC_VERSION = BUILD_TYPE == "default" ? "${EPIC_VERSION}" : "main"
     JUGGLER_VERSION = BUILD_TYPE == "default" ? "${JUGGLER_VERSION}" : "main"
   }
-  tags = compact([
-    "${CI_REGISTRY}/${CI_PROJECT_PATH}/${image_name}:${INTERNAL_TAG}",
-    EXPORT_TAG != null ? "${registry}/${image_name}:${EXPORT_TAG}" : null,
-  ])
+  tags = compact(flatten([
+    [ for image_name in image_names: "${CI_REGISTRY}/${CI_PROJECT_PATH}/${image_name}:${INTERNAL_TAG}" ],
+    EXPORT_TAG != null && EXPORT_TAG != "" ? [
+      for registry_image_name in setproduct(registries, image_names):
+        format("%s:%s", join("/", registry_image_name), EXPORT_TAG )
+    ] : [ null ]
+  ]))
 }
