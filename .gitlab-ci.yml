@@ -269,8 +269,14 @@ base:
   needs:
     - version
   script:
+    - docker buildx bake ${BUILD_OPTIONS}
+        --print
+        --file containers/variables.hcl
+        --file containers/debian/base.hcl
+        --provenance false
     - while !
-      docker buildx bake ${BUILD_OPTIONS} --push
+      docker buildx bake ${BUILD_OPTIONS}
+        --push
         --file containers/variables.hcl
         --file containers/debian/base.hcl
         --provenance false
@@ -342,8 +348,14 @@ eic:
       source eic-spack.sh ;
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
+    - docker buildx bake ${BUILD_OPTIONS}
+        --print
+        --file containers/variables.hcl
+        --file containers/debian/dev.hcl
+        --provenance false
     - while !
-      docker buildx bake --print ${BUILD_OPTIONS} --push
+      docker buildx bake ${BUILD_OPTIONS}
+        --push
         --file containers/variables.hcl
         --file containers/debian/dev.hcl
         --provenance false
