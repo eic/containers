@@ -276,7 +276,7 @@ base:
     - attempts=0
     - nocache=""
     - while !
-      docker buildx bake ${BUILD_OPTIONS} ${nocache} --push --build-arg jobs=${JOBS} --file containers/debian/base.hcl 2>&1 | tee build.log
+      docker buildx bake ${BUILD_OPTIONS} ${nocache} --print --build-arg jobs=${JOBS} --file containers/debian/base.hcl 2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
           nocache="--no-cache" ;
