@@ -12,8 +12,8 @@ target "default" {
   dockerfile = "base.Dockerfile"
   platforms = [ "linux/amd64" ]
   args = {
-    BASE_IMAGE = "${BASE_IMAGE}"
-    BUILD_IMAGE = "${BUILD_IMAGE}"
+    BASE_IMAGE = BASE_IMAGE
+    BUILD_IMAGE = BUILD_IMAGE
   }
   tags = compact(flatten([
     "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}",
