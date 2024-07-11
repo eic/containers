@@ -270,13 +270,17 @@ base:
   needs:
     - version
   script:
-    - source spack.sh ; 
-      source key4hep-spack.sh ;
-      source eic-spack.sh ;
     - attempts=0
     - nocache=""
+    - docker buildx bake ${BUILD_OPTIONS} ${nocache}
+        --print
+        --build-arg jobs=${JOBS}
+        --file containers/variables.hcl
+        --file containers/debian/base.hcl
+        --provenance false
     - while !
-      docker buildx bake ${BUILD_OPTIONS} ${nocache} --push
+      docker buildx bake ${BUILD_OPTIONS} ${nocache}
+        --push
         --build-arg jobs=${JOBS}
         --file containers/variables.hcl
         --file containers/debian/base.hcl
@@ -356,8 +360,14 @@ eic:
       cat mirrors.yaml.in | envsubst > mirrors.yaml
     - attempts=0
     - nocache=""
+    - docker buildx bake ${BUILD_OPTIONS} ${nocache}
+        --print
+        --file containers/variables.hcl
+        --file containers/debian/dev.hcl
+        --provenance false
     - while !
-      docker buildx bake --print ${BUILD_OPTIONS} ${nocache} --push
+      docker buildx bake ${BUILD_OPTIONS} ${nocache}
+        --push
         --file containers/variables.hcl
         --file containers/debian/dev.hcl
         --provenance false
