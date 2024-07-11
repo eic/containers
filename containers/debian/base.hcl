@@ -14,7 +14,21 @@ variable "EXPORT_TAG" {
   default = null
 }
 
+variable "CI_REGISTRY" {
+  default = null
+}
+
+variable "CI_PROJECT_PATH" {
+  default = null
+}
+
 target "default" {
+  matrix = {
+    registry = [
+      "${CI_REGISTRY}/${CI_PROJECT_PATH}"
+    ]
+  }
+  name = "${replace(registry,"/","-")}"
   context = "containers/debian"
   dockerfile = "containers/debian/base.Dockerfile"
   platforms = [ "linux/amd64" ]
@@ -23,6 +37,6 @@ target "default" {
     BUILD_IMAGE = "${BUILD_IMAGE}"
   }
   tags = [
-    "${BUILD_IMAGE}:${INTERNAL_TAG}",
+    "{registry}/${BUILD_IMAGE}:${INTERNAL_TAG}",
   ]
 }
