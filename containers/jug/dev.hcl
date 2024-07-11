@@ -2,6 +2,7 @@ variable "jobs" { default = null }
 variable "ENV" { default = null }
 variable "BUILD_IMAGE" { default = "eic_" }
 
+# Variables whose defaults can be overridden on build
 variable "DOCKER_REGISTRY" { default = null }
 variable "BUILDER_IMAGE" { default = null }
 variable "RUNTIME_IMAGE" { default = null }
