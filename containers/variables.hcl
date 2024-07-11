@@ -1,3 +1,5 @@
+variable "printable" { default = "a-zA-Z0-9_-" }
+
 variable "BASE_IMAGE" { default = null }
 variable "BUILD_IMAGE" { default = null }
 
