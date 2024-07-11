@@ -34,6 +34,9 @@ image_names = [
 ]
 
 target "default" {
+  attest = [
+    "type=provenance,disabled=true"
+  ]
   context = "containers/jug"
   contexts = {
     spack-environment = "spack-environment"
