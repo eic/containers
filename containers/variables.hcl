@@ -1,6 +1,6 @@
 variable "printable" { default = "a-zA-Z0-9_-" }
 
-variable "INTERNAL_TAG" { default = null }
+variable "INTERNAL_TAG" { default = "testing" }
 variable "EXPORT_TAG" { default = null }
 
 variable "CI_PUSH" { default = null }
