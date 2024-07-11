@@ -351,7 +351,7 @@ eic:
     - docker buildx bake ${BUILD_OPTIONS}
         --print
         --file containers/variables.hcl
-        --file containers/debian/dev.hcl
+        --file containers/jug/dev.hcl
         --provenance false
     - while !
       docker buildx bake ${BUILD_OPTIONS}
