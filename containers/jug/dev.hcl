@@ -37,7 +37,7 @@ target "default" {
       replace(image_name,"eic","jug")
     ]
   }
-  name = "${regex_replace(join("-",[registry,image_names]),"[^a-zA-Z0-9_-]","-")}"
+  name = "${regex_replace(join("-",[registry,image_names]),"[^${printable}]","-")}"
   context = "containers/jug"
   contexts = {
     spack-environment = "spack-environment"
