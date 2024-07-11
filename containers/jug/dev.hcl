@@ -27,17 +27,17 @@ variable "JUGGLER_VERSION" { default = null }
 
 variable "CI_COMMIT_SHA" { default = null }
 
-image_name = ${BUILD_TYPE} == "default" ? "${BUILD_IMAGE}${ENV}" : "${BUILD_IMAGE}${ENV}-${BUILD_TYPE}"
+image_name = BUILD_TYPE == "default" ? "${BUILD_IMAGE}${ENV}" : "${BUILD_IMAGE}${ENV}-${BUILD_TYPE}"
 
 target "default" {
   matrix = {
     registry = registries,
     image_names = [
-      "${image_name}", 
-      "replace(${image_tag},"eic","jug")${ENV}"
+      image_name,
+      replace(image_name,"eic","jug")
     ]
   }
-  name = "${regex_replace(join("-",[registry,image_name]),"[^a-zA-Z0-9_-]","-")}"
+  name = "${regex_replace(join("-",[registry,image_names]),"[^a-zA-Z0-9_-]","-")}"
   context = "containers/jug"
   contexts = {
     spack-environment = "spack-environment"
@@ -61,10 +61,10 @@ target "default" {
     EICSPACK_VERSION = "${EICSPACK_VERSION}"
     S3_ACCESS_KEY = "${S3_ACCESS_KEY}"
     S3_SECRET_KEY = "${S3_SECRET_KEY}"
-    EDM4EIC_VERSION = ${BUILD_TYPE} == "default" ? "${EDM4EIC_VERSION}" : "main"
-    EICRECON_VERSION = ${BUILD_TYPE} == "default" ? "${EICRECON_VERSION}" : "main"
-    EPIC_VERSION = ${BUILD_TYPE} == "default" ? "${EPIC_VERSION}" : "main"
-    JUGGLER_VERSION = ${BUILD_TYPE} == "default" ? "${JUGGLER_VERSION}" : "main"
+    EDM4EIC_VERSION = BUILD_TYPE == "default" ? "${EDM4EIC_VERSION}" : "main"
+    EICRECON_VERSION = BUILD_TYPE == "default" ? "${EICRECON_VERSION}" : "main"
+    EPIC_VERSION = BUILD_TYPE == "default" ? "${EPIC_VERSION}" : "main"
+    JUGGLER_VERSION = BUILD_TYPE == "default" ? "${JUGGLER_VERSION}" : "main"
   }
   tags = compact([
     "${CI_REGISTRY}/${CI_PROJECT_PATH}/${image_name}:${INTERNAL_TAG}",
