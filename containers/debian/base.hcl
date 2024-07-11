@@ -16,7 +16,9 @@ target "default" {
     BUILD_IMAGE = BUILD_IMAGE
   }
   tags = compact(flatten([
-    "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}",
-    EXPORT_TAG != null ? [ for registry in registries: "${registry}/${BUILD_IMAGE}:${EXPORT_TAG}" ] : null,
+    join("/", compact([ CI_REGISTRY, CI_PROJECT_PATH, "${BUILD_IMAGE}:${INTERNAL_TAG}"]) ),
+    EXPORT_TAG != null && EXPORT_TAG != "" ? [
+      for registry in registries: "${registry}/${BUILD_IMAGE}:${EXPORT_TAG}"
+    ] : [ null ]
   ]))
 }
