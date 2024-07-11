@@ -347,9 +347,6 @@ eic:
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
-    - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY= ; fi
-    - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT= ; fi
-    - apk add envsubst git
     - source spack.sh ; 
       source key4hep-spack.sh ;
       source eic-spack.sh ;
@@ -358,81 +355,11 @@ eic:
     - attempts=0
     - nocache=""
     - while !
-      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
-                   ${EXPORT_TAG:+
-                     ${IF_BUILD_DEFAULT+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                     }
-                     ${IF_BUILD_DEFAULT-
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                     }
-                   }
-                   ${IF_BUILD_NIGHTLY+
-                     ${NIGHTLY:+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                       ${PUSH_NIGHTLY_WITH_DATE:+
-                         ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                         ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                       }
-                     }
-                   }
-                   ${EXPORT_TAG:+
-                     ${IF_BUILD_DEFAULT+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}}
-                     }
-                     ${IF_BUILD_DEFAULT-
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                     }
-                   }
-                   ${IF_BUILD_NIGHTLY+
-                     ${NIGHTLY:+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}}
-                     }
-                       ${PUSH_NIGHTLY_WITH_DATE:+
-                         ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                         ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                       }
-                   }
-                   --file containers/jug/dev.Dockerfile
-                   --platform ${PLATFORM}
-                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
-                   --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
-                   --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg JUG_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
-                   ${IF_BUILD_DEFAULT+
-                     ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION}}
-                     ${EICRECON_VERSION:+--build-arg EICRECON_VERSION=${EICRECON_VERSION}}
-                     ${EPIC_VERSION:+--build-arg EPIC_VERSION=${EPIC_VERSION}}
-                     ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=${JUGGLER_VERSION}}
-                   }
-                   ${IF_BUILD_NIGHTLY+
-                     --build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION:-main}
-                     --build-arg EICRECON_VERSION=${EICRECON_VERSION:-main}
-                     --build-arg EPIC_VERSION=${EPIC_VERSION:-main}
-                     --build-arg JUGGLER_VERSION=${JUGGLER_VERSION:-main}
-                   }
-                   --build-arg ENV=${ENV}
-                   --build-arg jobs=${JOBS}
-                   --build-context spack-environment=spack-environment
-                   --secret id=mirrors,src=mirrors.yaml
-                   --provenance false
-                   containers/jug
-                   2>&1 | tee build.log
+      docker buildx bake --print ${BUILD_OPTIONS} ${nocache} --push
+        --file containers/variables.hcl
+        --file containers/debian/dev.hcl
+        --provenance false
+        2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
           nocache="--no-cache" ;
