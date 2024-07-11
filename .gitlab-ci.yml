@@ -354,7 +354,7 @@ eic:
       docker buildx bake ${BUILD_OPTIONS}
         --push
         --file containers/variables.hcl
-        --file containers/debian/dev.hcl
+        --file containers/jug/dev.hcl
         2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
