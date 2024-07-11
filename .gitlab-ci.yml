@@ -280,6 +280,7 @@ base:
         --build-arg jobs=${JOBS}
         --file containers/variables.hcl
         --file containers/debian/base.hcl
+        --provenance false
         2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then

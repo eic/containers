@@ -10,8 +10,8 @@ target "default" {
     BASE_IMAGE = "${BASE_IMAGE}"
     BUILD_IMAGE = "${BUILD_IMAGE}"
   }
-  tags = [
+  tags = compact([
     "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}",
-    "${registry}/${BUILD_IMAGE}:${EXPORT_TAG}",
-  ]
+    EXPORT_TAG != null ? "${registry}/${BUILD_IMAGE}:${EXPORT_TAG}" : null,
+  ])
 }
