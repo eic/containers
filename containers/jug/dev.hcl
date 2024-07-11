@@ -1,5 +1,6 @@
 variable "jobs" { default = null }
 variable "ENV" { default = null }
+variable "BUILD_IMAGE" { default = "eic_" }
 
 variable "DOCKER_REGISTRY" { default = null }
 variable "BUILDER_IMAGE" { default = null }

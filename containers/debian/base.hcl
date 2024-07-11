@@ -1,3 +1,9 @@
+# Variables which are required to be defined
+variable "BUILD_IMAGE" { default = "debian_base" }
+
+# Variables whose defaults can be overridden on build
+variable "BASE_IMAGE" { default = null }
+
 target "default" {
   attest = [
     "type=provenance,disabled=true"
