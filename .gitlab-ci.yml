@@ -347,6 +347,7 @@ eic:
       if [ "$CI_COMMIT_BRANCH" == "master" ]; then
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
+    - apk add envsubst
     - source spack.sh ; 
       source key4hep-spack.sh ;
       source eic-spack.sh ;
