@@ -19,7 +19,7 @@ variable "GH_REGISTRY" { default = null }
 variable "GH_REGISTRY_USER" { default = null }
 
 registries = compact([
-  CI_PUSH != null ? "${CI_REGISTRY}/${CI_PROJECT_PATH}" : null,
-  DH_PUSH != null ? "${DH_REGISTRY}/${DH_REGISTRY_USER}" : null,
-  GH_PUSH != null ? "${GH_REGISTRY}/${GH_REGISTRY_USER}" : null,
+  CI_PUSH != null && CI_PUSH != "" ? "${CI_REGISTRY}/${CI_PROJECT_PATH}" : null,
+  DH_PUSH != null && DH_PUSH != "" ? "${DH_REGISTRY}/${DH_REGISTRY_USER}" : null,
+  GH_PUSH != null && GH_PUSH != "" ? "${GH_REGISTRY}/${GH_REGISTRY_USER}" : null,
 ])
