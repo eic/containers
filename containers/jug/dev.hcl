@@ -70,7 +70,10 @@ target "default" {
     JUGGLER_VERSION = BUILD_TYPE == "default" ? JUGGLER_VERSION : "main"
   }
   tags = compact(flatten([
-    [ for image_name in image_names: "${CI_REGISTRY}/${CI_PROJECT_PATH}/${image_name}:${INTERNAL_TAG}" ],
+    [
+      for image_name in image_names:
+        join("/", compact([ CI_REGISTRY, CI_PROJECT_PATH, "${image_name}:${INTERNAL_TAG}"]) )
+    ],
     EXPORT_TAG != null && EXPORT_TAG != "" ? [
       for registry_image_name in setproduct(registries, image_names):
         format("%s:%s", join("/", registry_image_name), EXPORT_TAG )
