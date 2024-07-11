@@ -270,7 +270,10 @@ base:
     - version
   script:
     - while !
-      docker buildx bake ${BUILD_OPTIONS} --push --file containers/debian/base.hcl 2>&1 | tee build.log
+      docker buildx bake ${BUILD_OPTIONS} --push
+        --file containers/variables.hcl
+        --file containers/debian/base.hcl
+        2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
           BUILD_OPTIONS="--no-cache ${BUILD_OPTIONS}" ;
