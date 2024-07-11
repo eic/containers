@@ -1,6 +1,8 @@
-variable "jobs" { default = null }
-variable "ENV" { default = null }
+# Variables which are required to be defined
+variable "jobs" { default = 1 }
+variable "ENV" { default = "dev" }
 variable "BUILD_IMAGE" { default = "eic_" }
+variable "BUILD_TYPE" { default = "default" }
 
 # Variables whose defaults can be overridden on build
 variable "DOCKER_REGISTRY" { default = null }
@@ -19,7 +21,6 @@ variable "S3_ACCESS_KEY" { default = null }
 variable "S3_SECRET_KEY" { default = null }
 
 variable "NIGHTLY" { default = null }
-variable "BUILD_TYPE" { default = null }
 variable "NIGHTLY_TAG" { default = null }
 
 variable "EDM4EIC_VERSION" { default = null }
