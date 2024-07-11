@@ -4,7 +4,7 @@ target "default" {
   }
   name = "${regex_replace(registry,"[^a-zA-Z0-9_-]","-")}"
   context = "containers/debian"
-  dockerfile = "containers/debian/base.Dockerfile"
+  dockerfile = "base.Dockerfile"
   platforms = [ "linux/amd64" ]
   args = {
     BASE_IMAGE = "${BASE_IMAGE}"
