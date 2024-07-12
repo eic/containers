@@ -1,6 +1,6 @@
 # Variables which are required to be defined
 variable "jobs" { default = 1 }
-variable "ENV" { default = "dev" }
+variable "ENV" { default = "xl" }
 variable "BUILD_IMAGE" { default = "eic_" }
 variable "BUILD_TYPE" { default = "default" }
 
