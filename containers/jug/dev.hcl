@@ -50,6 +50,7 @@ target "default" {
     "id=mirrors,src=mirrors.yaml",
   ]
   args = {
+    ENV = ENV
     jobs = jobs
     DOCKER_REGISTRY = DOCKER_REGISTRY
     BUILDER_IMAGE = BUILDER_IMAGE
