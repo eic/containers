@@ -45,7 +45,7 @@ env:
   GH_PUSH: 1
 
   ## Number of jobs to start during container builds
-  JOBS: 4
+  jobs: 4
 
   ## Internal tag used for the CI
   INTERNAL_TAG: pipeline-${{ github.run_id }}
