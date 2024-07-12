@@ -5,7 +5,7 @@ variable "BUILD_IMAGE" { default = "eic_" }
 variable "BUILD_TYPE" { default = "default" }
 
 # Variables whose defaults can be overridden on build
-variable "DOCKER_REGISTRY" { default = null }
+variable "DOCKER_REGISTRY" { default = join("/", [ CI_REGISTRY, CI_PROJECT_PATH ]) }
 variable "BUILDER_IMAGE" { default = null }
 variable "RUNTIME_IMAGE" { default = null }
 
