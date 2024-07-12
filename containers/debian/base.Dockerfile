@@ -1,7 +1,7 @@
 #syntax=docker/dockerfile:1.8
 #check
 ARG BASE_IMAGE="amd64/debian:stable-slim"
-ARG BUILD_IMAGE="debian_stable_base"
+ARG BUILD_IMAGE="debian_base"
 
 # Minimal container based on Debian base systems for up-to-date packages. 
 FROM  ${BASE_IMAGE}
