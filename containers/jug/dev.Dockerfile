@@ -1,7 +1,7 @@
 #syntax=docker/dockerfile:1.4
 ARG DOCKER_REGISTRY="eicweb/"
-ARG BUILDER_IMAGE="debian_stable_base"
-ARG RUNTIME_IMAGE="debian_stable_base"
+ARG BUILDER_IMAGE="debian_base"
+ARG RUNTIME_IMAGE="debian_base"
 ARG INTERNAL_TAG="testing"
 
 ## ========================================================================================
@@ -32,7 +32,7 @@ EOF
 ## Setup spack
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
-ARG SPACK_VERSION="releases/v0.20"
+ARG SPACK_VERSION="v0.22.0"
 ENV SPACK_PYTHON=/usr/bin/python3
 ARG SPACK_CHERRYPICKS=""
 ARG SPACK_CHERRYPICKS_FILES=""
@@ -108,7 +108,7 @@ EOF
 ## Setup eic-spack
 ENV EICSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/eic-spack
 ARG EICSPACK_ORGREPO="eic/eic-spack"
-ARG EICSPACK_VERSION="$SPACK_VERSION"
+ARG EICSPACK_VERSION="develop"
 ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
 RUN <<EOF
 set -e
@@ -138,7 +138,7 @@ FROM spack as builder
 
 ## 1. Setup our default environment (secret mount for write-enabled mirror)
 COPY --from=spack-environment . /opt/spack-environment/
-ARG ENV=dev
+ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
