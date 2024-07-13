@@ -155,8 +155,7 @@ spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
-  BUILDCACHE_OCI_FINAL="ghcr" \
-  BUILDCACHE_S3_FINAL="eics3rw"
+  BUILDCACHE_OCI_FINAL="ghcr"
 spack find --implicit --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
 | uniq -d | grep -v py-pip | grep -v py-cython \
@@ -207,8 +206,7 @@ fi
 spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
-  BUILDCACHE_OCI_FINAL="eicweb" \
-  BUILDCACHE_S3_FINAL="eics3rw"
+  BUILDCACHE_OCI_FINAL="eicweb"
 spack find --implicit --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
 | uniq -d | grep -v py-pip | grep -v py-cython \
