@@ -1,4 +1,5 @@
-#syntax=docker/dockerfile:1.4
+#syntax=docker/dockerfile:1.8
+#check
 ARG DOCKER_REGISTRY="eicweb/"
 ARG BUILDER_IMAGE="debian_stable_base"
 ARG RUNTIME_IMAGE="debian_stable_base"

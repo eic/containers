@@ -1,4 +1,5 @@
-#syntax=docker/dockerfile:1.4
+#syntax=docker/dockerfile:1.8
+#check
 ARG BASE_IMAGE="amd64/debian:stable-slim"
 ARG BUILD_IMAGE="debian_stable_base"
 
