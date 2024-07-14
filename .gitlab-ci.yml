@@ -580,6 +580,8 @@ df:
     - docker-new
   needs: 
     - version
+  rules:
+    - when: manual
   script:
     - docker images
     - docker ps --size
@@ -598,6 +600,7 @@ df:
       - docker-stats-all.txt
       - docker-buildx-du-verbose.txt
       - docker-system-df-verbose.txt
+  allow_failure: true
 
 prune: 
   extends: .build
