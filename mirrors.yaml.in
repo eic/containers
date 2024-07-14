@@ -2,6 +2,10 @@ mirrors:
   eicweb:
     url: oci://${CI_REGISTRY}/${CI_PROJECT_PATH}/spack-${SPACK_VERSION}
     signed: false
+    fetch:
+      access_pair:
+      - ${CI_REGISTRY_USER}
+      - ${CI_REGISTRY_PASSWORD}
     push:
       access_pair:
       - ${CI_REGISTRY_USER}
@@ -9,6 +13,10 @@ mirrors:
   ghcr:
     url: oci://ghcr.io/eic/spack-${SPACK_VERSION}
     signed: false
+    fetch:
+      access_pair:
+      - ${GITHUB_REGISTRY_USER}
+      - ${GITHUB_REGISTRY_TOKEN}
     push:
       access_pair:
       - ${GITHUB_REGISTRY_USER}
