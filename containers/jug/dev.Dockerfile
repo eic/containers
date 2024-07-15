@@ -48,6 +48,7 @@ echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
 spack env activate --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
 spack external find --not-buildable --scope env:${SPACK_ENV} llvm
+spack external find --not-buildable --scope env:${SPACK_ENV} python
 spack concretize --force
 EOF
 

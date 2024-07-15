@@ -286,9 +286,6 @@ packages:
     require:
     - '@8.312'
     - +fastjet +root
-  python:
-    require:
-    - '@3.11.7'
   py-awkward:
     require:
     - '@2.1.1'
