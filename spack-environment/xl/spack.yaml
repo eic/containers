@@ -94,6 +94,7 @@ spack:
   - py-wurlitzer
   - py-yapf
   - root +opengl +webgui +x
+  - simsipm
   - snakemake
   - spdlog
   - stow
