@@ -68,6 +68,9 @@ spack:
   - py-dask
   - py-deepdiff
   - py-epic-capybara
+  - py-hepunits
+  - py-hist
+  - py-histoprint
   - py-ipython
   - py-jinja2
   - py-jinja2-cli
@@ -82,6 +85,7 @@ spack:
   - py-onnx
   - py-onnxruntime
   - py-pandas
+  - py-particle
   - py-pip
   - py-pre-commit
   - py-pycairo
@@ -91,6 +95,7 @@ spack:
   - py-toml
   - py-torch
   - py-uproot
+  - py-vector
   - py-wurlitzer
   - py-yapf
   - root +opengl +webgui +x

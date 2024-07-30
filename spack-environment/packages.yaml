@@ -273,6 +273,15 @@ packages:
   py-epic-capybara:
     require:
     - '@git.c388cecce90d06f2db75e45bb0427816db04c836'
+  py-hepunits:
+    require:
+    - '@2.3.2'
+  py-hist:
+    require:
+    - '@2.6.1'
+  py-histoprint:
+    require:
+    - '@2.4.0'
   py-ipython:
     require:
     - '@8.11.0'
@@ -315,6 +324,9 @@ packages:
   py-pandas:
     require:
     - '@1.5.3'
+  py-particle:
+    require:
+    - '@0.23.0'
   py-pip:
     require:
     - any_of: ['@23.1.2', '@23.0']
@@ -346,6 +358,9 @@ packages:
   py-uproot:
     require:
     - '@5.0.5'
+  py-vector:
+    require:
+    - '@0.8.5'
   py-wurlitzer:
     require:
     - '@3.0.2'
