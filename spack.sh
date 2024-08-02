@@ -16,6 +16,8 @@ f6d50f790ee8b123f7775429f6ca6394170e6de9
 85f13442d2a7486daba81fdd9a3b6a1182ba11f6
 f73d7d2dce226857cbc774e942454bad2992969e
 cbab451c1a342523ed75e9be1098615a597a9b59
+4fe5f35c2fff6288e4c05e5946798ad2191a2c40
+4c60deb9921ff2cbbfa6771f4f63ff812a8a5840
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -31,3 +33,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 85f13442d2a7486daba81fdd9a3b6a1182ba11f6: Consolidate concretization output for environments
 ## f73d7d2dce226857cbc774e942454bad2992969e: dd4hep: cleanup recipe, remove deprecated versions and patches
 ## cbab451c1a342523ed75e9be1098615a597a9b59: dd4hep: Add version 1.29
+## 4fe5f35c2fff6288e4c05e5946798ad2191a2c40: xrootd: add v5.7.0
+## 4c60deb9921ff2cbbfa6771f4f63ff812a8a5840: xrootd: add github as secondary url to avoid SSL issues
