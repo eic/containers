@@ -367,9 +367,16 @@ packages:
   py-yapf:
     require:
     - '@0.30.0'
+  qmake:
+    require:
+    - qt-base
   qt:
     require:
     - '@5.15.12'
+    - +opengl
+  qt-base:
+    require:
+    - '@6.7.2'
     - +opengl
   root:
     require:

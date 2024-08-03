@@ -18,6 +18,9 @@ f73d7d2dce226857cbc774e942454bad2992969e
 cbab451c1a342523ed75e9be1098615a597a9b59
 4fe5f35c2fff6288e4c05e5946798ad2191a2c40
 4c60deb9921ff2cbbfa6771f4f63ff812a8a5840
+b894acf1fca8eb5cc52d2267b0c4c187065998c0
+8b45fa089e24c6ab7de2eaf614977369e69daa54
+2d8ca8af6932dfd50204d1e4f6fe587dec7beef5
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -35,3 +38,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## cbab451c1a342523ed75e9be1098615a597a9b59: dd4hep: Add version 1.29
 ## 4fe5f35c2fff6288e4c05e5946798ad2191a2c40: xrootd: add v5.7.0
 ## 4c60deb9921ff2cbbfa6771f4f63ff812a8a5840: xrootd: add github as secondary url to avoid SSL issues
+## b894acf1fca8eb5cc52d2267b0c4c187065998c0: geant4: add v11.2.2, incl g4ndl v4.7.1
+## 8b45fa089e24c6ab7de2eaf614977369e69daa54: geant4: support Qt5 and Qt6
+## 2d8ca8af6932dfd50204d1e4f6fe587dec7beef5: qt-*: add v6.7.1, v6.7.2
