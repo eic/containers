@@ -141,7 +141,7 @@ packages:
       prefix: /opt/software/externals/g4ndl
   geant4:
     require:
-    - '@11.2.1.east'
+    - '@11.2.2.east'
     - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   glew:
