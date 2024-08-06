@@ -21,6 +21,7 @@ cbab451c1a342523ed75e9be1098615a597a9b59
 b894acf1fca8eb5cc52d2267b0c4c187065998c0
 8b45fa089e24c6ab7de2eaf614977369e69daa54
 2d8ca8af6932dfd50204d1e4f6fe587dec7beef5
+d3bf1e04fca844abb7c1eeac38dda4e126c81b67
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -41,3 +42,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## b894acf1fca8eb5cc52d2267b0c4c187065998c0: geant4: add v11.2.2, incl g4ndl v4.7.1
 ## 8b45fa089e24c6ab7de2eaf614977369e69daa54: geant4: support Qt5 and Qt6
 ## 2d8ca8af6932dfd50204d1e4f6fe587dec7beef5: qt-*: add v6.7.1, v6.7.2
+## d3bf1e04fca844abb7c1eeac38dda4e126c81b67: py-vector: add through v1.4.1 (switch to hatchling)

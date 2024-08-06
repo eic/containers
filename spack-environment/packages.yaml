@@ -360,7 +360,7 @@ packages:
     - '@5.0.5'
   py-vector:
     require:
-    - '@0.8.5'
+    - '@1.4.1'
   py-wurlitzer:
     require:
     - '@3.0.2'
