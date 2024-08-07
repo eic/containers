@@ -87,7 +87,7 @@ packages:
     - '@656aa3192b097a631ddd1e0380e80c26fd6644a7'
   edm4eic:
     require:
-    - '@6.0.1' # EDM4EIC_VERSION
+    - '@7.0.0' # EDM4EIC_VERSION
     - cxxstd=20
   edm4hep:
     require:
@@ -103,7 +103,7 @@ packages:
     - '@1.1.12'
   eicrecon:
     require:
-    - '@1.15.0' # EICRECON_VERSION
+    - '@1.16.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
