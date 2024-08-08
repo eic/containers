@@ -156,7 +156,7 @@ packages:
     - +expat +pangocairo
   hepmc3:
     require:
-    - '@3.2.7'
+    - '@3.3.0'
     - +python +rootio
   heppdt:
     require:
