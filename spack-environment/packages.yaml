@@ -14,8 +14,8 @@ packages:
     require:
     - '%gcc'
     - any_of: [+ipo, '@:']
+    - any_of: [build_system=cmake, '@:']
     - any_of: [build_type=Release, '@:']
-    - any_of: [^py-pip@23.1.2, '@:']
   acts:
     require:
     - '@31.2.0'
@@ -127,6 +127,9 @@ packages:
     require:
     - '@9.1.0'
     - +shared cxxstd=17
+  freetype:
+    require:
+    - build_system=autotools
   gaudi:
     require:
     - '@38.1'
@@ -144,9 +147,12 @@ packages:
     - '@11.2.2.east'
     - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
-  glew:
+  gettext: 
     require:
-    - gl=glx
+    - +libxml2
+  gl:
+    require:
+    - glx
   gloo:
     require:
     - '@2023-05-19'
@@ -251,6 +257,9 @@ packages:
     require:
     - '@3.0.2'
     - +plot
+  protobuf:
+    require:
+    - '@3.21.12'
   pythia8:
     require:
     - '@8.311'
@@ -333,6 +342,9 @@ packages:
   py-pre-commit:
     require:
     - '@3.3.3'
+  py-protobuf:
+    require:
+    - '@4.21.9'
   py-pygithub:
     require:
     - '@2.1.1'

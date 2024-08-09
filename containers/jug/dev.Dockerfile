@@ -157,11 +157,11 @@ make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
   BUILDCACHE_OCI_FINAL="ghcr"
-spack find --implicit --no-groups \
+spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
-| uniq -d | grep -v py-pip | grep -v py-cython \
+| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
 | tee /tmp/duplicates.txt
-test -s /tmp/duplicates.txt && exit 1
+test -s /tmp/duplicates.txt && ( cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done ) && exit 1
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -208,11 +208,11 @@ spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_FINAL="eicweb"
-spack find --implicit --no-groups \
+spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
-| uniq -d | grep -v py-pip | grep -v py-cython \
+| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
 | tee /tmp/duplicates.txt
-test -s /tmp/duplicates.txt && exit 1
+test -s /tmp/duplicates.txt && ( cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done ) && exit 1
 ccache --show-stats
 ccache --zero-stats
 EOF
