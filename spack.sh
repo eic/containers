@@ -23,6 +23,7 @@ b894acf1fca8eb5cc52d2267b0c4c187065998c0
 d3bf1e04fca844abb7c1eeac38dda4e126c81b67
 81125c3bd80e71a2e57c7fcff8e02c4b3add5b90
 8b2fec61f23a7b8230c0ed0378d90d04d8f590d8
+2242da65fdc06e7ac04c43613dc7795164b3a7a3
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -45,3 +46,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## d3bf1e04fca844abb7c1eeac38dda4e126c81b67: py-vector: add through v1.4.1 (switch to hatchling)
 ## 81125c3bd80e71a2e57c7fcff8e02c4b3add5b90: hepmc3: pass root variant cxxstd as HEPMC3_CXX_STANDARD
 ## 8b2fec61f23a7b8230c0ed0378d90d04d8f590d8: hepmc3: add v3.3.0
+## 2242da65fdc06e7ac04c43613dc7795164b3a7a3: graphviz: add through v12.1.0

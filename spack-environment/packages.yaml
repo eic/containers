@@ -158,7 +158,7 @@ packages:
     - '@2023-05-19'
   graphviz:
     require:
-    - '@8.0.1'
+    - '@12.1.0'
     - +expat +pangocairo
   hepmc3:
     require:
