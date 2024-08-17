@@ -6,7 +6,6 @@ variables:
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
   ## Default versions are specified in packages.yaml but can be overridden
-  ## note: nightly builds will always use the master/main branch
   EDM4EIC_VERSION: ""
   EICRECON_VERSION: ""
   EPIC_VERSION: ""
@@ -435,10 +434,10 @@ eic:
                      ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=${JUGGLER_VERSION}}
                    }
                    ${IF_BUILD_NIGHTLY+
-                     --build-arg EDM4EIC_VERSION=main
-                     --build-arg EICRECON_VERSION=main
-                     --build-arg EPIC_VERSION=main
-                     --build-arg JUGGLER_VERSION=main
+                     --build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION:-main}
+                     --build-arg EICRECON_VERSION=${EICRECON_VERSION:-main}
+                     --build-arg EPIC_VERSION=${EPIC_VERSION:-main}
+                     --build-arg JUGGLER_VERSION=${JUGGLER_VERSION:-main}
                    }
                    --build-arg ENV=${ENV}
                    --build-arg jobs=${JOBS}
