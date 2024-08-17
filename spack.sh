@@ -11,7 +11,7 @@ read -r -d '' SPACK_CHERRYPICKS <<- \
 09f75ee426a2e05e0543570821582480ff823ba5
 f6d50f790ee8b123f7775429f6ca6394170e6de9
 63f6e6079aacc99078386e5c8ff06173841b9595
-9f3e45ddbee24aaa7993e575297827e0aed2e6fe
+092dc96e6c87a9c043e4421e1a524e23ec649f60
 85f13442d2a7486daba81fdd9a3b6a1182ba11f6
 f73d7d2dce226857cbc774e942454bad2992969e
 cbab451c1a342523ed75e9be1098615a597a9b59
@@ -24,6 +24,7 @@ d3bf1e04fca844abb7c1eeac38dda4e126c81b67
 81125c3bd80e71a2e57c7fcff8e02c4b3add5b90
 8b2fec61f23a7b8230c0ed0378d90d04d8f590d8
 2242da65fdc06e7ac04c43613dc7795164b3a7a3
+1dc63dbea6c1d42aabf0e14b51439dcc46423e79
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -34,7 +35,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 09f75ee426a2e05e0543570821582480ff823ba5: setup-env.sh: if exe contains qemu, use /proc/$$/comm instead
 ## f6d50f790ee8b123f7775429f6ca6394170e6de9: gaudi: Add version 38.1
 ## 63f6e6079aacc99078386e5c8ff06173841b9595: gaudi: upstream patch when @38.1 for missing #include <list>
-## 9f3e45ddbee24aaa7993e575297827e0aed2e6fe: acts: pass cuda_arch to CMAKE_CUDA_ARCHITECTURES
+## 9092dc96e6c87a9c043e4421e1a524e23ec649f6: acts: pass cuda_arch to CMAKE_CUDA_ARCHITECTURES
 ## 85f13442d2a7486daba81fdd9a3b6a1182ba11f6: Consolidate concretization output for environments
 ## f73d7d2dce226857cbc774e942454bad2992969e: dd4hep: cleanup recipe, remove deprecated versions and patches
 ## cbab451c1a342523ed75e9be1098615a597a9b59: dd4hep: Add version 1.29
@@ -47,3 +48,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 81125c3bd80e71a2e57c7fcff8e02c4b3add5b90: hepmc3: pass root variant cxxstd as HEPMC3_CXX_STANDARD
 ## 8b2fec61f23a7b8230c0ed0378d90d04d8f590d8: hepmc3: add v3.3.0
 ## 2242da65fdc06e7ac04c43613dc7795164b3a7a3: graphviz: add through v12.1.0
+## 1dc63dbea6c1d42aabf0e14b51439dcc46423e79: acts: add v34.1.0, v35.0.0 (identification, sycl variants changes)
