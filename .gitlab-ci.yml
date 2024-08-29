@@ -269,6 +269,7 @@ base:
   needs:
     - version
   script:
+    - attempts=0
     - while !
       docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
@@ -289,7 +290,12 @@ base:
           BUILD_OPTIONS="--no-cache ${BUILD_OPTIONS}" ;
         else
           exit 1 ;
-        fi
+        fi ;
+        if test ${attempts} -ge 1 ; then
+          echo "Failed to build on second attempt!" ;
+          exit 1 ;
+        fi ;
+        let attempts=$attempts+1 ;
       done
 
 
@@ -353,6 +359,7 @@ eic:
       source eic-spack.sh ;
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
+    - attempts=0
     - while !
       docker buildx build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
@@ -441,10 +448,15 @@ eic:
                    2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
-          BUILD_OPTIONS="--no-cache ${BUILD_OPTIONS}" ;
+          BUILD_OPTIONS="--no-cache-filter spack,builder,staging,runtime ${BUILD_OPTIONS}" ;
         else
           exit 1 ;
-        fi
+        fi ;
+        if test ${attempts} -ge 1 ; then
+          echo "Failed to build on second attempt!" ;
+          exit 1 ;
+        fi ;
+        let attempts=$attempts+1 ;
       done
 
 .singularity:
