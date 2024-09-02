@@ -114,7 +114,6 @@ version:
         NIGHTLY_TAG="${VERSION}-nightly"
         EXPORT_TAG="${VERSION}"
         DH_PUSH=""
-        GH_PUSH=""
       elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ]; then
         VERSION="${CI_COMMIT_BRANCH}"
         DH_PUSH=""
@@ -194,6 +193,8 @@ status:pending:
       GH_REGISTRY=$(nslookup ${GH_REGISTRY} | sed '/^Address:/!d;s/^Address:\s*\(\S*\)/\1/g' | sed '$!d') ;
       echo ${GH_REGISTRY}
   after_script:
+    - # Confirm resolved ghcr.io
+      echo "GitHub registry was at ${GH_REGISTRY}"
     - # Logout from local registry
       docker logout ${CI_REGISTRY}
     - # Logout from remote registries
