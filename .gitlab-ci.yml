@@ -189,6 +189,10 @@ status:pending:
           echo ${GITHUB_REGISTRY_TOKEN} | docker login -u ${GITHUB_REGISTRY_USER} --password-stdin ${GH_REGISTRY} ;
         fi ;
       fi
+    - # Resolve ghcr.io
+      echo -n "Resolving ${GH_REGISTRY} ... " ;
+      GH_REGISTRY=$(nslookup ${GH_REGISTRY} | sed '/^Address:/!d;s/^Address:\s*\(\S*\)/\1/g' | sed '$!d') ;
+      echo ${GH_REGISTRY}
   after_script:
     - # Logout from local registry
       docker logout ${CI_REGISTRY}
