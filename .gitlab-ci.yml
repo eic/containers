@@ -2,7 +2,7 @@ image: alpine
 
 variables:
   ## External images
-  DOCKER_IMAGE: docker.io/docker:25.0.5
+  DOCKER_IMAGE: docker.io/docker:27.2.0
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
   ## Default versions are specified in packages.yaml but can be overridden
