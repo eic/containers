@@ -362,7 +362,7 @@ eic:
       cat mirrors.yaml.in | envsubst > mirrors.yaml
     - attempts=0
     - while !
-      docker buildx build --push ${BUILD_OPTIONS}
+      docker buildx debug build --push ${BUILD_OPTIONS}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
