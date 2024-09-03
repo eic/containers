@@ -139,8 +139,9 @@ packages:
     - '@12.1'
     - -debuginfod
   g4ndl:
+    buildable: False
     externals:
-    - spec: g4ndl@4.7
+    - spec: g4ndl@4.7.1
       prefix: /opt/software/externals/g4ndl
   geant4:
     require:
