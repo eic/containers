@@ -270,8 +270,9 @@ base:
     - version
   script:
     - attempts=0
+    - nocache=""
     - while !
-      docker buildx build --push ${BUILD_OPTIONS}
+      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -287,7 +288,7 @@ base:
                    2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
-          BUILD_OPTIONS="--no-cache ${BUILD_OPTIONS}" ;
+          nocache="--no-cache" ;
         else
           exit 1 ;
         fi ;
@@ -360,8 +361,9 @@ eic:
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
     - attempts=0
+    - nocache=""
     - while !
-      docker buildx build --push ${BUILD_OPTIONS}
+      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
@@ -448,7 +450,7 @@ eic:
                    2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
-          BUILD_OPTIONS="--no-cache-filter spack,builder,staging,runtime ${BUILD_OPTIONS}" ;
+          nocache="--no-cache" ;
         else
           exit 1 ;
         fi ;
