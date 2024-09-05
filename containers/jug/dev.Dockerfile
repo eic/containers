@@ -6,7 +6,7 @@ ARG RUNTIME_IMAGE="debian_stable_base"
 ARG INTERNAL_TAG="testing"
 
 ## ========================================================================================
-## STAGE0: spack image
+## STAGE 0: spack image
 ## EIC spack image with spack and eic-spack repositories
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} as spack
@@ -56,6 +56,7 @@ if [ -n "${SPACK_CHERRYPICKS}" ] ; then
     fi
   done
 fi
+git -C $SPACK_ROOT gc --prune=all --aggressive
 sed -i 's/timeout=60/timeout=None/' $SPACK_ROOT/lib/spack/spack/stage.py
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/docker-shell
 ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/interactive-shell
@@ -132,7 +133,7 @@ EOF
 
 
 ## ========================================================================================
-## STAGE1: builder
+## STAGE 1: builder
 ## EIC builder image with spack environment
 ## ========================================================================================
 FROM spack as builder
@@ -157,6 +158,7 @@ make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
   BUILDCACHE_OCI_FINAL="ghcr"
+spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
 | uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
@@ -208,6 +210,7 @@ spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_FINAL="eicweb"
+spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
 | uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
@@ -241,35 +244,16 @@ set -e
 spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
 EOF
 
-## make sure we have the entrypoints setup correctly
-ENTRYPOINT []
-CMD ["bash", "--rcfile", "/etc/profile", "-l"]
-USER 0
-WORKDIR /
-
-
-## ========================================================================================
-## STAGE 2: staging image with unnecessariy packages removed and stripped binaries
-## ========================================================================================
-FROM builder as staging
-
-# Garbage collect in environment
-RUN spack -e ${SPACK_ENV} gc -y
-
-# Garbage collect in git
-#RUN git -C $SPACK_ROOT gc --prune=all --aggressive
-
-## Bugfix to address issues loading the Qt5 libraries on Linux kernels prior to 3.15
-## See
-#https://askubuntu.com/questions/1034313/ubuntu-18-4-libqt5core-so-5-cannot-open-shared-object-file-no-such-file-or-dir
-## and links therin for more info
+## Fixup /opt/detector/epic-git.fcf90937193c983c0af2acf1251e01f2e2c3a259_main
 RUN <<EOF
-set -ex
-if [ -f /opt/local/lib/libQt5Core.so ] ; then
-  strip --remove-section=.note.ABI-tag /opt/local/lib/libQt5Core.so
-fi
+shopt -s nullglob
+cd /opt/detector
+for detector in epic-git.*_* ; do
+  ln -s ${detector} epic-${detector/*_/}
+done
 EOF
 
+## Fill jug_info
 RUN <<EOF
 set -ex
 spack debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" >> /etc/jug_info
@@ -286,15 +270,6 @@ COPY profile.d/a00_cleanup.sh /etc/profile.d
 COPY profile.d/z11_jug_env.sh /etc/profile.d
 COPY singularity.d /.singularity.d
 
-## Fixup /opt/detector/epic-git.fcf90937193c983c0af2acf1251e01f2e2c3a259_main
-RUN <<EOF
-shopt -s nullglob
-cd /opt/detector
-for detector in epic-git.*_* ; do
-  ln -s ${detector} epic-${detector/*_/}
-done
-EOF
-
 ## Add minio client into /opt/local/bin
 ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-amd64/mc /opt/local/bin/mc-amd64
 ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-arm64/mc /opt/local/bin/mc-arm64
@@ -308,9 +283,15 @@ for t in ${target[*]} ; do
 done
 EOF
 
+## make sure we have the entrypoints setup correctly
+ENTRYPOINT []
+CMD ["bash", "--rcfile", "/etc/profile", "-l"]
+USER 0
+WORKDIR /
+
 
 ## ========================================================================================
-## STAGE 3
+## STAGE 2
 ## Lean target image
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} as runtime
@@ -320,17 +301,17 @@ LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="jug_xl" \
       march="$TARGETPLATFORM"
 
-## copy over everything we need from staging
-COPY --from=staging /opt/spack /opt/spack
-COPY --from=staging /opt/spack-environment /opt/spack-environment
-COPY --from=staging /opt/software /opt/software
-COPY --from=staging /opt/._local /opt/._local
-COPY --from=staging /opt/._detector /opt/._detector
-COPY --from=staging /etc/profile.d /etc/profile.d
-COPY --from=staging /etc/jug_info /etc/jug_info
-COPY --from=staging /etc/eic-env.sh /etc/eic-env.sh
-COPY --from=staging /.singularity.d /.singularity.d
-COPY --from=staging /usr/bin/docker-shell /usr/bin/docker-shell
+## copy over everything we need from builder
+COPY --from=builder /opt/spack /opt/spack
+COPY --from=builder /opt/spack-environment /opt/spack-environment
+COPY --from=builder /opt/software /opt/software
+COPY --from=builder /opt/._local /opt/._local
+COPY --from=builder /opt/._detector /opt/._detector
+COPY --from=builder /etc/profile.d /etc/profile.d
+COPY --from=builder /etc/jug_info /etc/jug_info
+COPY --from=builder /etc/eic-env.sh /etc/eic-env.sh
+COPY --from=builder /.singularity.d /.singularity.d
+COPY --from=builder /usr/bin/docker-shell /usr/bin/docker-shell
 
 ## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
 ENV SPACK_ROOT=/opt/spack
