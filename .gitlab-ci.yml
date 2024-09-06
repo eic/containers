@@ -694,7 +694,9 @@ clean_pipeline:
           --filter=reference=${registry}/*:pipeline-*
           --format "{{.ID}} {{.Repository}} {{.Tag}} {{.CreatedSince}}" ;
       done
-    - for registry in
+    - # prevent grep exit code 1 when no match
+      mygrep() { grep "$@" || test $? = 1; } ;
+      for registry in
         eicweb
         eicweb.phy.anl.gov:4567/containers/eic_container
       ; do 
@@ -702,8 +704,8 @@ clean_pipeline:
           --filter=reference=${registry}/*:pipeline-*
           --format "{{.ID}} {{.Repository}} {{.Tag}} {{.CreatedSince}}" ;
       done
-      | grep -v ${CI_PIPELINE_ID}
-      | grep -v "hours ago"
+      | mygrep -v ${CI_PIPELINE_ID}
+      | mygrep -v "hours ago"
       | sed -n -E 's/pipeline-([0-9]+)(-.*){0,1}\s+.*$/\1 &/p'
       | while read id repository pipeline_id tag N durations ago ; do
         echo "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}" ;
