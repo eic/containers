@@ -113,7 +113,6 @@ version:
         NIGHTLY_TAG="${VERSION}-nightly"
         EXPORT_TAG="${VERSION}"
         DH_PUSH=""
-        GH_PUSH=""
       elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ]; then
         VERSION="${CI_COMMIT_BRANCH}"
         DH_PUSH=""
