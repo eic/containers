@@ -77,8 +77,8 @@ packages:
   dd4hep:
     require:
     - '@1.29'
-    - +ddg4 +ddcad +hepmc3 +utilityapps +xercesc
-    - any_of: [+ddeve, -ddeve]
+    - +ddg4 +ddcad +hepmc3 +xercesc
+    - any_of: [+ddeve +utilityapps, -ddeve -utilityapps]
   dpmjet:
     require:
     - '@19.3.5'
@@ -146,7 +146,7 @@ packages:
   geant4:
     require:
     - '@11.2.2.east'
-    - cxxstd=20 -vecgeom +threads -vtk
+    - cxxstd=20 -vecgeom +threads -timemory -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   gettext: 
     require:

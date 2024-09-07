@@ -2,6 +2,8 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  concretizer:
+    unify: true
   config:
     install_missing_compilers: false
   specs:
@@ -25,5 +27,5 @@ spack:
   - py-jinja2
   - py-jinja2-cli
   - py-pip
-  - root -opengl
+  - root -opengl ~webgui ~x
   - xrootd
