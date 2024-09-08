@@ -310,8 +310,8 @@ eic:
         BUILD_IMAGE: eic_
         PLATFORM: linux/amd64
         ENV:
-        - dbg
-        - prod
+#        - dbg
+#        - prod
         - xl
 #      - BUILD_TYPE:
 #        - default
