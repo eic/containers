@@ -11,11 +11,11 @@
 #
 packages:
   all:
-    require:
+    prefer:
     - '%gcc'
-    - any_of: [+ipo, '@:']
-    - any_of: [build_system=cmake, '@:']
-    - any_of: [build_type=Release, '@:']
+    - '+ipo'
+    - 'build_system=cmake'
+    - 'build_type=Release'
   acts:
     require:
     - '%clang'
