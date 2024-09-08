@@ -334,6 +334,7 @@ packages:
     - '@1.15.0'
   py-onnxruntime:
     require:
+    - '%gcc'
     - '@1.17.1'
   py-pandas:
     require:
