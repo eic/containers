@@ -22,7 +22,7 @@ mirrors:
       - ${GITHUB_REGISTRY_USER}
       - ${GITHUB_REGISTRY_TOKEN}
   eics3rw:
-    autopush: true
+    autopush: false
     signed: false
     fetch:
       url: s3://eictest/EPIC/spack/${SPACK_VERSION}
