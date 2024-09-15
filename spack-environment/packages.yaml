@@ -403,8 +403,7 @@ packages:
     - '@2.0.2'
   snakemake:
     require:
-    - '@7.22.0'
-    - +http +s3
+    - '@7.32.4'
   spdlog:
     require:
     - '@1.11.0'
