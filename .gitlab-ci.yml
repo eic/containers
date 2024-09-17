@@ -39,6 +39,8 @@ variables:
   ## Internal tag used for the CI
   INTERNAL_TAG: "pipeline-${CI_PIPELINE_ID}"
 
+  PIPELINE_NAME: "$CI_COMMIT_TITLE"
+
 stages:
   - status-pending
   - config
@@ -520,7 +522,7 @@ jug_xl:singularity:nightly:
     DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
     BENCHMARKS_CONTAINER: "eic_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
-    PIPELINE_NAME: "$PIPELINE_NAME"
+    PIPELINE_NAME: "eic_container: $CI_PIPELINE_NAME"
   allow_failure: false
 
 benchmarks:detector:default:
