@@ -270,6 +270,9 @@ base:
   needs:
     - version
   script:
+    - source spack.sh ; 
+      source key4hep-spack.sh ;
+      source eic-spack.sh ;
     - attempts=0
     - nocache=""
     - while !
@@ -284,6 +287,16 @@ base:
                    --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
+                   --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
+                   --build-arg SPACK_VERSION=${SPACK_VERSION}
+                   --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
+                   --build-arg SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES}"
+                   --build-arg KEY4HEPSPACK_ORGREPO=${KEY4HEPSPACK_ORGREPO}
+                   --build-arg KEY4HEPSPACK_VERSION=${KEY4HEPSPACK_VERSION}
+                   --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
+                   --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
+                   --build-arg S3_ACCESS_KEY=${S3_ACCESS_KEY}
+                   --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
                    --provenance false
                    containers/debian
                    2>&1 | tee build.log
@@ -419,16 +432,6 @@ eic:
                    --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
                    --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE}
                    --build-arg INTERNAL_TAG=${INTERNAL_TAG}
-                   --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
-                   --build-arg SPACK_VERSION=${SPACK_VERSION}
-                   --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
-                   --build-arg SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES}"
-                   --build-arg KEY4HEPSPACK_ORGREPO=${KEY4HEPSPACK_ORGREPO}
-                   --build-arg KEY4HEPSPACK_VERSION=${KEY4HEPSPACK_VERSION}
-                   --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
-                   --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
-                   --build-arg S3_ACCESS_KEY=${S3_ACCESS_KEY}
-                   --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
                    --build-arg JUG_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    ${IF_BUILD_DEFAULT+
                      ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION}}

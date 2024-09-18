@@ -5,6 +5,8 @@ ARG BUILD_IMAGE="debian_stable_base"
 
 # Minimal container based on Debian base systems for up-to-date packages. 
 FROM  ${BASE_IMAGE}
+ARG TARGETPLATFORM
+
 LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
       name="${BUILD_IMAGE}" \
       march="amd64"
@@ -124,4 +126,117 @@ update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 100
 # Check versions
 gcc --version
 clang --version
+EOF
+
+## Install some extra spack dependencies
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM} \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=${TARGETPLATFORM} <<EOF
+rm -f /etc/apt/apt.conf.d/docker-clean
+apt-get -yqq update
+apt-get -yqq install --no-install-recommends                            \
+        jq                                                              \
+        python3                                                         \
+        python3-dev                                                     \
+        python3-distutils                                               \
+        python3-boto3                                                   \
+        python-is-python3
+EOF
+
+## Setup spack
+ENV SPACK_ROOT=/opt/spack
+ARG SPACK_ORGREPO="spack/spack"
+ARG SPACK_VERSION="releases/v0.20"
+ENV SPACK_PYTHON=/usr/bin/python3
+ARG SPACK_CHERRYPICKS=""
+ARG SPACK_CHERRYPICKS_FILES=""
+ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
+RUN <<EOF
+git config --global user.email "gitlab@eicweb.phy.anl.gov"
+git config --global user.name "EIC Container Build Service"
+git config --global advice.detachedHead false
+git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
+git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
+if [ -n "${SPACK_CHERRYPICKS}" ] ; then
+  SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo ${SPACK_CHERRYPICKS} | wc -w)  "${SPACK_CHERRYPICKS}" | tac)
+  eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
+  for hash in ${SPACK_CHERRYPICKS} ; do
+    if [ -n "${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
+      git -C ${SPACK_ROOT} show ${hash} -- ${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]//,/ } | patch -p1 -d ${SPACK_ROOT}
+      git -C ${SPACK_ROOT} commit --all --message "$(git -C ${SPACK_ROOT} show --no-patch --pretty=format:%s ${hash})"
+    else
+      git -C ${SPACK_ROOT} cherry-pick ${hash}
+    fi
+  done
+fi
+git -C $SPACK_ROOT gc --prune=all --aggressive
+sed -i 's/timeout=60/timeout=None/' $SPACK_ROOT/lib/spack/spack/stage.py
+ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/docker-shell
+ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/interactive-shell
+ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/spack-env
+EOF
+
+## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
+SHELL ["docker-shell"]
+
+## Setup build configuration
+ARG jobs=1
+RUN <<EOF
+set -e
+declare -A target=(["linux/amd64"]="x86_64_v2" ["linux/arm64"]="aarch64")
+target=${target[${TARGETPLATFORM}]}
+spack config --scope site add "packages:all:require:[target=${target}]"
+spack config --scope site add "packages:all:target:[${target}]"
+spack config blame packages
+spack config --scope user add "config:suppress_gpg_warnings:true"
+spack config --scope user add "config:build_jobs:${jobs}"
+spack config --scope user add "config:db_lock_timeout:${jobs}00"
+spack config --scope user add "config:source_cache:/var/cache/spack"
+spack config --scope user add "config:install_tree:root:/opt/software"
+spack config --scope user add "config:ccache:true"
+spack config blame config
+spack compiler find --scope site
+spack config blame compilers
+EOF
+
+## Setup buildcache mirrors
+## - this always adds the read-only mirror to the container
+## - the write-enabled mirror is provided later as a secret mount
+ARG S3_ACCESS_KEY=""
+ARG S3_SECRET_KEY=""
+RUN --mount=type=cache,target=/var/cache/spack <<EOF
+set -e
+if [ -n "${S3_ACCESS_KEY}" ] ; then
+  spack mirror add --scope site --unsigned                              \
+      --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
+      --s3-access-key-id "${S3_ACCESS_KEY}"                             \
+      --s3-access-key-secret "${S3_SECRET_KEY}"                         \
+      eics3 s3://eictest/EPIC/spack/${SPACK_VERSION}
+fi
+spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
+spack mirror add --scope site --unsigned ghcr-${SPACK_VERSION} oci://ghcr.io/eic/spack-${SPACK_VERSION}
+spack mirror list
+EOF
+
+## Setup eic-spack
+ENV EICSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/eic-spack
+ARG EICSPACK_ORGREPO="eic/eic-spack"
+ARG EICSPACK_VERSION="$SPACK_VERSION"
+ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
+RUN <<EOF
+set -e
+git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
+git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}
+spack repo add --scope site "${EICSPACK_ROOT}"
+EOF
+
+## Setup key4hep-spack
+ENV KEY4HEPSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/key4hep-spack
+ARG KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
+ARG KEY4HEPSPACK_VERSION="main"
+ADD https://api.github.com/repos/${KEY4HEPSPACK_ORGREPO}/commits/${KEY4HEPSPACK_VERSION} /tmp/key4hep-spack.json
+RUN <<EOF
+set -e
+git clone --filter=tree:0 https://github.com/${KEY4HEPSPACK_ORGREPO}.git ${KEY4HEPSPACK_ROOT}
+git -C ${KEY4HEPSPACK_ROOT} checkout ${KEY4HEPSPACK_VERSION}
+spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
 EOF

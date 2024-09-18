@@ -5,155 +5,69 @@ ARG BUILDER_IMAGE="debian_stable_base"
 ARG RUNTIME_IMAGE="debian_stable_base"
 ARG INTERNAL_TAG="testing"
 
+##
+## This docker build follows two tracks, in order to ensure that we build all packages
+## in a builder image, but install them in a runtime image, while at the same time
+## avoiding a expensive filesystem copy operation at the end that breaks layering.
+##
+## The build is split in an infrequently-changing default environment, upon which
+## an environment with custom versions (e.g. individual commits) is layered. The
+## custom environment will change frequently but layers will be smaller, allowing
+## for easier deployment with smaller delta layers.
+##
+## The separation in a builder and runtime image is particularly relevant to end up with
+## lightweight images for expensive build dependencies, such as for example CUDA.
+##
+## builder track                         runtime track
+## ----------------------------------------------------------------------
+## builder_image                         runtime_image
+## builder_concretization_default   
+## builder_installation_default     ->   runtime_concretization_default  (copy spack.lock)
+##                                 \->   runtime_installation_default    (from buildcache)
+## builder_concretization_custom
+## builder_installation_custom      ->   runtime_concretization_custom   (copy spack.lock)
+##                                 \->   runtime_installation_custom     (from buildcache)
+##
+
+
 ## ========================================================================================
-## STAGE 0: spack image
-## EIC spack image with spack and eic-spack repositories
+## builder_concretization_default
+## - builder base with concretization of default versions
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} as spack
+FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} as builder_concretization_default
 ARG TARGETPLATFORM
 
-## With heredocs for multi-line scripts, we want to fail on error and the print failing line.
-## Ref: https://docs.docker.com/engine/reference/builder/#example-running-a-multi-line-script
-SHELL ["bash", "-ex", "-c"]
-
-## install some extra spack dependencies
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM} \
-    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=${TARGETPLATFORM} <<EOF
-rm -f /etc/apt/apt.conf.d/docker-clean
-apt-get -yqq update
-apt-get -yqq install --no-install-recommends                            \
-        jq                                                              \
-        python3                                                         \
-        python3-dev                                                     \
-        python3-distutils                                               \
-        python3-boto3                                                   \
-        python-is-python3
-EOF
-
-## Setup spack
-ENV SPACK_ROOT=/opt/spack
-ARG SPACK_ORGREPO="spack/spack"
-ARG SPACK_VERSION="releases/v0.20"
-ENV SPACK_PYTHON=/usr/bin/python3
-ARG SPACK_CHERRYPICKS=""
-ARG SPACK_CHERRYPICKS_FILES=""
-ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
-RUN <<EOF
-git config --global user.email "gitlab@eicweb.phy.anl.gov"
-git config --global user.name "EIC Container Build Service"
-git config --global advice.detachedHead false
-git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
-git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
-if [ -n "${SPACK_CHERRYPICKS}" ] ; then
-  SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo ${SPACK_CHERRYPICKS} | wc -w)  "${SPACK_CHERRYPICKS}" | tac)
-  eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
-  for hash in ${SPACK_CHERRYPICKS} ; do
-    if [ -n "${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
-      git -C ${SPACK_ROOT} show ${hash} -- ${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]//,/ } | patch -p1 -d ${SPACK_ROOT}
-      git -C ${SPACK_ROOT} commit --all --message "$(git -C ${SPACK_ROOT} show --no-patch --pretty=format:%s ${hash})"
-    else
-      git -C ${SPACK_ROOT} cherry-pick ${hash}
-    fi
-  done
-fi
-git -C $SPACK_ROOT gc --prune=all --aggressive
-sed -i 's/timeout=60/timeout=None/' $SPACK_ROOT/lib/spack/spack/stage.py
-ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/docker-shell
-ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/interactive-shell
-ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/spack-env
-EOF
-
-## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
-SHELL ["docker-shell"]
-
-## Setup build configuration
-ARG jobs=1
-RUN <<EOF
-set -e
-declare -A target=(["linux/amd64"]="x86_64_v2" ["linux/arm64"]="aarch64")
-target=${target[${TARGETPLATFORM}]}
-spack config --scope site add "packages:all:require:[target=${target}]"
-spack config --scope site add "packages:all:target:[${target}]"
-spack external find --not-buildable --scope site --path /usr/local/cuda/bin cuda
-spack external find --not-buildable --scope site llvm
-spack config blame packages
-spack config --scope user add "config:suppress_gpg_warnings:true"
-spack config --scope user add "config:build_jobs:${jobs}"
-spack config --scope user add "config:db_lock_timeout:${jobs}00"
-spack config --scope user add "config:source_cache:/var/cache/spack"
-spack config --scope user add "config:install_tree:root:/opt/software"
-spack config --scope user add "config:ccache:true"
-spack config blame config
-spack compiler find --scope site
-spack config blame compilers
-EOF
-
-## Setup buildcache mirrors
-## - this always adds the read-only mirror to the container
-## - the write-enabled mirror is provided later as a secret mount
-ARG S3_ACCESS_KEY=""
-ARG S3_SECRET_KEY=""
-RUN --mount=type=cache,target=/var/cache/spack <<EOF
-set -e
-if [ -n "${S3_ACCESS_KEY}" ] ; then
-  spack mirror add --scope site --unsigned                              \
-      --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
-      --s3-access-key-id "${S3_ACCESS_KEY}"                             \
-      --s3-access-key-secret "${S3_SECRET_KEY}"                         \
-      eics3 s3://eictest/EPIC/spack/${SPACK_VERSION}
-fi
-spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
-spack mirror add --scope site --unsigned ghcr-${SPACK_VERSION} oci://ghcr.io/eic/spack-${SPACK_VERSION}
-spack mirror list
-EOF
-
-## Setup eic-spack
-ENV EICSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/eic-spack
-ARG EICSPACK_ORGREPO="eic/eic-spack"
-ARG EICSPACK_VERSION="$SPACK_VERSION"
-ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
-RUN <<EOF
-set -e
-git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
-git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}
-spack repo add --scope site "${EICSPACK_ROOT}"
-EOF
-
-## Setup key4hep-spack
-ENV KEY4HEPSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/key4hep-spack
-ARG KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
-ARG KEY4HEPSPACK_VERSION="main"
-ADD https://api.github.com/repos/${KEY4HEPSPACK_ORGREPO}/commits/${KEY4HEPSPACK_VERSION} /tmp/key4hep-spack.json
-RUN <<EOF
-set -e
-git clone --filter=tree:0 https://github.com/${KEY4HEPSPACK_ORGREPO}.git ${KEY4HEPSPACK_ROOT}
-git -C ${KEY4HEPSPACK_ROOT} checkout ${KEY4HEPSPACK_VERSION}
-spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
-EOF
-
-
-## ========================================================================================
-## STAGE 1: builder
-## EIC builder image with spack environment
-## ========================================================================================
-FROM spack as builder
-
-## 1. Setup our default environment (secret mount for write-enabled mirror)
+## Copy our default environment
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=dev
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
+
+# Concretization (default environment)
+RUN <<EOF
+echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
+spack env activate --dir ${SPACK_ENV}
+spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
+spack external find --not-buildable --scope env:${SPACK_ENV} llvm
+spack concretize --fresh --force
+EOF
+
+
+## ========================================================================================
+## builder_installation_default
+## - builder base with installation of default versions
+## ========================================================================================
+FROM builder_concretization_default as builder_installation_default
+ARG TARGETPLATFORM
+
+# Installation (default environment)
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-source ${SPACK_ROOT}/share/spack/setup-env.sh
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
-echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
-spack env activate --dir ${SPACK_ENV}
-spack concretize --fresh --force
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
@@ -163,10 +77,71 @@ spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
 | uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
 | tee /tmp/duplicates.txt
-test -s /tmp/duplicates.txt && ( cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done ) && exit 1
+if [ -s /tmp/duplicates.txt ] ; then
+  echo "Duplicate packages found"
+  cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done
+  exit 1
+fi
 ccache --show-stats
 ccache --zero-stats
 EOF
+
+
+## ========================================================================================
+## runtime_concretization_default
+## - runtime base with concretization of default versions (taken from equivalent builder)
+## ========================================================================================
+FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} as runtime_concretization_default
+ARG TARGETPLATFORM
+
+## Copy our default environment
+COPY --from=spack-environment . /opt/spack-environment/
+ARG ENV=dev
+ENV SPACK_ENV=/opt/spack-environment/${ENV}
+
+RUN echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
+
+COPY --from=builder_installation_default \
+  /opt/spack-environment/${ENV}/spack.* \
+  /opt/spack-environment/${ENV}/
+
+
+## ========================================================================================
+## runtime_installation_default
+## - runtime base with installation of default versions (buildcache populated by builder)
+## ========================================================================================
+FROM runtime_concretization_default as runtime_installation_default
+ARG TARGETPLATFORM
+
+# Installation (default environment, from buildcache)
+RUN --mount=type=cache,target=/var/cache/spack                          \
+    --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    <<EOF
+make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
+  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--use-buildcache only"
+spack gc --yes-to-all
+EOF
+
+## Add minio client into /opt/mc/bin/mc
+ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-amd64/mc /opt/mc/bin/mc-amd64
+ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-arm64/mc /opt/mc/bin/mc-arm64
+RUN <<EOF
+set -e
+declare -A target=(["linux/amd64"]="amd64" ["linux/arm64"]="arm64")
+mv /opt/mc/bin/mc-${target[${TARGETPLATFORM}]} /opt/mc/bin/mc
+unset target[${TARGETPLATFORM}]
+for t in ${target[*]} ; do
+  rm /opt/mc/bin/mc-${t}
+done
+EOF
+
+
+## ========================================================================================
+## builder_concretization_custom
+## - builder base with concretization of custom versions
+## ========================================================================================
+FROM builder_installation_default as builder_concretization_custom
+ARG TARGETPLATFORM
 
 ## 2. Setup our environment with custom versions (on top of cached layer)
 ## Note: these default versions are just the very first commit.
@@ -178,12 +153,9 @@ ADD https://api.github.com/repos/eic/edm4eic/commits/${EDM4EIC_VERSION} /tmp/edm
 ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
 ADD https://api.github.com/repos/eic/epic/commits/${EPIC_VERSION} /tmp/epic.json
 ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/juggler.json
-RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
-    --mount=type=cache,target=/var/cache/spack                          \
-    --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
-    <<EOF
-set -e
-export CCACHE_DIR=/ccache
+
+# Concretization (custom environment)
+RUN <<EOF
 spack env activate --dir ${SPACK_ENV}
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
@@ -207,18 +179,87 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   spack deconcretize -y --all juggler
 fi
 spack concretize --fresh --force
+EOF
+
+
+## ========================================================================================
+## builder_installation_custom
+## - builder base with installation of custom versions
+## ========================================================================================
+FROM builder_concretization_custom as builder_installation_custom
+ARG TARGETPLATFORM
+
+# Installation (custom environment)
+RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
+    --mount=type=cache,target=/var/cache/spack                          \
+    --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    <<EOF
+set -e
+export CCACHE_DIR=/ccache
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
-  BUILDCACHE_OCI_FINAL="eicweb"
+  BUILDCACHE_OCI_PROMPT="eicweb" \
+  BUILDCACHE_OCI_FINAL="ghcr"
 spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
 | uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
 | tee /tmp/duplicates.txt
-test -s /tmp/duplicates.txt && ( cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done ) && exit 1
+if [ -s /tmp/duplicates.txt ] ; then
+  echo "Duplicate packages found"
+  cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done
+  exit 1
+fi
 ccache --show-stats
 ccache --zero-stats
 EOF
+
+
+## ========================================================================================
+## runtime_concretization_custom
+## - runtime base with concretization of custom versions (taken from equivalent builder)
+## ========================================================================================
+FROM runtime_installation_default as runtime_concretization_custom
+COPY --from=builder_installation_custom \
+  /opt/spack-environment/${ENV}/spack.* \
+  /opt/spack-environment/${ENV}/
+COPY --from=builder_installation_custom \
+  /opt/spack-environment/packages.yaml \
+  /opt/spack-environment/
+
+
+## ========================================================================================
+## runtime_installation_custom
+## - runtime base with installation of custom versions (buildcache populated by builder)
+## ========================================================================================
+FROM runtime_concretization_custom as runtime_installation_custom
+ARG TARGETPLATFORM
+
+# Installation (default environment, from buildcache)
+RUN --mount=type=cache,target=/var/cache/spack                          \
+    --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    <<EOF
+set -e
+make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
+  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--use-buildcache only"
+spack gc --yes-to-all
+spack find --long --no-groups \
+| sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
+| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
+| tee /tmp/duplicates.txt
+if [ -s /tmp/duplicates.txt ] ; then
+  echo "Duplicate packages found"
+  cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done
+  exit 1
+fi
+EOF
+
+
+## ========================================================================================
+## final image, based on runtime_installation_custom
+## ========================================================================================
+FROM runtime_installation_custom
+ARG TARGETPLATFORM
 
 ## Create views at /opt/local and /opt/detector
 RUN <<EOF
@@ -228,10 +269,24 @@ sed -i -e '/view: false/d' ${SPACK_ENV}/spack.yaml
 cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/spack.yaml
 spack -e ${SPACK_ENV} env view regenerate /opt/local
 spack -e ${SPACK_ENV} env view regenerate /opt/detector
+# ensure /opt/local is the view, not a symlink
+rm -rf /opt/local /opt/detector
+LOCAL_PREFIX_PATH=$(realpath $(ls /opt/._local/ | tail -n1))
+mv /opt/._local/${LOCAL_PREFIX_PATH} /opt/local
+ln -s /opt/local /opt/._local/${LOCAL_PREFIX_PATH}
+DETECTOR_PREFIX_PATH=$(realpath $(ls /opt/._detector/ | tail -n1))
+mv /opt/._detector/${DETECTOR_PREFIX_PATH} /opt/detector
+ln -s /opt/detector /opt/._detector/${DETECTOR_PREFIX_PATH}
+EOF
+
+## Link minio client into /opt/local/bin/mc
+RUN <<EOF
+ln -sf /opt/mc/bin/mc /opt/local/bin/mc
 EOF
 
 ## Place cvmfs catalogs
 RUN <<EOF
+set -e
 touch ${SPACK_ROOT}/.cvmfscatalog
 touch /opt/software/.cvmfscatalog
 find /opt/software -mindepth 2 -maxdepth 3 -type d -exec touch {}/.cvmfscatalog \;
@@ -246,6 +301,7 @@ EOF
 
 ## Fixup /opt/detector/epic-git.fcf90937193c983c0af2acf1251e01f2e2c3a259_main
 RUN <<EOF
+set -e
 shopt -s nullglob
 cd /opt/detector
 for detector in epic-git.*_* ; do
@@ -255,7 +311,7 @@ EOF
 
 ## Fill jug_info
 RUN <<EOF
-set -ex
+set -e
 spack debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" >> /etc/jug_info
 spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
 spack graph --dot > /opt/spack-environment/env.dot
@@ -270,65 +326,6 @@ COPY profile.d/a00_cleanup.sh /etc/profile.d
 COPY profile.d/z11_jug_env.sh /etc/profile.d
 COPY singularity.d /.singularity.d
 
-## Add minio client into /opt/local/bin
-ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-amd64/mc /opt/local/bin/mc-amd64
-ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-arm64/mc /opt/local/bin/mc-arm64
-RUN <<EOF
-set -ex
-declare -A target=(["linux/amd64"]="amd64" ["linux/arm64"]="arm64")
-mv /opt/local/bin/mc-${target[${TARGETPLATFORM}]} /opt/local/bin/mc
-unset target[${TARGETPLATFORM}]
-for t in ${target[*]} ; do
-  rm /opt/local/bin/mc-${t}
-done
-EOF
-
-## make sure we have the entrypoints setup correctly
-ENTRYPOINT []
-CMD ["bash", "--rcfile", "/etc/profile", "-l"]
-USER 0
-WORKDIR /
-
-
-## ========================================================================================
-## STAGE 2
-## Lean target image
-## ========================================================================================
-FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} as runtime
-ARG TARGETPLATFORM
-
-LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
-      name="jug_xl" \
-      march="$TARGETPLATFORM"
-
-## copy over everything we need from builder
-COPY --from=builder /opt/spack /opt/spack
-COPY --from=builder /opt/spack-environment /opt/spack-environment
-COPY --from=builder /opt/software /opt/software
-COPY --from=builder /opt/._local /opt/._local
-COPY --from=builder /opt/._detector /opt/._detector
-COPY --from=builder /etc/profile.d /etc/profile.d
-COPY --from=builder /etc/jug_info /etc/jug_info
-COPY --from=builder /etc/eic-env.sh /etc/eic-env.sh
-COPY --from=builder /.singularity.d /.singularity.d
-COPY --from=builder /usr/bin/docker-shell /usr/bin/docker-shell
-
-## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
-ENV SPACK_ROOT=/opt/spack
-SHELL ["docker-shell"]
-
-## ensure /opt/local is the view, not a symlink
-RUN <<EOF
-set -ex
-rm -rf /opt/local /opt/detector
-LOCAL_PREFIX_PATH=$(realpath $(ls /opt/._local/ | tail -n1))
-mv /opt/._local/${LOCAL_PREFIX_PATH} /opt/local
-ln -s /opt/local /opt/._local/${LOCAL_PREFIX_PATH}
-DETECTOR_PREFIX_PATH=$(realpath $(ls /opt/._detector/ | tail -n1))
-mv /opt/._detector/${DETECTOR_PREFIX_PATH} /opt/detector
-ln -s /opt/detector /opt/._detector/${DETECTOR_PREFIX_PATH}
-EOF
-
 ## set ROOT TFile forward compatibility
 RUN sed --in-place --follow-symlinks 's/# \(TFile.v630forwardCompatibility:\) no/\1 yes/' /opt/local/etc/root/system.rootrc
 
@@ -342,7 +339,7 @@ RUN ldconfig
 ## set the local spack configuration
 ENV SPACK_DISABLE_LOCAL_CONFIG="true"
 RUN <<EOF
-set -ex
+set -e
 spack config --scope site add "config:install_tree:root:~/spack"
 spack config --scope site add "config:source_cache:~/.spack/cache"
 spack config --scope site add "config:binary_index_root:~/.spack"
@@ -371,7 +368,7 @@ ADD ${EICWEB}/399/repository/commits/${BENCHMARK_DET_VERSION} /tmp/399.json
 ADD ${EICWEB}/408/repository/commits/${BENCHMARK_REC_VERSION} /tmp/408.json 
 ADD ${EICWEB}/400/repository/commits/${BENCHMARK_PHY_VERSION} /tmp/400.json
 RUN <<EOF
-set -ex
+set -e
 mkdir -p /opt/benchmarks
 cd /opt/benchmarks
 git clone --filter=tree:0 -b ${BENCHMARK_COM_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git
@@ -394,7 +391,7 @@ ADD https://api.github.com/repos/eic/simulation_campaign_hepmc3/commits/${CAMPAI
 ADD https://api.github.com/repos/eic/job_submission_condor/commits/${CAMPAIGNS_CONDOR_VERSION} /tmp/job_submission_condor.json
 ADD https://api.github.com/repos/eic/job_submission_slurm/commits/${CAMPAIGNS_SLURM_VERSION} /tmp/job_submission_slurm.json
 RUN <<EOF
-set -ex
+set -e
 mkdir -p /opt/campaigns
 cd /opt/campaigns
 git clone --filter=tree:0 -b ${CAMPAIGNS_SINGLE_VERSION} --depth 1 https://github.com/eic/simulation_campaign_single.git single
