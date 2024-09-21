@@ -218,6 +218,9 @@ packages:
     require:
     - '@22.1.6'
     - +glx +llvm +opengl +opengles +osmesa
+  mpi:
+    require:
+    - openmpi
   nlohmann-json:
     require:
     - '@3.11.2'
