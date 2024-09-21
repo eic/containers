@@ -264,6 +264,9 @@ packages:
   mosquitto:
     require:
     - '@2.0.18:'
+  mpi:
+    require:
+    - openmpi
   nlohmann-json:
     require:
     - '@3.11.2:'
