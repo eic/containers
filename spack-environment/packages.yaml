@@ -416,6 +416,9 @@ packages:
   stow:
     require:
     - '@2.3.1'
+  tbb:
+    require:
+    - intel-tbb
   tensorflow-lite:
     require:
     - '@2.8.0'
