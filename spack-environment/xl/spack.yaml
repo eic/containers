@@ -19,7 +19,6 @@ spack:
   - dawn
   - dawncut
   - dd4hep +ddeve
-  - dpmjet
   - east
   - edm4eic
   - edm4hep
