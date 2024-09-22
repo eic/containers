@@ -52,7 +52,6 @@ spack:
   - k4fwcore
   - lcov
   - lhapdf
-  - madx
   - multitime
   - nano
   - ninja
