@@ -102,7 +102,6 @@ spack:
   - py-pycairo
   - py-pyyaml
   - py-rucio-clients
-  - py-scipy
   - py-seaborn
   - py-snakemake-executor-plugin-slurm
   - py-snakemake-executor-plugin-slurm-jobstep
