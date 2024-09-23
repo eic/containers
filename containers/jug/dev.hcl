@@ -9,9 +9,6 @@ variable "DOCKER_REGISTRY" { default = join("/", concat(compact([CI_REGISTRY, CI
 variable "BUILDER_IMAGE" { default = "debian_base" }
 variable "RUNTIME_IMAGE" { default = "debian_base" }
 
-variable "S3_ACCESS_KEY" { default = null }
-variable "S3_SECRET_KEY" { default = null }
-
 variable "NIGHTLY" { default = null }
 variable "NIGHTLY_TAG" { default = null }
 
@@ -64,16 +61,6 @@ target "default" {
     BUILDER_IMAGE = BUILDER_IMAGE
     RUNTIME_IMAGE = RUNTIME_IMAGE
     INTERNAL_TAG = INTERNAL_TAG
-    SPACK_ORGREPO = try(SPACK_ORGREPO, null)
-    SPACK_VERSION = try(SPACK_VERSION, null)
-    SPACK_CHERRYPICKS = join("\n", try(SPACK_CHERRYPICKS, []))
-    SPACK_CHERRYPICKS_FILES = join("\n", try(SPACK_CHERRYPICKS_FILES, []))
-    KEY4HEPSPACK_ORGREPO = try(KEY4HEPSPACK_ORGREPO, null)
-    KEY4HEPSPACK_VERSION = try(KEY4HEPSPACK_VERSION, null)
-    EICSPACK_ORGREPO = try(EICSPACK_ORGREPO, null)
-    EICSPACK_VERSION = try(EICSPACK_VERSION, null)
-    S3_ACCESS_KEY = S3_ACCESS_KEY
-    S3_SECRET_KEY = S3_SECRET_KEY
     EDM4EIC_VERSION = BUILD_TYPE == "default" ? EDM4EIC_VERSION : "main"
     EICRECON_VERSION = BUILD_TYPE == "default" ? EICRECON_VERSION : "main"
     EPIC_VERSION = BUILD_TYPE == "default" ? EPIC_VERSION : "main"

@@ -274,11 +274,17 @@ base:
     - nocache=""
     - docker buildx bake ${BUILD_OPTIONS} ${nocache}
         --print
+        --file spack.hcl
+        --file eic-spack.hcl
+        --file key4hep-spack.hcl
         --file containers/variables.hcl
         --file containers/debian/base.hcl
     - while !
       docker buildx bake ${BUILD_OPTIONS} ${nocache}
         --push
+        --file spack.hcl
+        --file eic-spack.hcl
+        --file key4hep-spack.hcl
         --file containers/variables.hcl
         --file containers/debian/base.hcl
         2>&1 | tee build.log
@@ -354,17 +360,11 @@ eic:
     - nocache=""
     - docker buildx bake ${BUILD_OPTIONS} ${nocache}
         --print
-        --file spack.hcl
-        --file eic-spack.hcl
-        --file key4hep-spack.hcl
         --file containers/variables.hcl
         --file containers/jug/dev.hcl
     - while !
       docker buildx bake ${BUILD_OPTIONS} ${nocache}
         --push
-        --file spack.hcl
-        --file eic-spack.hcl
-        --file key4hep-spack.hcl
         --file containers/variables.hcl
         --file containers/jug/dev.hcl
         2>&1 | tee build.log
