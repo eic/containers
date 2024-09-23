@@ -274,13 +274,11 @@ base:
     - nocache=""
     - docker buildx bake ${BUILD_OPTIONS} ${nocache}
         --print
-        --build-arg jobs=${JOBS}
         --file containers/variables.hcl
         --file containers/debian/base.hcl
     - while !
       docker buildx bake ${BUILD_OPTIONS} ${nocache}
         --push
-        --build-arg jobs=${JOBS}
         --file containers/variables.hcl
         --file containers/debian/base.hcl
         2>&1 | tee build.log

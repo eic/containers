@@ -1,4 +1,5 @@
 # Variables which are required to be defined
+variable "jobs" { default = 1 }
 variable "BUILD_IMAGE" { default = "debian_base" }
 
 # Variables whose defaults can be overridden on build
@@ -24,6 +25,7 @@ target "default" {
   dockerfile = "base.Dockerfile"
   platforms = [ "linux/amd64" ]
   args = {
+    jobs = jobs
     BASE_IMAGE = BASE_IMAGE
     BUILD_IMAGE = BUILD_IMAGE
   }
