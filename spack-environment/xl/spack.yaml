@@ -95,7 +95,6 @@ spack:
   - py-pycairo
   - py-pyyaml
   - py-rucio-clients
-  - py-scipy
   - py-seaborn
   - py-toml
   - py-torch
