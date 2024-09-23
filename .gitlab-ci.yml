@@ -352,19 +352,23 @@ eic:
       fi
     - apk add envsubst
     - source spack.sh ; 
-      source key4hep-spack.sh ;
-      source eic-spack.sh ;
       export SPACK_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
     - attempts=0
     - nocache=""
     - docker buildx bake ${BUILD_OPTIONS} ${nocache}
         --print
+        --file spack.hcl
+        --file eic-spack.hcl
+        --file key4hep-spack.hcl
         --file containers/variables.hcl
         --file containers/jug/dev.hcl
     - while !
       docker buildx bake ${BUILD_OPTIONS} ${nocache}
         --push
+        --file spack.hcl
+        --file eic-spack.hcl
+        --file key4hep-spack.hcl
         --file containers/variables.hcl
         --file containers/jug/dev.hcl
         2>&1 | tee build.log
