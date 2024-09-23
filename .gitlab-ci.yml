@@ -349,9 +349,7 @@ eic:
         PUSH_NIGHTLY_WITH_DATE="1"
       fi
     - apk add envsubst
-    - source spack.sh ; 
-      export SPACK_VERSION ;
-      cat mirrors.yaml.in | envsubst > mirrors.yaml
+    - cat mirrors.yaml.in | envsubst > mirrors.yaml
     - attempts=0
     - nocache=""
     - docker buildx bake ${BUILD_OPTIONS} ${nocache}

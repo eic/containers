@@ -3,6 +3,7 @@ variable "SPACK_ORGREPO" { default = "spack/spack" }
 
 ## Spack github version, e.g. v0.18.1 or commit hash
 ## note: nightly builds will use e.g. releases/v0.19
+## note: update mirrors.yaml.in to match
 variable "SPACK_VERSION" { default = "v0.23.0" }
 
 ## Space-separated list of spack cherry-picks
