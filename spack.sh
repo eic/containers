@@ -3,7 +3,7 @@ SPACK_ORGREPO="spack/spack"
 
 ## Spack github version, e.g. v0.18.1 or commit hash
 ## note: nightly builds will use e.g. releases/v0.19
-SPACK_VERSION="v0.22.1"
+SPACK_VERSION="v0.22.2"
 
 ## Space-separated list of spack cherry-picks
 read -r -d '' SPACK_CHERRYPICKS <<- \
@@ -25,7 +25,6 @@ d3bf1e04fca844abb7c1eeac38dda4e126c81b67
 8b2fec61f23a7b8230c0ed0378d90d04d8f590d8
 2242da65fdc06e7ac04c43613dc7795164b3a7a3
 1dc63dbea6c1d42aabf0e14b51439dcc46423e79
-3b59817ea7be35f4222dc88313734f7a30733ad7
 737b70cbbfacb3fba8054426e9b5bf8ede6d8faf
 a66586d749197841bd74e289802126f2359287a8
 7503a417731910d918a7863d1862f62c9b76429d
@@ -53,7 +52,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 8b2fec61f23a7b8230c0ed0378d90d04d8f590d8: hepmc3: add v3.3.0
 ## 2242da65fdc06e7ac04c43613dc7795164b3a7a3: graphviz: add through v12.1.0
 ## 1dc63dbea6c1d42aabf0e14b51439dcc46423e79: acts: add v34.1.0, v35.0.0 (identification, sycl variants changes)
-## 3b59817ea7be35f4222dc88313734f7a30733ad7: deal with TimeoutError from ssl.py
 ## 737b70cbbfacb3fba8054426e9b5bf8ede6d8faf: Buildcache: remove deprecated --allow-root and preview subcommand
 ## a66586d749197841bd74e289802126f2359287a8: spack buildcache push: best effort
 ## 7503a417731910d918a7863d1862f62c9b76429d: cuda: add v12.4.1
