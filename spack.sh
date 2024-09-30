@@ -28,6 +28,8 @@ d3bf1e04fca844abb7c1eeac38dda4e126c81b67
 737b70cbbfacb3fba8054426e9b5bf8ede6d8faf
 a66586d749197841bd74e289802126f2359287a8
 7503a417731910d918a7863d1862f62c9b76429d
+f8f01c336c882f29ac364995423b9f69ac365462
+6051d56014730528da8dfa69934d93f9b7941a70
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -55,3 +57,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 737b70cbbfacb3fba8054426e9b5bf8ede6d8faf: Buildcache: remove deprecated --allow-root and preview subcommand
 ## a66586d749197841bd74e289802126f2359287a8: spack buildcache push: best effort
 ## 7503a417731910d918a7863d1862f62c9b76429d: cuda: add v12.4.1
+## f8f01c336c882f29ac364995423b9f69ac365462: clang: support cxx20_flag and cxx23_flag
+## 6051d56014730528da8dfa69934d93f9b7941a70: fastjet: avoid plugins=all,cxx combinations
