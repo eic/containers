@@ -30,10 +30,16 @@ a66586d749197841bd74e289802126f2359287a8
 7503a417731910d918a7863d1862f62c9b76429d
 f8f01c336c882f29ac364995423b9f69ac365462
 6051d56014730528da8dfa69934d93f9b7941a70
+67536058077995cab1ed23b8ca62aaf75463ae04
+7b9f8abce5cee74546a6f588f88c6f353170d52b
+096ab11961995ac8d69f7b177cbcadf618d3068e
+6c4abef75cb2b98c337f8a3179797e29dfdc9ca3
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
+[67536058077995cab1ed23b8ca62aaf75463ae04]=var/spack/repos/builtin/packages/py-protobuf/package.py
+[7b9f8abce5cee74546a6f588f88c6f353170d52b]=var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/py-protobuf/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -59,3 +65,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 7503a417731910d918a7863d1862f62c9b76429d: cuda: add v12.4.1
 ## f8f01c336c882f29ac364995423b9f69ac365462: clang: support cxx20_flag and cxx23_flag
 ## 6051d56014730528da8dfa69934d93f9b7941a70: fastjet: avoid plugins=all,cxx combinations
+## 67536058077995cab1ed23b8ca62aaf75463ae04: Update py-pyspark and py-py4j (py-protobuf only)
+## 7b9f8abce5cee74546a6f588f88c6f353170d52b: Add depends_on([c,cxx,fortran])
+## 096ab11961995ac8d69f7b177cbcadf618d3068e: py-onnx: link to external protobuf
+## 6c4abef75cb2b98c337f8a3179797e29dfdc9ca3: py-protobuf: drop +cpp, always require protobuf

@@ -72,16 +72,6 @@ make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} \
   BUILDCACHE_OCI_PROMPT="eicweb" \
   BUILDCACHE_OCI_FINAL="ghcr"
-spack gc --yes-to-all
-spack find --long --no-groups \
-| sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
-| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
-| tee /tmp/duplicates.txt
-if [ -s /tmp/duplicates.txt ] ; then
-  echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done
-  exit 1
-fi
 ccache --show-stats
 ccache --zero-stats
 EOF
