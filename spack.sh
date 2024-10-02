@@ -38,6 +38,7 @@ f8f01c336c882f29ac364995423b9f69ac365462
 04f0af0a28e1f6ff0ef0b50e28ecf9d19fe544e6
 395491815acb20e48050b77dca457aa7cc340ca1
 43d1cdb0bd4780bff369dafa681a8a7939313784
+5bc105c01c0e458924df40d51f7111ba507689f9
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -77,3 +78,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 04f0af0a28e1f6ff0ef0b50e28ecf9d19fe544e6: acts,dd4hep: restrict to podio@0 to prevent failures with podio@1
 ## 395491815acb20e48050b77dca457aa7cc340ca1: dd4hep: mark conflict with root@6.31.1:
 ## 43d1cdb0bd4780bff369dafa681a8a7939313784: dd4hep: Add tag for version 1.30
+## 5bc105c01c0e458924df40d51f7111ba507689f9: gfal2: new package (and dependencies)

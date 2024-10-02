@@ -38,6 +38,7 @@ spack:
   - gaudi
   - gdb
   - geant4 +opengl
+  - gfal2
   - graphviz
   - hepmc3
   - heppdt

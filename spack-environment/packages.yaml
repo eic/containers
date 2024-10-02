@@ -153,6 +153,9 @@ packages:
   gettext: 
     require:
     - +libxml2
+  gfal2:
+    require:
+    - +file +xrootd
   gl:
     require:
     - glx
