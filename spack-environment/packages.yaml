@@ -413,6 +413,9 @@ packages:
   stow:
     require:
     - '@2.3.1'
+  strace:
+    require:
+    - -mpers
   tensorflow-lite:
     require:
     - '@2.8.0'

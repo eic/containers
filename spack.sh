@@ -39,12 +39,13 @@ f8f01c336c882f29ac364995423b9f69ac365462
 395491815acb20e48050b77dca457aa7cc340ca1
 43d1cdb0bd4780bff369dafa681a8a7939313784
 5bc105c01c0e458924df40d51f7111ba507689f9
+dce2f4ca7cb0c96d1be94ef6ee7a3f0c45207af0
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
 [67536058077995cab1ed23b8ca62aaf75463ae04]=var/spack/repos/builtin/packages/py-protobuf/package.py
-[7b9f8abce5cee74546a6f588f88c6f353170d52b]=var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/py-protobuf/package.py
+[7b9f8abce5cee74546a6f588f88c6f353170d52b]=var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/py-protobuf/package.py,var/spack/repos/builtin/packages/strace/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -79,3 +80,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 395491815acb20e48050b77dca457aa7cc340ca1: dd4hep: mark conflict with root@6.31.1:
 ## 43d1cdb0bd4780bff369dafa681a8a7939313784: dd4hep: Add tag for version 1.30
 ## 5bc105c01c0e458924df40d51f7111ba507689f9: gfal2: new package (and dependencies)
+## dce2f4ca7cb0c96d1be94ef6ee7a3f0c45207af0: strace: add v6.11 and mpers variant (disabed by default)
