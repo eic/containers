@@ -34,6 +34,10 @@ f8f01c336c882f29ac364995423b9f69ac365462
 7b9f8abce5cee74546a6f588f88c6f353170d52b
 096ab11961995ac8d69f7b177cbcadf618d3068e
 6c4abef75cb2b98c337f8a3179797e29dfdc9ca3
+9cdb2a8dbb742169fefe0214ee76530e7f14dfdf
+04f0af0a28e1f6ff0ef0b50e28ecf9d19fe544e6
+395491815acb20e48050b77dca457aa7cc340ca1
+43d1cdb0bd4780bff369dafa681a8a7939313784
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -69,3 +73,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 7b9f8abce5cee74546a6f588f88c6f353170d52b: Add depends_on([c,cxx,fortran])
 ## 096ab11961995ac8d69f7b177cbcadf618d3068e: py-onnx: link to external protobuf
 ## 6c4abef75cb2b98c337f8a3179797e29dfdc9ca3: py-protobuf: drop +cpp, always require protobuf
+## 9cdb2a8dbb742169fefe0214ee76530e7f14dfdf: dd4hep: depends_on root +root7 in some cases
+## 04f0af0a28e1f6ff0ef0b50e28ecf9d19fe544e6: acts,dd4hep: restrict to podio@0 to prevent failures with podio@1
+## 395491815acb20e48050b77dca457aa7cc340ca1: dd4hep: mark conflict with root@6.31.1:
+## 43d1cdb0bd4780bff369dafa681a8a7939313784: dd4hep: Add tag for version 1.30
