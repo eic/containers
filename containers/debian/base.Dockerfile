@@ -154,9 +154,9 @@ RUN <<EOF
 git config --global user.email "gitlab@eicweb.phy.anl.gov"
 git config --global user.name "EIC Container Build Service"
 git config --global advice.detachedHead false
+git config --global gc.autoDetach false
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
-git -C ${SPACK_ROOT} gc --no-auto
 if [ -n "${SPACK_CHERRYPICKS}" ] ; then
   SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo ${SPACK_CHERRYPICKS} | wc -w)  "${SPACK_CHERRYPICKS}" | tac)
   eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
