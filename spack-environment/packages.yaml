@@ -407,6 +407,15 @@ packages:
   snakemake:
     require:
     - '@8.5.2'
+  py-snakemake-storage-plugin-fs:
+    require:
+    - '@0.2.0'
+  py-snakemake-storage-plugin-http:
+    require:
+    - '@0.2.3'
+  py-snakemake-storage-plugin-s3:
+    require:
+    - '@0.2.10'
   spdlog:
     require:
     - '@1.11.0'
