@@ -27,11 +27,10 @@ spack:
   - eigen
   - emacs
   - epic@main # EPIC_VERSION
-  - epic@24.06.0
   - epic@24.07.0
-  - epic@24.08.0
   - epic@24.08.1
   - epic@24.09.0
+  - epic@24.10.0
   - fastjet
   - fjcontrib
   - fmt
