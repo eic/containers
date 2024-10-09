@@ -529,6 +529,16 @@ jug_xl:singularity:nightly:
     PIPELINE_NAME: "eic_container: $CI_PIPELINE_NAME"
   allow_failure: false
 
+benchmarks:geoviewer:default:
+  extends: .benchmarks
+  rules:
+   - if: '$CI_PIPELINE_SOURCE != "schedule" && $EPIC_VERSION != ""'
+  variables:
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+  trigger:
+    project: EIC/benchmarks/geoviewer
+    strategy: depend
+
 benchmarks:detector:default:
   extends: .benchmarks
   rules:
