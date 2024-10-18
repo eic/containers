@@ -5,8 +5,8 @@ SPACK_ORGREPO="spack/spack"
 ## note: nightly builds will use e.g. releases/v0.19
 SPACK_VERSION="v0.22.0"
 
-## Space-separated list of spack cherry-picks
-read -r -d '' SPACK_CHERRYPICKS <<- \
+## Array of spack cherry-picks
+read -r -d '' -a SPACK_CHERRYPICKS <<- \
 --- || true
 09f75ee426a2e05e0543570821582480ff823ba5
 f6d50f790ee8b123f7775429f6ca6394170e6de9
@@ -18,7 +18,7 @@ f73d7d2dce226857cbc774e942454bad2992969e
 cbab451c1a342523ed75e9be1098615a597a9b59
 ---
 ## Optional hash table with comma-separated file list
-read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
+read -r -d '' -a SPACK_CHERRYPICKS_FILES <<- \
 --- || true
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
