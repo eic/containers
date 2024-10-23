@@ -337,6 +337,7 @@ eic:
         ENV:
         - ci
 #        - dbg
+        - jl
 #        - prod
         - tf
         - xl
