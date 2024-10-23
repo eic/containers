@@ -346,6 +346,7 @@ eic:
         ENV:
         - ci
 #        - dbg
+        - jl
 #        - prod
         - xl
         BUILD_TYPE:
