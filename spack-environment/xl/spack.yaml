@@ -41,6 +41,7 @@ spack:
   - gfal2
   - graphviz
   - hepmc3
+  - hepmcmerger
   - heppdt
   - imagemagick
   - irt

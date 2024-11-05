@@ -170,6 +170,9 @@ packages:
     require:
     - '@3.3.0'
     - +python +rootio
+  hepmcmerger:
+    require:
+    - '@1.0.4'
   heppdt:
     require:
     - '@2.06.01'
