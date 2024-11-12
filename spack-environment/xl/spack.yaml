@@ -62,6 +62,7 @@ spack:
   - phonebook-cli
   - podio
   - prmon
+  - pyrobird
   - pythia8
   - py-awkward
   - py-bokeh

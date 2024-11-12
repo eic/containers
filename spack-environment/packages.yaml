@@ -269,6 +269,10 @@ packages:
   protobuf:
     require:
     - '@3.21.12'
+  pyrobird:
+    require:
+    - '@0.1.23'
+    - +batch +xrootd
   pythia8:
     require:
     - '@8.311'

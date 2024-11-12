@@ -44,6 +44,9 @@ fbceae7773c51198a775efffd7a9e21d0fe1e05c
 e91a69a7564dfe54718541954607d89c086caf12
 26bc91fe9bde4549fb39062e1dd838b612205717
 ddf1a1a74ba2ee99377edc2100e0478c1ddd3653
+2fc056e27cb6e362b56946907c48feda61766319
+fc7125fdf3f594683d264e48160ca86717c2109d
+b98e5886e5c9b5e005b54fa727704da384d81f21
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -89,3 +92,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## e91a69a7564dfe54718541954607d89c086caf12: py-tabulate: add v0.8.10, v0.9.0
 ## 26bc91fe9bde4549fb39062e1dd838b612205717: py-rucio-clients: new package (and dependencies)
 ## ddf1a1a74ba2ee99377edc2100e0478c1ddd3653: py-urllib3: add v1.26.20
+## 2fc056e27cb6e362b56946907c48feda61766319: py-flask-compress: add v1.14
+## fc7125fdf3f594683d264e48160ca86717c2109d: py-fsspec-xrootd: new package
+## b98e5886e5c9b5e005b54fa727704da384d81f21: py-pyppeteer: new package
