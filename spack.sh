@@ -47,12 +47,17 @@ ddf1a1a74ba2ee99377edc2100e0478c1ddd3653
 2fc056e27cb6e362b56946907c48feda61766319
 fc7125fdf3f594683d264e48160ca86717c2109d
 b98e5886e5c9b5e005b54fa727704da384d81f21
+e992e1efbdfd6072891e402371cac4741a3047a9
+8d2a6d6744cfe9663ca0aa3610bfd96c45a62333
+6d51d94dab4f780b39c614a9ecb10f5940bdae4b
+b90ac6441cfdf6425cb59551e7b0538899b69527
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
 [67536058077995cab1ed23b8ca62aaf75463ae04]=var/spack/repos/builtin/packages/py-protobuf/package.py
-[7b9f8abce5cee74546a6f588f88c6f353170d52b]=var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/py-protobuf/package.py,var/spack/repos/builtin/packages/strace/package.py
+[7b9f8abce5cee74546a6f588f88c6f353170d52b]=var/spack/repos/builtin/packages/celeritas/package.py,var/spack/repos/builtin/packages/protobuf/package.py,var/spack/repos/builtin/packages/py-protobuf/package.py,var/spack/repos/builtin/packages/strace/package.py
+[8d2a6d6744cfe9663ca0aa3610bfd96c45a62333]=var/spack/repos/builtin/packages/celeritas/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -95,3 +100,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 2fc056e27cb6e362b56946907c48feda61766319: py-flask-compress: add v1.14
 ## fc7125fdf3f594683d264e48160ca86717c2109d: py-fsspec-xrootd: new package
 ## b98e5886e5c9b5e005b54fa727704da384d81f21: py-pyppeteer: new package
+## e992e1efbdfd6072891e402371cac4741a3047a9: celeritas: new version 0.4.4
+## 8d2a6d6744cfe9663ca0aa3610bfd96c45a62333: sethrj: update maintained package language dependencies
+## 6d51d94dab4f780b39c614a9ecb10f5940bdae4b: celeritas: add v0.5.0
+## b90ac6441cfdf6425cb59551e7b0538899b69527: celeritas: remove ancient versions and add CUDA package dependency

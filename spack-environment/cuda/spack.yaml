@@ -11,6 +11,7 @@ spack:
   - algorithms
   - cairo
   - catch2
+  - celeritas +cuda cuda_arch=75
   - cernlib
   - cli11
   - cmake
