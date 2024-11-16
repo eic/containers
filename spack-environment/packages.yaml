@@ -232,6 +232,9 @@ packages:
     - '%clang'
     - '@15.0.2' # JUGGLER_VERSION
     - cxxstd=20
+  julia:
+    require:
+    - '@1.10.2'
   k4actstracking:
     require:
     - '@main'
