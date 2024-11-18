@@ -1,5 +1,6 @@
 mirrors:
   eicweb:
+    autopush: true
     url: oci://${CI_REGISTRY}/${CI_PROJECT_PATH}/spack-${SPACK_VERSION}
     signed: false
     fetch:
@@ -11,6 +12,7 @@ mirrors:
       - ${CI_REGISTRY_USER}
       - ${CI_REGISTRY_PASSWORD}
   ghcr:
+    autopush: true
     url: oci://ghcr.io/eic/spack-${SPACK_VERSION}
     signed: false
     fetch:
@@ -29,14 +31,10 @@ mirrors:
       access_pair:
       - ${S3RW_ACCESS_KEY}
       - ${S3RW_SECRET_KEY}
-      access_token: null
-      profile: null
       endpoint_url: https://eics3.sdcc.bnl.gov:9000
     push:
       url: s3://eictest/EPIC/spack/${SPACK_VERSION}
       access_pair:
       - ${S3RW_ACCESS_KEY}
       - ${S3RW_SECRET_KEY}
-      access_token: null
-      profile: null
       endpoint_url: https://eics3.sdcc.bnl.gov:9000

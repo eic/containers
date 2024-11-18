@@ -75,6 +75,11 @@ packages:
   dawncut:
     require:
     - '@1_54a'
+  dbus:
+    require:
+    # Until 1.15.12, https://gitlab.freedesktop.org/dbus/dbus/-/commit/b104667bd7ec55dda057ff4ffdde848336f253f4,
+    # the meson build assumes that the user name exists as a group name as well. Require 1.14.10 (only autotools).
+    - '@1.14.10'
   dd4hep:
     require:
     - '@1.30'
@@ -228,6 +233,10 @@ packages:
   nano:
     require:
     - '@7.2'
+  node-js:
+    require:
+    # node-js@22.3: fails with gcc-12.2 in bookworm
+    - '@20.15.0'
   nopayloadclient:
     require:
     - '@0.0.3'

@@ -69,9 +69,7 @@ export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV} \
-  BUILDCACHE_OCI_PROMPT="eicweb" \
-  BUILDCACHE_OCI_FINAL="ghcr"
+  SPACK_ENV=${SPACK_ENV}
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -187,9 +185,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
 set -e
 export CCACHE_DIR=/ccache
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV} \
-  BUILDCACHE_OCI_PROMPT="eicweb" \
-  BUILDCACHE_OCI_FINAL="ghcr"
+  SPACK_ENV=${SPACK_ENV}
 spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
