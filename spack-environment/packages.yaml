@@ -234,7 +234,7 @@ packages:
     - cxxstd=20
   julia:
     require:
-    - '@1.10.2'
+    - '@1.11.0'
   k4actstracking:
     require:
     - '@main'
