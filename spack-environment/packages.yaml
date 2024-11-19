@@ -40,7 +40,7 @@ packages:
     - openblas
   boost:
     require:
-    - '@1.84.0'
+    - '@1.86.0'
   cairo:
     require:
     - '@1.16.0'
