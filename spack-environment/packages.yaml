@@ -284,7 +284,7 @@ packages:
     - +batch +xrootd
   pythia8:
     require:
-    - '@8.311'
+    - '@8.312'
     - +fastjet +root
   python:
     require:
