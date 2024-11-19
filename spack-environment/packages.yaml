@@ -225,7 +225,7 @@ packages:
     - '@5.08.01'
   mesa:
     require:
-    - '@22.1.6'
+    - '@23.3.6'
     - +glx +llvm +opengl +opengles +osmesa
   nlohmann-json:
     require:
