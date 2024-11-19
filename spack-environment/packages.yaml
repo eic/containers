@@ -62,7 +62,7 @@ packages:
     - '@2.3.2'
   cmake:
     require:
-    - '@3.27.9'
+    - '@3.30.5'
   cnpy:
     require:
     - '@master'
