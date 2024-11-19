@@ -250,7 +250,7 @@ packages:
     - '@1.15.0'
   opencascade:
     require:
-    - '@7.7.1'
+    - '@7.8.1'
     - +application_framework -vtk
   opengl:
     buildable: False
