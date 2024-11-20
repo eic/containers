@@ -212,7 +212,7 @@ packages:
     - '@main'
   k4fwcore:
     require:
-    - '@1.0pre19'
+    - '@1.1.2'
   lapack:
     require:
     - openblas
