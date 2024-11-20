@@ -166,7 +166,7 @@ packages:
     - glx
   gloo:
     require:
-    - '@2023-05-19'
+    - '@2023-12-03'
   graphviz:
     require:
     - '@12.1.0'
@@ -387,7 +387,7 @@ packages:
     - '@0.10.2'
   py-torch:
     require:
-    - '@2.1.0'
+    - '@2.5.1'
     - -mkldnn
   py-uproot:
     require:
