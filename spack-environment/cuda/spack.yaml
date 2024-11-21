@@ -93,7 +93,7 @@ spack:
   - py-uproot
   - py-wurlitzer
   - py-yapf
-  - root +opengl +webgui +x
+  - root +cuda +opengl +webgui +x
   - snakemake
   - spdlog
   - stow
