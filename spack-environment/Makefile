@@ -7,7 +7,6 @@ export SPACK_COLOR = always
 
 SPACK_ENV ?= dev
 
-BUILDCACHE_S3_FINAL :=
 BUILDCACHE_OCI_FINAL :=
 BUILDCACHE_OCI_BASE_IMAGE := ghcr.io/eic/debian:stable-slim
 
@@ -20,8 +19,6 @@ include $(SPACK_ENV)/spack.mk
 endif
 
 $(SPACK_ENV)/push: $(addprefix $(SPACK_ENV)/push/,$($(SPACK_ENV)/SPACK_PACKAGE_IDS))
-	$(foreach buildcache, $(BUILDCACHE_S3_FINAL), $(SPACK) buildcache push --private --unsigned $(buildcache) ;)
-	$(foreach buildcache, $(BUILDCACHE_S3_FINAL), $(SPACK) buildcache update-index $(buildcache) ;)
 	$(foreach buildcache, $(BUILDCACHE_OCI_FINAL), $(SPACK) buildcache push --private --unsigned --base-image $(BUILDCACHE_OCI_BASE_IMAGE) $(buildcache) | grep -v "Using cached archive" ;)
 
 $(SPACK_ENV)/push/%: $(SPACK_ENV)/install/%

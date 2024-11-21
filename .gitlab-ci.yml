@@ -295,8 +295,6 @@ base:
                    --build-arg KEY4HEPSPACK_VERSION=${KEY4HEPSPACK_VERSION}
                    --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
                    --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
-                   --build-arg S3_ACCESS_KEY=${S3_ACCESS_KEY}
-                   --build-arg S3_SECRET_KEY=${S3_SECRET_KEY}
                    --build-arg jobs=${JOBS}
                    --provenance false
                    containers/debian

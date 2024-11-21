@@ -202,17 +202,8 @@ EOF
 ## Setup buildcache mirrors
 ## - this always adds the read-only mirror to the container
 ## - the write-enabled mirror is provided later as a secret mount
-ARG S3_ACCESS_KEY=""
-ARG S3_SECRET_KEY=""
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
-if [ -n "${S3_ACCESS_KEY}" ] ; then
-  spack mirror add --scope site --unsigned                              \
-      --s3-endpoint-url https://eics3.sdcc.bnl.gov:9000                 \
-      --s3-access-key-id "${S3_ACCESS_KEY}"                             \
-      --s3-access-key-secret "${S3_SECRET_KEY}"                         \
-      eics3 s3://eictest/EPIC/spack/${SPACK_VERSION}
-fi
 spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
 spack mirror add --scope site --unsigned ghcr-${SPACK_VERSION} oci://ghcr.io/eic/spack-${SPACK_VERSION}
 spack mirror list
