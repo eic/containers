@@ -543,6 +543,7 @@ benchmarks:detector:default:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_CONTAINER: "eic_xl"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
@@ -554,6 +555,7 @@ benchmarks:detector:nightly:
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_CONTAINER: "eic_cuda"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
@@ -564,6 +566,7 @@ benchmarks:phyiscs:default:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_CONTAINER: "eic_xl"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
     strategy: depend
@@ -575,6 +578,7 @@ benchmarks:physics:nightly:
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_CONTAINER: "eic_xl"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
     strategy: depend
