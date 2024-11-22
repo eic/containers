@@ -360,7 +360,7 @@ packages:
     - '@0.23.0'
   py-pip:
     require:
-    - any_of: ['@23.1.2', '@23.0']
+    - '@23.1.2'
   py-pre-commit:
     require:
     - '@3.3.3'
