@@ -143,8 +143,8 @@ packages:
     - +aida +gaudialg
   gdb:
     require:
-    - '@14.1'
-    - -debuginfod
+    - '@15.2'
+    - +debuginfod
   g4ndl:
     buildable: False
     externals:
