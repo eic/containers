@@ -139,6 +139,7 @@ apt-get -yqq install --no-install-recommends                            \
         python3-dev                                                     \
         python3-distutils                                               \
         python3-boto3                                                   \
+        python3-gdbm                                                    \
         python-is-python3
 EOF
 
