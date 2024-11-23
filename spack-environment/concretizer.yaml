@@ -6,5 +6,8 @@
 #   when_possible and consider duplicate dependencies an error.
 #
 concretizer:
-  reuse: false
+  reuse:
+    roots: true
+    from:
+    - type: local
   unify: when_possible

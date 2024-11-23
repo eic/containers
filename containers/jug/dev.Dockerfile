@@ -48,7 +48,7 @@ echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
 spack env activate --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
 spack external find --not-buildable --scope env:${SPACK_ENV} llvm
-spack concretize --fresh --force
+spack concretize --force
 EOF
 
 
@@ -166,7 +166,7 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all juggler
 fi
-spack concretize --fresh --force
+spack concretize --force
 EOF
 
 
