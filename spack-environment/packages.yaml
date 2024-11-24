@@ -158,8 +158,9 @@ packages:
   geant4:
     require:
     - '@11.2.2.east'
-    - cxxstd=20 -vecgeom +threads -vtk
+    - cxxstd=20 +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
+    - any_of: [-vecgeom, +vecgeom ^vecgeom +cuda]
   gettext: 
     require:
     - +libxml2
@@ -461,6 +462,10 @@ packages:
   valgrind:
     require:
     - '@3.20.0'
+  vecgeom:
+    require:
+    - '@1.2.9'
+    - cxxstd=20 +gdml +geant4 +root
   xrootd:
     require:
     - '@5.7.0'
