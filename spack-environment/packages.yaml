@@ -348,7 +348,7 @@ packages:
     - '@1.16-33-g3788bb4'
   py-numpy:
     require:
-    - '@1.26.1'
+    - '@1.26.4'
   py-onnx:
     require:
     - '@1.15.0'
