@@ -357,7 +357,7 @@ packages:
     - '@1.18.2'
   py-pandas:
     require:
-    - '@1.5.3'
+    - '@2.2.3'
   py-particle:
     require:
     - '@0.23.0'
