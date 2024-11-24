@@ -2,7 +2,7 @@ image: alpine
 
 variables:
   ## External images
-  DOCKER_IMAGE: docker.io/docker:27.2.0
+  DOCKER_IMAGE: docker.io/docker:27.3.1
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
   ## Default versions are specified in packages.yaml but can be overridden
@@ -448,6 +448,10 @@ eic:
                    --build-arg jobs=${JOBS}
                    --build-context spack-environment=spack-environment
                    --secret id=mirrors,src=mirrors.yaml
+                   --secret type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER
+                   --secret type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD
+                   --secret type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER
+                   --secret type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN
                    --provenance false
                    containers/jug
                    2>&1 | tee build.log

@@ -1,4 +1,4 @@
-#syntax=docker/dockerfile:1.8
+#syntax=docker/dockerfile:1.10
 #check
 ARG DOCKER_REGISTRY="eicweb/"
 ARG BUILDER_IMAGE="debian_stable_base"
@@ -63,6 +63,10 @@ ARG TARGETPLATFORM
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
+    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
+    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
+    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
@@ -104,6 +108,10 @@ ARG TARGETPLATFORM
 # Installation (default environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
+    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
+    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
+    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--use-buildcache only"
@@ -181,6 +189,10 @@ ARG TARGETPLATFORM
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
+    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
+    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
+    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache

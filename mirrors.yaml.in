@@ -5,21 +5,21 @@ mirrors:
     signed: false
     fetch:
       access_pair:
-      - ${CI_REGISTRY_USER}
-      - ${CI_REGISTRY_PASSWORD}
+        id_variable: CI_REGISTRY_USER
+        secret_variable: CI_REGISTRY_PASSWORD
     push:
       access_pair:
-      - ${CI_REGISTRY_USER}
-      - ${CI_REGISTRY_PASSWORD}
+        id_variable: CI_REGISTRY_USER
+        secret_variable: CI_REGISTRY_PASSWORD
   ghcr:
     autopush: true
     url: oci://ghcr.io/eic/spack-${SPACK_VERSION}
     signed: false
     fetch:
       access_pair:
-      - ${GITHUB_REGISTRY_USER}
-      - ${GITHUB_REGISTRY_TOKEN}
+        id_variable: GITHUB_REGISTRY_USER
+        secret_variable: GITHUB_REGISTRY_TOKEN
     push:
       access_pair:
-      - ${GITHUB_REGISTRY_USER}
-      - ${GITHUB_REGISTRY_TOKEN}
+        id_variable: GITHUB_REGISTRY_USER
+        secret_variable: GITHUB_REGISTRY_TOKEN
