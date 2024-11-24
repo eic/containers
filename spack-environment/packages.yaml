@@ -248,6 +248,9 @@ packages:
   onnx:
     require:
     - '@1.15.0'
+  openblas:
+    require:
+    - ~fortran
   opencascade:
     require:
     - '@7.8.1'
