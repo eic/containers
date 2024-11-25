@@ -33,7 +33,7 @@ spack:
   - fmt
   - gaudi
   - gdb
-  - geant4
+  - geant4 +vecgeom
   - graphviz
   - hepmc3
   - heppdt
