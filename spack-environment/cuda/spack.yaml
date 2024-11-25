@@ -36,7 +36,7 @@ spack:
   - g4adept +cuda
   - gaudi
   - gdb
-  - geant4
+  - geant4 +vecgeom
   - graphviz
   - hepmc3
   - heppdt
