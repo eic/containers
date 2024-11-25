@@ -89,7 +89,7 @@ packages:
     require:
     - '@1.30'
     - +ddg4 +ddcad +hepmc3 +utilityapps +xercesc
-    - any_of: [+ddeve, -ddeve]
+    - one_of: [+ddeve, -ddeve]
   dpmjet:
     require:
     - '@19.3.5'
@@ -159,8 +159,8 @@ packages:
     require:
     - '@11.2.2.east'
     - cxxstd=20 +threads -vtk
-    - any_of: [+opengl +qt +x11, -opengl -qt -x11]
-    - any_of: [-vecgeom, +vecgeom ^vecgeom +cuda]
+    - one_of: [+opengl +qt +x11, -opengl -qt -x11]
+    - one_of: [-vecgeom, +vecgeom ^vecgeom +cuda]
   gettext: 
     require:
     - +libxml2
@@ -250,7 +250,7 @@ packages:
     require:
     - '@1.4.3'
     - +http
-    - any_of: [+geocad, -geocad]
+    - one_of: [+geocad, -geocad]
   onnx:
     require:
     - '@1.15.0'
@@ -426,7 +426,7 @@ packages:
     require:
     - '@6.32.08'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +xrootd +ssl
-    - any_of: [+opengl +webgui +x, -opengl -webgui -x]
+    - one_of: [+opengl +webgui +x, -opengl -webgui -x]
   sherpa:
     require:
     - '@3.0.1'
