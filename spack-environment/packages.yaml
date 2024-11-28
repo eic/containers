@@ -191,7 +191,7 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@14.2.0' # JUGGLER_VERSION
+    - '@14.2.1' # JUGGLER_VERSION
     - cxxstd=20
   k4actstracking:
     require:
@@ -257,7 +257,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@0.99'
+    - '@1.0.1'
     - cxxstd=20
   prmon:
     require:
