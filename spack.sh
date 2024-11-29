@@ -44,6 +44,9 @@ fbceae7773c51198a775efffd7a9e21d0fe1e05c
 e91a69a7564dfe54718541954607d89c086caf12
 26bc91fe9bde4549fb39062e1dd838b612205717
 ddf1a1a74ba2ee99377edc2100e0478c1ddd3653
+c69af5d1e54a25778956ded8034808940a8f9498
+84cb604b19e66b14c6d9d4a0fb587f12af4b3a43
+a84c91b25984a308a4d47bb48ac9011806e61540
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -89,3 +92,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## e91a69a7564dfe54718541954607d89c086caf12: py-tabulate: add v0.8.10, v0.9.0
 ## 26bc91fe9bde4549fb39062e1dd838b612205717: py-rucio-clients: new package (and dependencies)
 ## ddf1a1a74ba2ee99377edc2100e0478c1ddd3653: py-urllib3: add v1.26.20
+## c69af5d1e54a25778956ded8034808940a8f9498: podio: cleanup recipe, remove deprecated versions and patches
+## 84cb604b19e66b14c6d9d4a0fb587f12af4b3a43: podio: Add version 1.0
+## a84c91b25984a308a4d47bb48ac9011806e61540: podio: add version 1.0.1
