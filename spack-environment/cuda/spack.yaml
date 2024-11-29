@@ -33,6 +33,7 @@ spack:
   - epic@24.10.1
   - epic@24.11.0
   - epic@24.11.1
+  - epic@24.11.2
   - fastjet
   - fjcontrib
   - fmt
