@@ -279,6 +279,7 @@ packages:
     require:
     - '@1.0.1'
     - cxxstd=20
+    - +rntuple
   prmon:
     require:
     - '@3.0.2'
