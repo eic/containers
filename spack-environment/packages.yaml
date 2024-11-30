@@ -49,6 +49,11 @@ packages:
     require:
     - '@3.4.0'
     - -ipo
+  celeritas:
+    require:
+    - '@0.5.0'
+    - +geant4 +hepmc3  +vecgeom
+    - one_of: [~cuda +root, +cuda +ipo ~root]
   cernlib:
     require:
     - '@2022.11.08.0-free'
