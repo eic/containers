@@ -54,6 +54,7 @@ spack:
   - lcov
   - lhapdf
   - madx
+  - multitime
   - nano
   - nopayloadclient
   - npsim
