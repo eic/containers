@@ -352,30 +352,19 @@ EOF
 ARG JUG_VERSION=1
 RUN echo -e "\n - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
 
-## eicweb shortcut
-ARG EICWEB="https://eicweb.phy.anl.gov/api/v4/projects"
-
 ## Install benchmarks into the container
 ARG BENCHMARK_COM_VERSION="master"
 ARG BENCHMARK_DET_VERSION="master"
 ARG BENCHMARK_REC_VERSION="master"
 ARG BENCHMARK_PHY_VERSION="master"
-## cache bust when updated repositories
-ADD ${EICWEB}/458/repository/commits/${BENCHMARK_COM_VERSION} /tmp/485.json
-ADD ${EICWEB}/399/repository/commits/${BENCHMARK_DET_VERSION} /tmp/399.json
-ADD ${EICWEB}/408/repository/commits/${BENCHMARK_REC_VERSION} /tmp/408.json 
-ADD ${EICWEB}/400/repository/commits/${BENCHMARK_PHY_VERSION} /tmp/400.json
+ADD https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git#${BENCHMARK_COM_VERSION} /opt/benchmarks/common_bench
+ADD https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git#${BENCHMARK_DET_VERSION} /opt/benchmarks/detector_benchmarks
+ADD https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git#${BENCHMARK_REC_VERSION} /opt/benchmarks/reconstruction_benchmarks
+ADD https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git#${BENCHMARK_PHY_VERSION} /opt/benchmarks/physics_benchmarks
 RUN <<EOF
-set -e
-mkdir -p /opt/benchmarks
-cd /opt/benchmarks
-git clone --filter=tree:0 -b ${BENCHMARK_COM_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git
-git clone --filter=tree:0 -b ${BENCHMARK_DET_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git
-ln -sf ../common_bench detector_benchmarks/.local
-git clone --filter=tree:0 -b ${BENCHMARK_REC_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git
-ln -sf ../common_bench reconstruction_benchmarks/.local
-git clone --filter=tree:0 -b ${BENCHMARK_PHY_VERSION} --depth 1 https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git
-ln -sf ../common_bench physics_benchmarks/.local
+ln -sf ../common_bench /opt/benchmarks/detector_benchmarks/.local
+ln -sf ../common_bench /opt/benchmarks/reconstruction_benchmarks/.local
+ln -sf ../common_bench /opt/benchmarks/physics_benchmarks/.local
 EOF
 
 ## Install campaigns into the container
@@ -383,20 +372,10 @@ ARG CAMPAIGNS_SINGLE_VERSION="main"
 ARG CAMPAIGNS_HEPMC3_VERSION="main"
 ARG CAMPAIGNS_CONDOR_VERSION="main"
 ARG CAMPAIGNS_SLURM_VERSION="main"
-## cache bust when updated repositories
-ADD https://api.github.com/repos/eic/simulation_campaign_single/commits/${CAMPAIGNS_SINGLE_VERSION} /tmp/simulation_campaign_single.json
-ADD https://api.github.com/repos/eic/simulation_campaign_hepmc3/commits/${CAMPAIGNS_HEPMC3_VERSION} /tmp/simulation_campaign_hepmc3.json
-ADD https://api.github.com/repos/eic/job_submission_condor/commits/${CAMPAIGNS_CONDOR_VERSION} /tmp/job_submission_condor.json
-ADD https://api.github.com/repos/eic/job_submission_slurm/commits/${CAMPAIGNS_SLURM_VERSION} /tmp/job_submission_slurm.json
-RUN <<EOF
-set -e
-mkdir -p /opt/campaigns
-cd /opt/campaigns
-git clone --filter=tree:0 -b ${CAMPAIGNS_SINGLE_VERSION} --depth 1 https://github.com/eic/simulation_campaign_single.git single
-git clone --filter=tree:0 -b ${CAMPAIGNS_HEPMC3_VERSION} --depth 1 https://github.com/eic/simulation_campaign_hepmc3.git hepmc3
-git clone --filter=tree:0 -b ${CAMPAIGNS_CONDOR_VERSION} --depth 1 https://github.com/eic/job_submission_condor.git condor
-git clone --filter=tree:0 -b ${CAMPAIGNS_SLURM_VERSION} --depth 1 https://github.com/eic/job_submission_slurm.git slurm
-EOF
+ADD https://github.com/eic/simulation_campaign_single.git#${CAMPAIGNS_SINGLE_VERSION} /opt/campaigns/single
+ADD https://github.com/eic/simulation_campaign_hepmc3.git#${CAMPAIGNS_HEPMC3_VERSION} /opt/campaigns/hepmc3
+ADD https://github.com/eic/job_submission_condor.git#${CAMPAIGNS_CONDOR_VERSION} /opt/campaigns/condor
+ADD https://github.com/eic/job_submission_slurm.git#${CAMPAIGNS_SLURM_VERSION} /opt/campaigns/slurm
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT ["/opt/local/sbin/entrypoint.sh"]
