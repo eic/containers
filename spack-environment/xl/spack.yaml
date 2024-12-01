@@ -56,6 +56,7 @@ spack:
   - madx
   - multitime
   - nano
+  - ninja
   - nopayloadclient
   - npsim
   - onnx
