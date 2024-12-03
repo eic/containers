@@ -10,6 +10,7 @@ read -r -d '' SPACK_CHERRYPICKS <<- \
 --- || true
 09f75ee426a2e05e0543570821582480ff823ba5
 b90ac6441cfdf6425cb59551e7b0538899b69527
+8e7641e584563c4859cbef992cd534e75ffd8142
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -19,3 +20,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## [hash]: [description]
 ## 09f75ee426a2e05e0543570821582480ff823ba5: setup-env.sh: if exe contains qemu, use /proc/$$/comm instead
 ## b90ac6441cfdf6425cb59551e7b0538899b69527: celeritas: remove ancient versions and add CUDA package dependency
+## 8e7641e584563c4859cbef992cd534e75ffd8142: onnx: set CMAKE_CXX_STANDARD to abseil-cpp cxxstd value

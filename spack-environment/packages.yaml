@@ -286,7 +286,7 @@ packages:
     - +plot
   protobuf:
     require:
-    - '@3.21.12'
+    - '@3.28.2'
   pyrobird:
     require:
     - '@0.1.23'
@@ -375,7 +375,7 @@ packages:
     - '@3.3.3'
   py-protobuf:
     require:
-    - '@4.21.9'
+    - '@5.28.2'
   py-pygithub:
     require:
     - '@2.1.1'
