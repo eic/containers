@@ -247,7 +247,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.4.1'
+    - '@1.4.2'
     - +http
     - any_of: [+geocad, -geocad]
   onnx:
@@ -423,7 +423,7 @@ packages:
     - +opengl
   root:
     require:
-    - '@6.30.02'
+    - '@6.32.06'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +xrootd +ssl
     - any_of: [+opengl +webgui +x, -opengl -webgui -x]
   simsipm:
