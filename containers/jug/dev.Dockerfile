@@ -384,6 +384,16 @@ USER 0
 WORKDIR /
 SHELL ["/opt/local/bin/eic-shell"]
 
+## rucio config (unprivileged read-only account)
+COPY <<EOF /opt/rucio/etc/rucio.cfg
+[client]
+rucio_host = https://rucio-server.jlab.org:443
+auth_host = https://rucio-server.jlab.org:443
+auth_type = userpass
+username = eicread
+password = eicread
+EOF
+
 ## eic-news
 COPY --chmod=0755 eic-news /opt/local/bin/eic-news
 RUN echo "test -f $HOME/.eic-news && source /opt/local/bin/eic-news" > /etc/profile.d/z13_eic-news.sh 

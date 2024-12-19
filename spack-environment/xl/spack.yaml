@@ -40,6 +40,7 @@ spack:
   - gdb
   - geant4 +opengl
   - gfal2
+  - gfal2-util
   - graphviz
   - hepmc3
   - hepmcmerger
@@ -72,6 +73,7 @@ spack:
   - py-boto3
   - py-dask
   - py-deepdiff
+  - py-eic-rucio-policy-package
   - py-epic-capybara
   - py-hepunits
   - py-hist
