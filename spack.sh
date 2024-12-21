@@ -14,6 +14,7 @@ b90ac6441cfdf6425cb59551e7b0538899b69527
 c50ac5ac25619bdf0b3e75884a893a73e5713e05
 69b17ea6024b1f9ef39681f1aba3a499e54f58eb
 6a217dc5d327de87441ebec89c43818bf8fe2746
+00f179ee6da8252dff882c2d2249240f2d43805a
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -27,3 +28,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## c50ac5ac25619bdf0b3e75884a893a73e5713e05: py-gfal2-python: new package to fix gfal2-util
 ## 69b17ea6024b1f9ef39681f1aba3a499e54f58eb: py-paramiko: add v3.3.2, v3.4.1, v3.5.0
 ## 6a217dc5d327de87441ebec89c43818bf8fe2746: gsoap: depends_on autoconf etc type build
+## 00f179ee6da8252dff882c2d2249240f2d43805a: root: add v6.32.08

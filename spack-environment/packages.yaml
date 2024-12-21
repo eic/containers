@@ -423,7 +423,7 @@ packages:
     - +opengl
   root:
     require:
-    - '@6.32.06'
+    - '@6.32.08'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +xrootd +ssl
     - any_of: [+opengl +webgui +x, -opengl -webgui -x]
   simsipm:
