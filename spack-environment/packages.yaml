@@ -165,7 +165,7 @@ packages:
     - +libxml2
   gfal2:
     require:
-    - +file +xrootd
+    - +file +http +xrootd
   gl:
     require:
     - glx
