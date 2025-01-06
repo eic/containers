@@ -309,7 +309,7 @@ packages:
     - '@1.26.26'
   py-dask:
     require:
-    - '@2023.4.1'
+    - '@2024.7.1'
   py-epic-capybara:
     require:
     - '@git.c15eefd88aeb08a2672d587d1d7c6d795678e1ca'
@@ -324,10 +324,10 @@ packages:
     - '@2.4.0'
   py-ipython:
     require:
-    - '@8.11.0'
+    - '@8.28.0'
   py-jinja2:
     require:
-    - '@3.1.2'
+    - '@3.1.4'
   py-jinja2-cli:
     require:
     - '@0.8.2'
@@ -336,13 +336,13 @@ packages:
     - '@6.4.4'
   py-jupyterlab:
     require:
-    - '@3.4.8'
+    - '@4.0.1'
   py-lmfit:
     require:
     - '@1.0.2'
   py-lxml:
     require:
-    - '@4.9.1'
+    - '@5.3.0'
   py-matplotlib:
     require:
     - '@3.7.1'
@@ -366,13 +366,13 @@ packages:
     - '@2.2.3'
   py-particle:
     require:
-    - '@0.23.0'
+    - '@0.24.0'
   py-pip:
     require:
     - '@23.1.2'
   py-pre-commit:
     require:
-    - '@3.3.3'
+    - '@3.6.0'
   py-protobuf:
     require:
     - '@5.28.2'
@@ -381,16 +381,16 @@ packages:
     - '@2.1.1'
   py-pycairo:
     require:
-    - '@1.20.0'
+    - '@1.24.0'
   py-pyyaml:
     require:
-    - '@6.0'
+    - '@6.0.2'
   py-scipy:
     require:
-    - '@1.11.3'
+    - '@1.14.1'
   py-seaborn:
     require:
-    - '@0.12.2'
+    - '@0.13.2'
   py-toml:
     require:
     - '@0.10.2'
@@ -403,7 +403,7 @@ packages:
     - '@5.0.5'
   py-vector:
     require:
-    - '@1.4.1'
+    - '@1.5.1'
   py-wurlitzer:
     require:
     - '@3.0.2'
