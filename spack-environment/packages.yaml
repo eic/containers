@@ -578,7 +578,7 @@ packages:
   vecgeom:
     require:
     - '@1.2.11'
-    - cxxstd=20 +gdml +geant4 +root
+    - cxxstd=20 +gdml ~geant4 +root
   xerces-c:
     require:
     - cxxstd=20
