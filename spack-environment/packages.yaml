@@ -465,7 +465,7 @@ packages:
   vecgeom:
     require:
     - '@1.2.9'
-    - cxxstd=20 +gdml +geant4 +root
+    - cxxstd=20 +gdml ~geant4 +root
   xrootd:
     require:
     - '@5.7.0'
