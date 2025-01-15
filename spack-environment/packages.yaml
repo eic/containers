@@ -241,8 +241,7 @@ packages:
     - '@7.2'
   node-js:
     require:
-    # node-js@22.3: fails with gcc-12.2 in bookworm
-    - '@20.15.0'
+    - '@22.4.0'
   nopayloadclient:
     require:
     - '@0.0.3'
@@ -297,7 +296,7 @@ packages:
     - +fastjet +root
   python:
     require:
-    - '@3.11.7'
+    - '@3.12.5'
   py-awkward:
     require:
     - '@2.1.1'
@@ -340,9 +339,6 @@ packages:
   py-lmfit:
     require:
     - '@1.0.2'
-  py-lxml:
-    require:
-    - '@5.3.0'
   py-matplotlib:
     require:
     - '@3.7.1'

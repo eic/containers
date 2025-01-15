@@ -16,10 +16,25 @@ c50ac5ac25619bdf0b3e75884a893a73e5713e05
 6a217dc5d327de87441ebec89c43818bf8fe2746
 00f179ee6da8252dff882c2d2249240f2d43805a
 94cf51875f0e29b79c2a1bd69e0fcddac3eec0c8
+3dcbd118df52e1bb93aba59c1751e448ee6a9358
+c57452dd08f9f4da6db1f4591053ea496893140a
+e1dfbbf611ee9ed23f51c6a7629ca2584a42d0af
+75b03bc12ffbabdfac0775ead5442c3f102f94c7
+e56057fd795d30146d58934840fe5b6e96f71e65
+1148c8f195d812e5bd586f404edd403579ed5df2
+9d07efa0dc6e7ebd715487be5e0092a608964cf0
+4d6347c99c5fb76d374baa5f933ab5bbae32793a
+396a70186002764891e2ae597ecefd02617570dd
+ebb3736de79e6e119a0057788a6b906507cb166f
+3c64821c6445aa085848ecb19482ebddeea7b657
+8f145f5e8ed98c0a5dcc0c0bea7b441bc0433923
+8196c68ff33dcde4f82df7063f6adf50fbe808d3
+b2a86fcaba3397e912eec32a7059e26ab234cef7
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
+[396a70186002764891e2ae597ecefd02617570dd]=var/spack/repos/builtin/packages/node-js/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -31,3 +46,17 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 6a217dc5d327de87441ebec89c43818bf8fe2746: gsoap: depends_on autoconf etc type build
 ## 00f179ee6da8252dff882c2d2249240f2d43805a: root: add v6.32.08
 ## 94cf51875f0e29b79c2a1bd69e0fcddac3eec0c8: acts: don't use system dfelibs for 35.1:36.0
+## 3dcbd118df52e1bb93aba59c1751e448ee6a9358: py-cython: support Python 3.12+
+## c57452dd08f9f4da6db1f4591053ea496893140a: py-cffi: support Python 3.12+
+## e1dfbbf611ee9ed23f51c6a7629ca2584a42d0af: py-greenlet: add v3.0.3, v3.1.1
+## 75b03bc12ffbabdfac0775ead5442c3f102f94c7: glib: add v2.82.2
+## e56057fd795d30146d58934840fe5b6e96f71e65: gobject-introspection: Do not write to user home
+## 1148c8f195d812e5bd586f404edd403579ed5df2: gobject-introspection: Python 3.12 still not supported
+## 9d07efa0dc6e7ebd715487be5e0092a608964cf0: gobject-introspection: patch to import setuptools before distutils
+## 4d6347c99c5fb76d374baa5f933ab5bbae32793a: node-js: patch for %gcc@12.[1-2] when @22.2:22
+## 396a70186002764891e2ae597ecefd02617570dd: python: deprecate 3.8
+## ebb3736de79e6e119a0057788a6b906507cb166f: node-js: update to 22.11.0
+## 3c64821c6445aa085848ecb19482ebddeea7b657: node-js: less strict python requirement for newer versions of node-js
+## 8f145f5e8ed98c0a5dcc0c0bea7b441bc0433923: node-js: always depend on some python, regardless of lower/upper limits
+## 8196c68ff33dcde4f82df7063f6adf50fbe808d3: py-dask: fix py-versioneer version pin
+## b2a86fcaba3397e912eec32a7059e26ab234cef7: py-plac: add v1.4.3; restrict to python@:3.11 for older
