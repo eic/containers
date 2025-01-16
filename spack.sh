@@ -30,6 +30,7 @@ ebb3736de79e6e119a0057788a6b906507cb166f
 8f145f5e8ed98c0a5dcc0c0bea7b441bc0433923
 8196c68ff33dcde4f82df7063f6adf50fbe808d3
 b2a86fcaba3397e912eec32a7059e26ab234cef7
+a86953fcb14a1e6ab760cba6957850ecfd40cca7
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -60,3 +61,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 8f145f5e8ed98c0a5dcc0c0bea7b441bc0433923: node-js: always depend on some python, regardless of lower/upper limits
 ## 8196c68ff33dcde4f82df7063f6adf50fbe808d3: py-dask: fix py-versioneer version pin
 ## b2a86fcaba3397e912eec32a7059e26ab234cef7: py-plac: add v1.4.3; restrict to python@:3.11 for older
+## a86953fcb14a1e6ab760cba6957850ecfd40cca7: acts: add version 37.4.0
