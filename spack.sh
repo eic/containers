@@ -16,6 +16,7 @@ c50ac5ac25619bdf0b3e75884a893a73e5713e05
 6a217dc5d327de87441ebec89c43818bf8fe2746
 00f179ee6da8252dff882c2d2249240f2d43805a
 94cf51875f0e29b79c2a1bd69e0fcddac3eec0c8
+a86953fcb14a1e6ab760cba6957850ecfd40cca7
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -31,3 +32,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 6a217dc5d327de87441ebec89c43818bf8fe2746: gsoap: depends_on autoconf etc type build
 ## 00f179ee6da8252dff882c2d2249240f2d43805a: root: add v6.32.08
 ## 94cf51875f0e29b79c2a1bd69e0fcddac3eec0c8: acts: don't use system dfelibs for 35.1:36.0
+## a86953fcb14a1e6ab760cba6957850ecfd40cca7: acts: add version 37.4.0
