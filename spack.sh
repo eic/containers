@@ -17,6 +17,10 @@ c50ac5ac25619bdf0b3e75884a893a73e5713e05
 00f179ee6da8252dff882c2d2249240f2d43805a
 94cf51875f0e29b79c2a1bd69e0fcddac3eec0c8
 a86953fcb14a1e6ab760cba6957850ecfd40cca7
+6b16c64c0e11ed6bd3605b15811f111f44800d97
+49efa711d04049d48690231ac9b1ccb81cc4d448
+e94d5b935f9da408371059cf0fd9001108f24772
+af9fd82476b8e9ab5d04b250ac3dbc3e8cde3291
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -33,3 +37,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 00f179ee6da8252dff882c2d2249240f2d43805a: root: add v6.32.08
 ## 94cf51875f0e29b79c2a1bd69e0fcddac3eec0c8: acts: don't use system dfelibs for 35.1:36.0
 ## a86953fcb14a1e6ab760cba6957850ecfd40cca7: acts: add version 37.4.0
+## 6b16c64c0e11ed6bd3605b15811f111f44800d97: acts dependencies: new versions as of 2024/12/02
+## 49efa711d04049d48690231ac9b1ccb81cc4d448: acts dependencies: new versions as of 2024/12/08
+## e94d5b935f9da408371059cf0fd9001108f24772: acts dependencies: new versions as of 2025/01/08
+## af9fd82476b8e9ab5d04b250ac3dbc3e8cde3291: acts: conflict ~svg ~json when +traccc
