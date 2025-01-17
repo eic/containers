@@ -19,7 +19,7 @@ packages:
   acts:
     require:
     - '%clang'
-    - '@37.4.0'
+    - '@37.1.0'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +tgeo
   actsvg:
     require:
