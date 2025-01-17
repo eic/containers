@@ -31,6 +31,10 @@ ebb3736de79e6e119a0057788a6b906507cb166f
 8196c68ff33dcde4f82df7063f6adf50fbe808d3
 b2a86fcaba3397e912eec32a7059e26ab234cef7
 a86953fcb14a1e6ab760cba6957850ecfd40cca7
+6b16c64c0e11ed6bd3605b15811f111f44800d97
+49efa711d04049d48690231ac9b1ccb81cc4d448
+e94d5b935f9da408371059cf0fd9001108f24772
+af9fd82476b8e9ab5d04b250ac3dbc3e8cde3291
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -62,3 +66,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 8196c68ff33dcde4f82df7063f6adf50fbe808d3: py-dask: fix py-versioneer version pin
 ## b2a86fcaba3397e912eec32a7059e26ab234cef7: py-plac: add v1.4.3; restrict to python@:3.11 for older
 ## a86953fcb14a1e6ab760cba6957850ecfd40cca7: acts: add version 37.4.0
+## 6b16c64c0e11ed6bd3605b15811f111f44800d97: acts dependencies: new versions as of 2024/12/02
+## 49efa711d04049d48690231ac9b1ccb81cc4d448: acts dependencies: new versions as of 2024/12/08
+## e94d5b935f9da408371059cf0fd9001108f24772: acts dependencies: new versions as of 2025/01/08
+## af9fd82476b8e9ab5d04b250ac3dbc3e8cde3291: acts: conflict ~svg ~json when +traccc
