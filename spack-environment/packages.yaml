@@ -205,7 +205,7 @@ packages:
   juggler:
     require:
     - '%clang'
-    - '@14.2.2' # JUGGLER_VERSION
+    - '@git.acts-38' # JUGGLER_VERSION
     - cxxstd=20
   k4actstracking:
     require:
