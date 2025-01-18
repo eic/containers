@@ -510,23 +510,8 @@ jug_xl:singularity:nightly:
     - version
     - eic
 
-
 .benchmarks:
   stage: benchmarks
-  needs: 
-    - job: version
-    - job: eic
-      parallel:
-        matrix:
-          - BUILD_TYPE:
-            - default
-            - nightly
-            BUILDER_IMAGE: debian_stable_base
-            RUNTIME_IMAGE: debian_stable_base
-            BUILD_IMAGE: eic_
-            PLATFORM: linux/amd64
-            ENV:
-            - xl
   variables:
     DETECTOR: "epic"
     DETECTOR_CONFIG: epic_craterlake
@@ -536,8 +521,40 @@ jug_xl:singularity:nightly:
     PIPELINE_NAME: "eic_container: $CI_PIPELINE_NAME"
   allow_failure: false
 
-benchmarks:geoviewer:default:
+.benchmarks:default:
   extends: .benchmarks
+  needs: 
+    - job: version
+    - job: eic
+      parallel:
+        matrix:
+          - BUILD_TYPE:
+            - default
+            BUILDER_IMAGE: debian_stable_base
+            RUNTIME_IMAGE: debian_stable_base
+            BUILD_IMAGE: eic_
+            PLATFORM: linux/amd64
+            ENV:
+            - xl
+
+.benchmarks:nightly:
+  extends: .benchmarks
+  needs: 
+    - job: version
+    - job: eic
+      parallel:
+        matrix:
+          - BUILD_TYPE:
+            - nightly
+            BUILDER_IMAGE: debian_stable_base
+            RUNTIME_IMAGE: debian_stable_base
+            BUILD_IMAGE: eic_
+            PLATFORM: linux/amd64
+            ENV:
+            - xl
+
+benchmarks:geoviewer:default:
+  extends: .benchmarks:default
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule" && $EPIC_VERSION != ""'
   variables:
@@ -547,7 +564,7 @@ benchmarks:geoviewer:default:
     strategy: depend
 
 benchmarks:detector:default:
-  extends: .benchmarks
+  extends: .benchmarks:default
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
@@ -557,7 +574,7 @@ benchmarks:detector:default:
     strategy: depend
   
 benchmarks:detector:nightly:
-  extends: .benchmarks
+  extends: .benchmarks:nightly
   rules:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
@@ -568,7 +585,7 @@ benchmarks:detector:nightly:
     strategy: depend
 
 benchmarks:phyiscs:default:
-  extends: .benchmarks
+  extends: .benchmarks:default
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
@@ -578,7 +595,7 @@ benchmarks:phyiscs:default:
     strategy: depend
 
 benchmarks:physics:nightly:
-  extends: .benchmarks
+  extends: .benchmarks:nightly
   rules:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
@@ -589,7 +606,7 @@ benchmarks:physics:nightly:
     strategy: depend
 
 benchmarks:reconstruction:default:
-  extends: .benchmarks
+  extends: .benchmarks:default
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
@@ -599,7 +616,7 @@ benchmarks:reconstruction:default:
     strategy: depend
 
 benchmarks:reconstruction:nightly:
-  extends: .benchmarks
+  extends: .benchmarks:nightly
   rules:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
