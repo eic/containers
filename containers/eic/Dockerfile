@@ -79,7 +79,7 @@ export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV}
+  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--source"
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -126,7 +126,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--use-buildcache only"
+  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--source --use-buildcache only"
 spack gc --yes-to-all
 EOF
 
@@ -202,7 +202,7 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
 set -e
 export CCACHE_DIR=/ccache
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV}
+  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--source"
 spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
@@ -252,7 +252,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     <<EOF
 set -e
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--use-buildcache only"
+  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--source --use-buildcache only"
 spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
