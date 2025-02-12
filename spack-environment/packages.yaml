@@ -60,7 +60,7 @@ packages:
     - -shared
   clhep:
     require:
-    - '@2.4.6.4'
+    - '@2.4.7.1'
     - cxxstd=20
   cli11:
     require:
