@@ -9,6 +9,7 @@ SPACK_VERSION="v0.23.1"
 read -r -d '' SPACK_CHERRYPICKS <<- \
 --- || true
 09f75ee426a2e05e0543570821582480ff823ba5
+12dd1208f3d8b6b1ea02e3e1ceeeaa8d778040d3
 b90ac6441cfdf6425cb59551e7b0538899b69527
 8e7641e584563c4859cbef992cd534e75ffd8142
 c50ac5ac25619bdf0b3e75884a893a73e5713e05
@@ -85,6 +86,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
 ## 09f75ee426a2e05e0543570821582480ff823ba5: setup-env.sh: if exe contains qemu, use /proc/$$/comm instead
+## 12dd1208f3d8b6b1ea02e3e1ceeeaa8d778040d3: geant4: add v11.3.0
 ## b90ac6441cfdf6425cb59551e7b0538899b69527: celeritas: remove ancient versions and add CUDA package dependency
 ## 8e7641e584563c4859cbef992cd534e75ffd8142: onnx: set CMAKE_CXX_STANDARD to abseil-cpp cxxstd value
 ## c50ac5ac25619bdf0b3e75884a893a73e5713e05: py-gfal2-python: new package to fix gfal2-util
