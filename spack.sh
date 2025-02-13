@@ -74,6 +74,7 @@ d08669a8c986de71135ea4daba3c06ed8cd883d9
 14d72d2703e0cafe546145f612c103afa4382318
 4a08f5b6e4153e113e9f2873754104f0b79dee0e
 b5ffbcc4aa43bffbffa96ff9a436a68773e10933
+79d79969bb4a5b80433dc3b73f471052a6281dc7
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -151,3 +152,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 14d72d2703e0cafe546145f612c103afa4382318: treewide style: move depends_on(c,cxx,fortran) with other dependencies, after variants
 ## 4a08f5b6e4153e113e9f2873754104f0b79dee0e: sherpa: add variant internal_pdfs to avoid fortran
 ## b5ffbcc4aa43bffbffa96ff9a436a68773e10933: strace: add v6.15
+## 79d79969bb4a5b80433dc3b73f471052a6281dc7: celeritas: patch 0.5.0 for geant4@11.3.0:
