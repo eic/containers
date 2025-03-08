@@ -41,6 +41,11 @@ variables:
 
   PIPELINE_NAME: "$CI_COMMIT_TITLE"
 
+  ## Variables passed from GitHub workflows
+  GITHUB_REPOSITORY: ""
+  GITHUB_SHA: ""
+  GITHUB_PR: ""
+
 stages:
   - status-pending
   - config
@@ -519,6 +524,9 @@ jug_xl:singularity:nightly:
     BENCHMARKS_CONTAINER: "eic_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
     PIPELINE_NAME: "eic_container: $CI_PIPELINE_NAME"
+    GITHUB_REPOSITORY: "$GITHUB_REPOSITORY"
+    GITHUB_SHA: "$GITHUB_SHA"
+    GITHUB_PR: "$GITHUB_PR"
   allow_failure: false
 
 .benchmarks:default:
