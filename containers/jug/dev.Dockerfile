@@ -392,6 +392,11 @@ auth_host = https://rucio-server.jlab.org:443
 auth_type = userpass
 username = eicread
 password = eicread
+
+[policy]
+package = eic_rucio_policy_package
+extract_scope = eic
+lfn2pfn_algorithm_default = eic
 EOF
 
 ## eic-news
