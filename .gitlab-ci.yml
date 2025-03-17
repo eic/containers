@@ -348,6 +348,7 @@ eic:
 #        - prod
       - BUILD_TYPE:
         - default
+        - nightly
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_runtime
         BASE_IMAGE: cuda_base
@@ -357,6 +358,7 @@ eic:
         - cuda
       - BUILD_TYPE:
         - default
+        - nightly
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_devel
         BASE_IMAGE: cuda_base
