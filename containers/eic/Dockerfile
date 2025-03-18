@@ -169,7 +169,7 @@ ARG JUGGLER_VERSION="df87bf1f8643afa8e80bece9d36d6dc26dfe8132"
 # Concretization (custom environment)
 RUN <<EOF
 set -e
-spack env activate --dir ${SPACK_ENV}
+spack env activate --dir ${SPACK_ENV}/epic
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   sed -i "/# EDM4EIC_VERSION$/ s/@[^' ]*/@git.${EDM4EIC_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all edm4eic
@@ -179,15 +179,15 @@ if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; the
   spack deconcretize -y --all eicrecon
 fi
 if [ "${EPIC_VERSION}" != "c1827f05430b2051df8a0b421db1cbab87165e0b" ] ; then
-  sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/spack.yaml
-  sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/spack.yaml
+  sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
+  sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
   spack deconcretize -y --all epic
 fi
 if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all juggler
 fi
-spack concretize --force
+spack concretize
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
 | uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-setuptools\|py-urllib3\)" \
 | tee /tmp/duplicates.txt
@@ -228,7 +228,6 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
 set -e
 export CCACHE_DIR=/ccache
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
-
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
 ccache --zero-stats
