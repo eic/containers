@@ -6,9 +6,6 @@ spack:
   specs:
   - acts
   - dd4hep -ddeve
-  - edm4eic
-  - eicrecon
-  - epic # EPIC_VERSION
   - fastjet
   - fjcontrib
   - geant4 -opengl
