@@ -5,6 +5,8 @@ spack:
   include_concrete:
   - /opt/spack-environment/xl
   specs:
+  - algorithms
   - edm4eic
   - eicrecon
   - epic@main # EPIC_VERSION
+  - juggler
