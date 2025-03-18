@@ -14,3 +14,8 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 [ ! -z "$CMAKE_PREFIX_PATH" ] && unset CMAKE_PREFIX_PATH
 [ ! -z "$SOFTWARE_HOME" ] && unset SOFTWARE_HOME
 [ ! -z "$ROOTSYS" ] && unset ROOTSYS
+
+# When starting in a (ana|mini)conda virtualenv, CMake prefers that python
+[ ! -z "$CONDA_EXE" ] && unset CONDA_EXE
+[ ! -z "$CONDA_PREFIX" ] && unset CONDA_PREFIX
+[ ! -z "$CONDA_PYTHON_EXE" ] && unset CONDA_PYTHON_EXE
