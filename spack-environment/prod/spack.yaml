@@ -6,9 +6,6 @@ spack:
   - acts
   - cmake
   - dd4hep -ddeve
-  - edm4eic
-  - eicrecon
-  - epic # EPIC_VERSION
   - fastjet
   - fjcontrib
   - gaudi
@@ -17,7 +14,6 @@ spack:
   - intel-tbb
   - irt
   - jana2
-  - juggler
   - npsim -geocad
   - py-boto3
   - py-jinja2

@@ -6,7 +6,6 @@ spack:
   - acts +cuda cuda_arch=75
   - actsvg
   - afterburner
-  - algorithms
   - cairo
   - catch2
   - celeritas +cuda cuda_arch=75
@@ -20,13 +19,10 @@ spack:
   - dd4hep +ddeve
   - dpmjet
   - east
-  - edm4eic
   - edm4hep
   - eic-smear
-  - eicrecon
   - eigen
   - emacs
-  - epic@main # EPIC_VERSION
   - epic@25.01.0
   - epic@25.01.1
   - epic@25.02.0
@@ -47,7 +43,6 @@ spack:
   - irt
   - iwyu
   - jana2
-  - juggler
   - k4actstracking
   - k4fwcore
   - lcov
