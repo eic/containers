@@ -3,7 +3,7 @@ spack:
   - ../../concretizer.yaml
   - ../../packages.yaml
   include_concrete:
-  - ../
+  - /opt/spack-environment/xl
   specs:
   - edm4eic
   - eicrecon
