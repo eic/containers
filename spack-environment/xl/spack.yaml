@@ -6,7 +6,6 @@ spack:
   - acts
   - actsvg
   - afterburner
-  - algorithms
   - cairo
   - catch2
   - celeritas
@@ -46,7 +45,6 @@ spack:
   - irt
   - iwyu
   - jana2
-  - juggler
   - k4actstracking
   - k4fwcore
   - lcov
