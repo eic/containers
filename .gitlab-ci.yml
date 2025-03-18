@@ -498,21 +498,21 @@ eic:
     - mkdir build
     - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
 
-jug_xl:singularity:default:
+eic_xl:singularity:default:
   extends: .singularity
   variables:
     BUILD_TYPE: default
-    BUILD_IMAGE: jug_xl
+    BUILD_IMAGE: eic_xl
   needs:
     - version
     - eic
 
-# eic-shell expects build/jug_xl.sif from the job with name 'jug_xl:singularity:nightly'
-jug_xl:singularity:nightly:
+# eic-shell/install.py expects build/eic_xl.sif from the job with name 'eic_xl:singularity:nightly'
+eic_xl:singularity:nightly:
   extends: .singularity
   variables:
     BUILD_TYPE: nightly
-    BUILD_IMAGE: jug_xl
+    BUILD_IMAGE: eic_xl
   needs:
     - version
     - eic
