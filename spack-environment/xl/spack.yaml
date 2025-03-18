@@ -56,7 +56,6 @@ spack:
   - irt
   - iwyu
   - jana2
-  - juggler
   - k4actstracking
   - k4fwcore
   - lcov
