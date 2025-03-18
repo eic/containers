@@ -54,16 +54,23 @@ target "default" {
   secret = [
     "id=mirrors,src=mirrors.yaml",
   ]
-  args = {
+  args = merge({
     ENV = ENV
     jobs = jobs
     DOCKER_REGISTRY = DOCKER_REGISTRY
     BUILDER_IMAGE = BUILDER_IMAGE
     RUNTIME_IMAGE = RUNTIME_IMAGE
     INTERNAL_TAG = INTERNAL_TAG
-    EDM4EIC_VERSION = BUILD_TYPE == "default" ? EDM4EIC_VERSION : "main"
-    EICRECON_VERSION = BUILD_TYPE == "default" ? EICRECON_VERSION : "main"
-    EPIC_VERSION = BUILD_TYPE == "default" ? EPIC_VERSION : "main"
-    JUGGLER_VERSION = BUILD_TYPE == "default" ? JUGGLER_VERSION : "main"
-  }
+  },
+  BUILD_TYPE == "default" ? merge(
+    { EPIC_VERSION = try(EPIC_VERSION, null) },
+    ( EDM4EIC_VERSION != "" ? { EDM4EIC_VERSION = EDM4EIC_VERSION } : { } ),
+    ( EICRECON_VERSION != "" ? { EICRECON_VERSION = EICRECON_VERSION } : { } ),
+    ( JUGGLER_VERSION != "" ? { JUGGLER_VERSION = JUGGLER_VERSION } : { } ),
+  ) : {
+    EPIC_VERSION = "main"
+    EDM4EIC_VERSION = "main"
+    EICRECON_VERSION = "main"
+    JUGGLER_VERSION = "main"
+  })
 }
