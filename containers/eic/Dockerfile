@@ -197,7 +197,7 @@ ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/jug
 
 # Concretization (custom environment)
 RUN <<EOF
-spack env activate --dir ${SPACK_ENV}
+spack env activate --dir ${SPACK_ENV}/epic
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
   sed -i "/# EDM4EIC_VERSION$/ s/@[^' ]*/@git.${EDM4EIC_VERSION}=main/" /opt/spack-environment/packages.yaml
@@ -210,8 +210,8 @@ if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; the
 fi
 if [ "${EPIC_VERSION}" != "c1827f05430b2051df8a0b421db1cbab87165e0b" ] ; then
   export EPIC_VERSION=$(jq -r .sha /tmp/epic.json)
-  sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/spack.yaml
-  sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/spack.yaml
+  sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
+  sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
   spack deconcretize -y --all epic
 fi
 if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
@@ -219,7 +219,7 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all juggler
 fi
-spack concretize --force
+spack concretize
 EOF
 
 
@@ -251,7 +251,7 @@ RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
 set -e
 export CCACHE_DIR=/ccache
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV}
+  SPACK_ENV=${SPACK_ENV}/epic
 spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
