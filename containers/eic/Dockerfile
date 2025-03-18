@@ -197,6 +197,7 @@ ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/jug
 
 # Concretization (custom environment)
 RUN <<EOF
+echo -e "\n  view: false" >> ${SPACK_ENV}/epic/spack.yaml
 spack env activate --dir ${SPACK_ENV}/epic
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
@@ -287,6 +288,9 @@ COPY --from=builder_installation_custom \
   /opt/spack-environment/${ENV}/spack.* \
   /opt/spack-environment/${ENV}/
 COPY --from=builder_installation_custom \
+  /opt/spack-environment/${ENV}/epic/spack.* \
+  /opt/spack-environment/${ENV}/epic/
+COPY --from=builder_installation_custom \
   /opt/spack-environment/packages.yaml \
   /opt/spack-environment/
 
@@ -313,7 +317,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     <<EOF
 set -e
 make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--use-buildcache only"
+  SPACK_ENV=${SPACK_ENV}/epic SPACK_INSTALL_FLAGS="--use-buildcache only"
 spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
@@ -346,10 +350,10 @@ LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 RUN <<EOF
 set -e
 rm -rf /opt/local
-sed -i -e '/view: false/d' ${SPACK_ENV}/spack.yaml
-cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/spack.yaml
-spack -e ${SPACK_ENV} env view regenerate /opt/local
-spack -e ${SPACK_ENV} env view regenerate /opt/detector
+sed -i -e '/view: false/d' ${SPACK_ENV}/epic/spack.yaml
+cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/epic/spack.yaml
+spack -e ${SPACK_ENV}/epic env view regenerate /opt/local
+spack -e ${SPACK_ENV}/epic env view regenerate /opt/detector
 # ensure /opt/local is the view, not a symlink
 rm -rf /opt/local /opt/detector
 LOCAL_PREFIX_PATH=$(realpath $(ls /opt/._local/ | tail -n1))
