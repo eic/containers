@@ -424,7 +424,7 @@ packages:
     - any_of: [+opengl +webgui +x, -opengl -webgui -x]
   simsipm:
     require:
-    - '@2.0.2'
+    - '@2.1.0'
   snakemake:
     require:
     - '@8.5.2'
