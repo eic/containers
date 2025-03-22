@@ -3,7 +3,7 @@
 ARG DOCKER_REGISTRY="eicweb/"
 ARG BUILDER_IMAGE="debian_stable_base"
 ARG RUNTIME_IMAGE="debian_stable_base"
-ARG INTERNAL_TAG="testing"
+ARG INTERNAL_TAG="master"
 
 ##
 ## This docker build follows two tracks, in order to ensure that we build all packages
@@ -39,7 +39,7 @@ ARG TARGETPLATFORM
 
 ## Copy our default environment
 COPY --from=spack-environment . /opt/spack-environment/
-ARG ENV=dev
+ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 
 # Concretization (default environment)
@@ -88,7 +88,7 @@ ARG TARGETPLATFORM
 
 ## Copy our default environment
 COPY --from=spack-environment . /opt/spack-environment/
-ARG ENV=dev
+ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 
 RUN echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml

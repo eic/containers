@@ -76,7 +76,7 @@ workflow:
 ## plan:
 ##  Workflows:
 ##  - master      --> config + all build stages + singularity
-#                            + nightly jug + nightly singularity
+#                            + nightly eic + nightly singularity
 ##  - v4.0-stable --> config + all build stages + singularity
 ##  - v4.0.0      --> config + all build stages + singularity
 ##  - MR          --> config + all build stages
@@ -245,14 +245,14 @@ status:pending:
     - when: never
 
 ## Images:
-## debian_testing_base --> jug_dev  --> jug_xl
-##             ---------------> jug_sim
-##             ---------------> jug_ml
-## debian_stable_base --> oneapi_jug_dev
-## oneapi_jug_dev + jug_xl   --> oneapi_jug_xl
+## debian_testing_base --> eic_dev  --> eic_xl
+##             ---------------> eic_sim
+##             ---------------> eic_ml
+## debian_stable_base --> oneapi_eic_dev
+## oneapi_jug_dev + eic_xl --> oneapi_eic_xl
 
 ## TODO
-## oneapi_runtime + jug_xl --> oneapi_prod 
+## oneapi_runtime + eic_xl --> oneapi_prod 
 
 base:
   parallel:
@@ -293,7 +293,7 @@ base:
                      ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                      ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
                    }
-                   --file containers/debian/base.Dockerfile
+                   --file containers/debian/Dockerfile
                    --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
@@ -390,7 +390,6 @@ eic:
     - while !
       docker buildx build --push ${BUILD_OPTIONS} ${nocache}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
                      ${IF_BUILD_DEFAULT+
                        ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
@@ -414,30 +413,7 @@ eic:
                        }
                      }
                    }
-                   ${EXPORT_TAG:+
-                     ${IF_BUILD_DEFAULT+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}}
-                     }
-                     ${IF_BUILD_DEFAULT-
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                     }
-                   }
-                   ${IF_BUILD_NIGHTLY+
-                     ${NIGHTLY:+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}}
-                     }
-                       ${PUSH_NIGHTLY_WITH_DATE:+
-                         ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                         ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE/eic/jug}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                       }
-                   }
-                   --file containers/jug/dev.Dockerfile
+                   --file containers/eic/Dockerfile
                    --platform ${PLATFORM}
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
@@ -465,7 +441,7 @@ eic:
                    --secret type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER
                    --secret type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN
                    --provenance false
-                   containers/jug
+                   containers/eic
                    2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
