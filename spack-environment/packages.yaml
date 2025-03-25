@@ -137,7 +137,7 @@ packages:
     - libflame
   fmt:
     require:
-    - '@9.1.0'
+    - '@10.2.1'
     - +shared cxxstd=17
   freetype:
     require:
@@ -439,7 +439,7 @@ packages:
     - '@0.2.10'
   spdlog:
     require:
-    - '@1.11.0'
+    - '@1.14.1'
   stow:
     require:
     - '@2.3.1'
