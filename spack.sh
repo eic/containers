@@ -31,11 +31,14 @@ ebb3736de79e6e119a0057788a6b906507cb166f
 8196c68ff33dcde4f82df7063f6adf50fbe808d3
 b2a86fcaba3397e912eec32a7059e26ab234cef7
 d5c0ace993d2b495de549e6694081b8e9baf2cfb
+0db3b36874457e065fb49ec469a40e72d6c011a0
+f2f13964fbb0d29a74f605e31b20f724d88cc024
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
 [396a70186002764891e2ae597ecefd02617570dd]=var/spack/repos/builtin/packages/node-js/package.py
+[f2f13964fbb0d29a74f605e31b20f724d88cc024]=var/spack/repos/builtin/packages/sherpa/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -62,3 +65,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 8196c68ff33dcde4f82df7063f6adf50fbe808d3: py-dask: fix py-versioneer version pin
 ## b2a86fcaba3397e912eec32a7059e26ab234cef7: py-plac: add v1.4.3; restrict to python@:3.11 for older
 ## d5c0ace993d2b495de549e6694081b8e9baf2cfb: simsipm: add a new version and a variant for setting the C++ standard
+## 0db3b36874457e065fb49ec469a40e72d6c011a0: sherpa: fix AutotoolsBuilder install signature
+## f2f13964fbb0d29a74f605e31b20f724d88cc024: sherpa: support cxxstd=20 when=@3:
