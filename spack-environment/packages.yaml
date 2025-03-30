@@ -417,11 +417,19 @@ packages:
     require:
     - '@6.7.2'
     - +opengl
+  rivet:
+    require:
+    - '@4.0.2'
+    - hepmc=3
   root:
     require:
     - '@6.32.08'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +xrootd +ssl
     - any_of: [+opengl +webgui +x, -opengl -webgui -x]
+  sherpa:
+    require:
+    - '@3.0.1'
+    - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root +ipo +lhapdf +lhole +mpi ~openloops +pythia +python ~recola +rivet +root ~ufo
   simsipm:
     require:
     - '@2.1.0'

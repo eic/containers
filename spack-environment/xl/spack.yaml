@@ -105,7 +105,9 @@ spack:
   - py-vector
   - py-wurlitzer
   - py-yapf
+  - rivet
   - root +opengl +webgui +x
+  - sherpa
   - simsipm
   - snakemake
   - spdlog

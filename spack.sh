@@ -33,6 +33,7 @@ b2a86fcaba3397e912eec32a7059e26ab234cef7
 d5c0ace993d2b495de549e6694081b8e9baf2cfb
 0db3b36874457e065fb49ec469a40e72d6c011a0
 f2f13964fbb0d29a74f605e31b20f724d88cc024
+0ce38ed1092aefeccb31ffed8e23e8d3ef58a4b1
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -67,3 +68,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## d5c0ace993d2b495de549e6694081b8e9baf2cfb: simsipm: add a new version and a variant for setting the C++ standard
 ## 0db3b36874457e065fb49ec469a40e72d6c011a0: sherpa: fix AutotoolsBuilder install signature
 ## f2f13964fbb0d29a74f605e31b20f724d88cc024: sherpa: support cxxstd=20 when=@3:
+## 0ce38ed1092aefeccb31ffed8e23e8d3ef58a4b1: rivet: patch to fix missing headers
