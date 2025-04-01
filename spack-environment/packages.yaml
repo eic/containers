@@ -144,8 +144,8 @@ packages:
     - build_system=autotools
   gaudi:
     require:
-    - '@38.1'
-    - +aida +gaudialg
+    - '@39.0'
+    - +aida
   gdb:
     require:
     - '@15.2'
