@@ -115,7 +115,7 @@ packages:
   eicrecon:
     require:
     - '%clang'
-    - '@git.bfc673f302e982b856e4ca92b8243d8a86546837=1.23.1-11-gbfc673f30' # EICRECON_VERSION
+    - '@1.24.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
