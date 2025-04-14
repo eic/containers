@@ -34,6 +34,8 @@ d5c0ace993d2b495de549e6694081b8e9baf2cfb
 0db3b36874457e065fb49ec469a40e72d6c011a0
 f2f13964fbb0d29a74f605e31b20f724d88cc024
 0ce38ed1092aefeccb31ffed8e23e8d3ef58a4b1
+4b2f5638f24438549770ab475b85002d1499000b
+4a08f5b6e4153e113e9f2873754104f0b79dee0e
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -69,3 +71,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 0db3b36874457e065fb49ec469a40e72d6c011a0: sherpa: fix AutotoolsBuilder install signature
 ## f2f13964fbb0d29a74f605e31b20f724d88cc024: sherpa: support cxxstd=20 when=@3:
 ## 0ce38ed1092aefeccb31ffed8e23e8d3ef58a4b1: rivet: patch to fix missing headers
+## 4b2f5638f24438549770ab475b85002d1499000b: sherpa: +hepmc3root only when +root
+## 4a08f5b6e4153e113e9f2873754104f0b79dee0e: sherpa: add variant internal_pdfs to avoid fortran
