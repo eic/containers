@@ -35,6 +35,7 @@ d5c0ace993d2b495de549e6694081b8e9baf2cfb
 f2f13964fbb0d29a74f605e31b20f724d88cc024
 0ce38ed1092aefeccb31ffed8e23e8d3ef58a4b1
 4b2f5638f24438549770ab475b85002d1499000b
+14d72d2703e0cafe546145f612c103afa4382318
 4a08f5b6e4153e113e9f2873754104f0b79dee0e
 ---
 ## Optional hash table with comma-separated file list
@@ -42,6 +43,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
 [396a70186002764891e2ae597ecefd02617570dd]=var/spack/repos/builtin/packages/node-js/package.py
 [f2f13964fbb0d29a74f605e31b20f724d88cc024]=var/spack/repos/builtin/packages/sherpa/package.py
+[14d72d2703e0cafe546145f612c103afa4382318]=var/spack/repos/builtin/packages/sherpa/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -72,4 +74,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## f2f13964fbb0d29a74f605e31b20f724d88cc024: sherpa: support cxxstd=20 when=@3:
 ## 0ce38ed1092aefeccb31ffed8e23e8d3ef58a4b1: rivet: patch to fix missing headers
 ## 4b2f5638f24438549770ab475b85002d1499000b: sherpa: +hepmc3root only when +root
+## 14d72d2703e0cafe546145f612c103afa4382318: treewide style: move depends_on(c,cxx,fortran) with other dependencies, after variants
 ## 4a08f5b6e4153e113e9f2873754104f0b79dee0e: sherpa: add variant internal_pdfs to avoid fortran
