@@ -372,11 +372,6 @@ eic:
     - version
     - base
   script:
-    - |
-      PUSH_NIGHTLY_WITH_DATE=""
-      if [ "$CI_COMMIT_BRANCH" == "master" ]; then
-        PUSH_NIGHTLY_WITH_DATE="1"
-      fi
     - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY= ; fi
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT= ; fi
     - apk add envsubst git
@@ -407,10 +402,6 @@ eic:
                        ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
                        ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
                        ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                       ${PUSH_NIGHTLY_WITH_DATE:+
-                         ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                         ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}-$(date +%Y-%m-%d)}
-                       }
                      }
                    }
                    --file containers/eic/Dockerfile
