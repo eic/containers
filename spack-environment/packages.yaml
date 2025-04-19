@@ -182,7 +182,7 @@ packages:
     - +python +rootio
   hepmcmerger:
     require:
-    - '@1.0.4'
+    - '@1.0.5'
   heppdt:
     require:
     - '@2.06.01'
