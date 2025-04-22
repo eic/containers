@@ -1,5 +1,5 @@
 #syntax=docker/dockerfile:1.10
-#check
+#check=error=true
 ARG DOCKER_REGISTRY="eicweb/"
 ARG BUILDER_IMAGE="debian_stable_base"
 ARG RUNTIME_IMAGE="debian_stable_base"
