@@ -4,12 +4,17 @@ ARG BASE_IMAGE="amd64/debian:stable-slim"
 ARG BUILD_IMAGE="debian_stable_base"
 
 # Minimal container based on Debian base systems for up-to-date packages. 
-FROM  ${BASE_IMAGE}
+FROM ${BASE_IMAGE}
 ARG TARGETPLATFORM
 
-LABEL maintainer="Sylvester Joosten <sjoosten@anl.gov>" \
-      name="${BUILD_IMAGE}" \
-      march="amd64"
+# Open Container Initiative labels
+LABEL org.opencontainers.image.title="Electron-Ion Collider base image ($TARGETPLATFORM)"
+LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
+LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
+LABEL org.opencontainers.image.url="https://github.com/eic/containers"
+LABEL org.opencontainers.image.source="https://github.com/eic/containers"
+LABEL org.opencontainers.image.documentation="https://eic.github.io"
+LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 COPY bashrc /root/.bashrc
 
