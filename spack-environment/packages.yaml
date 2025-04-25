@@ -311,7 +311,7 @@ packages:
     - '@2024.7.1'
   py-epic-capybara:
     require:
-    - '@git.c15eefd88aeb08a2672d587d1d7c6d795678e1ca'
+    - '@git.281a1d099922b04651630e0061a4ccfb9d3fb8bb'
   py-hepunits:
     require:
     - '@2.3.2'
