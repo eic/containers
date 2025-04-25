@@ -34,7 +34,7 @@ ARG INTERNAL_TAG="master"
 ## builder_concretization_default
 ## - builder base with concretization of default versions
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} as builder_concretization_default
+FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} AS builder_concretization_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -65,7 +65,7 @@ EOF
 ## builder_installation_default
 ## - builder base with installation of default versions
 ## ========================================================================================
-FROM builder_concretization_default as builder_installation_default
+FROM builder_concretization_default AS builder_installation_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -101,7 +101,7 @@ EOF
 ## runtime_concretization_default
 ## - runtime base with concretization of default versions (taken from equivalent builder)
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} as runtime_concretization_default
+FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} AS runtime_concretization_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -129,7 +129,7 @@ COPY --from=builder_installation_default \
 ## runtime_installation_default
 ## - runtime base with installation of default versions (buildcache populated by builder)
 ## ========================================================================================
-FROM runtime_concretization_default as runtime_installation_default
+FROM runtime_concretization_default AS runtime_installation_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -172,7 +172,7 @@ EOF
 ## builder_concretization_custom
 ## - builder base with concretization of custom versions
 ## ========================================================================================
-FROM builder_installation_default as builder_concretization_custom
+FROM builder_installation_default AS builder_concretization_custom
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -227,7 +227,7 @@ EOF
 ## builder_installation_custom
 ## - builder base with installation of custom versions
 ## ========================================================================================
-FROM builder_concretization_custom as builder_installation_custom
+FROM builder_concretization_custom AS builder_installation_custom
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -271,7 +271,7 @@ EOF
 ## runtime_concretization_custom
 ## - runtime base with concretization of custom versions (taken from equivalent builder)
 ## ========================================================================================
-FROM runtime_installation_default as runtime_concretization_custom
+FROM runtime_installation_default AS runtime_concretization_custom
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -295,7 +295,7 @@ COPY --from=builder_installation_custom \
 ## runtime_installation_custom
 ## - runtime base with installation of custom versions (buildcache populated by builder)
 ## ========================================================================================
-FROM runtime_concretization_custom as runtime_installation_custom
+FROM runtime_concretization_custom AS runtime_installation_custom
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
