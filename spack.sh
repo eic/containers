@@ -34,6 +34,11 @@ d5c0ace993d2b495de549e6694081b8e9baf2cfb
 0db3b36874457e065fb49ec469a40e72d6c011a0
 f2f13964fbb0d29a74f605e31b20f724d88cc024
 0ce38ed1092aefeccb31ffed8e23e8d3ef58a4b1
+5640861aebbf3a56715ce0e311ffb365872a8a4d
+21d5fd6ec1279a92022bc388294d9a76881e43f3
+39c10c31169478b464cbfb50d12c865cf763790f
+8487842e11e4057c0ec0cc53049a94740f1f8466
+b02340724d43313377e7fa1e48e9fe9ac362bd49
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -69,3 +74,8 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 0db3b36874457e065fb49ec469a40e72d6c011a0: sherpa: fix AutotoolsBuilder install signature
 ## f2f13964fbb0d29a74f605e31b20f724d88cc024: sherpa: support cxxstd=20 when=@3:
 ## 0ce38ed1092aefeccb31ffed8e23e8d3ef58a4b1: rivet: patch to fix missing headers
+## 5640861aebbf3a56715ce0e311ffb365872a8a4d: Improve package recipes for some HEP packages
+## 21d5fd6ec1279a92022bc388294d9a76881e43f3: dd4hep: Fix faulty package configuration
+## 39c10c31169478b464cbfb50d12c865cf763790f: dd4hep: add v1.31
+## 8487842e11e4057c0ec0cc53049a94740f1f8466: gaudi: add v39.1; patch for failing test; properly support +examples
+## b02340724d43313377e7fa1e48e9fe9ac362bd49: gaudi: Fix nonexistent 'libs'
