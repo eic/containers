@@ -34,7 +34,7 @@ packages:
     - +root +zlib
   algorithms:
     require:
-    - '@git.9acce06e2b8b8d12ef527725e52eff35abd059f8'
+    - '@1.2.0'
   blas:
     require:
     - openblas
