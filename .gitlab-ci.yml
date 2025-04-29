@@ -185,8 +185,9 @@ status:pending:
 ## base job settings for all docker interactions
 .docker:
   image: ${DOCKER_IMAGE}
-  services:
-    - docker:dind
+  variables:
+    DOCKER_HOST: unix:///var/run/docker.sock
+    DOCKER_TLS_CERTDIR: ""
   before_script:
     - # Login to local registry
       echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY}
@@ -227,9 +228,12 @@ status:pending:
           docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes ;
         fi ;
       done
-    - docker context create context
+    - docker context create context || true
     - docker context use context
-    - docker buildx create --name builder --driver docker-container --bootstrap --use context
+    - docker buildx create --name builder-${CI_JOB_ID} --driver docker-container --bootstrap --use context
+  after_script:
+    - !reference [.docker, after_script]
+    - docker buildx rm "builder-${CI_JOB_ID}" || true  
   artifacts:
     paths:
       - build.log
