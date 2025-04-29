@@ -228,7 +228,7 @@ status:pending:
           docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes ;
         fi ;
       done
-    - docker context create context || true
+    - docker context create context
     - docker context use context
     - docker buildx create --name builder-${CI_JOB_ID} --driver docker-container --bootstrap --use context
   after_script:
