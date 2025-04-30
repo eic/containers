@@ -265,6 +265,10 @@ packages:
     externals:
     - spec: opengl@4.6
       prefix: /usr
+  openloops:
+    require:
+    - '@2.1.2'
+    - processes=ppvj,ppjj
   osg-ca-certs:
     require:
     - '@1.119.igtf.1.128'
@@ -429,7 +433,7 @@ packages:
   sherpa:
     require:
     - '@3.0.1'
-    - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root +ipo +lhapdf +lhole +mpi ~openloops +pythia +python ~recola +rivet +root ~ufo
+    - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root +ipo +lhapdf +lhole +mpi +openloops +pythia +python ~recola +rivet +root ~ufo
   simsipm:
     require:
     - '@2.1.0'
