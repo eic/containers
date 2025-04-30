@@ -39,6 +39,9 @@ f2f13964fbb0d29a74f605e31b20f724d88cc024
 39c10c31169478b464cbfb50d12c865cf763790f
 8487842e11e4057c0ec0cc53049a94740f1f8466
 b02340724d43313377e7fa1e48e9fe9ac362bd49
+a14f10e8825fd25e0615095feaa548b1938fffac
+e76f8fda2d959fdf7a262eb539a4002a6a0c900f
+7e89b3521ae8c9fb4ef3e94748d170ba1b799bf2
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -79,3 +82,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 39c10c31169478b464cbfb50d12c865cf763790f: dd4hep: add v1.31
 ## 8487842e11e4057c0ec0cc53049a94740f1f8466: gaudi: add v39.1; patch for failing test; properly support +examples
 ## b02340724d43313377e7fa1e48e9fe9ac362bd49: gaudi: Fix nonexistent 'libs'
+## a14f10e8825fd25e0615095feaa548b1938fffac: openloops: Fix configuration of cmodel setting for gfortran
+## e76f8fda2d959fdf7a262eb539a4002a6a0c900f: openloops: use cmodel small on aarch64 instead of large
+## 7e89b3521ae8c9fb4ef3e94748d170ba1b799bf2: openloops: add v2.1.3, v2.1.4
