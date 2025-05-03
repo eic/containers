@@ -281,7 +281,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@1.1'
+    - '@1.2'
     - cxxstd=20
     - +rntuple
   prmon:

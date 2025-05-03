@@ -42,6 +42,7 @@ b02340724d43313377e7fa1e48e9fe9ac362bd49
 a14f10e8825fd25e0615095feaa548b1938fffac
 e76f8fda2d959fdf7a262eb539a4002a6a0c900f
 7e89b3521ae8c9fb4ef3e94748d170ba1b799bf2
+c0c1a4aea1aa38bd7054cbac2e3fa1606f6939e9
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -85,3 +86,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## a14f10e8825fd25e0615095feaa548b1938fffac: openloops: Fix configuration of cmodel setting for gfortran
 ## e76f8fda2d959fdf7a262eb539a4002a6a0c900f: openloops: use cmodel small on aarch64 instead of large
 ## 7e89b3521ae8c9fb4ef3e94748d170ba1b799bf2: openloops: add v2.1.3, v2.1.4
+## c0c1a4aea1aa38bd7054cbac2e3fa1606f6939e9: podio: add v1.2; conflicts +rntuple ^root@6.32: when @:0.99
