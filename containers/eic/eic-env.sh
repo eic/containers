@@ -51,11 +51,6 @@ fi
 export CLING_STANDARD_PCH='none'
 export CPPYY_API_PATH='none'
 
-## default to ninja over make
-if which ninja ; then
-  export CMAKE_GENERATOR=Ninja
-fi
-
 ## redefine ls and less as functions, as this is something we
 ## can import into our plain bash --norc --noprofile session
 ## (aliases cannot be transferred to a child shell)
