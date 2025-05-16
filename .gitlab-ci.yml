@@ -642,13 +642,9 @@ df:
 
 prune: 
   extends: .build
-  stage: finalize
+  stage: config
   tags:
     - docker-new
-  needs:
-    - clean_internal_tag
-    - clean_unstable_mr
-    - clean_pipeline
   rules:
     - when: manual
   script:
