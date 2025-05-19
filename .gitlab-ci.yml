@@ -621,6 +621,7 @@ df:
   rules:
     - when: manual
   script:
+    - df -h
     - docker images
     - docker ps --size
     - docker stats --all --no-stream --no-trunc > docker-stats-all.txt
