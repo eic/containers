@@ -478,8 +478,18 @@ eic_xl:singularity:default:
     BUILD_TYPE: default
     BUILD_IMAGE: eic_xl
   needs:
-    - version
-    - eic
+    - job: version
+    - job: eic
+      parallel:
+        matrix:
+          - BUILD_TYPE:
+            - default
+            BUILDER_IMAGE: debian_stable_base
+            RUNTIME_IMAGE: debian_stable_base
+            BUILD_IMAGE: eic_
+            PLATFORM: linux/amd64
+            ENV:
+            - xl
 
 # eic-shell/install.py expects build/eic_xl.sif from the job with name 'eic_xl:singularity:nightly'
 eic_xl:singularity:nightly:
@@ -488,8 +498,18 @@ eic_xl:singularity:nightly:
     BUILD_TYPE: nightly
     BUILD_IMAGE: eic_xl
   needs:
-    - version
-    - eic
+    - job: version
+    - job: eic
+      parallel:
+        matrix:
+          - BUILD_TYPE:
+            - nightly
+            BUILDER_IMAGE: debian_stable_base
+            RUNTIME_IMAGE: debian_stable_base
+            BUILD_IMAGE: eic_
+            PLATFORM: linux/amd64
+            ENV:
+            - xl
 
 .benchmarks:
   stage: benchmarks
