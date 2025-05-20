@@ -218,22 +218,12 @@ EOF
 ENV KEY4HEPSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/key4hep-spack
 ARG KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
 ARG KEY4HEPSPACK_VERSION="main"
-ADD https://api.github.com/repos/${KEY4HEPSPACK_ORGREPO}/commits/${KEY4HEPSPACK_VERSION} /tmp/key4hep-spack.json
-RUN <<EOF
-set -e
-git clone --filter=tree:0 https://github.com/${KEY4HEPSPACK_ORGREPO}.git ${KEY4HEPSPACK_ROOT}
-git -C ${KEY4HEPSPACK_ROOT} checkout ${KEY4HEPSPACK_VERSION}
-spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
-EOF
+ADD https://github.com/${KEY4HEPSPACK_ORGREPO}.git#${KEY4HEPSPACK_VERSION} ${KEY4HEPSPACK_ROOT}
+RUN spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
 
 ## Setup eic-spack
 ENV EICSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/eic-spack
 ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="develop"
-ADD https://api.github.com/repos/${EICSPACK_ORGREPO}/commits/${EICSPACK_VERSION} /tmp/eic-spack.json
-RUN <<EOF
-set -e
-git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
-git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}
-spack repo add --scope site "${EICSPACK_ROOT}"
-EOF
+ADD https://github.com/${EICSPACK_ORGREPO}.git#${EICSPACK_VERSION} ${EICSPACK_ROOT}
+RUN spack repo add --scope site "${EICSPACK_ROOT}"
