@@ -390,11 +390,11 @@ for detector in epic-git.*_* ; do
 done
 EOF
 
-## Fill jug_info
+## Fill eic_info
 RUN <<EOF
 set -e
-spack debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" >> /etc/jug_info
-spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
+spack debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" >> /etc/eic_info
+spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/eic_info
 spack graph --dot > /opt/spack-environment/env.dot
 EOF
 
@@ -430,10 +430,6 @@ spack config blame config
 spack config --scope site add "upstreams:eic-shell:install_tree:/opt/software"
 spack config blame upstreams
 EOF
-
-## set the jug_dev version and add the afterburner
-ARG JUG_VERSION=1
-RUN echo -e "\n - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
 
 ## Install benchmarks into the container
 ARG BENCHMARK_COM_VERSION="master"
@@ -488,3 +484,7 @@ RUN echo "test -f $HOME/.eic-news && source /opt/local/bin/eic-news" > /etc/prof
 
 ## Hotfix for misbehaving OSG nodes
 RUN mkdir /hadoop /localscratch
+
+## set the eic_container version
+ARG CI_COMMIT_SHA
+RUN echo -e "\n - eic_container: ${CI_COMMIT_SHA}" >> /etc/eic_info
