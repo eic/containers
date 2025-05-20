@@ -229,14 +229,13 @@ status:pending:
         fi ;
       done
     - docker context create context
-    - docker context use context
-    - docker buildx create --name builder --driver docker-container --bootstrap --use context
-    - docker buildx create --name builder --node builder-${CI_JOB_ID} --append
+    # The docker-container cache persistence applies to builders of the same name,
+    # so do not change the name to something that has the pipeline or job id.
+    - docker buildx create context --name builder --driver docker-container --bootstrap --use
     - docker buildx ls
     - echo $DOCKER_HOST
   after_script:
     - !reference [.docker, after_script]
-    - docker buildx create --name builder --node builder-${CI_JOB_ID} --leave
     - docker buildx ls
   artifacts:
     paths:
