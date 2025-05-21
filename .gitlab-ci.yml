@@ -397,6 +397,53 @@ eic:
     - nocache=""
     - while !
       docker buildx build --push ${BUILD_OPTIONS} ${nocache}
+                   --target builder
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}-builder
+                   --file containers/eic/Dockerfile
+                   --platform ${PLATFORM}
+                   --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
+                   --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
+                   --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE}
+                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg JUG_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
+                   ${IF_BUILD_DEFAULT+
+                     ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION}}
+                     ${EICRECON_VERSION:+--build-arg EICRECON_VERSION=${EICRECON_VERSION}}
+                     ${EPIC_VERSION:+--build-arg EPIC_VERSION=${EPIC_VERSION}}
+                     ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=${JUGGLER_VERSION}}
+                   }
+                   ${IF_BUILD_NIGHTLY+
+                     --build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION:-main}
+                     --build-arg EICRECON_VERSION=${EICRECON_VERSION:-main}
+                     --build-arg EPIC_VERSION=${EPIC_VERSION:-main}
+                     --build-arg JUGGLER_VERSION=${JUGGLER_VERSION:-main}
+                   }
+                   --build-arg ENV=${ENV}
+                   --build-arg jobs=${JOBS}
+                   --build-context spack-environment=spack-environment
+                   --secret id=mirrors,src=mirrors.yaml
+                   --secret type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER
+                   --secret type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD
+                   --secret type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER
+                   --secret type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN
+                   --provenance false
+                   containers/eic
+                   2>&1 | tee build.log
+      ; do
+        if grep "unknown blob" build.log ; then
+          nocache="--no-cache" ;
+        else
+          exit 1 ;
+        fi ;
+        if test ${attempts} -ge 1 ; then
+          echo "Failed to build on second attempt!" ;
+          exit 1 ;
+        fi ;
+        let attempts=$attempts+1 ;
+      done
+    - while !
+      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
+                   --target runtime
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
                      ${IF_BUILD_DEFAULT+

@@ -267,9 +267,14 @@ EOF
 
 
 ## ========================================================================================
+## final image, based on builder_installation_custome
+## ========================================================================================
+FROM builder_installation_custome AS builder
+
+## ========================================================================================
 ## final image, based on runtime_installation_custom
 ## ========================================================================================
-FROM runtime_installation_custom
+FROM runtime_installation_custom AS runtime
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
