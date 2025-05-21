@@ -7,6 +7,8 @@ spack:
   - actsvg
   - afterburner
   - algorithms
+  - autoconf
+  - automake
   - cairo
   - catch2
   - celeritas
@@ -55,6 +57,7 @@ spack:
   - lcov
   - lhapdf
   - madx
+  - mosquitto
   - multitime
   - nano
   - ninja

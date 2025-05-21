@@ -233,6 +233,9 @@ packages:
     require:
     - '@23.3.6'
     - +glx +llvm +opengl +opengles +osmesa
+  mosquitto:
+    require:
+    - '@2.0.18'
   nlohmann-json:
     require:
     - '@3.11.2'
