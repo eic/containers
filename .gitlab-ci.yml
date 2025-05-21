@@ -300,7 +300,7 @@ base:
     - while !
       docker buildx build --push ${BUILD_OPTIONS} ${nocache}
                    --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}-cache,mode=max
-                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}-cache .
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}-cache
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -413,7 +413,7 @@ eic:
     - while !
       docker buildx build --push ${BUILD_OPTIONS} ${nocache}
                    --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}-cache,mode=max
-                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}-cache .
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}-cache
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
                      ${IF_BUILD_DEFAULT+
