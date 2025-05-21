@@ -267,9 +267,9 @@ EOF
 
 
 ## ========================================================================================
-## final image, based on builder_installation_custome
+## final image, based on builder_installation_custom
 ## ========================================================================================
-FROM builder_installation_custome AS builder
+FROM builder_installation_custom AS builder
 
 ## ========================================================================================
 ## final image, based on runtime_installation_custom
