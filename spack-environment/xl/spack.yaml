@@ -73,11 +73,13 @@ spack:
   - pythia8
   - py-awkward
   - py-bokeh
+  - py-boost-histogram
   - py-boto3
   - py-dask
   - py-deepdiff
   - py-eic-rucio-policy-package
   - py-epic-capybara
+  - py-graphviz
   - py-hepunits
   - py-hist
   - py-histoprint
