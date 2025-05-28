@@ -345,8 +345,8 @@ eic:
       - BUILD_IMAGE: eic_
         ENV:
         - ci
-#        - dbg
-#        - prod
+        - dbg
+        - prod
         - xl
         BUILD_TYPE:
         - default
@@ -354,15 +354,15 @@ eic:
         BUILDER_IMAGE: debian_stable_base
         RUNTIME_IMAGE: debian_stable_base
         PLATFORM: linux/amd64
-#      - BUILD_TYPE:
+#      - BUILD_IMAGE: oneapi_
+#        ENV:
+#        - prod
+#        BUILD_TYPE:
 #        - default
 #        - nightly
 #        BUILDER_IMAGE: oneapi_base
 #        RUNTIME_IMAGE: oneapi_base
-#        BUILD_IMAGE: oneapi_
 #        PLATFORM: linux/amd64
-#        ENV:
-#        - prod
       - BUILD_IMAGE: eic_
         ENV:
         - cuda
