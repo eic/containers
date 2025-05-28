@@ -335,7 +335,6 @@ eic:
     matrix:
       - BUILD_TYPE:
         - default
-        - nightly
         BUILDER_IMAGE: debian_stable_base
         RUNTIME_IMAGE: debian_stable_base
         BUILD_IMAGE: eic_
@@ -343,6 +342,14 @@ eic:
         ENV:
         - dbg
         - prod
+      - BUILD_TYPE:
+        - default
+        - nightly
+        BUILDER_IMAGE: debian_stable_base
+        RUNTIME_IMAGE: debian_stable_base
+        BUILD_IMAGE: eic_
+        PLATFORM: linux/amd64
+        ENV:
         - tf
         - xl
 #      - BUILD_TYPE:
