@@ -341,8 +341,8 @@ eic:
         BUILD_IMAGE: eic_
         PLATFORM: linux/amd64
         ENV:
-#        - dbg
-#        - prod
+        - dbg
+        - prod
         - tf
         - xl
 #      - BUILD_TYPE:
