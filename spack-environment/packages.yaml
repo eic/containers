@@ -11,7 +11,12 @@
 #
 packages:
   all:
-    require:
+    prefer: # is not overwritten below, but less strict than require
+    - '%gcc'
+    - any_of: [+ipo, '@:']
+    - any_of: [build_system=cmake, '@:']
+    - any_of: [build_type=Release, '@:']
+    require: # is overwritten by package-specific requirements below
     - '%gcc'
     - any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
