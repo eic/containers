@@ -186,6 +186,9 @@ packages:
   heppdt:
     require:
     - '@2.06.01'
+  highfive:
+    require:
+    - +mpi
   imagemagick:
     require:
     - '@7.1.1-11'
