@@ -349,6 +349,10 @@ packages:
   py-jupyterlab:
     require:
     - '@4.0.1'
+  py-keras:
+    require:
+    - '@3.7.0'
+    - backend=tensorflow
   py-lmfit:
     require:
     - '@1.0.2'

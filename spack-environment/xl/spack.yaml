@@ -91,6 +91,7 @@ spack:
   - py-jinja2-cli
   - py-jupyter-console
   - py-jupyterlab
+  - py-keras
   - py-lmfit
   - py-lxml
   - py-matplotlib
