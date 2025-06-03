@@ -176,6 +176,9 @@ packages:
     require:
     - '@12.1.0'
     - +expat +pangocairo
+  hdf5:
+    require:
+    - ~cxx ~fortran +hl +ipo ~java ~map +mpi +shared ~subfiling ~szip ~threadsafe +tools
   hepmc3:
     require:
     - '@3.3.0'
