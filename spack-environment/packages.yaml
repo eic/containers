@@ -87,7 +87,7 @@ packages:
     - '@1.14.10'
   dd4hep:
     require:
-    - '@1.31'
+    - '@1.32'
     - +ddg4 +ddcad +hepmc3 +utilityapps +xercesc
     - any_of: [+ddeve, -ddeve]
   dpmjet:
