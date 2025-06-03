@@ -347,6 +347,9 @@ packages:
   py-lmfit:
     require:
     - '@1.0.2'
+  py-llvmlite:
+    require:
+    - '@0.44.0'
   py-matplotlib:
     require:
     - '@3.7.1'
@@ -356,6 +359,9 @@ packages:
   py-htgettoken:
     require:
     - '@1.16-33-g3788bb4'
+  py-numba:
+    require:
+    - '@0.61.0'
   py-numpy:
     require:
     - '@1.26.4'

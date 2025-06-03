@@ -46,6 +46,8 @@ c0c1a4aea1aa38bd7054cbac2e3fa1606f6939e9
 71b65bb424c6294badc4825ac4714ec7f89ad0b7
 a7e57c9a14ce36d6a3b03d7cd3b3357754b89019
 6b9c099af871e7cfc48d831aaefd542064f8dafa
+bf591c96bd9c3e34589f2a0ab42f62184998a229
+8677bb4d43e84591b00c3293381a169ac3ecf299
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -93,3 +95,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 71b65bb424c6294badc4825ac4714ec7f89ad0b7: py-opt-einsum: missing forward compat bound for python
 ## a7e57c9a14ce36d6a3b03d7cd3b3357754b89019: py-opt-einsum: add v3.4.0
 ## 6b9c099af871e7cfc48d831aaefd542064f8dafa: py-keras: add v3.7.0
+## bf591c96bd9c3e34589f2a0ab42f62184998a229: py-llvmlite: add v0.42.0, v0.43.0; py-numba: add v0.59.1, v0.60.0
+## 8677bb4d43e84591b00c3293381a169ac3ecf299: py-numba: Add version 0.61
