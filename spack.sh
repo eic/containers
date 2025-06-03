@@ -43,6 +43,8 @@ a14f10e8825fd25e0615095feaa548b1938fffac
 e76f8fda2d959fdf7a262eb539a4002a6a0c900f
 7e89b3521ae8c9fb4ef3e94748d170ba1b799bf2
 c0c1a4aea1aa38bd7054cbac2e3fa1606f6939e9
+71b65bb424c6294badc4825ac4714ec7f89ad0b7
+a7e57c9a14ce36d6a3b03d7cd3b3357754b89019
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -87,3 +89,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## e76f8fda2d959fdf7a262eb539a4002a6a0c900f: openloops: use cmodel small on aarch64 instead of large
 ## 7e89b3521ae8c9fb4ef3e94748d170ba1b799bf2: openloops: add v2.1.3, v2.1.4
 ## c0c1a4aea1aa38bd7054cbac2e3fa1606f6939e9: podio: add v1.2; conflicts +rntuple ^root@6.32: when @:0.99
+## 71b65bb424c6294badc4825ac4714ec7f89ad0b7: py-opt-einsum: missing forward compat bound for python
+## a7e57c9a14ce36d6a3b03d7cd3b3357754b89019: py-opt-einsum: add v3.4.0

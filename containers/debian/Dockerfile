@@ -125,6 +125,7 @@ update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-
 update-alternatives --install /usr/bin/clang-format-diff clang-format-diff /usr/bin/clang-format-diff${CLANG} 100
 update-alternatives --install /usr/bin/clang-tidy-diff clang-tidy-diff /usr/bin/clang-tidy-diff${CLANG}.py 100
 update-alternatives --install /usr/bin/run-clang-tidy run-clang-tidy /usr/bin/run-clang-tidy${CLANG}.py 100
+update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config${CLANG} 100
 # Default to gcc
 update-alternatives --install /usr/bin/cc  cc  /usr/bin/gcc 100
 update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 100

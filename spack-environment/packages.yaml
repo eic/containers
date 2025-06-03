@@ -176,6 +176,9 @@ packages:
     require:
     - '@12.1.0'
     - +expat +pangocairo
+  hdf5:
+    require:
+    - ~cxx ~fortran +hl +ipo ~java ~map +mpi +shared ~subfiling ~szip ~threadsafe +tools
   hepmc3:
     require:
     - '@3.3.0'
@@ -186,6 +189,9 @@ packages:
   heppdt:
     require:
     - '@2.06.01'
+  highfive:
+    require:
+    - +mpi
   imagemagick:
     require:
     - '@7.1.1-11'
@@ -394,6 +400,10 @@ packages:
   py-seaborn:
     require:
     - '@0.13.2'
+  py-tensorflow:
+    require:
+    - '%clang'
+    - '@2.18'
   py-toml:
     require:
     - '@0.10.2'
