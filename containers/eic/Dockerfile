@@ -34,7 +34,7 @@ ARG INTERNAL_TAG="master"
 ## builder_concretization_default
 ## - builder base with concretization of default versions
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} AS builder_concretization_default
+FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} AS builder_concretization_default:${INTERNAL_TAG}
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -65,7 +65,7 @@ EOF
 ## builder_installation_default
 ## - builder base with installation of default versions
 ## ========================================================================================
-FROM builder_concretization_default AS builder_installation_default
+FROM builder_concretization_default:${INTERNAL_TAG} AS builder_installation_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
