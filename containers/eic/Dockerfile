@@ -154,19 +154,6 @@ make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
 spack gc --yes-to-all
 EOF
 
-## Add minio client into /opt/mc/bin/mc
-ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-amd64/mc /opt/mc/bin/mc-amd64
-ADD --chmod=0755 https://dl.min.io/client/mc/release/linux-arm64/mc /opt/mc/bin/mc-arm64
-RUN <<EOF
-set -e
-declare -A target=(["linux/amd64"]="amd64" ["linux/arm64"]="arm64")
-mv /opt/mc/bin/mc-${target[${TARGETPLATFORM}]} /opt/mc/bin/mc
-unset target[${TARGETPLATFORM}]
-for t in ${target[*]} ; do
-  rm /opt/mc/bin/mc-${t}
-done
-EOF
-
 
 ## ========================================================================================
 ## builder_concretization_custom
