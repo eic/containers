@@ -21,7 +21,7 @@ ARG INTERNAL_TAG="master"
 ## builder track                         runtime track
 ## ----------------------------------------------------------------------
 ## builder_image                         runtime_image
-## builder_compiler                 ->   runtime_compiler
+## builder_compilers                ->   runtime_compilers
 ## builder_concretization_default   
 ## builder_installation_default     ->   runtime_concretization_default  (copy spack.lock)
 ##                                 \->   runtime_installation_default    (from buildcache)
@@ -107,7 +107,7 @@ EOF
 ## builder_concretization_default
 ## - builder base with concretization of default versions
 ## ========================================================================================
-FROM builder_compiler AS builder_concretization_default
+FROM builder_compilers AS builder_concretization_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
