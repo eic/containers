@@ -21,6 +21,7 @@ ARG INTERNAL_TAG="master"
 ## builder track                         runtime track
 ## ----------------------------------------------------------------------
 ## builder_image                         runtime_image
+## builder_compiler                 ->   runtime_compiler
 ## builder_concretization_default   
 ## builder_installation_default     ->   runtime_concretization_default  (copy spack.lock)
 ##                                 \->   runtime_installation_default    (from buildcache)
@@ -31,10 +32,82 @@ ARG INTERNAL_TAG="master"
 
 
 ## ========================================================================================
+## builder_compilers
+## - builder base with compilers
+## ========================================================================================
+FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} AS builder_compilers
+ARG TARGETPLATFORM
+
+# Open Container Initiative labels
+LABEL org.opencontainers.image.title="Electron-Ion Collider build compilers image ($TARGETPLATFORM)"
+LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
+LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
+LABEL org.opencontainers.image.url="https://github.com/eic/containers"
+LABEL org.opencontainers.image.source="https://github.com/eic/containers"
+LABEL org.opencontainers.image.documentation="https://eic.github.io"
+LABEL org.opencontainers.image.license="GPL-3.0-or-later"
+
+# Installation (compiler)
+RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
+--mount=type=cache,target=/var/cache/spack                          \
+--mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+--mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
+--mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
+--mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
+--mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+<<EOF
+set -e
+spack env activate --dir /opt/spack-environment/compilers
+spack concretize --force
+export CCACHE_DIR=/ccache
+make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
+  SPACK_ENV=compilers
+ccache --show-stats
+ccache --zero-stats
+EOF
+
+
+## ========================================================================================
+## runtime_compilers
+## - runtime base with compilers
+## ========================================================================================
+FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} AS runtime_compilers
+ARG TARGETPLATFORM
+
+# Open Container Initiative labels
+LABEL org.opencontainers.image.title="Electron-Ion Collider runtime compilers image ($TARGETPLATFORM)"
+LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
+LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
+LABEL org.opencontainers.image.url="https://github.com/eic/containers"
+LABEL org.opencontainers.image.source="https://github.com/eic/containers"
+LABEL org.opencontainers.image.documentation="https://eic.github.io"
+LABEL org.opencontainers.image.license="GPL-3.0-or-later"
+
+## Copy our default environment
+COPY --from=spack-environment . /opt/spack-environment/
+COPY --from=builder_compilers\
+  /opt/spack-environment/compilers/spack.* \
+  /opt/spack-environment/compilers/
+
+# Installation (default environment, from buildcache)
+RUN --mount=type=cache,target=/var/cache/spack                          \
+    --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
+    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
+    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
+    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    <<EOF
+make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
+  SPACK_ENV=compilers SPACK_INSTALL_FLAGS="--use-buildcache only"
+spack gc --yes-to-all
+EOF
+
+
+## ========================================================================================
 ## builder_concretization_default
 ## - builder base with concretization of default versions
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} AS builder_concretization_default
+FROM builder_compiler AS builder_concretization_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -101,7 +174,7 @@ EOF
 ## runtime_concretization_default
 ## - runtime base with concretization of default versions (taken from equivalent builder)
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} AS runtime_concretization_default
+FROM runtime_compilers AS runtime_concretization_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
