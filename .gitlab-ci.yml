@@ -343,6 +343,7 @@ eic:
         ENV:
 #        - dbg
 #        - prod
+        - tf
         - xl
 #      - BUILD_TYPE:
 #        - default

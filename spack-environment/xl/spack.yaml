@@ -91,7 +91,6 @@ spack:
   - py-jinja2-cli
   - py-jupyter-console
   - py-jupyterlab
-  - py-keras
   - py-lmfit
   - py-lxml
   - py-matplotlib
@@ -109,7 +108,6 @@ spack:
   - py-rucio-clients
   - py-scipy
   - py-seaborn
-  - py-tensorflow
   - py-toml
   - py-torch
   - py-uproot
