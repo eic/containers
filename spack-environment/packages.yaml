@@ -334,21 +334,12 @@ packages:
   py-histoprint:
     require:
     - '@2.4.0'
-  py-ipython:
-    require:
-    - '@8.28.0'
   py-jinja2:
     require:
     - '@3.1.4'
   py-jinja2-cli:
     require:
     - '@0.8.2'
-  py-jupyter-console:
-    require:
-    - '@6.4.4'
-  py-jupyterlab:
-    require:
-    - '@4.0.1'
   py-keras:
     require:
     - '@3.7.0'
