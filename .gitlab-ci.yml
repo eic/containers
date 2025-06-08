@@ -96,7 +96,7 @@ workflow:
 
 nvidia-smi:
   stage: config
-  image: nvidia/cuda:11.3.1-base-ubuntu20.04
+  image: nvidia/cuda:12.2.2-base-ubuntu22.04
   tags:
     - gpu
   script:
