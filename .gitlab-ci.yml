@@ -333,18 +333,18 @@ base:
 eic:
   parallel:
     matrix:
-      - BUILD_TYPE:
-        - default
-        - nightly
-        BUILDER_IMAGE: debian_stable_base
-        RUNTIME_IMAGE: debian_stable_base
-        BUILD_IMAGE: eic_
-        PLATFORM: linux/amd64
+      - BUILD_IMAGE: eic_
         ENV:
 #        - dbg
 #        - prod
         - tf
         - xl
+        BUILD_TYPE:
+        - default
+        - nightly
+        BUILDER_IMAGE: debian_stable_base
+        RUNTIME_IMAGE: debian_stable_base
+        PLATFORM: linux/amd64
 #      - BUILD_TYPE:
 #        - default
 #        - nightly
@@ -354,26 +354,26 @@ eic:
 #        PLATFORM: linux/amd64
 #        ENV:
 #        - prod
-      - BUILD_TYPE:
+      - BUILD_IMAGE: eic_
+        ENV:
+        - cuda
+        BUILD_TYPE:
         - default
         - nightly
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_runtime
         BASE_IMAGE: cuda_base
-        BUILD_IMAGE: eic_
         PLATFORM: linux/amd64
+      - BUILD_IMAGE: eic_dev_
         ENV:
         - cuda
-      - BUILD_TYPE:
+        BUILD_TYPE:
         - default
         - nightly
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_devel
         BASE_IMAGE: cuda_base
-        BUILD_IMAGE: eic_dev_
         PLATFORM: linux/amd64
-        ENV:
-        - cuda
   extends: .build
   stage: eic
   needs:
@@ -483,14 +483,14 @@ eic_xl:singularity:default:
     - job: eic
       parallel:
         matrix:
-          - BUILD_TYPE:
+          - BUILD_IMAGE: eic_
+            ENV:
+            - xl
+            BUILD_TYPE:
             - default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            BUILD_IMAGE: eic_
             PLATFORM: linux/amd64
-            ENV:
-            - xl
 
 # eic-shell/install.py expects build/eic_xl.sif from the job with name 'eic_xl:singularity:nightly'
 eic_xl:singularity:nightly:
@@ -503,14 +503,14 @@ eic_xl:singularity:nightly:
     - job: eic
       parallel:
         matrix:
-          - BUILD_TYPE:
+          - BUILD_IMAGE: eic_
+            ENV:
+            - xl
+            BUILD_TYPE:
             - nightly
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            BUILD_IMAGE: eic_
             PLATFORM: linux/amd64
-            ENV:
-            - xl
 
 .benchmarks:
   stage: benchmarks
@@ -533,14 +533,14 @@ eic_xl:singularity:nightly:
     - job: eic
       parallel:
         matrix:
-          - BUILD_TYPE:
+          - BUILD_IMAGE: eic_
+            ENV:
+            - xl
+            BUILD_TYPE:
             - default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            BUILD_IMAGE: eic_
             PLATFORM: linux/amd64
-            ENV:
-            - xl
 
 .benchmarks:nightly:
   extends: .benchmarks
@@ -549,14 +549,14 @@ eic_xl:singularity:nightly:
     - job: eic
       parallel:
         matrix:
-          - BUILD_TYPE:
+          - BUILD_IMAGE: eic_
+            ENV:
+            - xl
+            BUILD_TYPE:
             - nightly
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            BUILD_IMAGE: eic_
             PLATFORM: linux/amd64
-            ENV:
-            - xl
 
 benchmarks:geoviewer:default:
   extends: .benchmarks:default
