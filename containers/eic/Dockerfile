@@ -347,11 +347,6 @@ mv /opt/._detector/${DETECTOR_PREFIX_PATH} /opt/detector
 ln -s /opt/detector /opt/._detector/${DETECTOR_PREFIX_PATH}
 EOF
 
-## Link minio client into /opt/local/bin/mc
-RUN <<EOF
-ln -sf /opt/mc/bin/mc /opt/local/bin/mc
-EOF
-
 ## Place cvmfs catalogs
 RUN <<EOF
 set -e
