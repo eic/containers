@@ -388,9 +388,6 @@ COPY eic-env.sh /etc/eic-env.sh
 COPY profile.d/* /etc/profile.d
 COPY singularity.d /.singularity.d
 
-## set ROOT TFile forward compatibility
-RUN sed --in-place --follow-symlinks 's/# \(TFile.v630forwardCompatibility:\) no/\1 yes/' /opt/local/etc/root/system.rootrc
-
 ## Setup ld.so.conf with what could go in LD_LIBRARY_PATH (but lower priority)
 ## Ref: https://man7.org/linux/man-pages/man8/ld.so.8.html
 COPY <<EOF /etc/ld.so.conf.d/eic-shell.conf
