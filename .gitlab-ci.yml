@@ -540,7 +540,6 @@ eic_xl:singularity:nightly:
           - BUILD_IMAGE: eic_
             ENV:
             - ci
-            - xl
             BUILD_TYPE:
             - default
             BUILDER_IMAGE: debian_stable_base
@@ -557,7 +556,6 @@ eic_xl:singularity:nightly:
           - BUILD_IMAGE: eic_
             ENV:
             - ci
-            - xl
             BUILD_TYPE:
             - nightly
             BUILDER_IMAGE: debian_stable_base
@@ -569,7 +567,7 @@ benchmarks:geoviewer:default:
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule" && $EPIC_VERSION != ""'
   variables:
-    BENCHMARKS_CONTAINER: eic_xl
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
     project: EIC/benchmarks/geoviewer
