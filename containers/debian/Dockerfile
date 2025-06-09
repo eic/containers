@@ -84,25 +84,25 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 . /etc/os-release
 mkdir -p /etc/apt/source.list.d
-# GCC version and repository
+# GCC and CLANG version and repository
 case ${ID} in
   debian)
     case ${VERSION_CODENAME} in
-      bookworm) GCC="-12" ;;
-      trixie) GCC="-13" ;;
+      bookworm) GCC="-12" ; CLANG="-16" ;;
+      trixie) GCC="-13" ; CLANG="-17" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   ubuntu)
     echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/ppa/ubuntu/${VERSION_CODENAME} main" > /etc/apt/source.list.d/ubuntu-toolchain.list
     case ${VERSION_CODENAME} in
-      focal) GCC="-10" ;;
-      jammy) GCC="-12" ;;
+      focal) GCC="-10" ; CLANG="-16" ;;
+      jammy) GCC="-12" ; CLANG="-16" ;;
+      noble) GCC="-13" ; CLANG="-17" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   *) echo "Unsupported ID=${ID}" ; exit 1 ;;
 esac
-# Clang version and repository
-CLANG="-16"
+# Clang repository
 curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
 if [ ${VERSION_CODENAME} = trixie ] ; then
   echo "deb http://apt.llvm.org/unstable llvm-toolchain${CLANG} main" > /etc/apt/sources.list.d/llvm.list
@@ -114,6 +114,8 @@ apt-get -yqq update
 apt-get -yqq install cpp${GCC} gcc${GCC} g++${GCC} gfortran${GCC}
 apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev
 apt-get -yqq autoremove
+# Remove symlinks loop in nvidia/cuda:12.5.1-devel-ubuntu24.04
+rm -f /usr/bin/cpp /etc/alternatives/cpp
 # Ensure alternatives without version tags
 update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp${GCC} 100
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc${GCC} 100
@@ -143,7 +145,6 @@ apt-get -yqq install --no-install-recommends                            \
         jq                                                              \
         python3                                                         \
         python3-dev                                                     \
-        python3-distutils                                               \
         python3-boto3                                                   \
         python-is-python3
 EOF

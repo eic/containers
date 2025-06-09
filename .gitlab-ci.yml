@@ -5,6 +5,10 @@ variables:
   DOCKER_IMAGE: docker.io/docker:28.1.1
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
+  ## CUDA version and container operating system
+  CUDA_VERSION: 12.2.2
+  CUDA_OS: ubuntu22.04
+
   ## Default versions are specified in packages.yaml but can be overridden
   EDM4EIC_VERSION: ""
   EICRECON_VERSION: ""
@@ -96,7 +100,7 @@ workflow:
 
 nvidia-smi:
   stage: config
-  image: nvidia/cuda:12.2.2-base-ubuntu22.04
+  image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
   tags:
     - gpu
   script:
@@ -276,10 +280,10 @@ base:
 #      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
 #        BUILD_IMAGE: oneapi_base
 #        PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:12.3.2-devel-ubuntu22.04
+      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_OS}
         BUILD_IMAGE: cuda_devel
         PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:12.3.2-runtime-ubuntu22.04
+      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-runtime-${CUDA_OS}
         BUILD_IMAGE: cuda_runtime
         PLATFORM: linux/amd64
   extends: .build
