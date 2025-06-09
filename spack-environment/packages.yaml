@@ -88,8 +88,8 @@ packages:
   dd4hep:
     require:
     - '@1.32'
-    - +ddg4 +ddcad +hepmc3 +utilityapps +xercesc
-    - any_of: [+ddeve, -ddeve]
+    - +ddg4 +ddcad +hepmc3 +xercesc
+    - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   dpmjet:
     require:
     - '@19.3.5'
@@ -436,8 +436,8 @@ packages:
   root:
     require:
     - '@6.32.14'
-    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +xrootd +ssl
-    - any_of: [+opengl +webgui +x, -opengl -webgui -x]
+    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +x +xrootd +ssl
+    - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
     require:
     - '@3.0.1'

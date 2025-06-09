@@ -390,8 +390,7 @@ COPY eic-shell /opt/local/bin/eic-shell
 COPY eic-info /opt/local/bin/eic-info
 COPY entrypoint.sh /opt/local/sbin/entrypoint.sh
 COPY eic-env.sh /etc/eic-env.sh
-COPY profile.d/a00_cleanup.sh /etc/profile.d
-COPY profile.d/z11_jug_env.sh /etc/profile.d
+COPY profile.d/* /etc/profile.d
 COPY singularity.d /.singularity.d
 
 ## set ROOT TFile forward compatibility

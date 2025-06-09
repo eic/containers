@@ -335,6 +335,7 @@ eic:
     matrix:
       - BUILD_IMAGE: eic_
         ENV:
+        - ci
 #        - dbg
 #        - prod
         - tf
@@ -518,7 +519,6 @@ eic_xl:singularity:nightly:
     DETECTOR: "epic"
     DETECTOR_CONFIG: epic_craterlake
     DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
-    BENCHMARKS_CONTAINER: "eic_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
     PIPELINE_NAME: "eic_container: $CI_PIPELINE_NAME"
     GITHUB_REPOSITORY: "$GITHUB_REPOSITORY"
@@ -535,6 +535,7 @@ eic_xl:singularity:nightly:
         matrix:
           - BUILD_IMAGE: eic_
             ENV:
+            - ci
             - xl
             BUILD_TYPE:
             - default
@@ -551,6 +552,7 @@ eic_xl:singularity:nightly:
         matrix:
           - BUILD_IMAGE: eic_
             ENV:
+            - ci
             - xl
             BUILD_TYPE:
             - nightly
@@ -563,6 +565,7 @@ benchmarks:geoviewer:default:
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule" && $EPIC_VERSION != ""'
   variables:
+    BENCHMARKS_CONTAINER: eic_xl
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
     project: EIC/benchmarks/geoviewer
@@ -573,6 +576,7 @@ benchmarks:detector:default:
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
@@ -584,6 +588,7 @@ benchmarks:detector:nightly:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
@@ -594,6 +599,7 @@ benchmarks:phyiscs:default:
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
@@ -605,6 +611,7 @@ benchmarks:physics:nightly:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
@@ -615,6 +622,7 @@ benchmarks:reconstruction:default:
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
@@ -626,6 +634,7 @@ benchmarks:reconstruction:nightly:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
