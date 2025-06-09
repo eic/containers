@@ -1,0 +1,8 @@
+spack:
+  include:
+  - ../concretizer.yaml
+  - ../packages.yaml
+  concretizer:
+    unify: true
+  specs:
+  - fmt
