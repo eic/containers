@@ -348,7 +348,7 @@ eic:
     - attempts=0
     - nocache=""
     - while !
-      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
+      docker buildx build --load --push ${BUILD_OPTIONS} ${nocache}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
                      ${IF_BUILD_DEFAULT+
@@ -398,7 +398,8 @@ eic:
                    --secret type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN
                    --provenance false
                    containers/eic
-                   2>&1 | tee build.log
+                   2>&1 | tee build.log ;
+          docker history ${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
       ; do
         if grep "unknown blob" build.log ; then
           nocache="--no-cache" ;
