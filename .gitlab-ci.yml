@@ -400,7 +400,8 @@ eic:
                    --provenance false
                    containers/eic
                    2>&1 | tee build.log ;
-          docker history ${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
+          docker images ;
+          docker history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
       ; do
         if grep "unknown blob" build.log ; then
           nocache="--no-cache" ;
