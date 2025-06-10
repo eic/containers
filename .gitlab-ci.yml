@@ -399,7 +399,7 @@ eic:
                    --secret type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN
                    --provenance false
                    containers/eic
-                   2>&1 | tee build.log ;
+                   2>&1 | tee build.log
       ; do
         if grep "unknown blob" build.log ; then
           nocache="--no-cache" ;
