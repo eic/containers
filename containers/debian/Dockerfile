@@ -7,14 +7,15 @@ ARG BUILD_IMAGE="debian_stable_base"
 FROM ${BASE_IMAGE}
 ARG TARGETPLATFORM
 
-# Open Container Initiative labels
+# Open Container Initiative labels (no heredoc support)
+LABEL \
+org.opencontainers.image.vendor="Electron-Ion Collider" \
+org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>" \
+org.opencontainers.image.url="https://github.com/eic/containers" \
+org.opencontainers.image.source="https://github.com/eic/containers" \
+org.opencontainers.image.documentation="https://eic.github.io" \
+org.opencontainers.image.license="GPL-3.0-or-later"
 LABEL org.opencontainers.image.title="Electron-Ion Collider base image ($TARGETPLATFORM)"
-LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
-LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
-LABEL org.opencontainers.image.url="https://github.com/eic/containers"
-LABEL org.opencontainers.image.source="https://github.com/eic/containers"
-LABEL org.opencontainers.image.documentation="https://eic.github.io"
-LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 COPY bashrc /root/.bashrc
 

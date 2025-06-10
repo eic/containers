@@ -39,12 +39,6 @@ ARG TARGETPLATFORM
 
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build concretization image (default configuration, $TARGETPLATFORM)"
-LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
-LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
-LABEL org.opencontainers.image.url="https://github.com/eic/containers"
-LABEL org.opencontainers.image.source="https://github.com/eic/containers"
-LABEL org.opencontainers.image.documentation="https://eic.github.io"
-LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 ## Copy our default environment
 COPY --from=spack-environment . /opt/spack-environment/
@@ -70,12 +64,6 @@ ARG TARGETPLATFORM
 
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (default configuration, $TARGETPLATFORM)"
-LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
-LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
-LABEL org.opencontainers.image.url="https://github.com/eic/containers"
-LABEL org.opencontainers.image.source="https://github.com/eic/containers"
-LABEL org.opencontainers.image.documentation="https://eic.github.io"
-LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 # Installation (default environment)
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
@@ -106,12 +94,6 @@ ARG TARGETPLATFORM
 
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime concretization image (default configuration, $TARGETPLATFORM)"
-LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
-LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
-LABEL org.opencontainers.image.url="https://github.com/eic/containers"
-LABEL org.opencontainers.image.source="https://github.com/eic/containers"
-LABEL org.opencontainers.image.documentation="https://eic.github.io"
-LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 ## Copy our default environment
 COPY --from=spack-environment . /opt/spack-environment/
@@ -134,12 +116,6 @@ ARG TARGETPLATFORM
 
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (default configuration, $TARGETPLATFORM)"
-LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
-LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
-LABEL org.opencontainers.image.url="https://github.com/eic/containers"
-LABEL org.opencontainers.image.source="https://github.com/eic/containers"
-LABEL org.opencontainers.image.documentation="https://eic.github.io"
-LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 # Installation (default environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
@@ -164,12 +140,6 @@ ARG TARGETPLATFORM
 
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build concretization image (custom configuration, $TARGETPLATFORM)"
-LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
-LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
-LABEL org.opencontainers.image.url="https://github.com/eic/containers"
-LABEL org.opencontainers.image.source="https://github.com/eic/containers"
-LABEL org.opencontainers.image.documentation="https://eic.github.io"
-LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 ## 2. Setup our environment with custom versions (on top of cached layer)
 ## Note: these default versions are just the very first commit.
@@ -219,12 +189,6 @@ ARG TARGETPLATFORM
 
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (custom configuration, $TARGETPLATFORM)"
-LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
-LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
-LABEL org.opencontainers.image.url="https://github.com/eic/containers"
-LABEL org.opencontainers.image.source="https://github.com/eic/containers"
-LABEL org.opencontainers.image.documentation="https://eic.github.io"
-LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 # Installation (custom environment)
 RUN --mount=type=cache,target=/ccache,id=${TARGETPLATFORM}              \
@@ -263,12 +227,6 @@ ARG TARGETPLATFORM
 
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime concretization image (custom configuration, $TARGETPLATFORM)"
-LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
-LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
-LABEL org.opencontainers.image.url="https://github.com/eic/containers"
-LABEL org.opencontainers.image.source="https://github.com/eic/containers"
-LABEL org.opencontainers.image.documentation="https://eic.github.io"
-LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 COPY --from=builder_installation_custom \
   /opt/spack-environment/${ENV}/spack.* \
@@ -287,12 +245,6 @@ ARG TARGETPLATFORM
 
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
-LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
-LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
-LABEL org.opencontainers.image.url="https://github.com/eic/containers"
-LABEL org.opencontainers.image.source="https://github.com/eic/containers"
-LABEL org.opencontainers.image.documentation="https://eic.github.io"
-LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 # Installation (default environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
@@ -322,12 +274,6 @@ ARG TARGETPLATFORM
 
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
-LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
-LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
-LABEL org.opencontainers.image.url="https://github.com/eic/containers"
-LABEL org.opencontainers.image.source="https://github.com/eic/containers"
-LABEL org.opencontainers.image.documentation="https://eic.github.io"
-LABEL org.opencontainers.image.license="GPL-3.0-or-later"
 
 ## Create views at /opt/local and /opt/detector
 RUN <<EOF
