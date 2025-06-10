@@ -235,7 +235,8 @@ status:pending:
     - docker context create context
     # The docker-container cache persistence applies to builders of the same name,
     # so do not change the name to something that has the pipeline or job id.
-    - docker buildx create context --name builder --driver docker-container --bootstrap --use
+    - echo -e "[worker.oci]\n  max-parallelism = 1" > buildkitd.toml
+    - docker buildx create context --name builder --driver docker-container --config $PWD/buildkitd.toml --bootstrap --use
     - docker buildx ls
     - echo $DOCKER_HOST
   after_script:
