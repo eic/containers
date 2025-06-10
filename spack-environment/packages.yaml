@@ -87,9 +87,9 @@ packages:
     - '@1.14.10'
   dd4hep:
     require:
-    - '@1.31'
-    - +ddg4 +ddcad +hepmc3 +utilityapps +xercesc
-    - any_of: [+ddeve, -ddeve]
+    - '@1.32'
+    - +ddg4 +ddcad +hepmc3 +xercesc
+    - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   dpmjet:
     require:
     - '@19.3.5'
@@ -115,7 +115,7 @@ packages:
   eicrecon:
     require:
     - '%clang'
-    - '@1.25.0' # EICRECON_VERSION
+    - '@1.26.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
@@ -176,6 +176,9 @@ packages:
     require:
     - '@12.1.0'
     - +expat +pangocairo
+  hdf5:
+    require:
+    - ~cxx ~fortran +hl +ipo ~java ~map +mpi +shared ~subfiling ~szip ~threadsafe +tools
   hepmc3:
     require:
     - '@3.3.0'
@@ -186,6 +189,9 @@ packages:
   heppdt:
     require:
     - '@2.06.01'
+  highfive:
+    require:
+    - +mpi
   imagemagick:
     require:
     - '@7.1.1-11'
@@ -328,21 +334,16 @@ packages:
   py-histoprint:
     require:
     - '@2.4.0'
-  py-ipython:
-    require:
-    - '@8.28.0'
   py-jinja2:
     require:
     - '@3.1.4'
   py-jinja2-cli:
     require:
     - '@0.8.2'
-  py-jupyter-console:
+  py-keras:
     require:
-    - '@6.4.4'
-  py-jupyterlab:
-    require:
-    - '@4.0.1'
+    - '@3.7.0'
+    - backend=tensorflow
   py-lmfit:
     require:
     - '@1.0.2'
@@ -394,6 +395,10 @@ packages:
   py-seaborn:
     require:
     - '@0.13.2'
+  py-tensorflow:
+    require:
+    - '%clang'
+    - '@2.18'
   py-toml:
     require:
     - '@0.10.2'
@@ -430,9 +435,9 @@ packages:
     - hepmc=3
   root:
     require:
-    - '@6.32.08'
-    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +xrootd +ssl
-    - any_of: [+opengl +webgui +x, -opengl -webgui -x]
+    - '@6.32.14'
+    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +x +xrootd +ssl
+    - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
     require:
     - '@3.0.1'

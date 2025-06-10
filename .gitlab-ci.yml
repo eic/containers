@@ -5,6 +5,10 @@ variables:
   DOCKER_IMAGE: docker.io/docker:28.1.1
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
+  ## CUDA version and container operating system
+  CUDA_VERSION: 12.2.2
+  CUDA_OS: ubuntu22.04
+
   ## Default versions are specified in packages.yaml but can be overridden
   EDM4EIC_VERSION: ""
   EICRECON_VERSION: ""
@@ -96,7 +100,7 @@ workflow:
 
 nvidia-smi:
   stage: config
-  image: nvidia/cuda:11.3.1-base-ubuntu20.04
+  image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
   tags:
     - gpu
   script:
@@ -158,21 +162,21 @@ version:
 
 .status:
   image: curlimages/curl:latest
+  rules:
+    - if: $GITHUB_SHA !~ /^$/ # when GITHUB_SHA non-empty
   before_script: []
   script:
     - |
-      if [ -n "${GITHUB_SHA}" ] ; then
-          curl \
-            -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: token ${GITHUB_REPO_STATUS_TOKEN}" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
-            -d '{"state":"'"${STATE}"'",
-                 "target_url":"'"${CI_PIPELINE_URL}"'",
-                 "description":"'"${DESCRIPTION} $(TZ=America/New_York date)"'",
-                 "context":"eicweb/eic_container"
-                }' ;
-      fi
+      curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: token ${GITHUB_REPO_STATUS_TOKEN}" \
+        "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+        -d '{"state":"'"${STATE}"'",
+              "target_url":"'"${CI_PIPELINE_URL}"'",
+              "description":"'"${DESCRIPTION} $(TZ=America/New_York date)"'",
+              "context":"eicweb/eic_container"
+            }' ;
 
 status:pending:
   stage: status-pending
@@ -276,10 +280,10 @@ base:
 #      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
 #        BUILD_IMAGE: oneapi_base
 #        PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:12.3.2-devel-ubuntu22.04
+      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_OS}
         BUILD_IMAGE: cuda_devel
         PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:12.3.2-runtime-ubuntu22.04
+      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-runtime-${CUDA_OS}
         BUILD_IMAGE: cuda_runtime
         PLATFORM: linux/amd64
   extends: .build
@@ -333,17 +337,19 @@ base:
 eic:
   parallel:
     matrix:
-      - BUILD_TYPE:
+      - BUILD_IMAGE: eic_
+        ENV:
+        - ci
+#        - dbg
+#        - prod
+        - tf
+        - xl
+        BUILD_TYPE:
         - default
         - nightly
         BUILDER_IMAGE: debian_stable_base
         RUNTIME_IMAGE: debian_stable_base
-        BUILD_IMAGE: eic_
         PLATFORM: linux/amd64
-        ENV:
-#        - dbg
-#        - prod
-        - xl
 #      - BUILD_TYPE:
 #        - default
 #        - nightly
@@ -353,26 +359,26 @@ eic:
 #        PLATFORM: linux/amd64
 #        ENV:
 #        - prod
-      - BUILD_TYPE:
+      - BUILD_IMAGE: eic_
+        ENV:
+        - cuda
+        BUILD_TYPE:
         - default
         - nightly
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_runtime
         BASE_IMAGE: cuda_base
-        BUILD_IMAGE: eic_
         PLATFORM: linux/amd64
+      - BUILD_IMAGE: eic_dev_
         ENV:
         - cuda
-      - BUILD_TYPE:
+        BUILD_TYPE:
         - default
         - nightly
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_devel
         BASE_IMAGE: cuda_base
-        BUILD_IMAGE: eic_dev_
         PLATFORM: linux/amd64
-        ENV:
-        - cuda
   extends: .build
   stage: eic
   needs:
@@ -461,7 +467,7 @@ eic:
   stage: deploy
   interruptible: true
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE != "trigger"'
       when: on_success
     - when: never
   artifacts:
@@ -482,14 +488,14 @@ eic_xl:singularity:default:
     - job: eic
       parallel:
         matrix:
-          - BUILD_TYPE:
+          - BUILD_IMAGE: eic_
+            ENV:
+            - xl
+            BUILD_TYPE:
             - default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            BUILD_IMAGE: eic_
             PLATFORM: linux/amd64
-            ENV:
-            - xl
 
 # eic-shell/install.py expects build/eic_xl.sif from the job with name 'eic_xl:singularity:nightly'
 eic_xl:singularity:nightly:
@@ -502,14 +508,14 @@ eic_xl:singularity:nightly:
     - job: eic
       parallel:
         matrix:
-          - BUILD_TYPE:
+          - BUILD_IMAGE: eic_
+            ENV:
+            - xl
+            BUILD_TYPE:
             - nightly
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            BUILD_IMAGE: eic_
             PLATFORM: linux/amd64
-            ENV:
-            - xl
 
 .benchmarks:
   stage: benchmarks
@@ -517,7 +523,6 @@ eic_xl:singularity:nightly:
     DETECTOR: "epic"
     DETECTOR_CONFIG: epic_craterlake
     DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
-    BENCHMARKS_CONTAINER: "eic_xl"
     BENCHMARKS_REGISTRY: "$CI_REGISTRY_IMAGE"
     PIPELINE_NAME: "eic_container: $CI_PIPELINE_NAME"
     GITHUB_REPOSITORY: "$GITHUB_REPOSITORY"
@@ -532,14 +537,14 @@ eic_xl:singularity:nightly:
     - job: eic
       parallel:
         matrix:
-          - BUILD_TYPE:
+          - BUILD_IMAGE: eic_
+            ENV:
+            - ci
+            BUILD_TYPE:
             - default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            BUILD_IMAGE: eic_
             PLATFORM: linux/amd64
-            ENV:
-            - xl
 
 .benchmarks:nightly:
   extends: .benchmarks
@@ -548,20 +553,21 @@ eic_xl:singularity:nightly:
     - job: eic
       parallel:
         matrix:
-          - BUILD_TYPE:
+          - BUILD_IMAGE: eic_
+            ENV:
+            - ci
+            BUILD_TYPE:
             - nightly
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            BUILD_IMAGE: eic_
             PLATFORM: linux/amd64
-            ENV:
-            - xl
 
 benchmarks:geoviewer:default:
   extends: .benchmarks:default
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule" && $EPIC_VERSION != ""'
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
     project: EIC/benchmarks/geoviewer
@@ -572,6 +578,7 @@ benchmarks:detector:default:
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
@@ -583,6 +590,7 @@ benchmarks:detector:nightly:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
@@ -593,6 +601,7 @@ benchmarks:phyiscs:default:
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
@@ -604,6 +613,7 @@ benchmarks:physics:nightly:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
@@ -614,6 +624,7 @@ benchmarks:reconstruction:default:
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
@@ -625,6 +636,7 @@ benchmarks:reconstruction:nightly:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
   variables:
+    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
