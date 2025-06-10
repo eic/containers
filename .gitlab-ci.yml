@@ -283,7 +283,7 @@ base:
     - attempts=0
     - nocache=""
     - while !
-      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
+      docker buildx build --load --push ${BUILD_OPTIONS} ${nocache}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
                    ${EXPORT_TAG:+
                      ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -317,8 +317,8 @@ base:
           exit 1 ;
         fi ;
         let attempts=$attempts+1 ;
-      done
-
+      done ;
+      docker history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
 
 eic:
   parallel:
@@ -400,8 +400,6 @@ eic:
                    --provenance false
                    containers/eic
                    2>&1 | tee build.log ;
-          docker images ;
-          docker history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
       ; do
         if grep "unknown blob" build.log ; then
           nocache="--no-cache" ;
@@ -413,7 +411,8 @@ eic:
           exit 1 ;
         fi ;
         let attempts=$attempts+1 ;
-      done
+      done ;
+      docker history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
 
 .singularity:
   image:
