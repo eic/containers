@@ -412,10 +412,6 @@ spack config --scope site add "upstreams:eic-shell:install_tree:/opt/software"
 spack config blame upstreams
 EOF
 
-## set the jug_dev version and add the afterburner
-ARG JUG_VERSION=1
-RUN echo -e "\n - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
-
 ## Install benchmarks into the container
 ARG BENCHMARK_COM_VERSION="master"
 ARG BENCHMARK_DET_VERSION="master"
@@ -466,6 +462,10 @@ EOF
 ## eic-news
 COPY --chmod=0755 eic-news /opt/local/bin/eic-news
 RUN echo "test -f $HOME/.eic-news && source /opt/local/bin/eic-news" > /etc/profile.d/z13_eic-news.sh 
+
+## set the container version
+ARG EIC_CONTAINER_VERSION=1
+RUN echo -e "\n - jug_dev: ${EIC_CONTAINER_VERSION}" >> /etc/jug_info
 
 ## Hotfix for misbehaving OSG nodes
 RUN mkdir /hadoop /localscratch
