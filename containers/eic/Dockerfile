@@ -407,7 +407,6 @@ EOF
 
 ## eic-news
 COPY --chmod=0755 eic-news /opt/local/bin/eic-news
-RUN echo "test -f $HOME/.eic-news && source /opt/local/bin/eic-news" > /etc/profile.d/z13_eic-news.sh 
 
 ## set the container version
 ARG EIC_CONTAINER_VERSION=1
