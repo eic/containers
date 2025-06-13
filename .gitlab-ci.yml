@@ -363,8 +363,6 @@ eic:
       while !
       docker buildx build --load --push ${BUILD_OPTIONS} ${nocache}
                    --target ${target}
-                   --cache-from type=registry,ref=${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}${target_suffix}
-                   --cache-to type=registry,ref=${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}${target_suffix},mode=max
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}${target_suffix}
                    ${export_tag:+
                      ${IF_BUILD_DEFAULT+
