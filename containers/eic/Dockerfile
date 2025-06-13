@@ -315,9 +315,25 @@ EOF
 
 
 ## ========================================================================================
-## final image, based on runtime_installation_custom
+## final builder image, based on builder_installation_custom
 ## ========================================================================================
-FROM runtime_installation_custom
+FROM builder_installation_custom AS builder
+ARG TARGETPLATFORM
+
+# Open Container Initiative labels
+LABEL org.opencontainers.image.title="Electron-Ion Collider builder installation image (custom configuration, $TARGETPLATFORM)"
+LABEL org.opencontainers.image.vendor="Electron-Ion Collider"
+LABEL org.opencontainers.image.authors="Electron-Ion Collider Software Working Groups <eic-software-l-owner@lists.bnl.gov>"
+LABEL org.opencontainers.image.url="https://github.com/eic/containers"
+LABEL org.opencontainers.image.source="https://github.com/eic/containers"
+LABEL org.opencontainers.image.documentation="https://eic.github.io"
+LABEL org.opencontainers.image.license="GPL-3.0-or-later"
+
+
+## ========================================================================================
+## final runtime image, based on runtime_installation_custom
+## ========================================================================================
+FROM runtime_installation_custom AS runtime
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels

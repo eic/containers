@@ -349,10 +349,24 @@ eic:
       cat mirrors.yaml.in | envsubst > mirrors.yaml
     - attempts=0
     - nocache=""
-    - while !
+    - for target in "builder" "runtime" ; do
+      if [ "${target}" == "builder" ] ; then
+        target_suffix="-builder" ; 
+        export_tag="" ;
+        nightly="" ;
+      fi ;
+      if [ "${target}" == "runtime" ] ; then
+        target_suffix="" ; 
+        export_tag="${EXPORT_TAG}" ;
+        nightly="${NIGHTLY}" ;
+      fi ;
+      while !
       docker buildx build --load --push ${BUILD_OPTIONS} ${nocache}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
-                   ${EXPORT_TAG:+
+                   --target ${target}
+                   --cache-from type=registry,ref=${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}${target_suffix}
+                   --cache-to type=registry,ref=${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}${target_suffix},mode=max
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}${target_suffix}
+                   ${export_tag:+
                      ${IF_BUILD_DEFAULT+
                        ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
                        ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
@@ -365,7 +379,7 @@ eic:
                      }
                    }
                    ${IF_BUILD_NIGHTLY+
-                     ${NIGHTLY:+
+                     ${nightly:+
                        ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
                        ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
                        ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
@@ -412,6 +426,7 @@ eic:
           exit 1 ;
         fi ;
         let attempts=$attempts+1 ;
+      done ;
       done ;
       docker history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE} ;
       docker inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
