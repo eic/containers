@@ -1,22 +1,37 @@
 #!/bin/bash
 
 news=$HOME/.eic-news
+hints=$HOME/.eic-hints
 
-# run only if stdin and sterr
+# run only if stdin and sterr, when not hushlogin, and when opt-in
 if [[ -t 0 && -t 2 && ! -f $HOME/.hushlogin && -f $news ]] ; then
+  # ensure hints file exists (atime or mtime not checked)
+  touch $hints
 
+  # check if interactive shell (sourced) or else (eic-news explicitly invoked)
   if [[ $- == *i* ]] ; then
-    # sourced: print once a day
-    if [[ -z $(find $HOME/.eic-news -atime -1) ]] ; then
+    # when sourced: print news at most once an hour
+    if [[ -z $(find $news -atime +1) ]] ; then
       cat $news
+      echo
+      cat $hints | shuf | head -n1
+      echo
+      echo 'More news with `eic-news`; you can disable `eic-news` by creating `$HOME/.hushlogin`'
     fi
   else
-    # else: print always
+    # when invoked: print always
     cat $news
+    echo
+    cat $hints | shuf | head -n1
   fi
 
-  # update once a day
-  if [[ -z $(find $HOME/.eic-news -mtime -1) ]] ; then
-    (&>/dev/null curl --silent --connect-timeout 5 --location https://eic.github.io/motd --output $news &)
+  # update news at most once a day
+  if [[ -z $(find $news -mtime +24) ]] ; then
+    (&>/dev/null curl --silent --connect-timeout 5 --location https://eic.github.io/motd/index.html --output $news &)
+  fi
+
+  # update hints at most once a day
+  if [[ -z $(find $hints -mtime +24) ]] ; then
+    (&>/dev/null curl --silent --connect-timeout 5 --location https://eic.github.io/motd/hints.html --output $hints &)
   fi
 fi
