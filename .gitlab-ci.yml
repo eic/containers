@@ -622,7 +622,7 @@ benchmarks:physics:nightly:
 benchmarks:reconstruction:default:
   extends: .benchmarks:default
   rules:
-   - if: '$CI_PIPELINE_SOURCE != "schedule"'
+   - if: '$CI_PIPELINE_SOURCE != "schedule" && $EICRECON_VERSION != ""'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
@@ -633,7 +633,7 @@ benchmarks:reconstruction:default:
 benchmarks:reconstruction:nightly:
   extends: .benchmarks:nightly
   rules:
-    - if: '$CI_PIPELINE_SOURCE != "schedule"'
+    - if: '$CI_PIPELINE_SOURCE != "schedule" && $EICRECON_VERSION != ""'
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_CONTAINER: eic_ci
