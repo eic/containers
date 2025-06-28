@@ -469,20 +469,19 @@ eic:
     - job: eic
       parallel:
         matrix:
-          - BUILD_IMAGE: ${BUILD_IMAGE}
+          - BUILD_IMAGE: eic_dev_
             ENV:
-            - ${ENV}
+            - cuda
             BUILD_TYPE:
-            - ${BUILD_TYPE}
+            - default
+            BUILDER_IMAGE: cuda_devel
+            RUNTIME_IMAGE: cuda_devel
+            PLATFORM: linux/amd64
   image: 
-    name: ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
+    name: ${CI_REGISTRY_IMAGE}/eic_dev_cuda:${INTERNAL_TAG}-default
 
 cuda:torch:
   extends: .cuda
-  variables:
-    BUILD_TYPE: default
-    BUILD_IMAGE: eic_dev_
-    ENV: cuda
   script:
     - python -c "import torch ; print(torch.cuda.is_available()) ;"
 
