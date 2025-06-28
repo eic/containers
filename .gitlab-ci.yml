@@ -367,7 +367,6 @@ eic:
         - nightly
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_runtime
-        BASE_IMAGE: cuda_base
         PLATFORM: linux/amd64
       - BUILD_IMAGE: eic_dev_
         ENV:
@@ -377,7 +376,6 @@ eic:
         - nightly
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_devel
-        BASE_IMAGE: cuda_base
         PLATFORM: linux/amd64
   extends: .build
   stage: eic
