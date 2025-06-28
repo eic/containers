@@ -460,6 +460,32 @@ eic:
         let attempts=$attempts+1 ;
       done
 
+.cuda:
+  stage: benchmarks
+  tags:
+    - gpu
+  needs: 
+    - job: version
+    - job: eic
+      parallel:
+        matrix:
+          - BUILD_IMAGE: ${BUILD_IMAGE}
+            ENV:
+            - ${ENV}
+            BUILD_TYPE:
+            - ${BUILD_TYPE}
+  image: 
+    name: ${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
+
+cuda:torch:
+  extends: .cuda
+  variables:
+    BUILD_TYPE: default
+    BUILD_IMAGE: eic_dev_
+    ENV: cuda
+  script:
+    - python -c "import torch ; print(torch.cuda.is_available()) ;"
+
 .singularity:
   image:
     name: ${SINGULARITY_IMAGE}
