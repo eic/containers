@@ -1,7 +1,7 @@
 #!/bin/bash
 
-## Force environment to be clean
-export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/usr/local/lib64:/usr/local/lib"
+## Force environment to be clean (/.singularity.d/libs is set by singularity --nv)
+export LD_LIBRARY_PATH="/.singularity.d/libs:/lib/x86_64-linux-gnu:/usr/local/lib64:/usr/local/lib"
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 [ ! -z "$CC" ] && unset CC
 [ ! -z "$CXX" ] && unset CXX
