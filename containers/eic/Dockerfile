@@ -374,11 +374,9 @@ ln -sf ../common_bench /opt/benchmarks/physics_benchmarks/.local
 EOF
 
 ## Install campaigns into the container
-ARG CAMPAIGNS_SINGLE_VERSION="main"
 ARG CAMPAIGNS_HEPMC3_VERSION="main"
 ARG CAMPAIGNS_CONDOR_VERSION="main"
 ARG CAMPAIGNS_SLURM_VERSION="main"
-ADD https://github.com/eic/simulation_campaign_single.git#${CAMPAIGNS_SINGLE_VERSION} /opt/campaigns/single
 ADD https://github.com/eic/simulation_campaign_hepmc3.git#${CAMPAIGNS_HEPMC3_VERSION} /opt/campaigns/hepmc3
 ADD https://github.com/eic/job_submission_condor.git#${CAMPAIGNS_CONDOR_VERSION} /opt/campaigns/condor
 ADD https://github.com/eic/job_submission_slurm.git#${CAMPAIGNS_SLURM_VERSION} /opt/campaigns/slurm
