@@ -46,6 +46,7 @@ c0c1a4aea1aa38bd7054cbac2e3fa1606f6939e9
 71b65bb424c6294badc4825ac4714ec7f89ad0b7
 a7e57c9a14ce36d6a3b03d7cd3b3357754b89019
 6b9c099af871e7cfc48d831aaefd542064f8dafa
+406c73ae1152b0f66b299fab2973d3b25dee8118
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -93,3 +94,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 71b65bb424c6294badc4825ac4714ec7f89ad0b7: py-opt-einsum: missing forward compat bound for python
 ## a7e57c9a14ce36d6a3b03d7cd3b3357754b89019: py-opt-einsum: add v3.4.0
 ## 6b9c099af871e7cfc48d831aaefd542064f8dafa: py-keras: add v3.7.0
+## 406c73ae1152b0f66b299fab2973d3b25dee8118: py-boto*: add v1.34.162
