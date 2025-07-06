@@ -37,6 +37,7 @@ spack:
   - onnx
   - osg-ca-certs
   - podio
+  - prmon
   - pythia8
   - py-awkward
   - py-bokeh
