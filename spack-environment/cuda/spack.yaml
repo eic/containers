@@ -68,6 +68,7 @@ spack:
   - py-boto3
   - py-dask
   - py-deepdiff
+  - py-eic-rucio-policy-package
   - py-epic-capybara
   - py-ipython
   - py-jinja2
@@ -87,6 +88,7 @@ spack:
   - py-pre-commit
   - py-pycairo
   - py-pyyaml
+  - py-rucio-clients
   - py-scipy
   - py-seaborn
   - py-toml
