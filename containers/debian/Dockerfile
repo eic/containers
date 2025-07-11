@@ -104,7 +104,7 @@ case ${ID} in
   *) echo "Unsupported ID=${ID}" ; exit 1 ;;
 esac
 # Clang repository
-curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /usr/share/keyrings/llvm-snapshot.gpg
 if [ ${VERSION_CODENAME} = trixie ] ; then
   echo "deb http://apt.llvm.org/unstable llvm-toolchain${CLANG} main" > /etc/apt/sources.list.d/llvm.list
 else
