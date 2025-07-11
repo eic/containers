@@ -89,7 +89,7 @@ mkdir -p /etc/apt/source.list.d
 case ${ID} in
   debian)
     case ${VERSION_CODENAME} in
-      bookworm) GCC="-12" ; CLANG="-19" ;;
+      bookworm) GCC="-12" ; CLANG="-18" ;;
       trixie) GCC="-13" ; CLANG="-17" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
