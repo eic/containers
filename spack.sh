@@ -47,6 +47,7 @@ c0c1a4aea1aa38bd7054cbac2e3fa1606f6939e9
 a7e57c9a14ce36d6a3b03d7cd3b3357754b89019
 6b9c099af871e7cfc48d831aaefd542064f8dafa
 406c73ae1152b0f66b299fab2973d3b25dee8118
+6b2cd0ca45b889c38be74b3d7c38ea1000535ccf
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -95,3 +96,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## a7e57c9a14ce36d6a3b03d7cd3b3357754b89019: py-opt-einsum: add v3.4.0
 ## 6b9c099af871e7cfc48d831aaefd542064f8dafa: py-keras: add v3.7.0
 ## 406c73ae1152b0f66b299fab2973d3b25dee8118: py-boto*: add v1.34.162
+## 6b2cd0ca45b889c38be74b3d7c38ea1000535ccf: bump iwyu
