@@ -342,7 +342,6 @@ eic:
         - ci
 #        - dbg
 #        - prod
-        - tf
         - xl
         BUILD_TYPE:
         - default
@@ -362,6 +361,7 @@ eic:
       - BUILD_IMAGE: eic_
         ENV:
         - cuda
+        - tf
         BUILD_TYPE:
         - default
         - nightly
