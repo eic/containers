@@ -398,7 +398,7 @@ packages:
   py-tensorflow:
     require:
     - '%clang'
-    - '@2.15.1' # py-tensorflow@2.16: depends_on cuda@12.3: 
+    - '@2.18'
   py-toml:
     require:
     - '@0.10.2'
