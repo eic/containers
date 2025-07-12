@@ -399,7 +399,7 @@ packages:
     require:
     - '%clang'
     - '@2.18'
-    - 'cxxflags=-Wno-gnu-offsetof-extension'
+    - 'cflags=-Wno-gnu-offsetof-extension'
   py-toml:
     require:
     - '@0.10.2'
