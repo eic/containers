@@ -6,7 +6,7 @@ variables:
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
   ## CUDA version and container operating system
-  CUDA_VERSION: 12.2.2
+  CUDA_VERSION: 12.3.2
   CUDA_OS: ubuntu22.04
 
   ## Default versions are specified in packages.yaml but can be overridden
