@@ -44,7 +44,7 @@ spack:
   - py-rucio-clients
   - py-scipy
   - py-seaborn
-  - py-tensorflow +cuda
+  - py-tensorflow +cuda cuda_arch=75
   - py-toml
   - py-uproot
   - py-vector
