@@ -56,6 +56,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
 [396a70186002764891e2ae597ecefd02617570dd]=var/spack/repos/builtin/packages/node-js/package.py
 [f2f13964fbb0d29a74f605e31b20f724d88cc024]=var/spack/repos/builtin/packages/sherpa/package.py
+[38e9043b9e3c0c5ebe9f98ca7cf8f0fe26a05e9d]=var/spack/repos/builtin/packages/rivet/package.py,var/spack/repos/builtin/packages/yoda/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
