@@ -431,8 +431,8 @@ packages:
     - +opengl
   rivet:
     require:
-    - '@4.0.2'
-    - hepmc=3
+    - '@4.1.0'
+    - hepmc=3 plugin-match=HERA,LEP,MC
   root:
     require:
     - '@6.32.14'

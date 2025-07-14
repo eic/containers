@@ -47,12 +47,16 @@ c0c1a4aea1aa38bd7054cbac2e3fa1606f6939e9
 a7e57c9a14ce36d6a3b03d7cd3b3357754b89019
 6b9c099af871e7cfc48d831aaefd542064f8dafa
 406c73ae1152b0f66b299fab2973d3b25dee8118
+2b9434a3401a5ce16ac056cd7309078bde6a86a5
+f5e84fb9e73f6230576c01673563b5ddbd529e90
+38e9043b9e3c0c5ebe9f98ca7cf8f0fe26a05e9d
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
 [396a70186002764891e2ae597ecefd02617570dd]=var/spack/repos/builtin/packages/node-js/package.py
 [f2f13964fbb0d29a74f605e31b20f724d88cc024]=var/spack/repos/builtin/packages/sherpa/package.py
+[38e9043b9e3c0c5ebe9f98ca7cf8f0fe26a05e9d]=var/spack/repos/builtin/packages/rivet/package.py,var/spack/repos/builtin/packages/yoda/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -95,3 +99,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## a7e57c9a14ce36d6a3b03d7cd3b3357754b89019: py-opt-einsum: add v3.4.0
 ## 6b9c099af871e7cfc48d831aaefd542064f8dafa: py-keras: add v3.7.0
 ## 406c73ae1152b0f66b299fab2973d3b25dee8118: py-boto*: add v1.34.162
+## 2b9434a3401a5ce16ac056cd7309078bde6a86a5: rivet, yoda: Add new versions with back-port fixes
+## f5e84fb9e73f6230576c01673563b5ddbd529e90: rivet: patch missing header in 3.1.10
+## 38e9043b9e3c0c5ebe9f98ca7cf8f0fe26a05e9d: yoda: add v2.1.0; rivet: add v4.1.0
