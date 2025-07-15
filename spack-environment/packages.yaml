@@ -87,7 +87,7 @@ packages:
     - '@1.14.10'
   dd4hep:
     require:
-    - '@1.32'
+    - '@1.32.1'
     - +ddg4 +ddcad +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   dpmjet:
