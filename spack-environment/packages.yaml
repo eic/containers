@@ -256,7 +256,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.4.4'
+    - '@1.4.5'
     - +http
     - any_of: [+geocad, -geocad]
   onnx:
