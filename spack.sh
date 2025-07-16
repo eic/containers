@@ -50,6 +50,19 @@ a7e57c9a14ce36d6a3b03d7cd3b3357754b89019
 2b9434a3401a5ce16ac056cd7309078bde6a86a5
 f5e84fb9e73f6230576c01673563b5ddbd529e90
 38e9043b9e3c0c5ebe9f98ca7cf8f0fe26a05e9d
+a86953fcb14a1e6ab760cba6957850ecfd40cca7
+6b16c64c0e11ed6bd3605b15811f111f44800d97
+49efa711d04049d48690231ac9b1ccb81cc4d448
+72ef5b90102d52d0994b9104bbc96011757c946e
+94cf51875f0e29b79c2a1bd69e0fcddac3eec0c8
+e94d5b935f9da408371059cf0fd9001108f24772
+af9fd82476b8e9ab5d04b250ac3dbc3e8cde3291
+495537cf56df07950a436d841a6ab1e114f06ac5
+e94d5b935f9da408371059cf0fd9001108f24772
+615b7a6ddb35b11ff149ab0efe66f6817ed0aa53
+f7edd10c17e097db2f3a4aff16341ca507184b2d
+46ff553ec2a5119e0d88fd21858c59205889b8ee
+b2b9914efc6ba15a4b56341da1515642a5614275
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -102,3 +115,16 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 2b9434a3401a5ce16ac056cd7309078bde6a86a5: rivet, yoda: Add new versions with back-port fixes
 ## f5e84fb9e73f6230576c01673563b5ddbd529e90: rivet: patch missing header in 3.1.10
 ## 38e9043b9e3c0c5ebe9f98ca7cf8f0fe26a05e9d: yoda: add v2.1.0; rivet: add v4.1.0
+## a86953fcb14a1e6ab760cba6957850ecfd40cca7: acts: add version 37.4.0
+## 6b16c64c0e11ed6bd3605b15811f111f44800d97: acts dependencies: new versions as of 2024/12/02
+## 49efa711d04049d48690231ac9b1ccb81cc4d448: acts dependencies: new versions as of 2024/12/08
+## 72ef5b90102d52d0994b9104bbc96011757c946e: acts dependencies: new versions as of 2024/12/16
+## 94cf51875f0e29b79c2a1bd69e0fcddac3eec0c8: acts: don't use system dfelibs for 35.1:36.0
+## e94d5b935f9da408371059cf0fd9001108f24772: acts dependencies: new versions as of 2025/01/08
+## af9fd82476b8e9ab5d04b250ac3dbc3e8cde3291: acts: conflict ~svg ~json when +traccc
+## 495537cf56df07950a436d841a6ab1e114f06ac5: acts: add v39.0.0
+## e94d5b935f9da408371059cf0fd9001108f24772: acts dependencies: new versions as of 2025/01/08
+## 615b7a6ddb35b11ff149ab0efe66f6817ed0aa53: geomodel: Add version 6.8.0
+## f7edd10c17e097db2f3a4aff16341ca507184b2d: acts dependencies: new versions as of 2025/02/10
+## 46ff553ec2a5119e0d88fd21858c59205889b8ee: acts dependencies: new versions as of 2025/02/17
+## b2b9914efc6ba15a4b56341da1515642a5614275: acts dependencies: new versions as of 2025/03/03
