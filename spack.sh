@@ -59,6 +59,7 @@ e94d5b935f9da408371059cf0fd9001108f24772
 af9fd82476b8e9ab5d04b250ac3dbc3e8cde3291
 495537cf56df07950a436d841a6ab1e114f06ac5
 e94d5b935f9da408371059cf0fd9001108f24772
+615b7a6ddb35b11ff149ab0efe66f6817ed0aa53
 f7edd10c17e097db2f3a4aff16341ca507184b2d
 46ff553ec2a5119e0d88fd21858c59205889b8ee
 b2b9914efc6ba15a4b56341da1515642a5614275
@@ -123,6 +124,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## af9fd82476b8e9ab5d04b250ac3dbc3e8cde3291: acts: conflict ~svg ~json when +traccc
 ## 495537cf56df07950a436d841a6ab1e114f06ac5: acts: add v39.0.0
 ## e94d5b935f9da408371059cf0fd9001108f24772: acts dependencies: new versions as of 2025/01/08
+## 615b7a6ddb35b11ff149ab0efe66f6817ed0aa53: geomodel: Add version 6.8.0
 ## f7edd10c17e097db2f3a4aff16341ca507184b2d: acts dependencies: new versions as of 2025/02/10
 ## 46ff553ec2a5119e0d88fd21858c59205889b8ee: acts dependencies: new versions as of 2025/02/17
 ## b2b9914efc6ba15a4b56341da1515642a5614275: acts dependencies: new versions as of 2025/03/03
