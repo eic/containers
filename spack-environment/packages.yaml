@@ -203,7 +203,7 @@ packages:
     - '@1.0.8'
   iwyu:
     require:
-    - '@0.20'
+    - '@0.22'
   jana2:
     require:
     - '@2.4.2'
