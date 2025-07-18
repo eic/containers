@@ -271,6 +271,9 @@ packages:
     externals:
     - spec: opengl@4.6
       prefix: /usr
+  openldap:
+    require:
+    - ~sasl
   openloops:
     require:
     - '@2.1.4'
