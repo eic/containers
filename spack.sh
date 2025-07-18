@@ -64,6 +64,7 @@ f7edd10c17e097db2f3a4aff16341ca507184b2d
 46ff553ec2a5119e0d88fd21858c59205889b8ee
 b2b9914efc6ba15a4b56341da1515642a5614275
 6b2cd0ca45b889c38be74b3d7c38ea1000535ccf
+55ae522d314c42809641941b312f8c410b6dc607
 eb0567479466889d0945b8f301f39c49deb14998
 ---
 ## Optional hash table with comma-separated file list
@@ -131,4 +132,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 46ff553ec2a5119e0d88fd21858c59205889b8ee: acts dependencies: new versions as of 2025/02/17
 ## b2b9914efc6ba15a4b56341da1515642a5614275: acts dependencies: new versions as of 2025/03/03
 ## 6b2cd0ca45b889c38be74b3d7c38ea1000535ccf: bump iwyu
+## 55ae522d314c42809641941b312f8c410b6dc607: fastjet: add v3.4.3
 ## eb0567479466889d0945b8f301f39c49deb14998: fastjet: add v3.5.0
