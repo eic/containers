@@ -195,9 +195,6 @@ packages:
   imagemagick:
     require:
     - '@7.1.1-11'
-  intel-tbb:
-    require:
-    - '@2020.3'
   irt:
     require:
     - '@1.0.8'
@@ -466,6 +463,9 @@ packages:
   strace:
     require:
     - -mpers
+  tbb:
+    require:
+    - 'intel-tbb'
   tensorflow-lite:
     require:
     - '@2.8.0'
