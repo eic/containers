@@ -12,7 +12,6 @@ spack:
   - cairo
   - catch2
   - celeritas
-  - cernlib
   - clang-build-analyzer
   - cli11
   - cmake
