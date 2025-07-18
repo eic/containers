@@ -138,8 +138,8 @@ clang --version
 EOF
 
 ## Install some extra spack dependencies
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM} \
-    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=${TARGETPLATFORM} <<EOF
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=apt-${TARGETPLATFORM} \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=apt-lists-${TARGETPLATFORM} <<EOF
 rm -f /etc/apt/apt.conf.d/docker-clean
 apt-get -yqq update
 apt-get -yqq install --no-install-recommends                            \
