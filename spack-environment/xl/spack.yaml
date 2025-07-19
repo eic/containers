@@ -67,7 +67,6 @@ spack:
   - onnx
   - opencascade
   - osg-ca-certs
-  - perl-tk
   - phonebook-cli
   - podio
   - prmon
