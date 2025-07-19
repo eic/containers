@@ -163,6 +163,7 @@ git config --global user.email "gitlab@eicweb.phy.anl.gov"
 git config --global user.name "EIC Container Build Service"
 git config --global advice.detachedHead false
 git config --global gc.autoDetach false
+git config --global merge.directoryRenames true
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} remote add packages https://github.com/${SPACK_ORGREPO}-packages.git
 git -C ${SPACK_ROOT} fetch packages
