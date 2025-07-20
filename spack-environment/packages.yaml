@@ -195,15 +195,12 @@ packages:
   imagemagick:
     require:
     - '@7.1.1-11'
-  intel-tbb:
-    require:
-    - '@2020.3'
   irt:
     require:
     - '@1.0.8'
   iwyu:
     require:
-    - '@0.22'
+    - '@0.23'
   jana2:
     require:
     - '@2.4.2'
@@ -274,6 +271,9 @@ packages:
     externals:
     - spec: opengl@4.6
       prefix: /usr
+  openldap:
+    require:
+    - ~sasl
   openloops:
     require:
     - '@2.1.4'
@@ -466,6 +466,9 @@ packages:
   strace:
     require:
     - -mpers
+  tbb:
+    require:
+    - 'intel-tbb'
   tensorflow-lite:
     require:
     - '@2.8.0'

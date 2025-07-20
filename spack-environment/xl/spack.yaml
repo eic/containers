@@ -12,7 +12,6 @@ spack:
   - cairo
   - catch2
   - celeritas
-  - cernlib
   - clang-build-analyzer
   - cli11
   - cmake
@@ -68,7 +67,6 @@ spack:
   - onnx
   - opencascade
   - osg-ca-certs
-  - perl-tk
   - phonebook-cli
   - podio
   - prmon
@@ -126,7 +124,6 @@ spack:
   - snakemake
   - spdlog
   - stow
-  - strace
   - valgrind
   - xrootd
   - xeyes

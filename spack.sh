@@ -66,6 +66,9 @@ b2b9914efc6ba15a4b56341da1515642a5614275
 6b2cd0ca45b889c38be74b3d7c38ea1000535ccf
 55ae522d314c42809641941b312f8c410b6dc607
 eb0567479466889d0945b8f301f39c49deb14998
+9dc16a653d881fdb39cc0e3a4fd3d314d08b5e2c
+b4ad564096025f0f03735a44f3c245442394339d
+d08669a8c986de71135ea4daba3c06ed8cd883d9
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -134,3 +137,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 6b2cd0ca45b889c38be74b3d7c38ea1000535ccf: bump iwyu
 ## 55ae522d314c42809641941b312f8c410b6dc607: fastjet: add v3.4.3
 ## eb0567479466889d0945b8f301f39c49deb14998: fastjet: add v3.5.0
+## 9dc16a653d881fdb39cc0e3a4fd3d314d08b5e2c: py-onnxruntime: add v1.18.0 -> v1.19.2
+## b4ad564096025f0f03735a44f3c245442394339d: py-onnxruntime: use CudaPackage
+## d08669a8c986de71135ea4daba3c06ed8cd883d9: py_onnxruntime: add new versions and update recipe

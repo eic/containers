@@ -90,7 +90,7 @@ case ${ID} in
   debian)
     case ${VERSION_CODENAME} in
       bookworm) GCC="-12" ; CLANG="-18" ;;
-      trixie) GCC="-13" ; CLANG="-17" ;;
+      trixie) GCC="-14" ; CLANG="-19" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   ubuntu)
@@ -104,7 +104,7 @@ case ${ID} in
   *) echo "Unsupported ID=${ID}" ; exit 1 ;;
 esac
 # Clang repository
-curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 if [ ${VERSION_CODENAME} = trixie ] ; then
   echo "deb http://apt.llvm.org/unstable llvm-toolchain${CLANG} main" > /etc/apt/sources.list.d/llvm.list
 else
@@ -138,8 +138,8 @@ clang --version
 EOF
 
 ## Install some extra spack dependencies
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=${TARGETPLATFORM} \
-    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=${TARGETPLATFORM} <<EOF
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=apt-${TARGETPLATFORM} \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=apt-lists-${TARGETPLATFORM} <<EOF
 rm -f /etc/apt/apt.conf.d/docker-clean
 apt-get -yqq update
 apt-get -yqq install --no-install-recommends                            \
@@ -163,6 +163,7 @@ git config --global user.email "gitlab@eicweb.phy.anl.gov"
 git config --global user.name "EIC Container Build Service"
 git config --global advice.detachedHead false
 git config --global gc.autoDetach false
+git config --global merge.directoryRenames true
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} remote add packages https://github.com/${SPACK_ORGREPO}-packages.git
 git -C ${SPACK_ROOT} fetch packages
