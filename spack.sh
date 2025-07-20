@@ -69,6 +69,8 @@ eb0567479466889d0945b8f301f39c49deb14998
 9dc16a653d881fdb39cc0e3a4fd3d314d08b5e2c
 b4ad564096025f0f03735a44f3c245442394339d
 d08669a8c986de71135ea4daba3c06ed8cd883d9
+4b2f5638f24438549770ab475b85002d1499000b
+4a08f5b6e4153e113e9f2873754104f0b79dee0e
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -140,3 +142,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 9dc16a653d881fdb39cc0e3a4fd3d314d08b5e2c: py-onnxruntime: add v1.18.0 -> v1.19.2
 ## b4ad564096025f0f03735a44f3c245442394339d: py-onnxruntime: use CudaPackage
 ## d08669a8c986de71135ea4daba3c06ed8cd883d9: py_onnxruntime: add new versions and update recipe
+## 4b2f5638f24438549770ab475b85002d1499000b: sherpa: +hepmc3root only when +root
+## 4a08f5b6e4153e113e9f2873754104f0b79dee0e: sherpa: add variant internal_pdfs to avoid fortran
