@@ -72,6 +72,7 @@ d08669a8c986de71135ea4daba3c06ed8cd883d9
 4b2f5638f24438549770ab475b85002d1499000b
 14d72d2703e0cafe546145f612c103afa4382318
 4a08f5b6e4153e113e9f2873754104f0b79dee0e
+b5ffbcc4aa43bffbffa96ff9a436a68773e10933
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -147,3 +148,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 4b2f5638f24438549770ab475b85002d1499000b: sherpa: +hepmc3root only when +root
 ## 14d72d2703e0cafe546145f612c103afa4382318: treewide style: move depends_on(c,cxx,fortran) with other dependencies, after variants
 ## 4a08f5b6e4153e113e9f2873754104f0b79dee0e: sherpa: add variant internal_pdfs to avoid fortran
+## b5ffbcc4aa43bffbffa96ff9a436a68773e10933: strace: add v6.15
