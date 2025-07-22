@@ -124,6 +124,7 @@ spack:
   - snakemake
   - spdlog
   - stow
+  - strace
   - valgrind
   - xrootd
   - xeyes
