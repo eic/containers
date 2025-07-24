@@ -5,24 +5,16 @@ spack:
   - ../view.yaml
   specs:
   - acts
-  - cmake
   - dd4hep -ddeve
   - edm4eic
   - eicrecon
   - epic # EPIC_VERSION
   - fastjet
   - fjcontrib
-  - gaudi
   - geant4 -opengl
   - hepmc3
-  - intel-tbb
   - irt
   - jana2
-  - juggler
   - npsim -geocad
-  - py-boto3
-  - py-jinja2
-  - py-jinja2-cli
-  - py-pip
-  - root -opengl
+  - root -opengl -webgui
   - xrootd
