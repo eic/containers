@@ -60,7 +60,7 @@ packages:
     - -shared
   clhep:
     require:
-    - '@2.4.6.4'
+    - '@2.4.7.1'
     - cxxstd=20
   cli11:
     require:
@@ -157,7 +157,7 @@ packages:
       prefix: /opt/software/externals/g4ndl
   geant4:
     require:
-    - '@11.2.2.east'
+    - '@11.3.2.east'
     - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   gettext: 
@@ -253,7 +253,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.4.5'
+    - '@1.4.6'
     - +http
     - any_of: [+geocad, -geocad]
   onnx:

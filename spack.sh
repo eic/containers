@@ -9,6 +9,7 @@ SPACK_VERSION="v0.23.1"
 read -r -d '' SPACK_CHERRYPICKS <<- \
 --- || true
 09f75ee426a2e05e0543570821582480ff823ba5
+12dd1208f3d8b6b1ea02e3e1ceeeaa8d778040d3
 b90ac6441cfdf6425cb59551e7b0538899b69527
 8e7641e584563c4859cbef992cd534e75ffd8142
 c50ac5ac25619bdf0b3e75884a893a73e5713e05
@@ -73,6 +74,7 @@ d08669a8c986de71135ea4daba3c06ed8cd883d9
 14d72d2703e0cafe546145f612c103afa4382318
 4a08f5b6e4153e113e9f2873754104f0b79dee0e
 b5ffbcc4aa43bffbffa96ff9a436a68773e10933
+79d79969bb4a5b80433dc3b73f471052a6281dc7
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -85,6 +87,7 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
 ## 09f75ee426a2e05e0543570821582480ff823ba5: setup-env.sh: if exe contains qemu, use /proc/$$/comm instead
+## 12dd1208f3d8b6b1ea02e3e1ceeeaa8d778040d3: geant4: add v11.3.0
 ## b90ac6441cfdf6425cb59551e7b0538899b69527: celeritas: remove ancient versions and add CUDA package dependency
 ## 8e7641e584563c4859cbef992cd534e75ffd8142: onnx: set CMAKE_CXX_STANDARD to abseil-cpp cxxstd value
 ## c50ac5ac25619bdf0b3e75884a893a73e5713e05: py-gfal2-python: new package to fix gfal2-util
@@ -149,3 +152,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 14d72d2703e0cafe546145f612c103afa4382318: treewide style: move depends_on(c,cxx,fortran) with other dependencies, after variants
 ## 4a08f5b6e4153e113e9f2873754104f0b79dee0e: sherpa: add variant internal_pdfs to avoid fortran
 ## b5ffbcc4aa43bffbffa96ff9a436a68773e10933: strace: add v6.15
+## 79d79969bb4a5b80433dc3b73f471052a6281dc7: celeritas: patch 0.5.0 for geant4@11.3.0:
