@@ -75,6 +75,7 @@ d08669a8c986de71135ea4daba3c06ed8cd883d9
 4a08f5b6e4153e113e9f2873754104f0b79dee0e
 b5ffbcc4aa43bffbffa96ff9a436a68773e10933
 79d79969bb4a5b80433dc3b73f471052a6281dc7
+b6b6d79c25c1496472f9535ec33c9030b27353ab
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -153,3 +154,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 4a08f5b6e4153e113e9f2873754104f0b79dee0e: sherpa: add variant internal_pdfs to avoid fortran
 ## b5ffbcc4aa43bffbffa96ff9a436a68773e10933: strace: add v6.15
 ## 79d79969bb4a5b80433dc3b73f471052a6281dc7: celeritas: patch 0.5.0 for geant4@11.3.0:
+## b6b6d79c25c1496472f9535ec33c9030b27353ab: iwyu: add patch for 0.23
