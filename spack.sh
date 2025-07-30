@@ -77,6 +77,9 @@ b5ffbcc4aa43bffbffa96ff9a436a68773e10933
 79d79969bb4a5b80433dc3b73f471052a6281dc7
 b6b6d79c25c1496472f9535ec33c9030b27353ab
 a14483efdd0233fde617137621340ea0e6f11d73
+a5fd113806bc29ddfea062cc62aba56464bc96a3
+d211bd5ddf7577e31a00376f81062472ec9ab692
+d6e6a1eceedc6129f05259dd7fda7958e2336418
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -86,6 +89,8 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 [38e9043b9e3c0c5ebe9f98ca7cf8f0fe26a05e9d]=var/spack/repos/builtin/packages/rivet/package.py,var/spack/repos/builtin/packages/yoda/package.py
 [14d72d2703e0cafe546145f612c103afa4382318]=var/spack/repos/builtin/packages/sherpa/package.py
 [a14483efdd0233fde617137621340ea0e6f11d73]=repos/builtin/packages/acts/package.py,repos/builtin/packages/actsvg/package.py
+[d211bd5ddf7577e31a00376f81062472ec9ab692]=repos/builtin/packages/actsvg/package.py
+[d6e6a1eceedc6129f05259dd7fda7958e2336418]=repos/builtin/packages/actsvg/package.py
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
@@ -158,3 +163,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 79d79969bb4a5b80433dc3b73f471052a6281dc7: celeritas: patch 0.5.0 for geant4@11.3.0:
 ## b6b6d79c25c1496472f9535ec33c9030b27353ab: iwyu: add patch for 0.23
 ## a14483efdd0233fde617137621340ea0e6f11d73: actsvg: add v0.4.51
+## a5fd113806bc29ddfea062cc62aba56464bc96a3: actsvg: use Spack pybind11 package
+## d211bd5ddf7577e31a00376f81062472ec9ab692: acts dependencies: new versions as of 2025/05/26
+## d6e6a1eceedc6129f05259dd7fda7958e2336418: actsvg: add v0.4.57
