@@ -188,7 +188,7 @@ EOF
 SHELL ["docker-shell"]
 
 ## Setup spack-packages
-ENV SPACKPACKAGES_ROOT=${SPACK_ROOT}/var/spack/repos/spack-packages
+ENV SPACKPACKAGES_ROOT=/opt/spack-packages
 ARG SPACKPACKAGES_ORGREPO="spack/spack-packages"
 ARG SPACKPACKAGES_VERSION="develop"
 ARG SPACKPACKAGES_CHERRYPICKS=""
@@ -211,7 +211,7 @@ if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
   done
 fi
 git -C ${SPACKPACKAGES_ROOT} gc --prune=all --aggressive
-spack repo add --scope site "${SPACKPACKAGES_ROOT}"
+spack repo add --scope site "${SPACKPACKAGES_ROOT}/repos/spack_repo/builtin"
 EOF
 
 ## Setup build configuration
@@ -245,14 +245,14 @@ spack mirror list
 EOF
 
 ## Setup key4hep-spack
-ENV KEY4HEPSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/key4hep-spack
+ENV KEY4HEPSPACK_ROOT=${SPACKPACKAGES_ROOT}/repos/key4hep-spack
 ARG KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
 ARG KEY4HEPSPACK_VERSION="main"
 ADD https://github.com/${KEY4HEPSPACK_ORGREPO}.git#${KEY4HEPSPACK_VERSION} ${KEY4HEPSPACK_ROOT}
 RUN spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
 
 ## Setup eic-spack
-ENV EICSPACK_ROOT=${SPACK_ROOT}/var/spack/repos/eic-spack
+ENV EICSPACK_ROOT=${SPACKPACKAGES_ROOT}/repos/eic-spack
 ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="develop"
 ADD https://github.com/${EICSPACK_ORGREPO}.git#${EICSPACK_VERSION} ${EICSPACK_ROOT}
