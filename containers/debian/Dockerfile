@@ -145,23 +145,25 @@ apt-get -yqq install --no-install-recommends                            \
         python-is-python3
 EOF
 
-## Setup spack
-ENV SPACK_ROOT=/opt/spack
-ARG SPACK_ORGREPO="spack/spack"
-ARG SPACK_VERSION="releases/latest"
-ENV SPACK_PYTHON=/usr/bin/python3
-ARG SPACK_CHERRYPICKS=""
-ARG SPACK_CHERRYPICKS_FILES=""
-ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
+## Setup git
 RUN <<EOF
 git config --global user.email "gitlab@eicweb.phy.anl.gov"
 git config --global user.name "EIC Container Build Service"
 git config --global advice.detachedHead false
 git config --global gc.autoDetach false
 git config --global merge.directoryRenames true
+EOF
+
+## Setup spack
+ENV SPACK_ROOT=/opt/spack
+ARG SPACK_ORGREPO="spack/spack"
+ARG SPACK_VERSION="releases/v1.0"
+ENV SPACK_PYTHON=/usr/bin/python3
+ARG SPACK_CHERRYPICKS=""
+ARG SPACK_CHERRYPICKS_FILES=""
+ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
+RUN <<EOF
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
-git -C ${SPACK_ROOT} remote add packages https://github.com/${SPACK_ORGREPO}-packages.git
-git -C ${SPACK_ROOT} fetch packages
 git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
 if [ -n "${SPACK_CHERRYPICKS}" ] ; then
   SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo ${SPACK_CHERRYPICKS} | wc -w)  "${SPACK_CHERRYPICKS}" | tac)
@@ -175,11 +177,37 @@ if [ -n "${SPACK_CHERRYPICKS}" ] ; then
     fi
   done
 fi
-git -C $SPACK_ROOT gc --prune=all --aggressive
-sed -i 's/timeout=60/timeout=None/' $SPACK_ROOT/lib/spack/spack/stage.py
-ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/docker-shell
-ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/interactive-shell
-ln -s $SPACK_ROOT/share/spack/docker/entrypoint.bash /usr/bin/spack-env
+git -C ${SPACK_ROOT} gc --prune=all --aggressive
+sed -i 's/timeout=60/timeout=None/' ${SPACK_ROOT}/lib/spack/spack/stage.py
+ln -s ${SPACK_ROOT}/share/spack/docker/entrypoint.bash /usr/bin/docker-shell
+ln -s ${SPACK_ROOT}/share/spack/docker/entrypoint.bash /usr/bin/interactive-shell
+ln -s ${SPACK_ROOT}/share/spack/docker/entrypoint.bash /usr/bin/spack-env
+EOF
+
+## Setup spack-packages
+ENV SPACKPACKAGES_ROOT=${SPACK_ROOT}/var/spack/repos/spack-packages
+ARG SPACKPACKAGES_ORGREPO="spack/spack-packages"
+ARG SPACKPACKAGES_VERSION="develop"
+ARG SPACKPACKAGES_CHERRYPICKS=""
+ARG SPACKPACKAGES_CHERRYPICKS_FILES=""
+ADD https://api.github.com/repos/${SPACKPACKAGES_ORGREPO}/commits/${SPACKPACKAGES_VERSION} /tmp/spack-packages.json
+RUN <<EOF
+git clone --filter=tree:0 https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPACKPACKAGES_ROOT}
+git -C ${SPACKPACKAGES_ROOT} checkout ${SPACKPACKAGES_VERSION}
+if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
+  SPACKPACKAGES_CHERRYPICKS=$(git -C ${SPACKPACKAGES_ROOT} rev-list --topo-order ${SPACKPACKAGES_CHERRYPICKS} | grep -m $(echo ${SPACKPACKAGES_CHERRYPICKS} | wc -w)  "${SPACKPACKAGES_CHERRYPICKS}" | tac)
+  eval "declare -A SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY=(${SPACKPACKAGES_CHERRYPICKS_FILES})"
+  for hash in ${SPACKPACKAGES_CHERRYPICKS} ; do
+    if [ -n "${SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
+      git -C ${SPACKPACKAGES_ROOT} show ${hash} -- ${SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY[${hash}]//,/ } | patch -p1 -d ${SPACKPACKAGES_ROOT}
+      git -C ${SPACKPACKAGES_ROOT} commit --all --message "$(git -C ${SPACKPACKAGES_ROOT} show --no-patch --pretty=format:%s ${hash})"
+    else
+      git -C ${SPACKPACKAGES_ROOT} cherry-pick ${hash}
+    fi
+  done
+fi
+git -C ${SPACKPACKAGES_ROOT} gc --prune=all --aggressive
+spack repo add --scope site "${SPACKPACKAGES_ROOT}"
 EOF
 
 ## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!

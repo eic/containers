@@ -292,6 +292,7 @@ base:
     - version
   script:
     - source spack.sh ; 
+      source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
     - attempts=0
@@ -312,6 +313,10 @@ base:
                    --build-arg SPACK_VERSION=${SPACK_VERSION}
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
                    --build-arg SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES}"
+                   --build-arg SPACKPACKAGES_ORGREPO=${SPACKPACKAGES_ORGREPO}
+                   --build-arg SPACKPACKAGES_VERSION=${SPACKPACKAGES_VERSION}
+                   --build-arg SPACKPACKAGES_CHERRYPICKS="${SPACKPACKAGES_CHERRYPICKS}"
+                   --build-arg SPACKPACKAGES_CHERRYPICKS_FILES="${SPACKPACKAGES_CHERRYPICKS_FILES}"
                    --build-arg KEY4HEPSPACK_ORGREPO=${KEY4HEPSPACK_ORGREPO}
                    --build-arg KEY4HEPSPACK_VERSION=${KEY4HEPSPACK_VERSION}
                    --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
@@ -387,6 +392,7 @@ eic:
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT= ; fi
     - apk add envsubst git
     - source spack.sh ; 
+      source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
       export SPACK_VERSION ;
