@@ -184,6 +184,9 @@ ln -s ${SPACK_ROOT}/share/spack/docker/entrypoint.bash /usr/bin/interactive-shel
 ln -s ${SPACK_ROOT}/share/spack/docker/entrypoint.bash /usr/bin/spack-env
 EOF
 
+## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
+SHELL ["docker-shell"]
+
 ## Setup spack-packages
 ENV SPACKPACKAGES_ROOT=${SPACK_ROOT}/var/spack/repos/spack-packages
 ARG SPACKPACKAGES_ORGREPO="spack/spack-packages"
@@ -192,6 +195,7 @@ ARG SPACKPACKAGES_CHERRYPICKS=""
 ARG SPACKPACKAGES_CHERRYPICKS_FILES=""
 ADD https://api.github.com/repos/${SPACKPACKAGES_ORGREPO}/commits/${SPACKPACKAGES_VERSION} /tmp/spack-packages.json
 RUN <<EOF
+set -e
 git clone --filter=tree:0 https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPACKPACKAGES_ROOT}
 git -C ${SPACKPACKAGES_ROOT} checkout ${SPACKPACKAGES_VERSION}
 if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
@@ -209,9 +213,6 @@ fi
 git -C ${SPACKPACKAGES_ROOT} gc --prune=all --aggressive
 spack repo add --scope site "${SPACKPACKAGES_ROOT}"
 EOF
-
-## Use spack entrypoint. NOTE: Requires `set -ex` in all multi-line scripts!
-SHELL ["docker-shell"]
 
 ## Setup build configuration
 ARG jobs=1
