@@ -53,6 +53,7 @@ spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/c
 spack external find --not-buildable --scope env:${SPACK_ENV} llvm
 sed -i 's/spec: llvm@.*/& targets=all/' ${SPACK_ENV}/spack.yaml
 sed -i 's/spec: llvm@.*/& targets=all/' ${SPACK_ROOT}/etc/spack/packages.yaml
+spack config blame packages
 spack concretize --force
 EOF
 
