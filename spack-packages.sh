@@ -10,6 +10,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS <<- \
 --- || true
 b5ffbcc4aa43bffbffa96ff9a436a68773e10933
 b6b6d79c25c1496472f9535ec33c9030b27353ab
+5e619a1d482bb5ee059d0a1ec49af1d90e86dee4
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -19,3 +20,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## [hash]: [description]
 ## b5ffbcc4aa43bffbffa96ff9a436a68773e10933: strace: add v6.15
 ## b6b6d79c25c1496472f9535ec33c9030b27353ab: iwyu: add patch for 0.23
+## 5e619a1d482bb5ee059d0a1ec49af1d90e86dee4: iwyu,g2,r-curl: requires(pkg) -> requires(^pkg)
