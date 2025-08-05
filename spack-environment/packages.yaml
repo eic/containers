@@ -65,9 +65,6 @@ packages:
   cli11:
     require:
     - '@2.4.2'
-  cmake:
-    require:
-    - '@3.30.5'
   cnpy:
     require:
     - '@master'
