@@ -246,9 +246,6 @@ packages:
   nano:
     require:
     - '@7.2'
-  node-js:
-    require:
-    - '@22.4.0'
   nopayloadclient:
     require:
     - '@0.0.3'
