@@ -51,6 +51,7 @@ echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
 spack env activate --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
 spack external find --not-buildable --scope env:${SPACK_ENV} llvm
+sed -i 's/spec: llvm@.*/& targets=all/' ${SPACK_ENV}/spack.yaml
 spack concretize --force
 EOF
 
