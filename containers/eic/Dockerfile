@@ -78,8 +78,9 @@ set -e
 export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
+make --debug=b --jobs ${jobs} --keep-going --directory /opt/spack-environment \
   SPACK_ENV=${SPACK_ENV}
+echo "done"
 ccache --show-stats
 ccache --zero-stats
 EOF
