@@ -43,7 +43,7 @@ packages:
     - '@1.86.0'
   cairo:
     require:
-    - '@1.16.0'
+    - '@1.18.2'
     - +fc+ft+X+pdf+gobject
   catch2:
     require:
