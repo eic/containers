@@ -1,6 +1,6 @@
 MAKEFLAGS += -Orecurse
 
-SPACK ?= spack --backtrace
+SPACK ?= spack --backtrace --yes-to-all
 SPACK_INSTALL_FLAGS += --no-check-signature --show-log-on-error
 
 export SPACK_COLOR = always
