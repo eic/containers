@@ -11,7 +11,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS <<- \
 b5ffbcc4aa43bffbffa96ff9a436a68773e10933
 b6b6d79c25c1496472f9535ec33c9030b27353ab
 405e97751385dccbd6ec6e6f3b57dc28fc04c76b
-13b4b6e0d9ffc08b12abe9c9b299546b2b382a71
+ba00d764b91db70bce8236bc528a1d4af37c4ce9
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -22,4 +22,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## b5ffbcc4aa43bffbffa96ff9a436a68773e10933: strace: add v6.15
 ## b6b6d79c25c1496472f9535ec33c9030b27353ab: iwyu: add patch for 0.23
 ## 405e97751385dccbd6ec6e6f3b57dc28fc04c76b: iwyu,g2,r-curl: requires(pkg) -> requires(^pkg)
-## 13b4b6e0d9ffc08b12abe9c9b299546b2b382a71: py-gfal2-python: depends_on c
+## ba00d764b91db70bce8236bc528a1d4af37c4ce9: py-gfal2-python: depends_on c
