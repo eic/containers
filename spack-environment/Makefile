@@ -1,4 +1,4 @@
-MAKEFLAGS += -Orecurse
+MAKEFLAGS += -Oline
 
 SPACK ?= spack --backtrace
 SPACK_INSTALL_FLAGS += --no-check-signature --show-log-on-error --yes-to-all --verbose
