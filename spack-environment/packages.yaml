@@ -481,6 +481,9 @@ packages:
   vecgeom:
     require:
     - '@1.2.9'
+  xerces-c:
+    require:
+    - cxxstd=20
   xrootd:
     require:
     - '@5.7.0'
