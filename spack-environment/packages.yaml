@@ -51,7 +51,7 @@ packages:
     - -ipo
   celeritas:
     require:
-    - '@0.6.0'
+    - '@0.5.0'
     - +geant4 +hepmc3  +vecgeom
     - one_of: [~cuda +root, +cuda +ipo ~root]
   cernlib:
@@ -65,6 +65,9 @@ packages:
   cli11:
     require:
     - '@2.4.2'
+  cmake:
+    require:
+    - '@3.30.9'
   cnpy:
     require:
     - '@master'
