@@ -50,8 +50,7 @@ ENV SPACK_COLOR="always"
 
 # Concretization (default environment)
 RUN <<EOF
-echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
-spack env activate --dir ${SPACK_ENV}
+spack env activate --without-view --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
 spack external find --not-buildable --scope env:${SPACK_ENV} llvm
 spack concretize --force
@@ -104,8 +103,6 @@ ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
 ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all --verbose"
 ENV SPACK_COLOR="always"
-
-RUN echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
 
 COPY --from=builder_installation_default \
   /opt/spack-environment/${ENV}/spack.* \
@@ -276,15 +273,9 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
 
-## Create views at /opt/local and /opt/detector
+## Ensure views directories, not symlinks
 RUN <<EOF
 set -e
-rm -rf /opt/local
-sed -i -e '/view: false/d' ${SPACK_ENV}/spack.yaml
-cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/spack.yaml
-spack -e ${SPACK_ENV} env view regenerate /opt/local
-spack -e ${SPACK_ENV} env view regenerate /opt/detector
-# ensure /opt/local is the view, not a symlink
 rm -rf /opt/local /opt/detector
 LOCAL_PREFIX_PATH=$(realpath $(ls /opt/._local/ | tail -n1))
 mv /opt/._local/${LOCAL_PREFIX_PATH} /opt/local
