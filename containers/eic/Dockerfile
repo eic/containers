@@ -208,8 +208,7 @@ export CCACHE_DIR=/ccache
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 
 spack gc --yes-to-all
-spack find --long --no-groups \
-| sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
+spack find --long --no-groups --format "{name}" \
 | uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
@@ -257,8 +256,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
 set -e
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all
-spack find --long --no-groups \
-| sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
+spack find --long --no-groups --format "{name}" \
 | uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
