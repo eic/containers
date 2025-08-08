@@ -4,6 +4,8 @@ spack:
   - ../packages.yaml
   concretizer:
     unify: true
+  config:
+    deprecated: True # FIXME vecgeom 1.2.9
   specs:
   - acts
   - actsvg
