@@ -55,11 +55,11 @@ spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/c
 spack external find --not-buildable --scope env:${SPACK_ENV} llvm
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\)" \
+| uniq -D -f2 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\)" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read hash spec ; do echo "'/${hash}'" ; spack --backtrace spec --long /${hash} ; done
+  cat /tmp/duplicates.txt | while read status hash spec ; do echo "'/${hash}'" ; spack --backtrace spec --long /${hash} ; done
   exit 1
 fi
 EOF
@@ -187,11 +187,11 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
 fi
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\)" \
+| uniq -D -f2 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\)" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read hash spec ; do echo "'/${hash}'" ; spack --backtrace spec --long /${hash} ; done
+  cat /tmp/duplicates.txt | while read status hash spec ; do echo "'/${hash}'" ; spack --backtrace spec --long /${hash} ; done
   exit 1
 fi
 EOF
