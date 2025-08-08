@@ -12,6 +12,7 @@ b5ffbcc4aa43bffbffa96ff9a436a68773e10933
 b6b6d79c25c1496472f9535ec33c9030b27353ab
 405e97751385dccbd6ec6e6f3b57dc28fc04c76b
 ba00d764b91db70bce8236bc528a1d4af37c4ce9
+4b243eb07a483a6bf527c2f74e5766b35afa528b
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -23,3 +24,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## b6b6d79c25c1496472f9535ec33c9030b27353ab: iwyu: add patch for 0.23
 ## 405e97751385dccbd6ec6e6f3b57dc28fc04c76b: iwyu,g2,r-curl: requires(pkg) -> requires(^pkg)
 ## ba00d764b91db70bce8236bc528a1d4af37c4ce9: py-gfal2-python: depends_on c
+## 4b243eb07a483a6bf527c2f74e5766b35afa528b: gobject-introspection: restore setuptools@44: support
