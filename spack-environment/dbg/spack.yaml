@@ -2,6 +2,8 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  concretizer:
+    unify: true
   specs:
   - acts build_type=Debug
   - algorithms build_type=Debug
