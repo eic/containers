@@ -54,6 +54,14 @@ spack env activate --without-view --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
 spack external find --not-buildable --scope env:${SPACK_ENV} llvm
 spack concretize --force
+spack --color=never find --long --no-groups --show-concretized --format "{name}" \
+| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\)" \
+| tee /tmp/duplicates.txt
+if [ -s /tmp/duplicates.txt ] ; then
+  echo "Duplicate packages found"
+  cat /tmp/duplicates.txt | while read hash spec ; do echo "'/${hash}'" ; spack --backtrace spec --long /${hash} ; done
+  exit 1
+fi
 EOF
 
 
@@ -178,6 +186,14 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   spack deconcretize -y --all juggler
 fi
 spack concretize --force
+spack --color=never find --long --no-groups --show-concretized --format "{name}" \
+| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\)" \
+| tee /tmp/duplicates.txt
+if [ -s /tmp/duplicates.txt ] ; then
+  echo "Duplicate packages found"
+  cat /tmp/duplicates.txt | while read hash spec ; do echo "'/${hash}'" ; spack --backtrace spec --long /${hash} ; done
+  exit 1
+fi
 EOF
 
 
@@ -205,14 +221,6 @@ export CCACHE_DIR=/ccache
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 
 spack gc --yes-to-all
-spack --color=never find --long --no-groups --format "{name}" \
-| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\)" \
-| tee /tmp/duplicates.txt
-if [ -s /tmp/duplicates.txt ] ; then
-  echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read hash spec ; do echo "'/${hash}'" ; spack --backtrace spec --long /${hash} ; done
-  exit 1
-fi
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -253,14 +261,6 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
 set -e
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all
-spack --color=never find --long --no-groups --format "{name}" \
-| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\)" \
-| tee /tmp/duplicates.txt
-if [ -s /tmp/duplicates.txt ] ; then
-  echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done
-  exit 1
-fi
 EOF
 
 
