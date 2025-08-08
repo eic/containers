@@ -44,6 +44,9 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider build concretization
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
+ARG SPACK_FLAGS="--backtrace"
+ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all --verbose"
+ENV SPACK_COLOR="always"
 
 # Concretization (default environment)
 RUN <<EOF
@@ -78,7 +81,7 @@ set -e
 export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
-spack --backtrace install --no-check-signature --show-log-on-error --yes-to-all --verbose
+spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -98,6 +101,9 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider runtime concretizati
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
+ARG SPACK_FLAGS="--backtrace"
+ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all --verbose"
+ENV SPACK_COLOR="always"
 
 RUN echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
 
@@ -124,7 +130,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
-spack --backtrace install --no-check-signature --show-log-on-error --yes-to-all --verbose --use-buildcache only
+spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all
 EOF
 
@@ -199,7 +205,8 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-spack --backtrace install --no-check-signature --show-log-on-error --yes-to-all --verbose
+spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+
 spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
@@ -248,7 +255,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
 set -e
-spack --backtrace install --no-check-signature --show-log-on-error --yes-to-all --verbose --use-buildcache only
+spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
