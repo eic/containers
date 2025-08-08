@@ -477,6 +477,9 @@ packages:
   valgrind:
     require:
     - '@3.20.0'
+  vecgeom:
+    require:
+    - '@1.2.9'
   xrootd:
     require:
     - '@5.7.0'
