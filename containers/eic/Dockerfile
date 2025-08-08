@@ -209,11 +209,11 @@ spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 
 spack gc --yes-to-all
 spack find --long --no-groups --format "{name}" \
-| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
+| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\)" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done
+  cat /tmp/duplicates.txt | while read hash spec ; do echo "'/${hash}'" ; spack --backtrace spec --long /${hash} ; done
   exit 1
 fi
 ccache --show-stats
@@ -257,7 +257,7 @@ set -e
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all
 spack find --long --no-groups --format "{name}" \
-| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
+| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\)" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
