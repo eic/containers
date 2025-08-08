@@ -3,11 +3,12 @@
 #   (but build cache products will get used if available during install).
 # - We want unified environments that can be installed in a simple view,
 #   but unfortunately that prevents multiple geometry versions. We use
-#   when_possible and consider duplicate dependencies an error.
+#   when_possible in those containers where multiple geometry versions are
+#   installed, and consider other duplicate packages an error.
 #
 concretizer:
   reuse:
     roots: true
     from:
     - type: local
-  unify: when_possible
+  unify: true

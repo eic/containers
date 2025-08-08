@@ -4,7 +4,7 @@ spack:
   - ../packages.yaml
   - ../view.yaml
   concretizer:
-    unify: true
+    unify: when_possible # multiple epic versions
   config:
     deprecated: True # FIXME vecgeom 1.2.9
   specs:
