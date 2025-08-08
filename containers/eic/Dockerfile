@@ -78,8 +78,7 @@ set -e
 export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV}
+spack --backtrace install --jobs ${jobs} --no-check-signature --show-log-on-error --yes-to-all --verbose
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -125,8 +124,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--use-buildcache only"
+spack --backtrace install --jobs ${jobs} --no-check-signature --show-log-on-error --yes-to-all --verbose --use-buildcache only
 spack gc --yes-to-all
 EOF
 
@@ -201,8 +199,7 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV}
+spack --backtrace install --jobs ${jobs} --no-check-signature --show-log-on-error --yes-to-all --verbose
 spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
@@ -251,8 +248,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
 set -e
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--use-buildcache only"
+spack --backtrace install --jobs ${jobs} --no-check-signature --show-log-on-error --yes-to-all --verbose --use-buildcache only
 spack gc --yes-to-all
 spack find --long --no-groups \
 | sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
