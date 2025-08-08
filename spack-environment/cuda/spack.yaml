@@ -2,6 +2,8 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  concretizer:
+    unify: true
   specs:
   - acts +cuda cuda_arch=75
   - actsvg
