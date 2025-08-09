@@ -86,7 +86,7 @@ spack:
   - py-epic-capybara
   - py-graphviz
   - py-hepunits
-  - py-hist
+  #- py-hist # FIXME enable when @2.7.2:
   - py-histoprint
   - py-ipython
   - py-jinja2
