@@ -41,7 +41,7 @@ packages:
   boost:
     require:
     - '@1.86.0'
-    - cxxstd=20
+    - +context +filesystem +graph +log +program_options +python +regex +system +test +thread cxxstd=20
   cairo:
     require:
     - '@1.18.2'
