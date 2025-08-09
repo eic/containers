@@ -462,6 +462,9 @@ packages:
   py-snakemake-storage-plugin-s3:
     require:
     - '@0.2.10'
+  rust:
+    require:
+    - +dev
   spdlog:
     require:
     - '@1.14.1'
