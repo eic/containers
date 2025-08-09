@@ -16,10 +16,10 @@ spack:
   - py-boost-histogram
   - py-dask
   - py-eic-rucio-policy-package
-  - py-epic-capybara
+  #- py-epic-capybara # FIXME enable when py-hist@2.7.2:
   - py-graphviz
   - py-hepunits
-  #- py-hist # FIXME enable when @2.7.2:
+  #- py-hist # FIXME enable when py-hist@2.7.2:
   - py-histoprint
   - py-ipython
   - py-jinja2
