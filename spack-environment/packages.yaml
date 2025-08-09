@@ -360,7 +360,7 @@ packages:
     - '@1.16-33-g3788bb4'
   py-numpy:
     require:
-    - '@1.26.4'
+    - '@2.0.2'
   py-onnx:
     require:
     - '@1.17.0'
