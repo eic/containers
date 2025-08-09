@@ -59,7 +59,14 @@ spack --color=never find --long --no-groups --show-concretized --format "{name}"
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read status hash spec ; do echo "'/${hash}'" ; spack --backtrace spec --long /${hash} ; done
+  cat /tmp/duplicates.txt | while read status hash spec ; do
+    spack --backtrace spec --long /${hash}
+    if [ "$prevspec" = "$spec" ] ; then
+      spack diff /${hash} /${prevhash}
+    fi
+    prevhash=${hash}
+    prevspec=${spec}
+  done
   exit 1
 fi
 EOF
@@ -191,7 +198,14 @@ spack --color=never find --long --no-groups --show-concretized --format "{name}"
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read status hash spec ; do echo "'/${hash}'" ; spack --backtrace spec --long /${hash} ; done
+  cat /tmp/duplicates.txt | while read status hash spec ; do
+    spack --backtrace spec --long /${hash}
+    if [ "$prevspec" = "$spec" ] ; then
+      spack diff /${hash} /${prevhash}
+    fi
+    prevhash=${hash}
+    prevspec=${spec}
+  done
   exit 1
 fi
 EOF
