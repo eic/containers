@@ -258,7 +258,7 @@ packages:
     - any_of: [+geocad, -geocad]
   onnx:
     require:
-    - '@1.15.0'
+    - '@1.17.0'
   openblas:
     require:
     - ~fortran
@@ -358,10 +358,10 @@ packages:
     - '@1.26.4'
   py-onnx:
     require:
-    - '@1.15.0'
+    - '@1.17.0'
   py-onnxruntime:
     require:
-    - '@1.18.2'
+    - '@1.20.2'
   py-pandas:
     require:
     - '@2.2.3'
