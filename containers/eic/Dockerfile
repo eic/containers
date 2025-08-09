@@ -50,6 +50,7 @@ ENV SPACK_COLOR="always"
 
 # Concretization (default environment)
 RUN <<EOF
+set -e
 spack env activate --without-view --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
 spack external find --not-buildable --scope env:${SPACK_ENV} llvm
@@ -142,6 +143,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
+set -e
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all
 EOF
@@ -170,6 +172,7 @@ ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/jug
 
 # Concretization (custom environment)
 RUN <<EOF
+set -e
 spack env activate --dir ${SPACK_ENV}
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
