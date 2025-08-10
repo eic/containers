@@ -14,6 +14,7 @@ b6b6d79c25c1496472f9535ec33c9030b27353ab
 ba00d764b91db70bce8236bc528a1d4af37c4ce9
 4b243eb07a483a6bf527c2f74e5766b35afa528b
 948d4ea14409e38d47882b5a5c2d61d99d02b30b
+d4f362a22b8149eab024db941c4e749bee6a2f5c
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -27,3 +28,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## ba00d764b91db70bce8236bc528a1d4af37c4ce9: py-gfal2-python: depends_on c
 ## 4b243eb07a483a6bf527c2f74e5766b35afa528b: gobject-introspection: restore setuptools@44: support
 ## 948d4ea14409e38d47882b5a5c2d61d99d02b30b: scikit-hep packages: update to latest major.minor versions
+## d4f362a22b8149eab024db941c4e749bee6a2f5c: py-boost-histogram: depends_on py-setuptools-scm type build
