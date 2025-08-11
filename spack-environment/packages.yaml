@@ -349,9 +349,6 @@ packages:
   py-lmfit:
     require:
     - '@1.0.2'
-  py-matplotlib:
-    require:
-    - '@3.9.2'
   py-mplhep:
     require:
     - '@0.3.26'
