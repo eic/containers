@@ -20,8 +20,7 @@ packages:
     require:
     - '%clang'
     - '@39.2.0'
-    - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 +json +onnx +podio +python +tgeo
-    - 'patch~d9bb4c9748233ac9f9e2bed3fc7d3aec9e5f5181729243be93b9c6eeee7db737,5aa1fee7437aaac8dc70bbac728c73fa42e59dd2e75ee4d2e7fbde1845889d08'
+    - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 +json +onnx +podio +python +tgeo ~pr4502
   actsvg:
     require:
     - '@0.4.26'
