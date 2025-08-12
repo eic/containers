@@ -141,7 +141,6 @@ apt-get -yqq install --no-install-recommends                            \
         jq                                                              \
         python3                                                         \
         python3-dev                                                     \
-        python3-boto3                                                   \
         python-is-python3
 EOF
 
