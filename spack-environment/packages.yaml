@@ -351,7 +351,7 @@ packages:
     - '@1.0.2'
   py-mplhep:
     require:
-    - '@0.3.26'
+    - '@0.4.0'
   py-htgettoken:
     require:
     - '@1.16-33-g3788bb4'
