@@ -355,6 +355,9 @@ packages:
   py-htgettoken:
     require:
     - '@1.16-33-g3788bb4'
+  py-matplotlib:
+    require:
+    - '%clang' # https://github.com/spack/spack-packages/issues/1068
   py-numpy:
     require:
     - '@2.0.2'
