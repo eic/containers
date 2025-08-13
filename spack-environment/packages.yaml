@@ -420,9 +420,6 @@ packages:
     require:
     - '@2.5.1'
     - -mkldnn
-  py-uproot:
-    require:
-    - '@5.0.5'
   py-vector:
     require:
     - '@1.5.1'
