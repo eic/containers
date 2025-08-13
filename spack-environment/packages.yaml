@@ -345,6 +345,9 @@ packages:
   py-jinja2-cli:
     require:
     - '@0.8.2'
+  py-jsonschema:
+    require:
+    - +format
   py-keras:
     require:
     - '@3.7.0'
