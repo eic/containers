@@ -364,6 +364,9 @@ packages:
   py-matplotlib:
     require:
     - '%clang' # https://github.com/spack/spack-packages/issues/1068
+  py-nbformat:
+    require:
+    - '@5.8:' # avoid py-jupyter-server and snakemake divergence
   py-numpy:
     require:
     - '@2.0.2'
