@@ -336,6 +336,9 @@ packages:
   py-histoprint:
     require:
     - '@2.4.0'
+  py-ipython:
+    require:
+    - '@8.28:'
   py-jinja2:
     require:
     - '@3.1.4'
