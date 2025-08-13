@@ -15,6 +15,7 @@ ba00d764b91db70bce8236bc528a1d4af37c4ce9
 4b243eb07a483a6bf527c2f74e5766b35afa528b
 948d4ea14409e38d47882b5a5c2d61d99d02b30b
 215e9f93f4de43095bd12e39809b9afeb89655f0
+8aaec9b76104af2cf58e7be55485d6c2385b41ab
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -29,3 +30,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 4b243eb07a483a6bf527c2f74e5766b35afa528b: gobject-introspection: restore setuptools@44: support
 ## 948d4ea14409e38d47882b5a5c2d61d99d02b30b: scikit-hep packages: update to latest major.minor versions
 ## 215e9f93f4de43095bd12e39809b9afeb89655f0: py-boost-histogram: depends_on py-setuptools-scm type build
+## 8aaec9b76104af2cf58e7be55485d6c2385b41ab: py-uproot: depends_on py-numpy@:1 when @:5.3.2
