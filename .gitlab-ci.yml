@@ -495,7 +495,7 @@ eic_xl:singularity:default:
             - default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            PLATFORM: linux/amd64
+            PLATFORM: linux/amd64,linux/arm64/v8
 
 # eic-shell/install.py expects build/eic_xl.sif from the job with name 'eic_xl:singularity:nightly'
 eic_xl:singularity:nightly:
@@ -515,7 +515,7 @@ eic_xl:singularity:nightly:
             - nightly
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            PLATFORM: linux/amd64
+            PLATFORM: linux/amd64,linux/arm64/v8
 
 .benchmarks:
   stage: benchmarks
@@ -544,7 +544,7 @@ eic_xl:singularity:nightly:
             - default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            PLATFORM: linux/amd64
+            PLATFORM: linux/amd64,linux/arm64/v8
 
 .benchmarks:nightly:
   extends: .benchmarks
@@ -560,7 +560,7 @@ eic_xl:singularity:nightly:
             - nightly
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            PLATFORM: linux/amd64
+            PLATFORM: linux/amd64,linux/arm64/v8
 
 benchmarks:geoviewer:default:
   extends: .benchmarks:default
