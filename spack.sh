@@ -78,6 +78,7 @@ b5ffbcc4aa43bffbffa96ff9a436a68773e10933
 b6b6d79c25c1496472f9535ec33c9030b27353ab
 70a7821a6932dee391686f50444854b3c6952f42
 88f1201502da558e2841453405811fea3968f1b5
+ee8f934b3ee9fab325f8aaf8a54d9cfb6942af38
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -159,3 +160,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## b6b6d79c25c1496472f9535ec33c9030b27353ab: iwyu: add patch for 0.23
 ## 70a7821a6932dee391686f50444854b3c6952f42: (py-)onnx: add v1.17.0
 ## 88f1201502da558e2841453405811fea3968f1b5: diffutils: add v3.11, v3.12
+## ee8f934b3ee9fab325f8aaf8a54d9cfb6942af38: m4: add v1.4.20
