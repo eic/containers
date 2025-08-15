@@ -364,7 +364,8 @@ base:multi:
         PLATFORM: linux/amd64
   extends: .build
   stage: base
-  needs: base
+  needs:
+    - base
   script:
     - declare -A amends ; 
       for platform in ${PLATFORM} ; do
