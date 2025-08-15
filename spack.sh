@@ -77,6 +77,7 @@ b5ffbcc4aa43bffbffa96ff9a436a68773e10933
 79d79969bb4a5b80433dc3b73f471052a6281dc7
 b6b6d79c25c1496472f9535ec33c9030b27353ab
 70a7821a6932dee391686f50444854b3c6952f42
+88f1201502da558e2841453405811fea3968f1b5
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -157,3 +158,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 79d79969bb4a5b80433dc3b73f471052a6281dc7: celeritas: patch 0.5.0 for geant4@11.3.0:
 ## b6b6d79c25c1496472f9535ec33c9030b27353ab: iwyu: add patch for 0.23
 ## 70a7821a6932dee391686f50444854b3c6952f42: (py-)onnx: add v1.17.0
+## 88f1201502da558e2841453405811fea3968f1b5: diffutils: add v3.11, v3.12
