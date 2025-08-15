@@ -266,7 +266,7 @@ status:pending:
 ## TODO
 ## oneapi_runtime + eic_xl --> oneapi_prod 
 
-base:
+.base: &base_parallel
   parallel:
     matrix:
 #      - BASE_IMAGE: debian:testing-slim
@@ -289,6 +289,9 @@ base:
       - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-runtime-${CUDA_OS}
         BUILD_IMAGE: cuda_runtime
         PLATFORM: linux/amd64
+
+base:
+  <<: *base_parallel
   extends: .build
   stage: base
   needs:
@@ -345,33 +348,14 @@ base:
       done
 
 base:multi:
-  parallel:
-    matrix:
-#      - BASE_IMAGE: debian:testing-slim
-#        BUILD_IMAGE: debian_testing_base
-#        PLATFORM: linux/amd64,linux/arm64/v8
-      - BASE_IMAGE: debian:trixie-slim
-        BUILD_IMAGE: debian_stable_base
-        PLATFORM: linux/amd64,linux/arm64/v8
-#      - BASE_IMAGE: ubuntu:22.04
-#        BUILD_IMAGE: ubuntu_base
-#        PLATFORM: linux/amd64,linux/arm64/v8
-#      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
-#        BUILD_IMAGE: oneapi_base
-#        PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_OS}
-        BUILD_IMAGE: cuda_devel
-        PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-runtime-${CUDA_OS}
-        BUILD_IMAGE: cuda_runtime
-        PLATFORM: linux/amd64
+  <<: *base_parallel
   extends: .build
   stage: base
   needs:
     - base
   script:
-    - for platform in ${PLATFORM} ; do
-        digest=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}/${platform}/build.json) ;
+    - for build_json in `find metadata/${BUILD_IMAGE} -name build.json` ; do
+        digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
         echo ${digest} ;
         amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
       done
@@ -385,7 +369,7 @@ base:multi:
         docker push ${export_tag} ;
       done
 
-eic:
+.eic: &eic_parallel
   parallel:
     matrix:
       - BUILD_IMAGE: eic_
@@ -443,6 +427,9 @@ eic:
     - if: '$ENV != "ci" && $CI_PIPELINE_SOURCE == "trigger"'
       when: manual
     - when: always
+
+eic:
+  <<: *eic_parallel
   extends: .build
   stage: eic
   needs:
@@ -468,26 +455,7 @@ eic:
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
                    --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
                    --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64,mode=max
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
-                   ${EXPORT_TAG:+
-                     ${IF_BUILD_DEFAULT+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                     }
-                     ${IF_BUILD_DEFAULT-
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                     }
-                   }
-                   ${IF_BUILD_NIGHTLY+
-                     ${NIGHTLY:+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                     }
-                   }
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}
                    --file containers/eic/Dockerfile
                    --platform ${PLATFORM}
                    --build-arg BENCHMARK_COM_VERSION=$(sh .ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git master)
@@ -524,6 +492,8 @@ eic:
                    --secret type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER
                    --secret type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN
                    --provenance false
+                   --output push-by-digest=true,type=image,push=true
+                   --metadata-file metadata/${BUILD_IMAGE}/${PLATFORM}/build.json
                    containers/eic
                    2>&1 | tee build.log
       ; do
@@ -569,7 +539,7 @@ user_spack_environment:
     - gpu
   needs: 
     - job: version
-    - job: eic
+    - job: eic-amd64
       parallel:
         matrix:
           - BUILD_IMAGE: eic_dev_
@@ -588,6 +558,42 @@ cuda:torch:
   script:
     - python -c "import torch ; print(torch.cuda.is_available()) ;"
   allow_failure: true
+
+eic:multi:
+  <<: *eic_parallel
+  extends: .build
+  stage: eic
+  needs:
+    - eic
+  script:
+    - for build_json in `find metadata/${BUILD_IMAGE} -name build.json` ; do
+        digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
+        echo ${digest} ;
+        amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
+      done
+    - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE} ${amends}
+    - for export_tag in ${EXPORT_TAG:+
+                          ${IF_BUILD_DEFAULT+
+                            ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                            ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                            ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
+                          }
+                          ${IF_BUILD_DEFAULT-
+                            ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                            ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                            ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
+                          }
+                        }
+                        ${IF_BUILD_NIGHTLY+
+                          ${NIGHTLY:+
+                            ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                            ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                            ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
+                          }
+                        } ; do
+        docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${export_tag} ;
+        docker push ${export_tag} ;
+      done  
 
 .singularity:
   image:
