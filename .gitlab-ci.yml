@@ -273,7 +273,9 @@ base:
 #        PLATFORM: linux/amd64,linux/arm64/v8
       - BASE_IMAGE: debian:trixie-slim
         BUILD_IMAGE: debian_stable_base
-        PLATFORM: linux/amd64,linux/arm64/v8
+        PLATFORM:
+        - linux/amd64
+        - linux/arm64/v8
 #      - BASE_IMAGE: ubuntu:22.04
 #        BUILD_IMAGE: ubuntu_base
 #        PLATFORM: linux/amd64,linux/arm64/v8
@@ -299,12 +301,7 @@ base:
     - nocache=""
     - while !
       docker buildx build --push ${BUILD_OPTIONS} ${nocache}
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                   }
+                   ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}
                    --file containers/debian/Dockerfile
                    --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
@@ -323,6 +320,7 @@ base:
                    --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
                    --build-arg jobs=${JOBS}
                    --provenance false
+                   --output push-by-digest=true,type=image,push=true
                    containers/debian
                    2>&1 | tee build.log
       ; do
@@ -338,6 +336,44 @@ base:
         let attempts=$attempts+1 ;
       done
 
+base:multi:
+  parallel:
+    matrix:
+#      - BASE_IMAGE: debian:testing-slim
+#        BUILD_IMAGE: debian_testing_base
+#        PLATFORM: linux/amd64,linux/arm64/v8
+      - BASE_IMAGE: debian:trixie-slim
+        BUILD_IMAGE: debian_stable_base
+        PLATFORM: linux/amd64,linux/arm64/v8
+#      - BASE_IMAGE: ubuntu:22.04
+#        BUILD_IMAGE: ubuntu_base
+#        PLATFORM: linux/amd64,linux/arm64/v8
+#      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
+#        BUILD_IMAGE: oneapi_base
+#        PLATFORM: linux/amd64
+      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_OS}
+        BUILD_IMAGE: cuda_devel
+        PLATFORM: linux/amd64
+      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-runtime-${CUDA_OS}
+        BUILD_IMAGE: cuda_runtime
+        PLATFORM: linux/amd64
+  extends: .build
+  stage: base
+  needs: base
+  script:
+    - declare -A amends ; 
+      for platform in ${PLATFORM} ; do
+        amends[${platform}]="--amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@sha256:${digest}" ;
+      done
+    - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${amends[@]}
+    - for export_tag in ${EXPORT_TAG:+
+                          ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                          ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                          ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
+                        } ; do
+        docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${export_tag} ;
+        docker push ${export_tag} ;
+      done
 
 eic:
   parallel:
@@ -353,7 +389,9 @@ eic:
         - nightly
         BUILDER_IMAGE: debian_stable_base
         RUNTIME_IMAGE: debian_stable_base
-        PLATFORM: linux/amd64,linux/arm64/v8
+        PLATFORM:
+        - linux/amd64
+        - linux/arm64/v8
 #      - BUILD_TYPE:
 #        - default
 #        - nightly
@@ -524,7 +562,7 @@ eic_xl:singularity:default:
             - default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            PLATFORM: linux/amd64,linux/arm64/v8
+            PLATFORM: linux/amd64
 
 # eic-shell/install.py expects build/eic_xl.sif from the job with name 'eic_xl:singularity:nightly'
 eic_xl:singularity:nightly:
@@ -544,7 +582,7 @@ eic_xl:singularity:nightly:
             - nightly
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            PLATFORM: linux/amd64,linux/arm64/v8
+            PLATFORM: linux/amd64
 
 .benchmarks:
   stage: benchmarks
@@ -573,7 +611,7 @@ eic_xl:singularity:nightly:
             - default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            PLATFORM: linux/amd64,linux/arm64/v8
+            PLATFORM: linux/amd64
 
 .benchmarks:nightly:
   extends: .benchmarks
@@ -589,7 +627,7 @@ eic_xl:singularity:nightly:
             - nightly
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
-            PLATFORM: linux/amd64,linux/arm64/v8
+            PLATFORM: linux/amd64
 
 benchmarks:geoviewer:default:
   extends: .benchmarks:default
