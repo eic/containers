@@ -77,6 +77,8 @@ b5ffbcc4aa43bffbffa96ff9a436a68773e10933
 79d79969bb4a5b80433dc3b73f471052a6281dc7
 b6b6d79c25c1496472f9535ec33c9030b27353ab
 70a7821a6932dee391686f50444854b3c6952f42
+ce7cb3b6b12910691364fd8f53334c63e0c5624f
+82aaec0f9e68319f48952cd38f283429650cc9df
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -157,3 +159,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 79d79969bb4a5b80433dc3b73f471052a6281dc7: celeritas: patch 0.5.0 for geant4@11.3.0:
 ## b6b6d79c25c1496472f9535ec33c9030b27353ab: iwyu: add patch for 0.23
 ## 70a7821a6932dee391686f50444854b3c6952f42: (py-)onnx: add v1.17.0
+## ce7cb3b6b12910691364fd8f53334c63e0c5624f: veccore: add v0.8.2
+## 82aaec0f9e68319f48952cd38f283429650cc9df: veccore: add typo fix for clang
