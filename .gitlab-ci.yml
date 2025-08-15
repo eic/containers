@@ -298,6 +298,7 @@ base:
       source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
+    - mkdir -p metadata/${BUILD_IMAGE}/${PLATFORM}
     - attempts=0
     - nocache=""
     - while !
