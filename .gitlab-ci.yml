@@ -354,6 +354,7 @@ base:multi:
   needs:
     - base
   script:
+    - apk add jq
     - for build_json in `find metadata/${BUILD_IMAGE} -name build.json` ; do
         digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
         echo ${digest} ;
