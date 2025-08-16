@@ -319,6 +319,7 @@ status:pending:
   needs:
     - version
   script:
+    - apk add jq
     - source spack.sh ; 
       source spack-packages.sh ;
       source key4hep-spack.sh ;
