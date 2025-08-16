@@ -380,7 +380,6 @@ base-arm64:
   extends: .base
 
 base:multiarch:
-  <<: *base_amd64_parallel
   extends: .build
   stage: base:multiarch
   needs:
@@ -388,19 +387,21 @@ base:multiarch:
     - base-arm64
   script:
     - apk add jq
-    - for build_json in $(find metadata/${BUILD_IMAGE} -name build.json) ; do
-        digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
-        amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
-      done
-    - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${amends}
-    - docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-    - for export_tag in ${EXPORT_TAG:+
-                          ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                          ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                          ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                        } ; do
-        docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${export_tag} ;
-        docker push ${export_tag} ;
+    - for build_image in $(find metadata -type d) ; do
+        for build_json in $(find metadata/${build_image} -name build.json) ; do
+          digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
+          amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
+        done ;
+        docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ${amends} ;
+        docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
+        for export_tag in ${EXPORT_TAG:+
+                            ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${EXPORT_TAG}}
+                            ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
+                            ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
+                          } ; do
+          docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ${export_tag} ;
+          docker push ${export_tag} ;
+        done
       done
 
 .eic-amd64: &eic_amd64_parallel
@@ -556,6 +557,7 @@ base:multiarch:
         let attempts=$attempts+1 ;
       done
     - echo "BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}${ENV}/${PLATFORM}/build.json)" | tee -a build.env
+    - echo "BUILD_TYPE=${BUILD_TYPE}" | tee -a build.env
 
 user_spack_environment:
   stage: benchmarks
@@ -623,41 +625,42 @@ eic-arm64:
   allow_failure: true
 
 eic:multiarch:
-  <<: *eic_amd64_parallel
   extends: .build
   stage: eic:multiarch
   needs:
     - eic-amd64
     - eic-arm64
   script:
-    - for build_json in $(find metadata/${BUILD_IMAGE} -name build.json) ; do
-        digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
-        amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}@${digest}" ;
+    - for build_image in $(find metadata/ -type d) ; do
+        for build_json in $(find metadata/${build_image} -name build.json) ; do
+          digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
+          amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
+        done ;
+        docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ${amends} ; 
+        docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ;
+        for export_tag in ${EXPORT_TAG:+
+                            ${IF_BUILD_DEFAULT+
+                              ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${EXPORT_TAG}}
+                              ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
+                              ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
+                            }
+                            ${IF_BUILD_DEFAULT-
+                              ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${EXPORT_TAG}-${BUILD_TYPE}}
+                              ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}-${BUILD_TYPE}}
+                              ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}-${BUILD_TYPE}}
+                            }
+                          }
+                          ${IF_BUILD_NIGHTLY+
+                            ${NIGHTLY:+
+                              ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${NIGHTLY_TAG}}
+                              ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${build_image}:${NIGHTLY_TAG}}
+                              ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${NIGHTLY_TAG}}
+                            }
+                          } ; do
+          docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ${export_tag} ;
+          docker push ${export_tag} ;
+        done ;
       done
-    - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE} ${amends}
-    - docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
-    - for export_tag in ${EXPORT_TAG:+
-                          ${IF_BUILD_DEFAULT+
-                            ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                            ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                            ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                          }
-                          ${IF_BUILD_DEFAULT-
-                            ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                            ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                            ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                          }
-                        }
-                        ${IF_BUILD_NIGHTLY+
-                          ${NIGHTLY:+
-                            ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                            ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                            ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                          }
-                        } ; do
-        docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE} ${export_tag} ;
-        docker push ${export_tag} ;
-      done  
 
 .singularity:
   image:
