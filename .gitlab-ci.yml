@@ -337,10 +337,10 @@ base:
         let attempts=$attempts+1 ;
       done
 
-base:multi:
+base:multiarch:
   <<: *base_parallel
   extends: .build
-  stage: base
+  stage: base:multiarch
   needs:
     - base
   script:
@@ -478,10 +478,10 @@ eic:
         let attempts=$attempts+1 ;
       done
 
-eic:multi:
+eic:multiarch:
   <<: *eic_parallel
   extends: .build
-  stage: eic
+  stage: eic:multiarch
   needs:
     - eic
   script:
