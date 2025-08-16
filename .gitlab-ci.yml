@@ -249,6 +249,18 @@ status:pending:
       - metadata/
     when: always
 
+## rules for merging the various multiarch digests into a single tag
+.multiarch:
+  extends: .build
+  script:
+    - apk add jq
+    - for build_json in $(find metadata/${BUILD_IMAGE} -name build.json) ; do
+        digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
+        amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
+      done
+    - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${amends} 
+    - docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+
 ## rules for nightly jobs
 .nightly:
   rules:
@@ -357,11 +369,12 @@ base:multiarch:
     - base
   script:
     - apk add jq
-    - for build_json in `find metadata/${BUILD_IMAGE} -name build.json` ; do
+    - for build_json in $(find metadata/${BUILD_IMAGE} -name build.json) ; do
         digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
         amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
       done
     - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${amends}
+    - docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
     - for export_tag in ${EXPORT_TAG:+
                           ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
                           ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
@@ -571,11 +584,12 @@ eic:multiarch:
   needs:
     - eic
   script:
-    - for build_json in `find metadata/${BUILD_IMAGE} -name build.json` ; do
+    - for build_json in $(find metadata/${BUILD_IMAGE} -name build.json) ; do
         digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
-        amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
+        amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}@${digest}" ;
       done
-    - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE} ${amends}
+    - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE} ${amends}
+    - docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
     - for export_tag in ${EXPORT_TAG:+
                           ${IF_BUILD_DEFAULT+
                             ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
@@ -595,7 +609,7 @@ eic:multiarch:
                             ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
                           }
                         } ; do
-        docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${export_tag} ;
+        docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE} ${export_tag} ;
         docker push ${export_tag} ;
       done  
 
