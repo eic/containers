@@ -438,13 +438,15 @@ eic:
   script:
     - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY= ; fi
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT= ; fi
-    - apk add envsubst git
+    - apk add envsubst git jq
     - source spack.sh ; 
       source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
       export SPACKPACKAGES_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
+    - builder_digest=$(jq -r '."containerimage.digest"' metadata/${BUILDER_IMAGE}/${PLATFORM}/build.json)
+    - runtime_digest=$(jq -r '."containerimage.digest"' metadata/${RUNTIME_IMAGE}/${PLATFORM}/build.json)
     - attempts=0
     - nocache=""
     - set -o xtrace ; 
@@ -467,8 +469,9 @@ eic:
                    --build-arg CAMPAIGNS_SLURM_VERSION=$(sh .ci/resolve_git_ref eic/job_submission_slurm main)
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
+                   --build-arg BUILDER_TAG=@${builder_digest}
                    --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg RUNTIME_TAG=@${RUNTIME_digest}
                    --build-arg EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    --build-arg CI_COMMIT_SHA=${CI_COMMIT_SHA}
                    ${IF_BUILD_DEFAULT+
@@ -568,7 +571,6 @@ eic:multi:
   script:
     - for build_json in `find metadata/${BUILD_IMAGE} -name build.json` ; do
         digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
-        echo ${digest} ;
         amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
       done
     - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE} ${amends}
@@ -610,14 +612,17 @@ eic:multi:
       paths:
         - build/${BUILD_IMAGE}.sif
   script:
+    - apk add jq
     - mkdir build
-    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
+    - digest=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}/${PLATFORM}/build.json)
+    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}@${digest}
 
 eic_xl:singularity:default:
   extends: .singularity
   variables:
     BUILD_TYPE: default
     BUILD_IMAGE: eic_xl
+    PLATFORM: linux/amd64
   needs:
     - job: version
     - job: eic
@@ -638,6 +643,7 @@ eic_xl:singularity:nightly:
   variables:
     BUILD_TYPE: nightly
     BUILD_IMAGE: eic_xl
+    PLATFORM: linux/amd64
   needs:
     - job: version
     - job: eic
