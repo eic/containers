@@ -247,6 +247,8 @@ status:pending:
     paths:
       - build.log
       - metadata/
+    reports:
+      dotenv: build.env
     when: always
 
 ## rules for merging the various multiarch digests into a single tag
@@ -366,7 +368,7 @@ status:pending:
         fi ;
         let attempts=$attempts+1 ;
       done
-
+    - echo "BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}/${PLATFORM}/build.json)" | tee -a build.env
 
 base-amd64:
   <<: *base_amd64_parallel
@@ -552,6 +554,7 @@ base:multiarch:
         fi ;
         let attempts=$attempts+1 ;
       done
+    - echo "BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}${ENV}/${PLATFORM}/build.json)" | tee -a build.env
 
 user_spack_environment:
   stage: benchmarks
@@ -733,6 +736,7 @@ eic_xl:singularity:nightly:
   needs: 
     - job: version
     - job: eic-amd64
+      artifacts: true
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
@@ -749,6 +753,7 @@ eic_xl:singularity:nightly:
   needs: 
     - job: version
     - job: eic-amd64
+      artifacts: true
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
