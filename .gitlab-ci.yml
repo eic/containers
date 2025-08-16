@@ -280,20 +280,19 @@ status:pending:
 ## TODO
 ## oneapi_runtime + eic_xl --> oneapi_prod 
 
-.base: &base_parallel
+.base-amd64: &base_amd64_parallel
   parallel:
     matrix:
 #      - BASE_IMAGE: debian:testing-slim
 #        BUILD_IMAGE: debian_testing_base
-#        PLATFORM: linux/amd64,linux/arm64/v8
+#        PLATFORM: linux/amd64
       - BASE_IMAGE: debian:trixie-slim
         BUILD_IMAGE: debian_stable_base
         PLATFORM:
         - linux/amd64
-        #- linux/arm64/v8
 #      - BASE_IMAGE: ubuntu:22.04
 #        BUILD_IMAGE: ubuntu_base
-#        PLATFORM: linux/amd64,linux/arm64/v8
+#        PLATFORM: linux/amd64
 #      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
 #        BUILD_IMAGE: oneapi_base
 #        PLATFORM: linux/amd64
@@ -304,8 +303,15 @@ status:pending:
         BUILD_IMAGE: cuda_runtime
         PLATFORM: linux/amd64
 
-base:
-  <<: *base_parallel
+.base-arm64: &base_arm64_parallel
+  parallel:
+    matrix:
+      - BASE_IMAGE: debian:trixie-slim
+        BUILD_IMAGE: debian_stable_base
+        PLATFORM:
+        - linux/arm64/v8
+
+.base:
   extends: .build
   stage: base
   needs:
@@ -361,12 +367,22 @@ base:
         let attempts=$attempts+1 ;
       done
 
+
+base-amd64:
+  <<: *base_amd64_parallel
+  extends: .base
+
+base-arm64:
+  <<: *base_arm64_parallel
+  extends: .base
+
 base:multiarch:
   <<: *base_parallel
   extends: .build
   stage: base:multiarch
   needs:
-    - base
+    - base-amd64
+    - base-arm64
   script:
     - apk add jq
     - for build_json in $(find metadata/${BUILD_IMAGE} -name build.json) ; do
@@ -384,7 +400,7 @@ base:multiarch:
         docker push ${export_tag} ;
       done
 
-.eic: &eic_parallel
+.eic-amd64: &eic_amd64_parallel
   parallel:
     matrix:
       - BUILD_IMAGE: eic_
@@ -409,7 +425,6 @@ base:multiarch:
         RUNTIME_IMAGE: debian_stable_base
         PLATFORM:
         - linux/amd64
-        #- linux/arm64/v8
 #      - BUILD_IMAGE: oneapi_
 #        ENV:       
 #        - prod
@@ -443,13 +458,23 @@ base:multiarch:
       when: manual
     - when: always
 
-eic:
-  <<: *eic_parallel
+.eic-arm64: &eic_arm64_parallel
+  parallel:
+    matrix:
+      - BUILD_IMAGE: eic_
+        ENV:
+        - ci
+        BUILD_TYPE:
+        - default
+        - nightly
+        BUILDER_IMAGE: debian_stable_base
+        RUNTIME_IMAGE: debian_stable_base
+        PLATFORM:
+        - linux/arm64/v8
+
+.eic:
   extends: .build
   stage: eic
-  needs:
-    - version
-    - base
   script:
     - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY= ; fi
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT= ; fi
@@ -577,12 +602,27 @@ cuda:torch:
     - python -c "import torch ; print(torch.cuda.is_available()) ;"
   allow_failure: true
 
+eic-amd64:
+  <<: *eic_amd64_parallel
+  extends: .eic
+  needs:
+    - version
+    - base-amd64
+
+eic-arm64:
+  <<: *eic_arm64_parallel
+  extends: .eic
+  needs:
+    - version
+    - base-arm64
+
 eic:multiarch:
   <<: *eic_parallel
   extends: .build
   stage: eic:multiarch
   needs:
-    - eic
+    - eic-amd64
+    - eic-arm64
   script:
     - for build_json in $(find metadata/${BUILD_IMAGE} -name build.json) ; do
         digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
@@ -641,7 +681,7 @@ eic_xl:singularity:default:
     PLATFORM: linux/amd64
   needs:
     - job: version
-    - job: eic
+    - job: eic-amd64
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
@@ -662,7 +702,7 @@ eic_xl:singularity:nightly:
     PLATFORM: linux/amd64
   needs:
     - job: version
-    - job: eic
+    - job: eic-amd64
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
@@ -691,7 +731,7 @@ eic_xl:singularity:nightly:
   extends: .benchmarks
   needs: 
     - job: version
-    - job: eic
+    - job: eic-amd64
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
@@ -707,7 +747,7 @@ eic_xl:singularity:nightly:
   extends: .benchmarks
   needs: 
     - job: version
-    - job: eic
+    - job: eic-amd64
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
