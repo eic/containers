@@ -485,6 +485,7 @@ base:multiarch:
       source eic-spack.sh ;
       export SPACKPACKAGES_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
+    - mkdir -p metadata/${BUILD_IMAGE}${ENV}/${PLATFORM}
     - builder_digest=$(jq -r '."containerimage.digest"' metadata/${BUILDER_IMAGE}/${PLATFORM}/build.json)
     - runtime_digest=$(jq -r '."containerimage.digest"' metadata/${RUNTIME_IMAGE}/${PLATFORM}/build.json)
     - attempts=0
@@ -536,7 +537,7 @@ base:multiarch:
                    --secret type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN
                    --provenance false
                    --output push-by-digest=true,type=image,push=true
-                   --metadata-file metadata/${BUILD_IMAGE}/${PLATFORM}/build.json
+                   --metadata-file metadata/${BUILD_IMAGE}${ENV}/${PLATFORM}/build.json
                    containers/eic
                    2>&1 | tee build.log
       ; do
