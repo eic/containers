@@ -357,7 +357,6 @@ base:multi:
     - apk add jq
     - for build_json in `find metadata/${BUILD_IMAGE} -name build.json` ; do
         digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
-        echo ${digest} ;
         amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
       done
     - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${amends}
@@ -395,7 +394,7 @@ base:multi:
         RUNTIME_IMAGE: debian_stable_base
         PLATFORM:
         - linux/amd64
-        - linux/arm64/v8
+        #- linux/arm64/v8
 #      - BUILD_IMAGE: oneapi_
 #        ENV:       
 #        - prod
