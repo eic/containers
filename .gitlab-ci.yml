@@ -722,7 +722,8 @@ benchmarks:geoviewer:default:
    - if: '$CI_PIPELINE_SOURCE != "schedule" && $EPIC_VERSION != ""'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/geoviewer
     strategy: depend
@@ -733,7 +734,8 @@ benchmarks:detector:default:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
@@ -745,7 +747,8 @@ benchmarks:detector:nightly:
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
@@ -756,7 +759,8 @@ benchmarks:phyiscs:default:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
     strategy: depend
@@ -768,7 +772,8 @@ benchmarks:physics:nightly:
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
     strategy: depend
@@ -779,7 +784,8 @@ benchmarks:reconstruction:default:
    - if: '$CI_PIPELINE_SOURCE != "schedule" && $EICRECON_VERSION != ""'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
     strategy: depend
@@ -791,7 +797,8 @@ benchmarks:reconstruction:nightly:
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
     strategy: depend
