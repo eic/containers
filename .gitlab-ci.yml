@@ -347,10 +347,10 @@ base:
         let attempts=$attempts+1 ;
       done
 
-base:multi:
+base:multiarch:
   <<: *base_parallel
   extends: .build
-  stage: base
+  stage: base:multiarch
   needs:
     - base
   script:
@@ -562,10 +562,10 @@ cuda:torch:
     - python -c "import torch ; print(torch.cuda.is_available()) ;"
   allow_failure: true
 
-eic:multi:
+eic:multiarch:
   <<: *eic_parallel
   extends: .build
-  stage: eic
+  stage: eic:multiarch
   needs:
     - eic
   script:
