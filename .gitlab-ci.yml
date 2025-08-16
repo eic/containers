@@ -377,7 +377,7 @@ base-arm64:
   extends: .base
 
 base:multiarch:
-  <<: *base_parallel
+  <<: *base_amd64_parallel
   extends: .build
   stage: base:multiarch
   needs:
@@ -617,7 +617,7 @@ eic-arm64:
     - base-arm64
 
 eic:multiarch:
-  <<: *eic_parallel
+  <<: *eic_amd64_parallel
   extends: .build
   stage: eic:multiarch
   needs:
