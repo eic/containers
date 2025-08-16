@@ -378,6 +378,10 @@ base-amd64:
 base-arm64:
   <<: *base_arm64_parallel
   extends: .base
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "trigger"'
+      when: on_success
+    - when: never
 
 base:multiarch:
   extends: .build
@@ -385,6 +389,8 @@ base:multiarch:
   needs:
     - base-amd64
     - base-arm64
+  rules:
+    - when: always
   script:
     - apk add jq
     - for build_image in $(find metadata -type d) ; do
@@ -622,6 +628,10 @@ eic-arm64:
   needs:
     - version
     - base-arm64
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "trigger"'
+      when: on_success
+    - when: never
   allow_failure: true
 
 eic:multiarch:
@@ -630,6 +640,8 @@ eic:multiarch:
   needs:
     - eic-amd64
     - eic-arm64
+  rules:
+    - when: always
   script:
     - for build_image in $(find metadata/ -type d) ; do
         for build_json in $(find metadata/${build_image} -name build.json) ; do
