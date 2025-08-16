@@ -53,8 +53,10 @@ variables:
 stages:
   - status-pending
   - config
-  - base            ## base OS image
-  - eic             ## EIC container images
+  - base            ## base OS image (build)
+  - base:multiarch  ## base OS image (merge into multiarch)
+  - eic             ## EIC container images (build)
+  - eic:multiarch   ## EIC container images (merge into multiarch)
   - deploy          ## build/deploy singularity images
   - benchmarks
   - test
