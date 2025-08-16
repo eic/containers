@@ -471,7 +471,7 @@ eic:
                    --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
                    --build-arg BUILDER_TAG=@${builder_digest}
                    --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE}
-                   --build-arg RUNTIME_TAG=@${RUNTIME_digest}
+                   --build-arg RUNTIME_TAG=@${runtime_digest}
                    --build-arg EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    --build-arg CI_COMMIT_SHA=${CI_COMMIT_SHA}
                    ${IF_BUILD_DEFAULT+
