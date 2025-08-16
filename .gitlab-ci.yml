@@ -429,9 +429,11 @@ eic:
       cat mirrors.yaml.in | envsubst > mirrors.yaml
     - attempts=0
     - nocache=""
-    - builder_digest=$(jq -r '."containerimage.digest"' metadata/${BUILDER_IMAGE}/${PLATFORM}/build.json)
-    - runtime_digest=$(jq -r '."containerimage.digest"' metadata/${RUNTIME_IMAGE}/${PLATFORM}/build.json)
-    - while !
+    - builder_digest=$(jq -r '."containerimage.digest"' metadata/${BUILDER_IMAGE}/${PLATFORM}/build.json) ;
+      echo ${builder_digest} ;
+      runtime_digest=$(jq -r '."containerimage.digest"' metadata/${RUNTIME_IMAGE}/${PLATFORM}/build.json) ;
+      echo ${runtime_digest} ;
+      while !
       docker buildx build --push ${BUILD_OPTIONS} ${nocache}
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}
                    --file containers/eic/Dockerfile
