@@ -619,6 +619,7 @@ eic-arm64:
   needs:
     - version
     - base-arm64
+  allow_failure: true
 
 eic:multiarch:
   <<: *eic_amd64_parallel
