@@ -370,6 +370,7 @@ status:pending:
         let attempts=$attempts+1 ;
       done
     - echo "BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}/${PLATFORM}/build.json)" | tee -a build.env
+    - docker image history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${BUILD_DIGEST}
 
 base-amd64:
   <<: *base_amd64_parallel
@@ -398,6 +399,7 @@ base:multiarch:
           amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
         done ;
         docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ${amends} ;
+        docker manifest inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
         docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
         for export_tag in ${EXPORT_TAG:+
                             ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${EXPORT_TAG}}
@@ -563,6 +565,7 @@ base:multiarch:
       done
     - echo "BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}${ENV}/${PLATFORM}/build.json)" | tee -a build.env
     - echo "BUILD_TYPE=${BUILD_TYPE}" | tee -a build.env
+    - docker image history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}@${BUILD_DIGEST}
 
 user_spack_environment:
   stage: benchmarks
@@ -648,6 +651,7 @@ eic:multiarch:
           amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
         done ;
         docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ${amends} ; 
+        docker manifest inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ;
         docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ;
         for export_tag in ${EXPORT_TAG:+
                             ${IF_BUILD_DEFAULT+
