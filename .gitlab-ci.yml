@@ -393,7 +393,7 @@ base:multiarch:
     - when: always
   script:
     - apk add jq
-    - for build_image in $(find metadata -type d) ; do
+    - for build_image in $(ls metadata) ; do
         for build_json in $(find metadata/${build_image} -name build.json) ; do
           digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
           amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
