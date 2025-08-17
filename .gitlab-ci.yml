@@ -235,6 +235,7 @@ status:pending:
           docker run --rm --privileged ${BINFMT_IMAGE} --install $arch ;
         fi ;
       done
+    - docker run --rm --privileged ${BINFMT_IMAGE} --version
     - docker context create context
     # The docker-container cache persistence applies to builders of the same name,
     # so do not change the name to something that has the pipeline or job id.
