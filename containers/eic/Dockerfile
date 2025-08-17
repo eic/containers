@@ -408,7 +408,7 @@ COPY --chmod=0755 eic-news /opt/local/bin/eic-news
 
 ## set the container version
 ARG EIC_CONTAINER_VERSION=1
-RUN echo -e "\n - eic_container: ${EIC_CONTAINER_VERSION}" >> /etc/jug_info
+RUN echo -e "\n - jug_dev: ${EIC_CONTAINER_VERSION}" >> /etc/jug_info
 
 ## Hotfix for misbehaving OSG nodes
 RUN mkdir /hadoop /localscratch

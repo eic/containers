@@ -2,8 +2,8 @@
 
 # This script auto-loads epic-main configuration iff:
 # - no $DETECTOR_PATH or $DETECTOR_CONFIG is set
-# - /etc/jug_info contains a line with eic_container
-# - /etc/jug_info contains eic_container: 25.08.0-stable-*
+# - /etc/jug_info contains a line with jug_.*
+# - /etc/jug_info contains version info: 25.08.0-stable-*
 # - /opt/detector/epic-${version}/bin/thisepic.sh exists
 
 file=/etc/jug_info
@@ -11,7 +11,7 @@ if test -z "$DETECTOR_PATH" -a -z "$DETECTOR_CONFIG" ; then
   if test -f $file ; then
     version="main"
 
-    eic_container_version=$(sed -nr 's/.*eic_container: (.*)/\1/p' $file)
+    eic_container_version=$(sed -nr 's/.*jug_.*: (.*)/\1/p' $file)
     if test -n "$eic_container_version" ; then
       if [[ $eic_container_version =~ ([0-9]{2}\.[0-9]{2}\.[0-9])-stable-.* ]] ; then
         version=${BASH_REMATCH[1]}
