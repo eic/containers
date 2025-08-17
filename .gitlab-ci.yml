@@ -389,8 +389,7 @@ base:multiarch:
   needs:
     - base-amd64
     - base-arm64
-  rules:
-    - when: always
+      optional: true
   script:
     - apk add jq
     - for build_image in $(ls metadata) ; do
@@ -640,8 +639,7 @@ eic:multiarch:
   needs:
     - eic-amd64
     - eic-arm64
-  rules:
-    - when: always
+      optional: true
   script:
     - for build_image in $(ls metadata) ; do
         for build_json in $(find metadata/${build_image} -name build.json) ; do
