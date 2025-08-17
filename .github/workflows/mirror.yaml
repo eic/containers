@@ -29,7 +29,7 @@ jobs:
         username: ${{ secrets.GITLAB_USERNAME }}
         ciskip: true
     - name: Trigger EICweb
-      if: ${{ github.event_name != 'delete' }}
+      if: ${{ github.event_name != 'delete' && github.event_name != 'workflow_dispatch' }}
       uses: eic/trigger-gitlab-ci@v3
       with:
         url: https://eicweb.phy.anl.gov
