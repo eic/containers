@@ -24,6 +24,7 @@ COPY bashrc /root/.bashrc
 SHELL ["bash", "-ex", "-c"]
 
 ENV CLICOLOR_FORCE=1                                                    \
+    DEBIAN_FRONTEND=noninteractive                                      \
     LANGUAGE=en_US.UTF-8                                                \
     LANG=en_US.UTF-8                                                    \
     LC_ALL=en_US.UTF-8
@@ -45,31 +46,25 @@ apt-get -yqq install --no-install-recommends                            \
         file                                                            \
         gawk                                                            \
         gdb                                                             \
-        ghostscript                                                     \
         git                                                             \
         gnupg2                                                          \
-        gv                                                              \
         iproute2                                                        \
         iputils-ping                                                    \
         iputils-tracepath                                               \
         less                                                            \
         libc6-dbg                                                       \
-        libcbor-xs-perl                                                 \
         libegl-dev                                                      \
-        libjson-xs-perl                                                 \
         libgl-dev                                                       \
         libglew-dev                                                     \
         libglx-dev                                                      \
         libopengl-dev                                                   \
         locales                                                         \
-        lua-posix                                                       \
         make                                                            \
         moreutils                                                       \
         nano                                                            \
         openssh-client                                                  \
         parallel                                                        \
         patch                                                           \
-        poppler-utils                                                   \
         time                                                            \
         unzip                                                           \
         vim-nox                                                         \
