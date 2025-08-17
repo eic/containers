@@ -371,8 +371,9 @@ status:pending:
         fi ;
         let attempts=$attempts+1 ;
       done
-    - echo "BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}/${PLATFORM}/build.json)" | tee -a build.env
+    - BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}/${PLATFORM}/build.json)
     - docker image history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${BUILD_DIGEST}
+    - echo "BUILD_DIGEST=${BUILD_DIGEST}" | tee -a build.env
 
 base-amd64:
   <<: *base_amd64_parallel
@@ -567,7 +568,8 @@ base:multiarch:
         fi ;
         let attempts=$attempts+1 ;
       done
-    - echo "BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}${ENV}/${PLATFORM}/build.json)" | tee -a build.env
+    - BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}${ENV}/${PLATFORM}/build.json)
+    - echo "BUILD_DIGEST=${BUILD_DIGEST}" | tee -a build.env
     - echo "BUILD_TYPE=${BUILD_TYPE}" | tee -a build.env
     - docker image history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}@${BUILD_DIGEST}
 
