@@ -521,9 +521,11 @@ base:multiarch:
                    --build-arg CAMPAIGNS_SLURM_VERSION=$(sh .ci/resolve_git_ref eic/job_submission_slurm main)
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
-                   --build-arg BUILDER_TAG=@${builder_digest}
+                   --build-arg BUILDER_SIGIL=@
+                   --build-arg BUILDER_TAG=${builder_digest}
                    --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE}
-                   --build-arg RUNTIME_TAG=@${runtime_digest}
+                   --build-arg RUNTIME_SIGIL=@
+                   --build-arg RUNTIME_TAG=${runtime_digest}
                    --build-arg EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    --build-arg CI_COMMIT_SHA=${CI_COMMIT_SHA}
                    ${IF_BUILD_DEFAULT+
