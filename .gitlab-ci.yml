@@ -641,6 +641,7 @@ eic:multiarch:
     - job: eic-arm64
       optional: true
   script:
+    - apk add jq
     - for build_image in $(ls metadata) ; do
         for build_json in $(find metadata/${build_image} -name build.json) ; do
           digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
