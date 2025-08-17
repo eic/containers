@@ -2,6 +2,7 @@ name: Mirror and Trigger EICweb
 
 on:
   delete:
+  pull_request:
   push:
   workflow_dispatch:
 
@@ -29,7 +30,7 @@ jobs:
         username: ${{ secrets.GITLAB_USERNAME }}
         ciskip: true
     - name: Trigger EICweb
-      if: ${{ github.event_name != 'delete' && github.event_name != 'workflow_dispatch' }}
+      if: ${{ github.event_name == 'pull_request' }}
       uses: eic/trigger-gitlab-ci@v3
       with:
         url: https://eicweb.phy.anl.gov
