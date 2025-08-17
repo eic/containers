@@ -4,7 +4,7 @@ variables:
   ## External images
   DOCKER_IMAGE: docker.io/docker:28.3.3
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
-  BINFMT_IMAGE: multiarch/qemu-user-static
+  BINFMT_IMAGE: tonistiigi/binfmt:qemu-v9.2.2
 
   ## CUDA version and container operating system
   CUDA_VERSION: 12.5.1
@@ -232,7 +232,7 @@ status:pending:
     - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
       for arch in aarch64 ; do
         if ! grep -q enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
-          docker run --rm --privileged ${BINFMT_IMAGE} --reset --persistent yes ;
+          docker run --rm --privileged ${BINFMT_IMAGE} --install $arch ;
         fi ;
       done
     - docker context create context
