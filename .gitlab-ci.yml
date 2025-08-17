@@ -387,8 +387,8 @@ base:multiarch:
   extends: .build
   stage: base:multiarch
   needs:
-    - base-amd64
-    - base-arm64
+    - job: base-amd64
+    - job: base-arm64
       optional: true
   script:
     - apk add jq
@@ -637,8 +637,8 @@ eic:multiarch:
   extends: .build
   stage: eic:multiarch
   needs:
-    - eic-amd64
-    - eic-arm64
+    - job: eic-amd64
+    - job: eic-arm64
       optional: true
   script:
     - for build_image in $(ls metadata) ; do
