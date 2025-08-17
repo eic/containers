@@ -498,9 +498,11 @@ base:multiarch:
                    --platform ${PLATFORM}
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
-                   --build-arg BUILDER_TAG=@${builder_digest}
+                   --build-arg BUILDER_SIGIL=@
+                   --build-arg BUILDER_TAG=${builder_digest}
                    --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE}
-                   --build-arg RUNTIME_TAG=@${runtime_digest}
+                   --build-arg RUNTIME_SIGIL=@
+                   --build-arg RUNTIME_TAG=${runtime_digest}
                    --build-arg EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    ${IF_BUILD_DEFAULT+
                      ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION}}
