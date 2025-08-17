@@ -178,7 +178,7 @@ packages:
   graphviz:
     require:
     - '@12.1.0'
-    - +expat +ghostscript +pangocairo
+    - +expat ~ghostscript +pangocairo
   hdf5:
     require:
     - ~cxx ~fortran +hl +ipo ~java ~map +mpi +shared ~subfiling ~szip ~threadsafe +tools
