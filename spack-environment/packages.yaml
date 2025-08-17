@@ -166,6 +166,9 @@ packages:
   gfal2:
     require:
     - +file +http +xrootd
+  ghostscript:
+    require:
+    - ~gtk
   gl:
     require:
     - glx
