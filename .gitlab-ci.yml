@@ -367,7 +367,6 @@ eic:
         - nightly
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_runtime
-        BASE_IMAGE: cuda_base
         PLATFORM: linux/amd64
       - BUILD_IMAGE: eic_dev_
         ENV:
@@ -377,7 +376,6 @@ eic:
         - nightly
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_devel
-        BASE_IMAGE: cuda_base
         PLATFORM: linux/amd64
   extends: .build
   stage: eic
@@ -459,6 +457,31 @@ eic:
         fi ;
         let attempts=$attempts+1 ;
       done
+
+.cuda:
+  stage: benchmarks
+  tags:
+    - gpu
+  needs: 
+    - job: version
+    - job: eic
+      parallel:
+        matrix:
+          - BUILD_IMAGE: eic_dev_
+            ENV:
+            - cuda
+            BUILD_TYPE:
+            - default
+            BUILDER_IMAGE: cuda_devel
+            RUNTIME_IMAGE: cuda_devel
+            PLATFORM: linux/amd64
+  image: 
+    name: ${CI_REGISTRY_IMAGE}/eic_dev_cuda:${INTERNAL_TAG}-default
+
+cuda:torch:
+  extends: .cuda
+  script:
+    - python -c "import torch ; print(torch.cuda.is_available()) ;"
 
 .singularity:
   image:
