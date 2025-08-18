@@ -166,6 +166,9 @@ packages:
   gfal2:
     require:
     - +file +http +xrootd
+  ghostscript:
+    require:
+    - ~gtk
   gl:
     require:
     - glx
@@ -175,7 +178,7 @@ packages:
   graphviz:
     require:
     - '@12.1.0'
-    - +expat +pangocairo
+    - +expat ~ghostscript +pangocairo
   hdf5:
     require:
     - ~cxx ~fortran +hl +ipo ~java ~map +mpi +shared ~subfiling ~szip ~threadsafe +tools
@@ -194,6 +197,7 @@ packages:
     - +mpi
   imagemagick:
     require:
+    - +ghostscript
     - '@7.1.1-11'
   irt:
     require:

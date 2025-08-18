@@ -79,6 +79,8 @@ b6b6d79c25c1496472f9535ec33c9030b27353ab
 70a7821a6932dee391686f50444854b3c6952f42
 ce7cb3b6b12910691364fd8f53334c63e0c5624f
 82aaec0f9e68319f48952cd38f283429650cc9df
+cc92962edd05277654aa881d42a6eae0feb13489
+20c945a11bc02a3f46c2d0c9fad4e5257679ea97
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -161,3 +163,5 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 70a7821a6932dee391686f50444854b3c6952f42: (py-)onnx: add v1.17.0
 ## ce7cb3b6b12910691364fd8f53334c63e0c5624f: veccore: add v0.8.2
 ## 82aaec0f9e68319f48952cd38f283429650cc9df: veccore: add typo fix for clang
+## cc92962edd05277654aa881d42a6eae0feb13489: ghostscript: add v10.04.0 (fix CVEs)
+## 20c945a11bc02a3f46c2d0c9fad4e5257679ea97: ghostscript: add variant to make gtk+ optional
