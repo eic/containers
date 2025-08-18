@@ -410,7 +410,8 @@ base:multiarch:
                             ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
                             ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
                           } ; do
-          docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ${export_tag} ;
+          docker buildx imagetools create --tag ${export_tag} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
+          docker buildx imagetools inspect ${export_tag}
           docker push ${export_tag} ;
         done
       done
@@ -680,7 +681,8 @@ eic:multiarch:
                               ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${NIGHTLY_TAG}}
                             }
                           } ; do
-          docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ${export_tag} ;
+          docker buildx imagetools create --tag ${export_tag} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ;
+          docker buildx imagetools inspect ${export_tag}
           docker push ${export_tag} ;
         done ;
       done
