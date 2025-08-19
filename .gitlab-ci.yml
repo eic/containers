@@ -113,6 +113,9 @@ nvidia-smi:
 ##   on eicweb to communicate between jobs (removed in cleanup job)
 ## - export tag to public registries, optional secondary export tag
 version:
+  id_tokens:
+    CI_JOB_JWT:
+      aud: https://eicweb.phy.anl.gov
   tags:
     - jacamar
   stage: config
