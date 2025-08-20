@@ -83,10 +83,10 @@ spack:
   - py-dask
   - py-deepdiff
   - py-eic-rucio-policy-package
-  #- py-epic-capybara # FIXME enable when py-hist@2.7.2:
+  - py-epic-capybara
   - py-graphviz
   - py-hepunits
-  #- py-hist # FIXME enable when py-hist@2.7.2:
+  - py-hist
   - py-histoprint
   - py-ipython
   - py-jinja2
