@@ -4,7 +4,7 @@ spack:
   - ../packages.yaml
   - ../view.yaml
   concretizer:
-    unify: when_possible # FIXME revert when unified concretization fixed
+    unify: true
   specs:
   - edm4eic
   - edm4hep
