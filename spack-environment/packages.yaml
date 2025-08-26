@@ -142,7 +142,7 @@ packages:
   fmt:
     require:
     - '@10.2.1'
-    - +shared cxxstd=17
+    - +shared cxxstd=20
   freetype:
     require:
     - build_system=autotools
