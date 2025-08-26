@@ -56,7 +56,7 @@ jobs:
     strategy:
       matrix:
         include:
-        - BASE_IMAGE: debian:stable-slim
+        - BASE_IMAGE: debian:trixie-slim
           BUILD_IMAGE: debian_stable_base
           PLATFORM: linux/amd64
     steps:
@@ -96,7 +96,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          file: containers/debian/base.Dockerfile
+          file: containers/debian/Dockerfile
           context: containers/debian
           platforms: ${{ matrix.PLATFORM }}
           push: true
@@ -108,7 +108,7 @@ jobs:
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}
 
-  dev:
+  eic:
     runs-on: ubuntu-latest
     needs: base
     strategy:
@@ -116,9 +116,9 @@ jobs:
         include:
         - BUILDER_IMAGE: debian_stable_base
           RUNTIME_IMAGE: debian_stable_base
-          BUILD_IMAGE: dev
+          BUILD_IMAGE: eic_ci
           PLATFORM: linux/amd64
-          ENV: dev
+          ENV: ci
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
@@ -197,7 +197,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          file: containers/jug/dev.Dockerfile
+          file: containers/eic/Dockerfile
           context: containers/jug
           build-contexts: |
             spack-environment=spack-environment
