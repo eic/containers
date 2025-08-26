@@ -2,6 +2,9 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../view.yaml
+  concretizer:
+    unify: true
   specs:
   - edm4eic
   - edm4hep

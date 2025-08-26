@@ -1,16 +1,16 @@
-  view:
-    default:
-      root: /opt/local
-      exclude: 
-      - epic
-      - py-pip@23.0
-      - py-urllib3@1
-      link_type: symlink
-    detectors:
-      root: /opt/detector
-      select:
-      - epic
-      projections:
-        all: '{name}-{version}'
-      link: roots
-      link_type: symlink
+view:
+  default:
+    root: /opt/local
+    exclude: 
+    - epic
+    - py-pip@23.0
+    - py-urllib3@1
+    link_type: symlink
+  detectors:
+    root: /opt/detector
+    select:
+    - epic
+    projections:
+      all: '{name}-{version}'
+    link: roots
+    link_type: symlink

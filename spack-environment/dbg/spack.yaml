@@ -2,6 +2,7 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../view.yaml
   specs:
   - acts build_type=Debug
   - algorithms build_type=Debug

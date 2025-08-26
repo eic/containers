@@ -44,14 +44,32 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider build concretization
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
+ARG SPACK_FLAGS="--backtrace"
+ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+ENV SPACK_COLOR="always"
 
 # Concretization (default environment)
 RUN <<EOF
-echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
-spack env activate --dir ${SPACK_ENV}
+set -e
+spack env activate --without-view --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
 spack external find --not-buildable --scope env:${SPACK_ENV} llvm
 spack concretize --force
+spack --color=never find --long --no-groups --show-concretized --format "{name}" \
+| uniq -D -f2 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\|py-urllib3\)" \
+| tee /tmp/duplicates.txt
+if [ -s /tmp/duplicates.txt ] ; then
+  echo "Duplicate packages found"
+  cat /tmp/duplicates.txt | while read status hash spec ; do
+    spack --backtrace spec --long /${hash}
+    if [ "$prevspec" = "$spec" ] ; then
+      spack diff /${hash} /${prevhash}
+    fi
+    prevhash=${hash}
+    prevspec=${spec}
+  done
+  exit 1
+fi
 EOF
 
 
@@ -78,8 +96,7 @@ set -e
 export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV}
+spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -99,8 +116,9 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider runtime concretizati
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
-
-RUN echo -e "\n  view: false" >> ${SPACK_ENV}/spack.yaml
+ARG SPACK_FLAGS="--backtrace"
+ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+ENV SPACK_COLOR="always"
 
 COPY --from=builder_installation_default \
   /opt/spack-environment/${ENV}/spack.* \
@@ -125,8 +143,8 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--use-buildcache only"
+set -e
+spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all
 EOF
 
@@ -154,6 +172,7 @@ ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/jug
 
 # Concretization (custom environment)
 RUN <<EOF
+set -e
 spack env activate --dir ${SPACK_ENV}
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
@@ -177,6 +196,21 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   spack deconcretize -y --all juggler
 fi
 spack concretize --force
+spack --color=never find --long --no-groups --show-concretized --format "{name}" \
+| uniq -D -f2 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\|py-urllib3\)" \
+| tee /tmp/duplicates.txt
+if [ -s /tmp/duplicates.txt ] ; then
+  echo "Duplicate packages found"
+  cat /tmp/duplicates.txt | while read status hash spec ; do
+    spack --backtrace spec --long /${hash}
+    if [ "$prevspec" = "$spec" ] ; then
+      spack diff /${hash} /${prevhash}
+    fi
+    prevhash=${hash}
+    prevspec=${spec}
+  done
+  exit 1
+fi
 EOF
 
 
@@ -201,18 +235,9 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV}
+spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+
 spack gc --yes-to-all
-spack find --long --no-groups \
-| sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
-| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
-| tee /tmp/duplicates.txt
-if [ -s /tmp/duplicates.txt ] ; then
-  echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done
-  exit 1
-fi
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -251,18 +276,8 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
 set -e
-make --jobs ${jobs} --keep-going --directory /opt/spack-environment \
-  SPACK_ENV=${SPACK_ENV} SPACK_INSTALL_FLAGS="--use-buildcache only"
+spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all
-spack find --long --no-groups \
-| sed -e '1,/Installed packages/d;s/\([^@]*\).*/\1/g' \
-| uniq -D -f1 | grep -v -w -e "\(epic\|py-pip\|py-cython\)" \
-| tee /tmp/duplicates.txt
-if [ -s /tmp/duplicates.txt ] ; then
-  echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read hash spec ; do spack spec --long /${hash} ; done
-  exit 1
-fi
 EOF
 
 
@@ -275,15 +290,9 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
 
-## Create views at /opt/local and /opt/detector
+## Ensure views directories, not symlinks
 RUN <<EOF
 set -e
-rm -rf /opt/local
-sed -i -e '/view: false/d' ${SPACK_ENV}/spack.yaml
-cat /opt/spack-environment/view.yaml >> ${SPACK_ENV}/spack.yaml
-spack -e ${SPACK_ENV} env view regenerate /opt/local
-spack -e ${SPACK_ENV} env view regenerate /opt/detector
-# ensure /opt/local is the view, not a symlink
 rm -rf /opt/local /opt/detector
 LOCAL_PREFIX_PATH=$(realpath $(ls /opt/._local/ | tail -n1))
 mv /opt/._local/${LOCAL_PREFIX_PATH} /opt/local

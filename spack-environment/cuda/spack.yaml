@@ -2,6 +2,11 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../view.yaml
+  concretizer:
+    unify: when_possible # multiple epic versions
+  config:
+    deprecated: True # FIXME vecgeom 1.2.9
   specs:
   - acts +cuda cuda_arch=75
   - actsvg

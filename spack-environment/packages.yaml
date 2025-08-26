@@ -41,9 +41,13 @@ packages:
   boost:
     require:
     - '@1.86.0'
+    - +atomic +chrono +context +date_time +exception +fiber +filesystem +graph
+    - +iostreams +locale +log +math +program_options +python +random +regex
+    - +serialization +system +test +thread +timer +wave 
+    - cxxstd=20
   cairo:
     require:
-    - '@1.16.0'
+    - '@1.18.2'
     - +fc+ft+X+pdf+gobject
   catch2:
     require:
@@ -67,7 +71,7 @@ packages:
     - '@2.4.2'
   cmake:
     require:
-    - '@3.30.5'
+    - '@3.30.9'
   cnpy:
     require:
     - '@master'
@@ -249,9 +253,6 @@ packages:
   nano:
     require:
     - '@7.2'
-  node-js:
-    require:
-    - '@22.4.0'
   nopayloadclient:
     require:
     - '@0.0.3'
@@ -313,13 +314,13 @@ packages:
     - +fastjet +root
   python:
     require:
-    - '@3.12.5'
+    - '@3.12'
   py-awkward:
     require:
     - '@2.6.6'
   py-bokeh:
     require:
-    - '@3.3.1'
+    - '@3.5.2'
   py-dask:
     require:
     - '@2024.7.1'
@@ -331,16 +332,22 @@ packages:
     - '@2.3.2'
   py-hist:
     require:
-    - '@2.6.1'
+    - '@2.8.1'
   py-histoprint:
     require:
     - '@2.4.0'
+  py-ipython:
+    require:
+    - '@8.28:'
   py-jinja2:
     require:
     - '@3.1.4'
   py-jinja2-cli:
     require:
     - '@0.8.2'
+  py-jsonschema:
+    require:
+    - +format-nongpl # non-default required for jupyter stack
   py-keras:
     require:
     - '@3.7.0'
@@ -348,18 +355,21 @@ packages:
   py-lmfit:
     require:
     - '@1.0.2'
-  py-matplotlib:
-    require:
-    - '@3.7.1'
   py-mplhep:
     require:
-    - '@0.3.26'
+    - '@0.4.0'
   py-htgettoken:
     require:
     - '@1.16-33-g3788bb4'
+  py-matplotlib:
+    require:
+    - '%clang' # https://github.com/spack/spack-packages/issues/1068
+  py-nbformat:
+    require:
+    - '@5.8:' # avoid py-jupyter-server and snakemake divergence
   py-numpy:
     require:
-    - '@1.26.4'
+    - '@2.0.2'
   py-onnx:
     require:
     - '@1.17.0'
@@ -410,9 +420,6 @@ packages:
     require:
     - '@2.5.1'
     - -mkldnn
-  py-uproot:
-    require:
-    - '@5.0.5'
   py-vector:
     require:
     - '@1.5.1'
@@ -461,6 +468,9 @@ packages:
   py-snakemake-storage-plugin-s3:
     require:
     - '@0.2.10'
+  rust:
+    require:
+    - +dev
   spdlog:
     require:
     - '@1.14.1'
@@ -480,6 +490,12 @@ packages:
   valgrind:
     require:
     - '@3.20.0'
+  vecgeom:
+    require:
+    - '@1.2.9'
+  xerces-c:
+    require:
+    - cxxstd=20
   xrootd:
     require:
     - '@5.7.0'
