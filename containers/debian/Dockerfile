@@ -174,7 +174,7 @@ if [ -n "${SPACK_CHERRYPICKS}" ] ; then
   eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
   for hash in ${SPACK_CHERRYPICKS} ; do
     if [ -n "${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
-      git -C ${SPACK_ROOT} show ${hash} -- ${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]//,/ } | sed 's|\([ab]\)/repos|\1/var/spack/repos|g' | patch --no-backup-if-mismatch -p1 -d ${SPACK_ROOT}
+      git -C ${SPACK_ROOT} show ${hash} -- ${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]//,/ } | patch -p1 -d ${SPACK_ROOT}
       git -C ${SPACK_ROOT} commit --all --message "$(git -C ${SPACK_ROOT} show --no-patch --pretty=format:%s ${hash})"
     else
       git -C ${SPACK_ROOT} cherry-pick ${hash}
