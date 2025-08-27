@@ -460,7 +460,7 @@ packages:
     - hepmc=3 plugin-match=HERA,LEP,MC
   root:
     require:
-    - '@6.34.08'
+    - '@6.36.02'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
