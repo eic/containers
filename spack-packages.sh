@@ -18,6 +18,8 @@ ba00d764b91db70bce8236bc528a1d4af37c4ce9
 8aaec9b76104af2cf58e7be55485d6c2385b41ab
 8751ca4c4ba54559b40cdaa3c319bf14db72e28e
 2c1e68ded81add6d3d0fbc005ad19b0727639204
+b440c61b9cddfab0fd59dd5fc607c95247a18bc9
+698ce0531e4be2d55ca667d6f9341636397c2662
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -35,3 +37,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 8aaec9b76104af2cf58e7be55485d6c2385b41ab: py-uproot: depends_on py-numpy@:1 when @:5.3.2
 ## 8751ca4c4ba54559b40cdaa3c319bf14db72e28e: py-hist: add v2.6.2 thru v2.8.0 (switch to hatchling)
 ## 2c1e68ded81add6d3d0fbc005ad19b0727639204: pythia8: add v8.314 and v8.315
+## b440c61b9cddfab0fd59dd5fc607c95247a18bc9: force CMAKE_INSTALL_RPATH to prefix/lib/root for ROOT
+## 698ce0531e4be2d55ca667d6f9341636397c2662: root: add v6.36.02
