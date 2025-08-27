@@ -310,7 +310,7 @@ packages:
     - +batch +xrootd
   pythia8:
     require:
-    - '@8.312'
+    - '@8.315'
     - +fastjet +root
   python:
     require:
