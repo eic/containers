@@ -5,7 +5,7 @@ view:
     - epic
     - py-pip@23.0
     - py-urllib3@1
-    link_type: symlink
+    link_type: hardlink
   detectors:
     root: /opt/detector
     select:
@@ -13,4 +13,4 @@ view:
     projections:
       all: '{name}-{version}'
     link: roots
-    link_type: symlink
+    link_type: hardlink
