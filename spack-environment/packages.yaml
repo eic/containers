@@ -40,18 +40,18 @@ packages:
     - openblas
   boost:
     require:
-    - '@1.86.0'
+    - '@1.86.0:'
     - +atomic +chrono +context +date_time +exception +fiber +filesystem +graph
     - +iostreams +locale +log +math +program_options +python +random +regex
     - +serialization +system +test +thread +timer +wave 
     - cxxstd=20
   cairo:
     require:
-    - '@1.18.2'
+    - '@1.18.2:'
     - +fc+ft+X+pdf+gobject
   catch2:
     require:
-    - '@3.4.0'
+    - '@3.4.0:'
     - -ipo
   celeritas:
     require:
@@ -88,7 +88,7 @@ packages:
     require:
     # Until 1.15.12, https://gitlab.freedesktop.org/dbus/dbus/-/commit/b104667bd7ec55dda057ff4ffdde848336f253f4,
     # the meson build assumes that the user name exists as a group name as well. Require 1.14.10 (only autotools).
-    - '@1.14.10'
+    - '@1.16.2:'
   dd4hep:
     require:
     - '@1.32.1'
@@ -152,7 +152,7 @@ packages:
     - +aida
   gdb:
     require:
-    - '@15.2'
+    - '@15.2:'
     - +debuginfod
   g4ndl:
     buildable: False
@@ -229,7 +229,7 @@ packages:
     - openblas
   lcov:
     require:
-    - '@1.16'
+    - '@1.16:'
   libglx:
     require:
     - opengl
@@ -239,7 +239,7 @@ packages:
     - +python
   madx:
     require:
-    - '@5.08.01'
+    - '@5.08.01:'
   mesa:
     require:
     - '@23.3.6'
@@ -249,7 +249,7 @@ packages:
     - '@2.0.18:'
   nlohmann-json:
     require:
-    - '@3.11.2'
+    - '@3.11.2:'
   nano:
     require:
     - '@7.2:'
@@ -405,7 +405,7 @@ packages:
     - '@37.3.0:'
   py-scipy:
     require:
-    - '@1.14.1'
+    - '@1.14.1:'
   py-scikit-build-core:
     require:
     - +pyproject
@@ -425,7 +425,7 @@ packages:
     - -mkldnn
   py-vector:
     require:
-    - '@1.5.1'
+    - '@1.5.1:'
   py-wurlitzer:
     require:
     - '@3.0.2:'
