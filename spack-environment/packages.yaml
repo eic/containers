@@ -235,7 +235,7 @@ packages:
     - opengl
   lhapdf:
     require:
-    - '@6.5.4'
+    - '@6.5.5'
     - +python
   madx:
     require:
