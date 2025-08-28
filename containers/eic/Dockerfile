@@ -330,9 +330,9 @@ EOF
 ## Fill jug_info
 RUN <<EOF
 set -e
-spack debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" >> /etc/jug_info
-spack find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
-spack graph --dot > /opt/spack-environment/env.dot
+spack --color=never debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" >> /etc/jug_info
+spack --color=never find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
+spack --color=never graph --dot > /opt/spack-environment/env.dot
 EOF
 
 ## Copy custom content
