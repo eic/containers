@@ -15,6 +15,7 @@ spack:
   - py-bokeh
   - py-boost-histogram
   - py-dask
+  - py-dask-histogram
   - py-eic-rucio-policy-package
   - py-epic-capybara
   - py-graphviz

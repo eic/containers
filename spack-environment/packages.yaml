@@ -324,6 +324,9 @@ packages:
   py-dask:
     require:
     - '@2024.7.1:'
+  py-dask-histogram:
+    require:
+    - '@2025.2.0:'
   py-epic-capybara:
     require:
     - '@git.ef2a8790312b9b697655b28a07b353e601bfa3b8'

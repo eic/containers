@@ -81,6 +81,7 @@ spack:
   - py-boost-histogram
   - py-boto3
   - py-dask
+  - py-dask-histogram
   - py-deepdiff
   - py-eic-rucio-policy-package
   - py-epic-capybara
