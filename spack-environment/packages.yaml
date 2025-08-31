@@ -336,6 +336,7 @@ packages:
   py-hist:
     require:
     - '@2.8.1:'
+    - +dask +plot
   py-histoprint:
     require:
     - '@2.4.0:'
