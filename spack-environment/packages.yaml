@@ -502,7 +502,7 @@ packages:
     - '@3.20.0:'
   vecgeom:
     require:
-    - '@1.2.9'
+    - '@1.2.11'
   xerces-c:
     require:
     - cxxstd=20
