@@ -321,6 +321,9 @@ packages:
   py-bokeh:
     require:
     - '@3.5.2:'
+  py-boost-histogram:
+    require:
+    - '@1.5:'
   py-dask:
     require:
     - '@2024.7.1:'
