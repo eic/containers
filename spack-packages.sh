@@ -19,6 +19,7 @@ ba00d764b91db70bce8236bc528a1d4af37c4ce9
 8751ca4c4ba54559b40cdaa3c319bf14db72e28e
 2c1e68ded81add6d3d0fbc005ad19b0727639204
 b7dbf22114fe746d783f552aa9788dedf58d1769
+0c164b846058d9c57c9adb6b17ef86ead9f4b8c4
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -37,3 +38,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 8751ca4c4ba54559b40cdaa3c319bf14db72e28e: py-hist: add v2.6.2 thru v2.8.0 (switch to hatchling)
 ## 2c1e68ded81add6d3d0fbc005ad19b0727639204: pythia8: add v8.314 and v8.315
 ## b7dbf22114fe746d783f552aa9788dedf58d1769: py-hist: fix py-boost-histogram dependency
+## 0c164b846058d9c57c9adb6b17ef86ead9f4b8c4: g4vg: new version 1.0.5

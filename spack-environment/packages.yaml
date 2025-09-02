@@ -55,7 +55,7 @@ packages:
     - -ipo
   celeritas:
     require:
-    - '@0.5.0'
+    - '@0.5:'
     - +geant4 +hepmc3  +vecgeom
     - one_of: [~cuda +root, +cuda +ipo ~root]
   cernlib:
@@ -502,7 +502,7 @@ packages:
     - '@3.20.0:'
   vecgeom:
     require:
-    - '@1.2.9'
+    - '@1.2.11'
   xerces-c:
     require:
     - cxxstd=20
