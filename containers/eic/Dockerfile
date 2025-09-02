@@ -60,7 +60,7 @@ else
 fi
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\|py-urllib3\)" \
+| uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-pip\|py-cython\|py-setuptools\|py-urllib3\)" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
@@ -201,7 +201,7 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
 fi
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 | grep -v -w -e "\(epic\|py-pip\|py-cython\|py-setuptools\|py-urllib3\)" \
+| uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-pip\|py-cython\|py-setuptools\|py-urllib3\)" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
