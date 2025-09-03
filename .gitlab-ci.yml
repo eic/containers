@@ -411,7 +411,7 @@ base:multiarch:
                             ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
                           } ; do
           docker buildx imagetools create --tag ${export_tag} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
-          #docker buildx imagetools inspect ${export_tag}
+          docker buildx imagetools inspect ${export_tag} ;
           docker push ${export_tag} ;
         done
       done
