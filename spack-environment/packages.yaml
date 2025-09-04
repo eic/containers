@@ -75,6 +75,9 @@ packages:
   cnpy:
     require:
     - '@master'
+  covfie:
+    require:
+    - '@0.14:'
   cppcoro:
     require:
     - '@10bbcdbf2be3ad3aa56febcf4c7662d771460a99'

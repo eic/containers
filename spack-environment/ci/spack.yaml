@@ -9,6 +9,7 @@ spack:
   - afterburner
   - algorithms
   - cmake
+  - covfie
   - dd4hep -ddeve
   - edm4eic
   - edm4hep

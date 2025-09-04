@@ -19,6 +19,7 @@ spack:
   - cli11
   - cmake
   - cnpy
+  - covfie
   - cppcoro
   - dawn
   - dawncut
