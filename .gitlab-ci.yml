@@ -666,7 +666,6 @@ benchmarks:reconstruction:default:
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
     strategy: depend
-    branch: commit-17b46bc88be8902f5750f76c57823680bc5702f5
 
 benchmarks:reconstruction:nightly:
   extends: .benchmarks:nightly
