@@ -20,6 +20,8 @@ ba00d764b91db70bce8236bc528a1d4af37c4ce9
 2c1e68ded81add6d3d0fbc005ad19b0727639204
 a118c877bcca1d71810528ba481b8d3f819035f1
 0c164b846058d9c57c9adb6b17ef86ead9f4b8c4
+b440c61b9cddfab0fd59dd5fc607c95247a18bc9
+698ce0531e4be2d55ca667d6f9341636397c2662
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -39,3 +41,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 2c1e68ded81add6d3d0fbc005ad19b0727639204: pythia8: add v8.314 and v8.315
 ## a118c877bcca1d71810528ba481b8d3f819035f1: py-hist: fix py-boost-histogram dependency
 ## 0c164b846058d9c57c9adb6b17ef86ead9f4b8c4: g4vg: new version 1.0.5
+## b440c61b9cddfab0fd59dd5fc607c95247a18bc9: force CMAKE_INSTALL_RPATH to prefix/lib/root for ROOT
+## 698ce0531e4be2d55ca667d6f9341636397c2662: root: add v6.36.02
