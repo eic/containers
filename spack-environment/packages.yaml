@@ -35,6 +35,9 @@ packages:
   algorithms:
     require:
     - '@1.2.0'
+  binutils:
+    require:
+    - ~gold
   blas:
     require:
     - openblas
@@ -241,6 +244,9 @@ packages:
     require:
     - '@6.5.5'
     - +python
+  llvm:
+    require:
+    - ~gold
   madx:
     require:
     - '@5.08.01:'
