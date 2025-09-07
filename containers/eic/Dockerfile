@@ -425,8 +425,8 @@ RUN mkdir /hadoop /localscratch
 
 ## set the jug_dev version
 ARG JUG_VERSION=1
-RUN echo -e "\n - jug_dev: ${JUG_VERSION}" >> /etc/jug_info
+RUN echo -e "\n - jug_dev: ${JUG_VERSION}" | tee -a /etc/eic_info /etc/jug_info
 
 ## set the eic_container version
 ARG CI_COMMIT_SHA
-RUN echo -e "\n - eic_container: ${CI_COMMIT_SHA}" >> /etc/eic_info
+RUN echo -e "\n - eic_container: ${CI_COMMIT_SHA}" | tee -a /etc/eic_info /etc/jug_info
