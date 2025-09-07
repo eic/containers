@@ -327,11 +327,11 @@ for detector in epic-git.*_* ; do
 done
 EOF
 
-## Fill jug_info
+## Fill eic_info
 RUN <<EOF
 set -e
-spack --color=never debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" >> /etc/jug_info
-spack --color=never find --no-groups --long --variants | sed "s/^/ - /" >> /etc/jug_info
+spack --color=never debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" | tee -a /etc/eic_info /etc/jug_info
+spack --color=never find --no-groups --long --variants | sed "s/^/ - /" | tee -a /etc/eic_info /etc/jug_info
 spack --color=never graph --dot > /opt/spack-environment/env.dot
 EOF
 
@@ -421,3 +421,12 @@ RUN echo -e "\n - jug_dev: ${EIC_CONTAINER_VERSION}" >> /etc/jug_info
 
 ## Hotfix for misbehaving OSG nodes
 RUN mkdir /hadoop /localscratch
+
+
+## set the jug_dev version
+ARG JUG_VERSION=1
+RUN echo -e "\n - jug_dev: ${JUG_VERSION}" | tee -a /etc/eic_info /etc/jug_info
+
+## set the eic_container version
+ARG CI_COMMIT_SHA
+RUN echo -e "\n - eic_container: ${CI_COMMIT_SHA}" | tee -a /etc/eic_info /etc/jug_info
