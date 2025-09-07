@@ -93,6 +93,7 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
 set -e
+rm /var/cache/spack/_source-cache/git//microsoft/onnxruntime.git/8608bf02f21774be0388d2aa3a9f886d009d0b4c.tar.gz
 export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
