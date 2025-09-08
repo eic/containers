@@ -3,8 +3,6 @@ spack:
   - ../concretizer.yaml
   - ../packages.yaml
   - ../view.yaml
-  concretizer:
-    unify: when_possible # multiple epic versions
   specs:
   - acts +cuda cuda_arch=75
   - actsvg
@@ -31,11 +29,6 @@ spack:
   - eigen
   - emacs
   - epic@main # EPIC_VERSION
-  - epic@25.05.0
-  - epic@25.06.0
-  - epic@25.06.1
-  - epic@25.07.0
-  - epic@25.08.0
   - fastjet
   - fjcontrib
   - fmt
