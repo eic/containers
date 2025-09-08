@@ -33,6 +33,7 @@ spack:
   - py-matplotlib
   - py-mplhep
   - py-htgettoken
+  - py-numba
   - py-numpy
   - py-onnx
   - py-onnxruntime

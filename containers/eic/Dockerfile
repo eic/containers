@@ -53,10 +53,10 @@ RUN <<EOF
 set -e
 spack env activate --without-view --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
-spack external find --not-buildable --scope env:${SPACK_ENV} llvm
+spack external find --scope env:${SPACK_ENV} llvm
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 | grep -v -w -e "\(epic\|py-setuptools\|py-urllib3\)" \
+| uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-setuptools\|py-urllib3\)" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
@@ -197,7 +197,7 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
 fi
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 | grep -v -w -e "\(epic\|py-setuptools\|py-urllib3\)" \
+| uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-setuptools\|py-urllib3\)" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"

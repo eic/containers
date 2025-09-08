@@ -35,6 +35,9 @@ packages:
   algorithms:
     require:
     - '@1.2.0'
+  binutils:
+    require:
+    - ~gold
   blas:
     require:
     - openblas
@@ -241,6 +244,9 @@ packages:
     require:
     - '@6.5.5'
     - +python
+  llvm:
+    require:
+    - ~gold
   madx:
     require:
     - '@5.08.01:'
@@ -366,6 +372,9 @@ packages:
   py-lmfit:
     require:
     - '@1.0.2:'
+  py-llvmlite:
+    require:
+    - '@0.44.0'
   py-mplhep:
     require:
     - '@0.4.0:'
@@ -378,6 +387,9 @@ packages:
   py-nbformat:
     require:
     - '@5.8:' # avoid py-jupyter-server and snakemake divergence
+  py-numba:
+    require:
+    - '@0.61.0:'
   py-numpy:
     require:
     - '@2.0.2:'
