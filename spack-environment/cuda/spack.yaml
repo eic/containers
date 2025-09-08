@@ -20,7 +20,6 @@ spack:
   - dawncut
   - dd4hep +ddeve
   - dpmjet
-  - east
   - edm4hep
   - eic-smear
   - eigen
