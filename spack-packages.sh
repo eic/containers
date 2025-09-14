@@ -22,6 +22,7 @@ a118c877bcca1d71810528ba481b8d3f819035f1
 0c164b846058d9c57c9adb6b17ef86ead9f4b8c4
 b440c61b9cddfab0fd59dd5fc607c95247a18bc9
 698ce0531e4be2d55ca667d6f9341636397c2662
+387d9a5213cc6e3fd738b995b25d6facde4cc902
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -43,3 +44,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 0c164b846058d9c57c9adb6b17ef86ead9f4b8c4: g4vg: new version 1.0.5
 ## b440c61b9cddfab0fd59dd5fc607c95247a18bc9: force CMAKE_INSTALL_RPATH to prefix/lib/root for ROOT
 ## 698ce0531e4be2d55ca667d6f9341636397c2662: root: add v6.36.02
+## 387d9a5213cc6e3fd738b995b25d6facde4cc902: acts: only init submodules when +odd
