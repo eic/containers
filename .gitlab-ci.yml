@@ -345,6 +345,7 @@ eic:
       - BUILD_IMAGE: eic_
         ENV:
         - ci
+        - ci_without_acts
         - dbg
         - prod
         - xl
@@ -356,6 +357,7 @@ eic:
       - BUILD_IMAGE: eic_
         ENV:
         - ci
+        - ci_without_acts
         - xl
         BUILD_TYPE:
         - nightly
