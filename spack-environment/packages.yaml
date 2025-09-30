@@ -126,7 +126,7 @@ packages:
   eicrecon:
     require:
     - '%clang'
-    - '@1.28.0' # EICRECON_VERSION
+    - '@1.29.1' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
@@ -199,7 +199,7 @@ packages:
     - +python +rootio
   hepmcmerger:
     require:
-    - '@2.0.0'
+    - '@2.1.0'
   heppdt:
     require:
     - '@2.06.01'
