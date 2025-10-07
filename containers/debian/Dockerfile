@@ -77,10 +77,11 @@ localedef -i en_US -f UTF-8 en_US.UTF-8
 EOF
 
 # Install updated compilers, with support for multiple base images
-## Ubuntu: latest gcc from toolchain ppa, latest stable clang
-## Debian: default gcc with distribution, latest stable clang
-## Trixie (glibc 2.41): GCC-14, CLANG-19
-## Bookworm (glibc 2.36): GCC-12, CLANG-18
+## Debian Trixie (glibc 2.41): GCC-14, CLANG-19
+## Debian Bookworm (glibc 2.36): GCC-12, CLANG-18
+## Ubuntu Noble 24.04 (glibc 2.39): GCC-13, CLANG-17
+## Ubuntu Jammy 22.04 (glibc 2.35): GCC-12, CLANG-16
+## Ubuntu Focal 20.04 (glibc 2.31): GCC-10, CLANG-16
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 . /etc/os-release
