@@ -1,6 +1,9 @@
 #syntax=docker/dockerfile:1.8
 #check=error=true
-ARG BASE_IMAGE="amd64/debian:stable-slim"
+# Updated to Debian Trixie for glibc 2.41 (requirement: glibc 2.38+)
+# Trixie provides glibc 2.41 and maintains Debian ecosystem compatibility
+# Previous: debian:stable-slim (Bookworm) with glibc 2.36
+ARG BASE_IMAGE="amd64/debian:trixie-slim"
 ARG BUILD_IMAGE="debian_stable_base"
 
 # Minimal container based on Debian base systems for up-to-date packages. 
@@ -76,6 +79,8 @@ EOF
 # Install updated compilers, with support for multiple base images
 ## Ubuntu: latest gcc from toolchain ppa, latest stable clang
 ## Debian: default gcc with distribution, latest stable clang
+## Trixie (glibc 2.41): GCC-14, CLANG-19
+## Bookworm (glibc 2.36): GCC-12, CLANG-18
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 . /etc/os-release
