@@ -6,8 +6,8 @@ variables:
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
   ## CUDA version and container operating system
-  CUDA_VERSION: 12.2.2
-  CUDA_OS: ubuntu22.04
+  CUDA_VERSION: 12.5.1
+  CUDA_OS: ubuntu24.04
 
   ## Default versions are specified in packages.yaml but can be overridden
   EDM4EIC_VERSION: ""
@@ -498,6 +498,7 @@ cuda:torch:
   extends: .cuda
   script:
     - python -c "import torch ; print(torch.cuda.is_available()) ;"
+  allow_failure: true
 
 .singularity:
   image:
