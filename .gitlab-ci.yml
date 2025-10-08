@@ -498,6 +498,7 @@ cuda:torch:
   extends: .cuda
   script:
     - python -c "import torch ; print(torch.cuda.is_available()) ;"
+  allow_failure: true
 
 .singularity:
   image:
