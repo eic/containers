@@ -126,7 +126,7 @@ packages:
   eicrecon:
     require:
     - '%clang'
-    - '@1.29.1' # EICRECON_VERSION
+    - '@1.30.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
