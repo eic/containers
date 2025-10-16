@@ -51,6 +51,7 @@ ENV SPACK_COLOR="always"
 # Concretization (default environment)
 RUN <<EOF
 set -e
+spack env create ${ENV}
 spack env activate --without-view --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
 spack external find --scope env:${SPACK_ENV} llvm
