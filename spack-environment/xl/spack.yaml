@@ -49,7 +49,7 @@ spack:
   - hepmcmerger
   - heppdt
   - imagemagick
-  - irt
+  - irt@1.0.8
   - iwyu
   - jana2
   - juggler
