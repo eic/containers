@@ -122,7 +122,7 @@ packages:
       prefix: /usr
   eic-smear:
     require:
-    - '@1.1.12'
+    - '@1.1.14'
   eicrecon:
     require:
     - '%clang'
