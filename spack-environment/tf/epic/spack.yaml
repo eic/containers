@@ -1,0 +1,8 @@
+spack:
+  include:
+  - ../../concretizer.yaml
+  - ../../packages.yaml
+  include_concrete:
+  - /opt/spack-environment/tf
+  specs:
+  - edm4eic

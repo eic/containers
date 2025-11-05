@@ -1,0 +1,10 @@
+spack:
+  include:
+  - ../../concretizer.yaml
+  - ../../packages.yaml
+  include_concrete:
+  - /opt/spack-environment/ci_without_acts
+  specs:
+  - algorithms
+  - edm4eic
+  - epic@main # EPIC_VERSION
