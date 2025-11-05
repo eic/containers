@@ -1,0 +1,12 @@
+spack:
+  include:
+  - ../../concretizer.yaml
+  - ../../packages.yaml
+  include_concrete:
+  - /opt/spack-environment/ci
+  specs:
+  - algorithms
+  - edm4eic
+  - eicrecon
+  - epic@main # EPIC_VERSION
+  - juggler
