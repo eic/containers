@@ -736,11 +736,9 @@ df:
       - docker-system-df-verbose.txt
   allow_failure: true
 
-prune: 
+.prune: 
   extends: .build
   stage: config
-  tags:
-    - docker-new
   rules:
     - when: manual
   script:
@@ -748,6 +746,16 @@ prune:
     - docker buildx prune --all --force --filter=until=24h --verbose
     - docker system prune --all --force --filter=until=24h
   allow_failure: true
+
+prune:gpu:
+  extends: .prune
+  tags:
+    - gpu
+
+prune:docker-new:
+  extends: .prune
+  tags:
+    - docker-new
 
 clean_internal_tag:
   image: alpine/curl
@@ -763,11 +771,9 @@ clean_internal_tag:
       done
   allow_failure: true
 
-clean_unstable_mr:
+.clean_unstable_mr:
   extends: .docker
   stage: finalize
-  tags:
-    - docker-new
   when: always
   script:
     - apk add curl jq
@@ -791,6 +797,16 @@ clean_unstable_mr:
         if [ "$state" == "closed" ] ; then docker rmi $repository:$tag ; fi ;
       done
   allow_failure: true
+
+clean_unstable_mr:gpu:
+  extends: .clean_unstable_mr
+  tags:
+    - gpu
+
+clean_unstable_mr:docker-new:
+  extends: .clean_unstable_mr
+  tags:
+    - docker-new
 
 .clean_pipeline:
   extends: .docker
