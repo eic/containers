@@ -195,7 +195,8 @@ ARG SPACKPACKAGES_CHERRYPICKS_FILES=""
 ADD https://api.github.com/repos/${SPACKPACKAGES_ORGREPO}/commits/${SPACKPACKAGES_VERSION} /tmp/spack-packages.json
 RUN <<EOF
 set -e
-spack repo add --scope site --branch ${SPACKPACKAGES_VERSION} https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPACKPACKAGES_ROOT}
+spack repo add --scope site --name builtin https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPACKPACKAGES_ROOT}
+spack repo update --scope site --branch ${SPACKPACKAGES_VERSION} builtin
 if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
   SPACKPACKAGES_CHERRYPICKS=$(git -C ${SPACKPACKAGES_ROOT} rev-list --topo-order ${SPACKPACKAGES_CHERRYPICKS} | grep -m $(echo ${SPACKPACKAGES_CHERRYPICKS} | wc -w)  "${SPACKPACKAGES_CHERRYPICKS}" | tac)
   eval "declare -A SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY=(${SPACKPACKAGES_CHERRYPICKS_FILES})"
@@ -209,7 +210,6 @@ if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
   done
 fi
 git -C ${SPACKPACKAGES_ROOT} gc --prune=all --aggressive
-spack repo add --scope site "${SPACKPACKAGES_ROOT}/repos/spack_repo/builtin"
 EOF
 
 ## Setup build configuration
