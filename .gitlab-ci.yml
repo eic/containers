@@ -792,14 +792,12 @@ clean_unstable_mr:
       done
   allow_failure: true
 
-clean_pipeline:
+.clean_pipeline:
   extends: .docker
   stage: finalize
   needs:
     - version
     - clean_internal_tag
-  tags:
-    - docker-new
   when: always
   script:
     - apk add curl jq
@@ -836,6 +834,16 @@ clean_pipeline:
         if [ "$status" == "canceled" ] ; then docker rmi $repository:$tag ; fi ;
       done
   allow_failure: true
+
+clean_pipeline:gpu:
+  extends: .clean_pipeline
+  tags:
+    - gpu
+
+clean_pipeline:docker-new:
+  extends: .clean_pipeline
+  tags:
+    - docker-new
 
 status:success:
   stage: status-report
