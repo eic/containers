@@ -78,8 +78,12 @@ jobs:
           source spack-packages.sh
           echo "orgrepo=${SPACKPACKAGES_ORGREPO}" | tee -a $GITHUB_OUTPUT
           echo "version=${SPACKPACKAGES_VERSION}" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks=${SPACKPACKAGES_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks_files=${SPACKPACKAGES_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
+          echo "cherrypicks<<EOF" | tee -a $GITHUB_OUTPUT
+          echo "${SPACKPACKAGES_CHERRYPICKS}" | tee -a $GITHUB_OUTPUT
+          echo "EOF" | tee -a $GITHUB_OUTPUT
+          echo "cherrypicks_files<<EOF" | tee -a $GITHUB_OUTPUT
+          echo "${SPACKPACKAGES_CHERRYPICKS_FILES}" | tee -a $GITHUB_OUTPUT
+          echo "EOF" | tee -a $GITHUB_OUTPUT
       - name: Load key4hep-spack version
         id: key4hep-spack
         run: |
