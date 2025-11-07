@@ -145,12 +145,12 @@ jobs:
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
             SPACK_ORGREPO=${{ steps.spack.outputs.orgrepo }}
             SPACK_VERSION=${{ steps.spack.outputs.version }}
-            SPACK_CHERRYPICKS="${{ steps.spack.outputs.cherrypicks }}"
-            SPACK_CHERRYPICKS_FILES="${{ steps.spack.outputs.cherrypicks_files }}"
+            SPACK_CHERRYPICKS='${{ steps.spack.outputs.cherrypicks }}'
+            SPACK_CHERRYPICKS_FILES='${{ steps.spack.outputs.cherrypicks_files }}'
             SPACKPACKAGES_ORGREPO=${{ steps.spack-packages.outputs.orgrepo }}
             SPACKPACKAGES_VERSION=${{ steps.spack-packages.outputs.version }}
-            SPACKPACKAGES_CHERRYPICKS="${{ steps.spack-packages.outputs.cherrypicks }}"
-            SPACKPACKAGES_CHERRYPICKS_FILES="${{ steps.spack-packages.outputs.cherrypicks_files }}"
+            SPACKPACKAGES_CHERRYPICKS='${{ steps.spack-packages.outputs.cherrypicks }}'
+            SPACKPACKAGES_CHERRYPICKS_FILES='${{ steps.spack-packages.outputs.cherrypicks_files }}'
             KEY4HEPSPACK_ORGREPO=${{ steps.eic-spack.outputs.orgrepo }}
             KEY4HEPSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
             EICSPACK_ORGREPO=${{ steps.eic-spack.outputs.orgrepo }}
