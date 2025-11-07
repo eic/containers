@@ -213,6 +213,9 @@ packages:
   irt:
     require:
     - '@1.0.8'
+  irt2:
+    require:
+    - '@2.1.0'
   iwyu:
     require:
     - '@0.23'
