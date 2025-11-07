@@ -187,7 +187,7 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
   sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all juggler
 fi
-spack concretize
+spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
 | uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-setuptools\|py-urllib3\)" \
 | tee /tmp/duplicates.txt
