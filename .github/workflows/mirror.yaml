@@ -23,6 +23,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Push to EICweb
+      if: ${{ github.event_name == 'push' }}
       uses: eic/gitlab-sync@master
       with:
         url: https://eicweb.phy.anl.gov/containers/eic_container.git/
