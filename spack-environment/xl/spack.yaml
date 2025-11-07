@@ -40,6 +40,7 @@ spack:
   - epic@25.10.2
   - epic@25.10.3
   - epic@25.11.0
+  - estarlight
   - fastjet
   - fjcontrib
   - fmt
