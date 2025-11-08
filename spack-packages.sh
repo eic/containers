@@ -24,6 +24,8 @@ b440c61b9cddfab0fd59dd5fc607c95247a18bc9
 698ce0531e4be2d55ca667d6f9341636397c2662
 387d9a5213cc6e3fd738b995b25d6facde4cc902
 1d53be2a26ecb7809c1f6006ed8cbfe7febee7a9
+a115a811bdfce4db5298a9ba9b7903ccfb0de101
+22dadd619053ff0872903549db616200bda082f0
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -47,3 +49,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 698ce0531e4be2d55ca667d6f9341636397c2662: root: add v6.36.02
 ## 387d9a5213cc6e3fd738b995b25d6facde4cc902: acts: only init submodules when +odd
 ## 1d53be2a26ecb7809c1f6006ed8cbfe7febee7a9: root: add v6.36.04
+## a115a811bdfce4db5298a9ba9b7903ccfb0de101: github-copilot: new package
+## 22dadd619053ff0872903549db616200bda082f0: claude-code: new package
