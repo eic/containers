@@ -28,6 +28,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  packages: write
+
 env:
   ## Default versions are specified in packages.yaml but can be overridden
   ## note: nightly builds will always use the master/main branch
