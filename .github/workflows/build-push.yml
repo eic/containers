@@ -239,9 +239,7 @@ jobs:
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
             BUILDER_IMAGE=${{ matrix.BUILDER_IMAGE }}
             RUNTIME_IMAGE=${{ matrix.RUNTIME_IMAGE }}
-            BUILD_IMAGE=eic_${{ matrix.BUILD_IMAGE }}
             INTERNAL_TAG=${{ env.INTERNAL_TAG }}
             ENV=${{ matrix.ENV }}
-            jobs=${{ env.JOBS }}
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}
