@@ -145,7 +145,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     <<EOF
 set -e
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
-spack gc --yes-to-all
+spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
 
@@ -237,7 +237,7 @@ set -e
 export CCACHE_DIR=/ccache
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 
-spack gc --yes-to-all
+spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
 ccache --zero-stats
 EOF

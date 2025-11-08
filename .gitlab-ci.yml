@@ -474,6 +474,30 @@ eic:
         let attempts=$attempts+1 ;
       done
 
+user_spack_environment:
+  stage: benchmarks
+  needs:
+    - job: version
+    - job: eic
+      parallel:
+        matrix:
+          - BUILD_IMAGE: eic_
+            ENV:
+            - ci
+            BUILD_TYPE:
+            - default
+            BUILDER_IMAGE: debian_stable_base
+            RUNTIME_IMAGE: debian_stable_base
+            PLATFORM: linux/amd64
+  image: 
+    name: ${CI_REGISTRY_IMAGE}/eic_ci:${INTERNAL_TAG}-default
+  script:
+    - source /opt/spack/share/spack/setup-env.sh
+    - spack env activate --create edm4eic
+    - spack add edm4eic@git.main
+    - spack install
+    - ls $HOME/spack/
+
 .cuda:
   stage: benchmarks
   tags:
