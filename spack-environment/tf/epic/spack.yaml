@@ -2,6 +2,7 @@ spack:
   include:
   - ../../concretizer.yaml
   - ../../packages.yaml
+  - ../../view.yaml
   include_concrete:
   - /opt/spack-environment/tf
   specs:
