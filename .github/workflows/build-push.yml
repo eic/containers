@@ -151,8 +151,6 @@ jobs:
             KEY4HEPSPACK_VERSION=${{ steps.key4hep-spack.outputs.version }}
             EICSPACK_ORGREPO=${{ steps.eic-spack.outputs.orgrepo }}
             EICSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
-            KEY4HEPSPACK_ORGREPO=${{ steps.key4hep-spack.outputs.orgrepo }}
-            KEY4HEPSPACK_VERSION=${{ steps.key4hep-spack.outputs.version }}
             jobs=${{ env.JOBS }}
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}
