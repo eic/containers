@@ -492,6 +492,7 @@ user_spack_environment:
   image: 
     name: ${CI_REGISTRY_IMAGE}/eic_ci:${INTERNAL_TAG}-default
   script:
+    - source /opt/spack/share/spack/setup-env.sh
     - spack env activate --create edm4eic
     - spack add edm4eic@git.main
     - spack install
