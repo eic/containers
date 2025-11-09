@@ -46,7 +46,7 @@ env:
   ## GitHub registry
   GH_REGISTRY: ghcr.io
   GH_REGISTRY_USER: eic
-  GH_PUSH: 1
+  GH_PUSH: 1 # required
 
   ## Number of jobs to start during container builds
   JOBS: 4
@@ -115,17 +115,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }},enable=${{ env.DH_PUSH != 0 }}
-            name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }},enable=${{ env.GH_PUSH != 0 }}
+            name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}
           tags: |
             type=sha,prefix=${{ matrix.arch }}-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        if: ${{ env.DH_PUSH == '1' }}
-        with:
-          registry: ${{ env.DH_REGISTRY }}
-          username: ${{ env.DH_REGISTRY_USER }}
-          password: ${{ secrets.DH_EICWEB_TOKEN }}
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         if: ${{ env.GH_PUSH == '1' }}
@@ -165,7 +157,7 @@ jobs:
         # We write this to a file for the next job
         run: |
           mkdir -p /tmp/digests
-          echo "${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}.digest
+          echo "${{ steps.meta.outputs.images }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}.digest
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -202,33 +194,43 @@ jobs:
           path: /tmp/digests
           pattern: base-*-digest
           merge-multiple: true
+      - name: Analyze digest artifacts
+        id: digests
+        run: |
+          # Read the digests from the files
+          DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
+          DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
+          # Get the base image name from the digests (they'll be the same)
+          IMAGE_NAME=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
+          echo "Image Name: $IMAGE_NAME"
+          echo "AMD64 Digest: $DIGEST_AMD64"
+          echo "ARM64 Digest: $DIGEST_ARM64"
+          echo "image_name=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "amd64=$DIGEST_AMD64" >> $GITHUB_OUTPUT
+          echo "arm64=$DIGEST_ARM64" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
-            # FIXME hardcoded debian_stable_base as BUILD_IMAGE
-            name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/debian_stable_base,enable=${{ env.DH_PUSH != 0 }}
-            name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/debian_stable_base,enable=${{ env.GH_PUSH != 0 }}
+            name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/${{ steps.digests.outputs.image_name }},enable=${{ env.DH_PUSH != 0 }}
+            name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ steps.digests.outputs.image_name }},enable=${{ env.GH_PUSH != 0 }}
           tags: |
             ${{ env.INTERNAL_TAG }}
             type=ref,prefix=unstable-pr-,event=pr
             type=match,pattern=^v(\d+\.\d+\.\d+-.*)$,group=1
       - name: Create and push manifest list
         run: |
-          # Read the digests from the files
-          DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
-          DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
-          # Get the base image name from the digests (they'll be the same)
-          BASE_IMAGE_NAME=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
-          echo "Base image: $BASE_IMAGE_NAME"
-          echo "AMD64 Digest: $DIGEST_AMD64"
-          echo "ARM64 Digest: $DIGEST_ARM64"
+          # Create tag arguments from the multi-line 'tags' output from the meta step
+          TAG_ARGS=""
+          while read -r line; do
+            TAG_ARGS="$TAG_ARGS --tag $line"
+          done <<< "${{ steps.meta.outputs.tags }}"
           # Create the manifest list and tag it with the final tags
           docker buildx imagetools create \
-            --tag ${{ steps.meta.outputs.tags }} \
-            $DIGEST_AMD64 \
-            $DIGEST_ARM64
+            $TAG_ARGS \
+            ${{ steps.digests.outputs.amd64 }} \
+            ${{ steps.digests.outputs.arm64 }}
 
   eic:
     name: Build eic on ${{ matrix.arch }}
