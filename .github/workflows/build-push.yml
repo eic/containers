@@ -70,7 +70,7 @@ jobs:
           PLATFORM: linux/arm64
           runner: ubuntu-latest-arm64
           arch: arm64
-      steps:
+    steps:
       - name: Checkout 
         uses: actions/checkout@v4
       - name: Load spack version and cherry-picks
