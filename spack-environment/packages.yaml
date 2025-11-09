@@ -370,7 +370,7 @@ packages:
     - +format-nongpl # non-default required for jupyter stack
   py-keras:
     require:
-    - '@3.7.0'
+    - '@3.12:'
     - backend=tensorflow
   py-lmfit:
     require:
@@ -441,7 +441,7 @@ packages:
   py-tensorflow:
     require:
     - '%clang'
-    - '@2.18'
+    - '@2.20'
   py-toml:
     require:
     - '@0.10.2:'
