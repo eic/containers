@@ -1,4 +1,4 @@
-name: build-push
+amd644uild-push
 
 on:
   schedule:
@@ -56,15 +56,22 @@ env:
 
 jobs:
   base:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
         include:
         - BASE_IMAGE: debian:stable-slim
           BUILD_IMAGE: debian_stable_base
-          PLATFORM: linux/amd64
-    steps:
-      - name: Checkout
+          PLATFORM: linux/amd64 
+          runner: ubuntu-latest
+          arch: amd64
+        - BASE_IMAGE: debian:stable-slim
+          BUILD_IMAGE: debian_stable_base
+          PLATFORM: linux/arm64
+          runner: ubuntu-latest-arm64
+          arch: arm64
+      steps:
+      - name: Checkout 
         uses: actions/checkout@v4
       - name: Load spack version and cherry-picks
         id: spack
@@ -75,7 +82,7 @@ jobs:
           echo "version=${SPACK_VERSION}" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks_files=${SPACK_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
-      - name: Load spack-packages version and cherry-picks
+      - name: Load spack-packages version aversionry-picks
         id: spack-packages
         shell: bash
         run: |
@@ -110,9 +117,8 @@ jobs:
             name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }},enable=${{ env.DH_PUSH != 0 }}
             name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }},enable=${{ env.GH_PUSH != 0 }}
           tags: |
-            ${{ env.INTERNAL_TAG }}
-            type=schedule
-            type=ref,prefix=unstable-pr-,event=pr
+            ${{ matrix.arch }}-${{ env.INTERNAL_TAG }}
+            type=sha,prefix=${{ matrix.arch }}-
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ env.DH_PUSH == '1' }}
@@ -134,8 +140,8 @@ jobs:
           context: containers/debian
           platforms: ${{ matrix.PLATFORM }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ steps.meta.outputs.tags }},push-by-digest=true,name-canonical=true
           build-args: |
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
