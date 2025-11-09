@@ -229,7 +229,7 @@ jobs:
 
   eic:
     name: Build eic on ${{ matrix.arch }}
-    runs-on: ${{ matri.runner }}
+    runs-on: ${{ matrix.runner }}
     needs: base-manifest
     strategy:
       matrix:
