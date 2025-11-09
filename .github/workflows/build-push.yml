@@ -201,6 +201,7 @@ jobs:
           path: /tmp/digests
           pattern: base-*-digest
           merge-multiple: true
+      - run: ls -alR /tmp/digests
       - name: Extract Docker metadata for final tags
         id: meta
         uses: docker/metadata-action@v5
