@@ -201,7 +201,6 @@ jobs:
           path: /tmp/digests
           pattern: base-*-digest
           merge-multiple: true
-      - run: ls -alR /tmp/digests
       - name: Extract Docker metadata for final tags
         id: meta
         uses: docker/metadata-action@v5
@@ -212,11 +211,10 @@ jobs:
             type=ref,prefix=unstable-pr-,event=pr
             type=match,pattern=^v(\d+\.\d+\.\d+-.*)$,group=1
       - name: Create and push manifest list
-        working-directory: /tmp/digests
         run: |
           # Read the digests from the files
-          DIGEST_AMD64=$(cat amd64.digest)
-          DIGEST_ARM64=$(cat arm64.digest)
+          DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
+          DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
           # Get the base image name from the digests (they'll be the same)
           # e.g., ghcr.io/my-org/my-repo@sha256:...
           BASE_IMAGE_NAME=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
