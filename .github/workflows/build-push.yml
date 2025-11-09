@@ -164,12 +164,12 @@ jobs:
         # We write this to a file for the next job
         run: |
           mkdir -p /tmp/digests
-          echo "${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}
+          echo "${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}.digest
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: base-digests
-          path: /tmp/digests/${{ matrix.arch }}
+          name: base-${{ matrix.arch }}-digest
+          path: /tmp/digests/${{ matrix.arch }}.digest
           retention-days: 1
 
   base-manifest:
@@ -198,8 +198,9 @@ jobs:
       - name: Download all digest artifacts
         uses: actions/download-artifact@v4
         with:
-          name: base-digests
           path: /tmp/digests
+          pattern: base-*-digest
+          merge-multiple: true
       - name: Extract Docker metadata for final tags
         id: meta
         uses: docker/metadata-action@v5
@@ -325,10 +326,10 @@ jobs:
         # We write this to a file for the next job
         run: |
           mkdir -p /tmp/digests
-          echo "${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}
+          echo "${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}.digest
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eic-digests
-          path: /tmp/digests/${{ matrix.arch }}
+          name: eic-${{ matrix.arch }}-digest
+          path: /tmp/digests/${{ matrix.arch }}.digest
           retention-days: 1
