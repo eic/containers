@@ -214,8 +214,8 @@ jobs:
         working-directory: /tmp/digests
         run: |
           # Read the digests from the files
-          DIGEST_AMD64=$(cat amd64)
-          DIGEST_ARM64=$(cat arm64)
+          DIGEST_AMD64=$(cat amd64.digest)
+          DIGEST_ARM64=$(cat arm64.digest)
           # Get the base image name from the digests (they'll be the same)
           # e.g., ghcr.io/my-org/my-repo@sha256:...
           BASE_IMAGE_NAME=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
