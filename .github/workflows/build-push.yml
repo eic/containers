@@ -169,7 +169,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: base-digests
-          path: /tmp/digests/
+          path: /tmp/digests/${{ matrix.arch }}
           retention-days: 1
 
   base-manifest:
@@ -330,5 +330,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: eic-digests
-          path: /tmp/digests/
+          path: /tmp/digests/${{ matrix.arch }}
           retention-days: 1
