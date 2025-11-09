@@ -135,6 +135,7 @@ jobs:
           password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v5
+        id: build
         with:
           file: containers/debian/Dockerfile
           context: containers/debian
@@ -210,8 +211,6 @@ jobs:
             ${{ env.INTERNAL_TAG }}
             type=ref,prefix=unstable-pr-,event=pr
             type=match,pattern=^v(\d+\.\d+\.\d+-.*)$,group=1
-      - run: ls -alR /tmp/digests
-      - run: cat /tmp/digests/amd64.digest
       - name: Create and push manifest list
         run: |
           # Read the digests from the files
@@ -299,6 +298,7 @@ jobs:
           password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v5
+        id: build
         with:
           file: containers/eic/Dockerfile
           context: containers/eic
