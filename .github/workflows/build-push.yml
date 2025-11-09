@@ -1,4 +1,4 @@
-amd644uild-push
+name: build-push
 
 on:
   schedule:
