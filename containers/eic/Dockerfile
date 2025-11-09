@@ -270,6 +270,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
 set -e
+spack env activate --dir ${SPACK_ENV}/epic 
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all
 EOF
@@ -308,7 +309,7 @@ EOF
 ## Store environment
 RUN <<EOF
 set -e
-spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
+spack env activate --sh --dir ${SPACK_ENV}/epic > /etc/profile.d/z10_spack_environment.sh
 EOF
 
 ## Fixup /opt/detector/epic-git.fcf90937193c983c0af2acf1251e01f2e2c3a259_main
