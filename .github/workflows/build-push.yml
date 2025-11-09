@@ -138,7 +138,6 @@ jobs:
           file: containers/debian/Dockerfile
           context: containers/debian
           platforms: ${{ matrix.PLATFORM }}
-          push: true
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ steps.meta.outputs.tags }},push-by-digest=true,name-canonical=true
           build-args: |
