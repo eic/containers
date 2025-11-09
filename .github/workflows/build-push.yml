@@ -56,6 +56,7 @@ env:
 
 jobs:
   base:
+    name: Build base on ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
@@ -171,9 +172,65 @@ jobs:
           path: /tmp/digests/
           retention-days: 1
 
-  eic:
+  base-manifest:
+    name: Push base manifest
     runs-on: ubuntu-latest
     needs: base
+    steps:
+      - name: Set up QEMU (for imagetools)
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        if: ${{ env.DH_PUSH == '1' }}
+        with:
+          registry: ${{ env.DH_REGISTRY }}
+          username: ${{ env.DH_REGISTRY_USER }}
+          password: ${{ secrets.DH_EICWEB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        if: ${{ env.GH_PUSH == '1' }}
+        with:
+          registry: ${{ env.GH_REGISTRY }}
+          username: ${{ secrets.GHCR_REGISTRY_USER }}
+          password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+      - name: Download all digest artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: base-digests
+          path: /tmp/digests
+      - name: Extract Docker metadata for final tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ env.IMAGE_NAME }}
+          tags: |
+            ${{ env.INTERNAL_TAG }}
+            type=ref,prefix=unstable-pr-,event=pr
+            type=match,pattern=^v(\d+\.\d+\.\d+-.*)$,group=1
+      - name: Create and push manifest list
+        working-directory: /tmp/digests
+        run: |
+          # Read the digests from the files
+          DIGEST_AMD64=$(cat amd64)
+          DIGEST_ARM64=$(cat arm64)
+          # Get the base image name from the digests (they'll be the same)
+          # e.g., ghcr.io/my-org/my-repo@sha256:...
+          BASE_IMAGE_NAME=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
+          echo "Base image: $BASE_IMAGE_NAME"
+          echo "AMD64 Digest: $DIGEST_AMD64"
+          echo "ARM64 Digest: $DIGEST_ARM64"
+          # Create the manifest list and tag it with the final tags
+          docker buildx imagetools create \
+            --tag ${{ steps.meta.outputs.tags }} \
+            $DIGEST_AMD64 \
+            $DIGEST_ARM64
+
+  eic:
+    name: Build eic on ${{ matrix.arch }}
+    runs-on: ${{ matri.runner }}
+    needs: base-manifest
     strategy:
       matrix:
         include:
@@ -183,6 +240,16 @@ jobs:
           BUILDER_IMAGE: debian_stable_base
           RUNTIME_IMAGE: debian_stable_base
           PLATFORM: linux/amd64
+          runner: ubuntu-latest
+          arch: amd64
+        - BUILD_IMAGE: eic_
+          ENV: xl
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          PLATFORM: linux/arm64
+          runner: ubuntu-24.04-arm
+          arch: arm64
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
@@ -202,7 +269,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Docker meta
@@ -213,10 +280,7 @@ jobs:
             name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }},enable=${{ env.DH_PUSH != 0 }}
             name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }},enable=${{ env.GH_PUSH != 0 }}
           tags: |
-            ${{ env.INTERNAL_TAG }}
-            type=schedule,pattern={{date 'YYYY-MM-DD'}}
-            type=ref,prefix=unstable-pr-,event=pr
-            type=match,pattern=^v(\d+\.\d+\.\d+-.*)$,group=1
+            type=sha,prefix=${{ matrix.arch }}-
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ env.DH_PUSH == '1' }}
@@ -246,9 +310,8 @@ jobs:
           secret-files: |
             mirrors=mirrors.yaml
           platforms: ${{ matrix.PLATFORM }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ steps.meta.outputs.tags }},push-by-digest=true,name-canonical=true
           build-args: |
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
             BUILDER_IMAGE=${{ matrix.BUILDER_IMAGE }}
@@ -257,3 +320,15 @@ jobs:
             ENV=${{ matrix.ENV }}
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}
+      - name: Export digest to file
+        # The build-push action outputs the digest at steps.build.outputs.digest
+        # We write this to a file for the next job
+        run: |
+          mkdir -p /tmp/digests
+          echo "${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}
+      - name: Upload digest as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: eic-digests
+          path: /tmp/digests/
+          retention-days: 1
