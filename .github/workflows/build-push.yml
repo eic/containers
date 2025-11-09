@@ -212,7 +212,7 @@ jobs:
           echo "AMD64 Digest: $DIGEST_AMD64"
           echo "ARM64 Digest: $DIGEST_ARM64"
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
-          echo "image=$image" >> $GITHUB_OUTPUT
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "amd64=$DIGEST_AMD64" >> $GITHUB_OUTPUT
           echo "arm64=$DIGEST_ARM64" >> $GITHUB_OUTPUT
