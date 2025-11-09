@@ -206,7 +206,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ env.IMAGE_NAME }}
+          images: |
+            # FIXME hardcoded debian_stable_base as BUILD_IMAGE
+            name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/debian_stable_base,enable=${{ env.DH_PUSH != 0 }}
+            name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/debian_stable_base,enable=${{ env.GH_PUSH != 0 }}
           tags: |
             ${{ env.INTERNAL_TAG }}
             type=ref,prefix=unstable-pr-,event=pr
@@ -217,7 +220,6 @@ jobs:
           DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
           DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
           # Get the base image name from the digests (they'll be the same)
-          # e.g., ghcr.io/my-org/my-repo@sha256:...
           BASE_IMAGE_NAME=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
           echo "Base image: $BASE_IMAGE_NAME"
           echo "AMD64 Digest: $DIGEST_AMD64"
