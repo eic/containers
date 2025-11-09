@@ -133,7 +133,7 @@ jobs:
           context: containers/debian
           platforms: ${{ matrix.PLATFORM }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ steps.meta.outputs.tags }},push-by-digest=true,name-canonical=true
+          outputs: type=image,name=${{ steps.meta.outputs.tags }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
@@ -325,7 +325,7 @@ jobs:
             mirrors=mirrors.yaml
           platforms: ${{ matrix.PLATFORM }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ steps.meta.outputs.tags }},push-by-digest=true,name-canonical=true
+          outputs: type=image,name=${{ steps.meta.outputs.tags }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
             BUILDER_IMAGE=${{ matrix.BUILDER_IMAGE }}
