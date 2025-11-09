@@ -110,6 +110,32 @@ jobs:
           platforms: linux/amd64,linux/arm64
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        id: buildx
+      - name: Cache build mounts
+        # Cache mount contents (ccache, apt cache, spack cache) using GitHub Actions cache
+        # This is separate from the registry cache which stores image layers
+        # Reference: https://docs.docker.com/build/ci/github-actions/cache/#cache-mounts
+        # Implementation: https://github.com/reproducible-containers/buildkit-cache-dance
+        uses: actions/cache@v4
+        id: cache-base-mounts
+        with:
+          path: cache-mount-base-${{ matrix.arch }}
+          key: ${{ matrix.arch }}-base-mounts-${{ github.ref_name }}
+          restore-keys: |
+            ${{ matrix.arch }}-base-mounts-main
+            ${{ matrix.arch }}-base-mounts-
+      - name: Inject cache mounts into builder
+        uses: reproducible-containers/buildkit-cache-dance@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-dir: cache-mount-base-${{ matrix.arch }}
+          cache-map: |
+            {
+              "var-cache-apt": "/var/cache/apt",
+              "var-lib-apt": "/var/lib/apt",
+              "var-cache-spack": "/var/cache/spack"
+            }
+          skip-extraction: ${{ steps.cache-base-mounts.outputs.cache-hit }}
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
@@ -285,6 +311,32 @@ jobs:
           platforms: linux/amd64,linux/arm64
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        id: buildx
+      - name: Cache build mounts
+        # Cache mount contents (ccache, apt cache, spack cache) using GitHub Actions cache
+        # This is separate from the registry cache which stores image layers
+        # Reference: https://docs.docker.com/build/ci/github-actions/cache/#cache-mounts
+        # Implementation: https://github.com/reproducible-containers/buildkit-cache-dance
+        uses: actions/cache@v4
+        id: cache-eic-mounts
+        with:
+          path: cache-mount-eic-${{ matrix.arch }}
+          key: ${{ matrix.arch }}-eic-${{ matrix.ENV }}-mounts-${{ github.ref_name }}
+          restore-keys: |
+            ${{ matrix.arch }}-eic-${{ matrix.ENV }}-mounts-main
+            ${{ matrix.arch }}-eic-${{ matrix.ENV }}-mounts-
+            ${{ matrix.arch }}-eic-mounts-
+      - name: Inject cache mounts into builder
+        uses: reproducible-containers/buildkit-cache-dance@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-dir: cache-mount-eic-${{ matrix.arch }}
+          cache-map: |
+            {
+              "ccache": "/ccache",
+              "var-cache-spack": "/var/cache/spack"
+            }
+          skip-extraction: ${{ steps.cache-eic-mounts.outputs.cache-hit }}
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
