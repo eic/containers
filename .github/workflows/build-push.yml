@@ -437,16 +437,20 @@ jobs:
           # Read the digests from the files
           DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
           DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
-          # Get the image name from the digests (they'll be the same)
-          REGISTRY_IMAGE=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
+          # Get the base image name from the digests (they'll be the same)
+          REGISTRY_IMAGE_TAG=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
+          REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
           REGISTRY=$(echo $REGISTRY_IMAGE | cut -d'/' -f1-2)
           IMAGE=$(echo $REGISTRY_IMAGE | cut -d'/' -f3)
+          TAG=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f2)
           echo "Registry Name: $REGISTRY"
           echo "Image Name: $IMAGE"
+          echo "Tag Name: $TAG"
           echo "AMD64 Digest: $DIGEST_AMD64"
           echo "ARM64 Digest: $DIGEST_ARM64"
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "amd64=$DIGEST_AMD64" >> $GITHUB_OUTPUT
           echo "arm64=$DIGEST_ARM64" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
