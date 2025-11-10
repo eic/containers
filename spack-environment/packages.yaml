@@ -484,7 +484,7 @@ packages:
     - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root ~internal_pdfs +ipo +lhapdf +lhole +mpi +openloops +pythia +python ~recola +rivet +root ~ufo
   simsipm:
     require:
-    - '@git.b08cc27151d70298b43ca7e216add9e46c056b04=2.1.0'
+    - '@2.1.0'
   snakemake:
     require:
     - '@8.5.2'
