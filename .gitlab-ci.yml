@@ -407,7 +407,7 @@ eic:
       source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
-      export SPACK_VERSION ;
+      export SPACKPACKAGES_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
     - attempts=0
     - nocache=""

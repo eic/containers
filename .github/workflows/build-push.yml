@@ -152,7 +152,7 @@ jobs:
         id: mirrors
         run: |
           source spack.sh
-          export SPACK_VERSION
+          export SPACKPACKAGES_VERSION
           export CI_REGISTRY=ghcr.io
           export CI_PROJECT_PATH=eic
           export CI_REGISTRY_USER=${{ secrets.GHCR_REGISTRY_USER }}
