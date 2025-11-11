@@ -85,7 +85,7 @@ jobs:
           echo "version=${SPACK_VERSION}" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks_files=${SPACK_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
-      - name: Load spack-packages version aversionry-picks
+      - name: Load spack-packages version and cherry-picks
         id: spack-packages
         shell: bash
         run: |
