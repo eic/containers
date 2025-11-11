@@ -362,7 +362,7 @@ base:
                    --build-arg KEY4HEPSPACK_ORGREPO=${KEY4HEPSPACK_ORGREPO}
                    --build-arg KEY4HEPSPACK_VERSION=$(resolve_git_ref "${KEY4HEPSPACK_ORGREPO}" "${KEY4HEPSPACK_VERSION}")
                    --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
-                   --build-arg EICSPACK_VERSION=$(resolve_git_ref "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}""
+                   --build-arg EICSPACK_VERSION=$(resolve_git_ref "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
                    --build-arg jobs=${JOBS}
                    --provenance false
                    containers/debian
