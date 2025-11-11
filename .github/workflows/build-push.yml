@@ -304,7 +304,7 @@ jobs:
       - name: Load secrets into mirrors.yaml
         id: mirrors
         run: |
-          source spack.sh
+          source spack-packages.sh
           export SPACKPACKAGES_VERSION
           export CI_REGISTRY=ghcr.io
           export CI_PROJECT_PATH=eic
