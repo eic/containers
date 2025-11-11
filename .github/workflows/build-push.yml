@@ -74,6 +74,8 @@ jobs:
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
+      - name: Inject enhanced GitHub environment variables
+        uses: rlespinasse/github-slug-action@v5
       - name: Load spack version and cherry-picks
         id: spack
         shell: bash
@@ -176,8 +178,10 @@ jobs:
             EICSPACK_ORGREPO=${{ steps.eic-spack.outputs.orgrepo }}
             EICSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
             jobs=${{ env.JOBS }}
-          cache-from: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}
-          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }},mode=max
+          cache-from: |
+            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_REF_NAME_SLUG }}-${{ matrix.arch }}
+            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_BASE_REF_SLUG }}-${{ matrix.arch }}
+          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_REF_NAME_SLUG }}-${{ matrix.arch }},mode=max
       - name: Export digest to file
         # The build-push action outputs the digest at steps.build.outputs.digest
         # We write this to a file for the next job
@@ -305,6 +309,8 @@ jobs:
           export CI_REGISTRY=ghcr.io
           export CI_PROJECT_PATH=eic
           cat mirrors.yaml.in | envsubst > mirrors.yaml
+      - name: Inject enhanced GitHub environment variables
+        uses: rlespinasse/github-slug-action@v5
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -384,8 +390,10 @@ jobs:
             RUNTIME_IMAGE=${{ matrix.RUNTIME_IMAGE }}
             INTERNAL_TAG=${{ env.INTERNAL_TAG }}
             ENV=${{ matrix.ENV }}
-          cache-from: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.arch }}
-          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.arch }},mode=max
+          cache-from: |
+            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ env.GITHUB_REF_NAME_SLUG }}-${{ matrix.arch }}
+            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ env.GITHUB_BASE_REF_SLUG }}-${{ matrix.arch }}
+          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ env.GITHUB_REF_NAME_SLUG }}-${{ matrix.arch }},mode=max
       - name: Export digest to file
         # The build-push action outputs the digest at steps.build.outputs.digest
         # We write this to a file for the next job
