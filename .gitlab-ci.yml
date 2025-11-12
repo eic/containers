@@ -315,17 +315,17 @@ base:
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
-                   --build-arg SPACK_VERSION=$(.ci/resolve_git_ref "${SPACK_ORGREPO}" "${SPACK_VERSION}")
+                   --build-arg SPACK_VERSION=$(sh .ci/resolve_git_ref "${SPACK_ORGREPO}" "${SPACK_VERSION}")
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
                    --build-arg SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES}"
                    --build-arg SPACKPACKAGES_ORGREPO=${SPACKPACKAGES_ORGREPO}
-                   --build-arg SPACKPACKAGES_VERSION=$(.ci/resolve_git_ref "${SPACKPACKAGES_ORGREPO}" "${SPACKPACKAGES_VERSION}")
+                   --build-arg SPACKPACKAGES_VERSION=$(sh .ci/resolve_git_ref "${SPACKPACKAGES_ORGREPO}" "${SPACKPACKAGES_VERSION}")
                    --build-arg SPACKPACKAGES_CHERRYPICKS="${SPACKPACKAGES_CHERRYPICKS}"
                    --build-arg SPACKPACKAGES_CHERRYPICKS_FILES="${SPACKPACKAGES_CHERRYPICKS_FILES}"
                    --build-arg KEY4HEPSPACK_ORGREPO=${KEY4HEPSPACK_ORGREPO}
-                   --build-arg KEY4HEPSPACK_VERSION=$(.ci/resolve_git_ref "${KEY4HEPSPACK_ORGREPO}" "${KEY4HEPSPACK_VERSION}")
+                   --build-arg KEY4HEPSPACK_VERSION=$(sh .ci/resolve_git_ref "${KEY4HEPSPACK_ORGREPO}" "${KEY4HEPSPACK_VERSION}")
                    --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
-                   --build-arg EICSPACK_VERSION=$(.ci/resolve_git_ref "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
+                   --build-arg EICSPACK_VERSION=$(sh .ci/resolve_git_ref "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
                    --build-arg jobs=${JOBS}
                    --provenance false
                    containers/debian
@@ -449,16 +449,16 @@ eic:
                    --build-arg EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    --build-arg CI_COMMIT_SHA=${CI_COMMIT_SHA}
                    ${IF_BUILD_DEFAULT+
-                     ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=$(.ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION})}
-                     ${EICRECON_VERSION:+--build-arg EICRECON_VERSION=$(.ci/resolve_git_ref eic/EICrecon ${EICRECON_VERSION})}
-                     ${EPIC_VERSION:+--build-arg EPIC_VERSION=$(.ci/resolve_git_ref eic/epic ${EPIC_VERSION})}
-                     ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=$(.ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION})}
+                     ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=$(sh .ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION})}
+                     ${EICRECON_VERSION:+--build-arg EICRECON_VERSION=$(sh .ci/resolve_git_ref eic/EICrecon ${EICRECON_VERSION})}
+                     ${EPIC_VERSION:+--build-arg EPIC_VERSION=$(sh .ci/resolve_git_ref eic/epic ${EPIC_VERSION})}
+                     ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=$(sh .ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION})}
                    }
                    ${IF_BUILD_NIGHTLY+
-                     --build-arg EDM4EIC_VERSION=$(.ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION:-main})
-                     --build-arg EICRECON_VERSION=$(.ci/resolve_git_ref eic/EICrecon ${EICRECON_VERSION:-main})
-                     --build-arg EPIC_VERSION=$(.ci/resolve_git_ref eic/epic ${EPIC_VERSION:-main})
-                     --build-arg JUGGLER_VERSION=$(.ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION:-main})
+                     --build-arg EDM4EIC_VERSION=$(sh .ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION:-main})
+                     --build-arg EICRECON_VERSION=$(sh .ci/resolve_git_ref eic/EICrecon ${EICRECON_VERSION:-main})
+                     --build-arg EPIC_VERSION=$(sh .ci/resolve_git_ref eic/epic ${EPIC_VERSION:-main})
+                     --build-arg JUGGLER_VERSION=$(sh .ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION:-main})
                    }
                    --build-arg ENV=${ENV}
                    --build-arg jobs=${JOBS}

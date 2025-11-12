@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Resolve git refs (branches, tags, or commit SHAs) to full commit SHAs
 #
 # Usage:
@@ -59,10 +59,20 @@ fi
 
 # If it's already a commit SHA (7-40 hex characters), return as-is
 # Full SHAs are 40 chars, but short SHAs (7+) are also valid
-if [[ "${ref}" =~ ^[0-9a-f]{7,40}$ ]]; then
-  echo "${ref}"
-  exit 0
-fi
+# POSIX-compliant check: use case statement for pattern matching
+case "${ref}" in
+  *[!0-9a-f]*)
+    # Contains non-hex characters, not a SHA
+    ;;
+  *)
+    # All hex characters, check length
+    ref_len=${#ref}
+    if [ "${ref_len}" -ge 7 ] && [ "${ref_len}" -le 40 ]; then
+      echo "${ref}"
+      exit 0
+    fi
+    ;;
+esac
 
 # Try to resolve as branch
 sha=$(git ls-remote "${repo_url}" "refs/heads/${ref}" 2>/dev/null | cut -f1)
