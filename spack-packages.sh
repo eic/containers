@@ -36,6 +36,7 @@ b7870dfad11c4e8ca9690b0895c98f16d79f5398
 1e8f896b2807bcc48553e90d6212f0931fa5262f
 e998e20d3979c5aa47faaf59a8020e3fab13ab97
 904792d49dc4236c5394dbc0aebbe45175b59187
+a3f3a80e2877645c72cca0381c820307fe1d4523
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -73,3 +74,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 1e8f896b2807bcc48553e90d6212f0931fa5262f: simsipm: Add conflict for aarch64
 ## e998e20d3979c5aa47faaf59a8020e3fab13ab97: py-immutables: add v0.21
 ## 904792d49dc4236c5394dbc0aebbe45175b59187: py-yapf: add versions
+## a3f3a80e2877645c72cca0381c820307fe1d4523: py-numba: fix python dependency bounds
