@@ -82,7 +82,7 @@ jobs:
         run: |
           source spack.sh
           echo "orgrepo=${SPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=${SPACK_VERSION}" | tee -a $GITHUB_OUTPUT
+          echo "version=$(.ci/resolve_git_ref ${SPACK_ORGREPO} ${SPACK_VERSION})" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks_files=${SPACK_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
       - name: Load spack-packages version and cherry-picks
@@ -91,7 +91,7 @@ jobs:
         run: |
           source spack-packages.sh
           echo "orgrepo=${SPACKPACKAGES_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=${SPACKPACKAGES_VERSION}" | tee -a $GITHUB_OUTPUT
+          echo "version=$(.ci/resolve_git_ref ${SPACKPACKAGES_ORGREPO} ${SPACKPACKAGES_VERSION})" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks=${SPACKPACKAGES_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks_files=${SPACKPACKAGES_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
       - name: Load key4hep-spack version
@@ -99,13 +99,13 @@ jobs:
         run: |
           source key4hep-spack.sh
           echo "orgrepo=${KEY4HEPSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=${KEY4HEPSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
+          echo "version=$(.ci/resolve_git_ref ${KEY4HEPSPACK_ORGREPO} ${KEY4HEPSPACK_VERSION})" | tee -a $GITHUB_OUTPUT
       - name: Load eic-spack version
         id: eic-spack
         run: |
           source eic-spack.sh
           echo "orgrepo=${EICSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=${EICSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
+          echo "version=$(.ci/resolve_git_ref ${EICSPACK_ORGREPO} ${EICSPACK_VERSION})" | tee -a $GITHUB_OUTPUT
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
