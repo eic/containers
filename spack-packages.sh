@@ -26,10 +26,19 @@ b440c61b9cddfab0fd59dd5fc607c95247a18bc9
 1d53be2a26ecb7809c1f6006ed8cbfe7febee7a9
 a115a811bdfce4db5298a9ba9b7903ccfb0de101
 22dadd619053ff0872903549db616200bda082f0
+7fad8a78d35b5556e1d7aa92a71a4e1c58a1665a
+1b976bbdf7c5bce37d6541beb93445791f9292c6
+20aa538bd0d33743b8cd9dd9179c759b85615d47
+795ad32793a7dfda1086f31b7e49cf4ae52672f6
+e61079273e806301d76cc64f53fb034980988583
+b063312bb52fb62010e04588f6b16d37e16c8d02
+b7870dfad11c4e8ca9690b0895c98f16d79f5398
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 --- || true
+[b063312bb52fb62010e04588f6b16d37e16c8d02]=repos/spack_repo/builtin/packages/py_tensorflow/package.py
+[7fad8a78d35b5556e1d7aa92a71a4e1c58a1665a]=repos/spack_repo/builtin/packages/py_tensorflow/package.py,repos/spack_repo/builtin/packages/py_tensorboard/package.py
 ---
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
@@ -51,3 +60,10 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 1d53be2a26ecb7809c1f6006ed8cbfe7febee7a9: root: add v6.36.04
 ## a115a811bdfce4db5298a9ba9b7903ccfb0de101: github-copilot: new package
 ## 22dadd619053ff0872903549db616200bda082f0: claude-code: new package
+## 1b976bbdf7c5bce37d6541beb93445791f9292c6: py-keras: add v3.11.0
+## 20aa538bd0d33743b8cd9dd9179c759b85615d47: py-keras: add v3.11.1
+## 795ad32793a7dfda1086f31b7e49cf4ae52672f6: py-keras: add v3.11.2
+## e61079273e806301d76cc64f53fb034980988583: py-keras: add v3.11.3
+## b7870dfad11c4e8ca9690b0895c98f16d79f5398: py-keras: add v3.12.0
+## b063312bb52fb62010e04588f6b16d37e16c8d02: Remove Python-related deprecations
+## 7fad8a78d35b5556e1d7aa92a71a4e1c58a1665a: py-tensorflow: add v2.19, v2.20
