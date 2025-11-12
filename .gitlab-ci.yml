@@ -238,43 +238,6 @@ status:pending:
     - docker buildx create context --name builder --driver docker-container --bootstrap --use
     - docker buildx ls
     - echo $DOCKER_HOST
-    - |
-      resolve_git_ref() {
-        local repo_url="https://github.com/${1}.git"
-        local ref="${2}"
-        
-        # If it's already a commit SHA (7-40 hex chars), return as-is
-        if [[ "${ref}" =~ ^[0-9a-f]{7,40}$ ]]; then
-          echo "${ref}"
-          return 0
-        fi
-        
-        # Try as branch
-        sha=$(git ls-remote "${repo_url}" "refs/heads/${ref}" 2>/dev/null | cut -f1)
-        if [ -n "${sha}" ]; then
-          echo "${sha}"
-          return 0
-        fi
-        
-        # Try as tag
-        sha=$(git ls-remote "${repo_url}" "refs/tags/${ref}" 2>/dev/null | cut -f1)
-        if [ -n "${sha}" ]; then
-          echo "${sha}"
-          return 0
-        fi
-        
-        # Try as annotated tag (^{} dereferences to commit)
-        sha=$(git ls-remote "${repo_url}" "refs/tags/${ref}^{}" 2>/dev/null | cut -f1)
-        if [ -n "${sha}" ]; then
-          echo "${sha}"
-          return 0
-        fi
-        
-        # Fallback: return original ref
-        echo "${ref}"
-        return 1
-      }
-
   after_script:
     - !reference [.docker, after_script]
     - docker buildx ls
@@ -352,17 +315,17 @@ base:
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
-                   --build-arg SPACK_VERSION=$(resolve_git_ref "${SPACK_ORGREPO}" "${SPACK_VERSION}")
+                   --build-arg SPACK_VERSION=$(.ci/resolve_git_ref "${SPACK_ORGREPO}" "${SPACK_VERSION}")
                    --build-arg SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS}"
                    --build-arg SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES}"
                    --build-arg SPACKPACKAGES_ORGREPO=${SPACKPACKAGES_ORGREPO}
-                   --build-arg SPACKPACKAGES_VERSION=$(resolve_git_ref "${SPACKPACKAGES_ORGREPO}" "${SPACKPACKAGES_VERSION}")
+                   --build-arg SPACKPACKAGES_VERSION=$(.ci/resolve_git_ref "${SPACKPACKAGES_ORGREPO}" "${SPACKPACKAGES_VERSION}")
                    --build-arg SPACKPACKAGES_CHERRYPICKS="${SPACKPACKAGES_CHERRYPICKS}"
                    --build-arg SPACKPACKAGES_CHERRYPICKS_FILES="${SPACKPACKAGES_CHERRYPICKS_FILES}"
                    --build-arg KEY4HEPSPACK_ORGREPO=${KEY4HEPSPACK_ORGREPO}
-                   --build-arg KEY4HEPSPACK_VERSION=$(resolve_git_ref "${KEY4HEPSPACK_ORGREPO}" "${KEY4HEPSPACK_VERSION}")
+                   --build-arg KEY4HEPSPACK_VERSION=$(.ci/resolve_git_ref "${KEY4HEPSPACK_ORGREPO}" "${KEY4HEPSPACK_VERSION}")
                    --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO}
-                   --build-arg EICSPACK_VERSION=$(resolve_git_ref "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
+                   --build-arg EICSPACK_VERSION=$(.ci/resolve_git_ref "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
                    --build-arg jobs=${JOBS}
                    --provenance false
                    containers/debian
@@ -486,16 +449,16 @@ eic:
                    --build-arg EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    --build-arg CI_COMMIT_SHA=${CI_COMMIT_SHA}
                    ${IF_BUILD_DEFAULT+
-                     ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION}}
-                     ${EICRECON_VERSION:+--build-arg EICRECON_VERSION=${EICRECON_VERSION}}
-                     ${EPIC_VERSION:+--build-arg EPIC_VERSION=${EPIC_VERSION}}
-                     ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=${JUGGLER_VERSION}}
+                     ${EDM4EIC_VERSION:+--build-arg EDM4EIC_VERSION=$(.ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION})}
+                     ${EICRECON_VERSION:+--build-arg EICRECON_VERSION=$(.ci/resolve_git_ref eic/EICrecon ${EICRECON_VERSION})}
+                     ${EPIC_VERSION:+--build-arg EPIC_VERSION=$(.ci/resolve_git_ref eic/epic ${EPIC_VERSION})}
+                     ${JUGGLER_VERSION:+--build-arg JUGGLER_VERSION=$(.ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION})}
                    }
                    ${IF_BUILD_NIGHTLY+
-                     --build-arg EDM4EIC_VERSION=${EDM4EIC_VERSION:-main}
-                     --build-arg EICRECON_VERSION=${EICRECON_VERSION:-main}
-                     --build-arg EPIC_VERSION=${EPIC_VERSION:-main}
-                     --build-arg JUGGLER_VERSION=${JUGGLER_VERSION:-main}
+                     --build-arg EDM4EIC_VERSION=$(.ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION:-main})
+                     --build-arg EICRECON_VERSION=$(.ci/resolve_git_ref eic/EICrecon ${EICRECON_VERSION:-main})
+                     --build-arg EPIC_VERSION=$(.ci/resolve_git_ref eic/epic ${EPIC_VERSION:-main})
+                     --build-arg JUGGLER_VERSION=$(.ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION:-main})
                    }
                    --build-arg ENV=${ENV}
                    --build-arg jobs=${JOBS}
