@@ -256,12 +256,20 @@ EOF
 ENV KEY4HEPSPACK_ROOT=${SPACKPACKAGES_ROOT}/repos/key4hep-spack
 ARG KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
 ARG KEY4HEPSPACK_VERSION="main"
-ADD https://github.com/${KEY4HEPSPACK_ORGREPO}.git#${KEY4HEPSPACK_VERSION} ${KEY4HEPSPACK_ROOT}
-RUN spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
+RUN <<EOF
+set -e
+git clone --filter=tree:0 https://github.com/${KEY4HEPSPACK_ORGREPO}.git ${KEY4HEPSPACK_ROOT}
+git -C ${KEY4HEPSPACK_ROOT} checkout ${KEY4HEPSPACK_VERSION}
+spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
+EOF
 
 ## Setup eic-spack (no need for cherry-picks)
 ENV EICSPACK_ROOT=${SPACKPACKAGES_ROOT}/repos/eic-spack
 ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="develop"
-ADD https://github.com/${EICSPACK_ORGREPO}.git#${EICSPACK_VERSION} ${EICSPACK_ROOT}
-RUN spack repo add --scope site "${EICSPACK_ROOT}"
+RUN <<EOF
+set -e
+git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
+git -C ${EICSPACK_ROOT} checkout ${EICSPACK_VERSION}
+spack repo add --scope site "${EICSPACK_ROOT}"
+EOF
