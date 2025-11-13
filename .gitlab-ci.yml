@@ -579,7 +579,7 @@ user_spack_environment:
   stage: benchmarks
   needs:
     - job: version
-    - job: eic
+    - job: eic-amd64
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
