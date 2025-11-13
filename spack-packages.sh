@@ -41,6 +41,8 @@ a3f3a80e2877645c72cca0381c820307fe1d4523
 95c45b6c3322e151fd29ed00ea10567b97705ee4
 d6f99b8d611cf740eb45e13df2c84044a4ca6ae4
 bc25e5eb2f8f7a8733cdc10d92e9787358c82cfa
+c4d983b764d7b1ee2b63da79f5f25365ac61ce7a
+44da889cc86bb8a5315c729a7c79f2c002c9c951
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -83,3 +85,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 95c45b6c3322e151fd29ed00ea10567b97705ee4: py-tensorflow: modify cuDNN dependency versions when +cuda
 ## d6f99b8d611cf740eb45e13df2c84044a4ca6ae4: py-tensorflow: patch to build with +cuda
 ## bc25e5eb2f8f7a8733cdc10d92e9787358c82cfa: actsvg: patch version numbers into source source
+## c4d983b764d7b1ee2b63da79f5f25365ac61ce7a: Julia: add v1.11.6
+## 44da889cc86bb8a5315c729a7c79f2c002c9c951: Julia: add v1.11.7
