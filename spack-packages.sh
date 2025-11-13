@@ -37,6 +37,8 @@ b7870dfad11c4e8ca9690b0895c98f16d79f5398
 e998e20d3979c5aa47faaf59a8020e3fab13ab97
 904792d49dc4236c5394dbc0aebbe45175b59187
 a3f3a80e2877645c72cca0381c820307fe1d4523
+c4d983b764d7b1ee2b63da79f5f25365ac61ce7a
+44da889cc86bb8a5315c729a7c79f2c002c9c951
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -75,3 +77,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## e998e20d3979c5aa47faaf59a8020e3fab13ab97: py-immutables: add v0.21
 ## 904792d49dc4236c5394dbc0aebbe45175b59187: py-yapf: add versions
 ## a3f3a80e2877645c72cca0381c820307fe1d4523: py-numba: fix python dependency bounds
+## c4d983b764d7b1ee2b63da79f5f25365ac61ce7a: Julia: add v1.11.6
+## 44da889cc86bb8a5315c729a7c79f2c002c9c951: Julia: add v1.11.7
