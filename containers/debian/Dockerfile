@@ -160,8 +160,11 @@ ARG SPACK_VERSION="develop"
 ENV SPACK_PYTHON=/usr/bin/python3
 ARG SPACK_CHERRYPICKS=""
 ARG SPACK_CHERRYPICKS_FILES=""
-ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
+# Dockerfile ADD --keep-git-dir clones a shallow copy preventing cherry-picking
+#ADD --keep-git-dir https://github.com/${SPACK_ORGREPO}.git#${SPACK_VERSION} ${SPACK_ROOT}
+# so we git clone the default branch and checkout the specific commit
 RUN <<EOF
+set -e
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
 if [ -n "${SPACK_CHERRYPICKS}" ] ; then
@@ -194,7 +197,9 @@ ARG SPACKPACKAGES_ORGREPO="spack/spack-packages"
 ARG SPACKPACKAGES_VERSION="develop"
 ARG SPACKPACKAGES_CHERRYPICKS=""
 ARG SPACKPACKAGES_CHERRYPICKS_FILES=""
-ADD https://api.github.com/repos/${SPACKPACKAGES_ORGREPO}/commits/${SPACKPACKAGES_VERSION} /tmp/spack-packages.json
+# Dockerfile ADD --keep-git-dir clones a shallow copy preventing cherry-picking
+#ADD --keep-git-dir https://github.com/${SPACKPACKAGES_ORGREPO}.git#${SPACKPACKAGES_VERSION} ${SPACKPACKAGES_ROOT}
+# so we git clone the default branch and checkout the specific commit
 RUN <<EOF
 set -e
 git clone --filter=tree:0 https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPACKPACKAGES_ROOT}
@@ -247,14 +252,14 @@ spack mirror add --scope site --unsigned ghcr-${SPACK_VERSION} oci://ghcr.io/eic
 spack mirror list
 EOF
 
-## Setup key4hep-spack
+## Setup key4hep-spack (no need for cherry-picks)
 ENV KEY4HEPSPACK_ROOT=${SPACKPACKAGES_ROOT}/repos/key4hep-spack
 ARG KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
 ARG KEY4HEPSPACK_VERSION="main"
 ADD https://github.com/${KEY4HEPSPACK_ORGREPO}.git#${KEY4HEPSPACK_VERSION} ${KEY4HEPSPACK_ROOT}
 RUN spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
 
-## Setup eic-spack
+## Setup eic-spack (no need for cherry-picks)
 ENV EICSPACK_ROOT=${SPACKPACKAGES_ROOT}/repos/eic-spack
 ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="develop"

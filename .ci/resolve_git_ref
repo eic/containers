@@ -1,0 +1,101 @@
+#!/bin/sh
+# Resolve git refs (branches, tags, or commit SHAs) to full commit SHAs
+#
+# Usage:
+#   resolve_git_ref <repo> <ref>
+#   resolve_git_ref eic/edm4eic main
+#   resolve_git_ref eic/epic v24.11.0
+#   resolve_git_ref eic/eicrecon abc123def456...
+#
+# Exit codes:
+#   0 - Success (ref resolved or already a SHA)
+#   1 - Invalid arguments or ref not found
+
+set -e
+
+# Show usage if no arguments or --help
+if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+  cat >&2 << 'USAGE'
+Usage: resolve_git_ref <repo> <ref>
+
+Resolves a git reference (branch, tag, or commit SHA) to a full commit SHA.
+
+Arguments:
+  repo        Git repository, in the format org/repo (e.g., eic/edm4eic)
+  ref         Git reference: branch name, tag name, or commit SHA
+
+Examples:
+  # Resolve branch to SHA
+  resolve_git_ref eic/edm4eic main
+
+  # Resolve tag to SHA
+  resolve_git_ref eic/epic v24.11.0
+
+  # Return commit SHA as-is
+  resolve_git_ref eic/eicrecon abc123def456...
+
+Exit codes:
+  0 - Success (SHA printed to stdout)
+  1 - Error (message printed to stderr)
+USAGE
+  exit 1
+fi
+
+# Require exactly 2 arguments
+if [ $# -ne 2 ]; then
+  echo "Error: Expected 2 arguments, got $#" >&2
+  echo "Run 'resolve_git_ref --help' for usage" >&2
+  exit 1
+fi
+
+repo_url="https://github.com/${1}.git"
+ref="${2}"
+
+# Handle empty ref
+if [ -z "${ref}" ]; then
+  echo "Error: ref argument is empty" >&2
+  exit 1
+fi
+
+# If it's already a commit SHA (7-40 hex characters), return as-is
+# Full SHAs are 40 chars, but short SHAs (7+) are also valid
+# POSIX-compliant check: use case statement for pattern matching
+case "${ref}" in
+  *[!0-9a-f]*)
+    # Contains non-hex characters, not a SHA
+    ;;
+  *)
+    # All hex characters, check length
+    ref_len=${#ref}
+    if [ "${ref_len}" -ge 7 ] && [ "${ref_len}" -le 40 ]; then
+      echo "${ref}"
+      exit 0
+    fi
+    ;;
+esac
+
+# Try to resolve as branch
+sha=$(git ls-remote "${repo_url}" "refs/heads/${ref}" 2>/dev/null | cut -f1)
+if [ -n "${sha}" ]; then
+  echo "${sha}"
+  exit 0
+fi
+
+# Try to resolve as tag
+sha=$(git ls-remote "${repo_url}" "refs/tags/${ref}" 2>/dev/null | cut -f1)
+if [ -n "${sha}" ]; then
+  echo "${sha}"
+  exit 0
+fi
+
+# Try to resolve as annotated tag (^{} dereferences to commit)
+sha=$(git ls-remote "${repo_url}" "refs/tags/${ref}^{}" 2>/dev/null | cut -f1)
+if [ -n "${sha}" ]; then
+  echo "${sha}"
+  exit 0
+fi
+
+# Unable to resolve
+echo "Error: Unable to resolve ref '${ref}' in repository '${repo_url}'" >&2
+echo "Ref must be a valid branch name, tag name, or commit SHA" >&2
+exit 1
