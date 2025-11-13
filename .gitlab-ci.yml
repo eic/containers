@@ -343,6 +343,36 @@ base:
         let attempts=$attempts+1 ;
       done
 
+base:no-args:
+  extends: .build
+  stage: base
+  needs:
+    - version
+  script:
+    - attempts=0
+    - nocache=""
+    - while !
+      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-amd64
+                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-amd64
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
+                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
+                   --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-amd64,mode=max
+                   --file containers/debian/Dockerfile
+                   containers/debian
+                   2>&1 | tee build.log
+      ; do
+        if grep "unknown blob" build.log ; then
+          nocache="--no-cache" ;
+        else
+          exit 1 ;
+        fi ;
+        if test ${attempts} -ge 1 ; then
+          echo "Failed to build on second attempt!" ;
+          exit 1 ;
+        fi ;
+        let attempts=$attempts+1 ;
+      done
 
 eic:
   parallel:
@@ -481,6 +511,38 @@ eic:
                    --secret type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER
                    --secret type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN
                    --provenance false
+                   containers/eic
+                   2>&1 | tee build.log
+      ; do
+        if grep "unknown blob" build.log ; then
+          nocache="--no-cache" ;
+        else
+          exit 1 ;
+        fi ;
+        if test ${attempts} -ge 1 ; then
+          echo "Failed to build on second attempt!" ;
+          exit 1 ;
+        fi ;
+        let attempts=$attempts+1 ;
+      done
+
+eic:noargs:
+  extends: .build
+  stage: eic
+  needs:
+    - version
+    - base
+  script:
+    - attempts=0
+    - nocache=""
+    - while !
+      docker buildx build ${BUILD_OPTIONS} ${nocache}
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${CI_COMMIT_REF_SLUG}-noargs-amd64
+                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${CI_COMMIT_REF_SLUG}-noargs-amd64
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${CI_DEFAULT_BRANCH_SLUG}-noargs-amd64
+                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${CI_DEFAULT_BRANCH_SLUG}-noargs-amd64
+                   --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${CI_COMMIT_REF_SLUG}-noargs-amd64,mode=max
+                   --file containers/eic/Dockerfile
                    containers/eic
                    2>&1 | tee build.log
       ; do
