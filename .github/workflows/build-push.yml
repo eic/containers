@@ -409,7 +409,7 @@ jobs:
     needs: eic
     strategy:
       matrix:
-        ENV: [xl]
+        ENV: [ci, xl]
     steps:
       - name: Set up QEMU (for imagetools)
         uses: docker/setup-qemu-action@v3
