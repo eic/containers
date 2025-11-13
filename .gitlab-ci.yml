@@ -258,12 +258,13 @@ status:pending:
   extends: .build
   script:
     - apk add jq
-    - for build_json in $(find metadata/${BUILD_IMAGE} -name build.json) ; do
+    - sources="" ;
+      for build_json in $(find metadata/${BUILD_IMAGE} -name build.json) ; do
         digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
-        amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
+        sources="${sources} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
       done
-    - docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${amends} 
-    - docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
+    - docker buildx imagetools create --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${sources}
+    - docker buildx imagetools inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
 
 ## rules for nightly jobs
 .nightly:
@@ -398,13 +399,13 @@ base:multiarch:
   script:
     - apk add jq
     - for build_image in $(ls metadata) ; do
+        sources="" ;
         for build_json in $(find metadata/${build_image} -name build.json) ; do
           digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
-          amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
+          sources="${sources} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
         done ;
-        docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ${amends} ;
-        docker manifest inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
-        docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
+        docker buildx imagetools create --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ${sources} ;
+        docker buildx imagetools inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
         for export_tag in ${EXPORT_TAG:+
                             ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${EXPORT_TAG}}
                             ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
@@ -412,7 +413,6 @@ base:multiarch:
                           } ; do
           docker buildx imagetools create --tag ${export_tag} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
           docker buildx imagetools inspect ${export_tag} ;
-          docker push ${export_tag} ;
         done
       done
 
@@ -655,13 +655,13 @@ eic:multiarch:
   script:
     - apk add jq
     - for build_image in $(ls metadata) ; do
+        sources="" ;
         for build_json in $(find metadata/${build_image} -name build.json) ; do
           digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
-          amends="${amends} --amend ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
+          sources="${sources} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
         done ;
-        docker manifest create ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ${amends} ; 
-        docker manifest inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ;
-        docker manifest push ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ;
+        docker buildx imagetools create --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ${sources} ;
+        docker buildx imagetools inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ;
         for export_tag in ${EXPORT_TAG:+
                             ${IF_BUILD_DEFAULT+
                               ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${EXPORT_TAG}}
