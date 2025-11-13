@@ -34,6 +34,9 @@ e61079273e806301d76cc64f53fb034980988583
 b063312bb52fb62010e04588f6b16d37e16c8d02
 b7870dfad11c4e8ca9690b0895c98f16d79f5398
 1e8f896b2807bcc48553e90d6212f0931fa5262f
+e998e20d3979c5aa47faaf59a8020e3fab13ab97
+904792d49dc4236c5394dbc0aebbe45175b59187
+a3f3a80e2877645c72cca0381c820307fe1d4523
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -69,3 +72,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## b063312bb52fb62010e04588f6b16d37e16c8d02: Remove Python-related deprecations
 ## 7fad8a78d35b5556e1d7aa92a71a4e1c58a1665a: py-tensorflow: add v2.19, v2.20
 ## 1e8f896b2807bcc48553e90d6212f0931fa5262f: simsipm: Add conflict for aarch64
+## e998e20d3979c5aa47faaf59a8020e3fab13ab97: py-immutables: add v0.21
+## 904792d49dc4236c5394dbc0aebbe45175b59187: py-yapf: add versions
+## a3f3a80e2877645c72cca0381c820307fe1d4523: py-numba: fix python dependency bounds
