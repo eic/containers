@@ -202,8 +202,8 @@ ARG SPACKPACKAGES_CHERRYPICKS_FILES=""
 # so we git clone the default branch and checkout the specific commit
 RUN <<EOF
 set -e
-git clone --filter=tree:0 https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPACKPACKAGES_ROOT}
-git -C ${SPACKPACKAGES_ROOT} checkout ${SPACKPACKAGES_VERSION}
+spack repo add --scope site --name builtin https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPACKPACKAGES_ROOT}
+spack repo update --scope site --tag ${SPACKPACKAGES_VERSION} builtin
 if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
   SPACKPACKAGES_CHERRYPICKS="${SPACKPACKAGES_CHERRYPICKS// /$'\n'}"
   SPACKPACKAGES_CHERRYPICKS_FILES="${SPACKPACKAGES_CHERRYPICKS_FILES// /$'\n'}"
@@ -219,7 +219,6 @@ if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
   done
 fi
 git -C ${SPACKPACKAGES_ROOT} gc --prune=all --aggressive
-spack repo add --scope site "${SPACKPACKAGES_ROOT}/repos/spack_repo/builtin"
 EOF
 
 ## Setup build configuration
