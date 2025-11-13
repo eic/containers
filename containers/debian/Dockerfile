@@ -164,7 +164,7 @@ ARG SPACK_CHERRYPICKS_FILES=""
 #ADD --keep-git-dir https://github.com/${SPACK_ORGREPO}.git#${SPACK_VERSION} ${SPACK_ROOT}
 # so we git clone the default branch and checkout the specific commit
 RUN <<EOF
-set -euo pipefail
+set -e
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
 if [ -n "${SPACK_CHERRYPICKS}" ] ; then
@@ -201,7 +201,7 @@ ARG SPACKPACKAGES_CHERRYPICKS_FILES=""
 #ADD --keep-git-dir https://github.com/${SPACKPACKAGES_ORGREPO}.git#${SPACKPACKAGES_VERSION} ${SPACKPACKAGES_ROOT}
 # so we git clone the default branch and checkout the specific commit
 RUN <<EOF
-set -euo pipefail
+set -e
 git clone --filter=tree:0 https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPACKPACKAGES_ROOT}
 git -C ${SPACKPACKAGES_ROOT} checkout ${SPACKPACKAGES_VERSION}
 if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
