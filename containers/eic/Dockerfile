@@ -159,6 +159,9 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build concretization image (custom configuration, $TARGETPLATFORM)"
 
+# Set spack environment directory
+ENV SPACK_ENV=/opt/spack-environment/${ENV}/epic
+
 ## 2. Setup our environment with custom versions (on top of cached layer)
 ## Note: these default versions are just the very first commit.
 ARG EDM4EIC_VERSION="8aeb507f93a93257c99985efbce0ec1371e0b331"
@@ -243,6 +246,9 @@ ARG TARGETPLATFORM
 
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime concretization image (custom configuration, $TARGETPLATFORM)"
+
+# Set spack environment directory
+ENV SPACK_ENV=/opt/spack-environment/${ENV}/epic
 
 COPY --from=builder_installation_custom \
   /opt/spack-environment/${ENV}/spack.* \
