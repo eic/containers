@@ -39,6 +39,7 @@ e998e20d3979c5aa47faaf59a8020e3fab13ab97
 a3f3a80e2877645c72cca0381c820307fe1d4523
 559789f67245a40306aeea636b61348e97d4f092
 95c45b6c3322e151fd29ed00ea10567b97705ee4
+d6f99b8d611cf740eb45e13df2c84044a4ca6ae4
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -79,3 +80,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## a3f3a80e2877645c72cca0381c820307fe1d4523: py-numba: fix python dependency bounds
 ## 559789f67245a40306aeea636b61348e97d4f092: estarlight: add thru v1.2.0
 ## 95c45b6c3322e151fd29ed00ea10567b97705ee4: py-tensorflow: modify cuDNN dependency versions when +cuda
+## d6f99b8d611cf740eb45e13df2c84044a4ca6ae4: py-tensorflow: patch to build with +cuda
