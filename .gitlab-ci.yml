@@ -415,11 +415,11 @@ eic:
     - nocache=""
     - while !
       docker buildx build --push ${BUILD_OPTIONS} ${nocache}
-                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${CI_COMMIT_REF_SLUG}-amd64
-                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${CI_COMMIT_REF_SLUG}-amd64
-                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${CI_DEFAULT_BRANCH_SLUG}-amd64
-                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${CI_DEFAULT_BRANCH_SLUG}-amd64
-                   --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${CI_COMMIT_REF_SLUG}-amd64,mode=max
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64
+                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
+                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
+                   --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64,mode=max
                    --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
                    ${EXPORT_TAG:+
                      ${IF_BUILD_DEFAULT+
