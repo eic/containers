@@ -37,7 +37,7 @@ b7870dfad11c4e8ca9690b0895c98f16d79f5398
 e998e20d3979c5aa47faaf59a8020e3fab13ab97
 904792d49dc4236c5394dbc0aebbe45175b59187
 a3f3a80e2877645c72cca0381c820307fe1d4523
-335d066c41372d73c616c792b6ce760846f220a5
+559789f67245a40306aeea636b61348e97d4f092
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -76,4 +76,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## e998e20d3979c5aa47faaf59a8020e3fab13ab97: py-immutables: add v0.21
 ## 904792d49dc4236c5394dbc0aebbe45175b59187: py-yapf: add versions
 ## a3f3a80e2877645c72cca0381c820307fe1d4523: py-numba: fix python dependency bounds
-## 335d066c41372d73c616c792b6ce760846f220a5: estarlight: add thru v1.2.0
+## 559789f67245a40306aeea636b61348e97d4f092: estarlight: add thru v1.2.0
