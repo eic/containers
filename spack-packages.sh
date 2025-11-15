@@ -8,6 +8,8 @@ SPACKPACKAGES_VERSION="v2025.11.0"
 ## Space-separated list of spack-packages cherry-picks
 read -r -d '' SPACKPACKAGES_CHERRYPICKS <<- \
 --- || true
+a115a811bdfce4db5298a9ba9b7903ccfb0de101
+22dadd619053ff0872903549db616200bda082f0
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -15,3 +17,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ---
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
+## a115a811bdfce4db5298a9ba9b7903ccfb0de101: github-copilot: new package
+## 22dadd619053ff0872903549db616200bda082f0: claude-code: new package
