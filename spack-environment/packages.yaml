@@ -136,6 +136,10 @@ packages:
   epic:
     require:
     - 'artifacts=epic_craterlake'
+  estarlight:
+    require:
+    - '@1.2.0'
+    -  ~dpmjet +hepmc3 ~pythia6 ~pythia8
   fastjet:
     require:
     - '@3.5.0'
