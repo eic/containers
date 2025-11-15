@@ -86,15 +86,7 @@ jobs:
           echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks_files=${SPACK_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
       - name: Load spack-packages version and cherry-picks
-        id: spack-packages      - name: Load spack-packages version and cherry-picks
         id: spack-packages
-        shell: bash
-        run: |
-          source spack-packages.sh
-          echo "orgrepo=${SPACKPACKAGES_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=$(.ci/resolve_git_ref ${SPACKPACKAGES_ORGREPO} ${SPACKPACKAGES_VERSION})" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks=${SPACKPACKAGES_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks_files=${SPACKPACKAGES_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
         shell: bash
         run: |
           source spack-packages.sh
