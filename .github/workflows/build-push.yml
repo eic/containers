@@ -271,7 +271,7 @@ jobs:
             ${{ steps.digests.outputs.arm64 }}
 
   eic:
-    name: Build ${{ matrix.BUILD_IMAGE }}${{ ENV }} on ${{ matrix.arch }}
+    name: Build ${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }} on ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
     needs: base-manifest
     strategy:
