@@ -315,7 +315,7 @@ EOF
 ## Store environment
 RUN <<EOF
 set -e
-spack env activate --sh --dir ${SPACK_ENV}/epic > /etc/profile.d/z10_spack_environment.sh
+spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
 EOF
 
 ## Fixup /opt/detector/epic-git.fcf90937193c983c0af2acf1251e01f2e2c3a259_main
