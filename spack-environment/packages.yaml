@@ -12,7 +12,7 @@
 packages:
   all:
     require:
-    - '%clang'
+    - '%gcc'
     - any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
     - any_of: [build_type=Release, '@:']
