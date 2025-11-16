@@ -65,12 +65,12 @@ jobs:
           BUILD_IMAGE: debian_stable_base
           PLATFORM: linux/amd64/v2
           runner: ubuntu-latest
-          arch: amd64
+          arch: amd64_v2
         - BASE_IMAGE: debian:stable-slim
           BUILD_IMAGE: debian_stable_base
           PLATFORM: linux/amd64/v3
           runner: ubuntu-latest
-          arch: amd64-v3
+          arch: amd64_v3
         - BASE_IMAGE: debian:stable-slim
           BUILD_IMAGE: debian_stable_base
           PLATFORM: linux/arm64
@@ -233,7 +233,8 @@ jobs:
         id: digests
         run: |
           # Read the digests from the files
-          DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
+          DIGEST_AMD64_V2=$(cat /tmp/digests/amd64_v2.digest)
+          DIGEST_AMD64_V3=$(cat /tmp/digests/amd64_v3.digest)
           DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
           # Get the base image name from the digests (they'll be the same)
           REGISTRY_IMAGE_TAG=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
@@ -249,7 +250,8 @@ jobs:
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "amd64=$DIGEST_AMD64" >> $GITHUB_OUTPUT
+          echo "amd64_v2=$DIGEST_AMD64_V2" >> $GITHUB_OUTPUT
+          echo "amd64_v3=$DIGEST_AMD64_V3" >> $GITHUB_OUTPUT
           echo "arm64=$DIGEST_ARM64" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
         id: meta
@@ -272,7 +274,8 @@ jobs:
           # Create the manifest list and tag it with the final tags
           docker buildx imagetools create \
             $TAG_ARGS \
-            ${{ steps.digests.outputs.amd64 }} \
+            ${{ steps.digests.outputs.amd64_v2 }} \
+            ${{ steps.digests.outputs.amd64_v3 }} \
             ${{ steps.digests.outputs.arm64 }}
 
   eic:
