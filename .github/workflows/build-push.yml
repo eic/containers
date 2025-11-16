@@ -271,28 +271,24 @@ jobs:
             ${{ steps.digests.outputs.arm64 }}
 
   eic:
-    name: Build eic on ${{ matrix.arch }}
+    name: Build ${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }} on ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
     needs: base-manifest
     strategy:
       matrix:
+        BUILD_IMAGE: [eic_]
+        BUILD_TYPE: [default]
+        BUILDER_IMAGE: [debian_stable_base]
+        RUNTIME_IMAGE: [debian_stable_base]
+        ENV: [ci, xl]
+        arch: [amd64, arm64]
         include:
-        - BUILD_IMAGE: eic_
-          ENV: xl
-          BUILD_TYPE: default
-          BUILDER_IMAGE: debian_stable_base
-          RUNTIME_IMAGE: debian_stable_base
-          PLATFORM: linux/amd64
+        - arch: amd64
           runner: ubuntu-latest
-          arch: amd64
-        - BUILD_IMAGE: eic_
-          ENV: xl
-          BUILD_TYPE: default
-          BUILDER_IMAGE: debian_stable_base
-          RUNTIME_IMAGE: debian_stable_base
-          PLATFORM: linux/arm64
+          PLATFORM: linux/amd64
+        - arch: arm64
           runner: ubuntu-24.04-arm
-          arch: arm64
+          PLATFORM: linux/arm64
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
@@ -413,7 +409,7 @@ jobs:
     needs: eic
     strategy:
       matrix:
-        ENV: [xl]
+        ENV: [ci, xl]
     steps:
       - name: Set up QEMU (for imagetools)
         uses: docker/setup-qemu-action@v3
