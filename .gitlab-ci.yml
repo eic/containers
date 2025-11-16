@@ -537,11 +537,11 @@ eic:noargs:
     - nocache=""
     - while !
       docker buildx build ${BUILD_OPTIONS} ${nocache}
-                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${CI_COMMIT_REF_SLUG}-noargs-amd64
-                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${CI_COMMIT_REF_SLUG}-noargs-amd64
-                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${CI_DEFAULT_BRANCH_SLUG}-noargs-amd64
-                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${CI_DEFAULT_BRANCH_SLUG}-noargs-amd64
-                   --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${CI_COMMIT_REF_SLUG}-noargs-amd64,mode=max
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:eic-noargs-${CI_COMMIT_REF_SLUG}-amd64
+                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:eic-noargs--${CI_COMMIT_REF_SLUG}-amd64
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:eic-noargs--${CI_DEFAULT_BRANCH_SLUG}-amd64
+                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:eic-noargs--${CI_DEFAULT_BRANCH_SLUG}-amd64
+                   --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:eic-noargs--${CI_COMMIT_REF_SLUG}-amd64,mode=max
                    --file containers/eic/Dockerfile
                    containers/eic
                    2>&1 | tee build.log
