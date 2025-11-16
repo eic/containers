@@ -396,6 +396,10 @@ eic:
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_devel
         PLATFORM: linux/amd64
+  rules:
+    - if: '$ENV != "ci" && $CI_PIPELINE_SOURCE == "trigger"'
+      when: manual
+    - when: always
   extends: .build
   stage: eic
   needs:
