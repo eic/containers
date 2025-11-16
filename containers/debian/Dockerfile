@@ -255,6 +255,7 @@ target=${target[${TARGETPLATFORM}]}
 spack config --scope site add "packages:all:require:[target=${target}]"
 spack config --scope site add "packages:all:target:[${target}]"
 spack config blame packages
+mkdir -p $HOME/.spack/  # workaround for Spack not creating config directory automatically in some versions (see https://github.com/spack/spack/issues/51564)
 spack config --scope user add "config:suppress_gpg_warnings:true"
 spack config --scope user add "config:build_jobs:${jobs}"
 spack config --scope user add "config:db_lock_timeout:${jobs}00"
