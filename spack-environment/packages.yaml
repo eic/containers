@@ -23,7 +23,6 @@ packages:
     - when: '+cuda'
       spec: cuda_arch=75
     require:
-    - '%clang'
     # FIXME any ipo requirement breaks llvm external reuse
     #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
