@@ -63,9 +63,14 @@ jobs:
         include:
         - BASE_IMAGE: debian:stable-slim
           BUILD_IMAGE: debian_stable_base
-          PLATFORM: linux/amd64 
+          PLATFORM: linux/amd64/v2
           runner: ubuntu-latest
           arch: amd64
+        - BASE_IMAGE: debian:stable-slim
+          BUILD_IMAGE: debian_stable_base
+          PLATFORM: linux/amd64/v3
+          runner: ubuntu-latest
+          arch: amd64-v3
         - BASE_IMAGE: debian:stable-slim
           BUILD_IMAGE: debian_stable_base
           PLATFORM: linux/arm64
