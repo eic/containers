@@ -353,11 +353,11 @@ base:no-args:
     - nocache=""
     - while !
       docker buildx build --push ${BUILD_OPTIONS} ${nocache}
-                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-amd64
-                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-amd64
-                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
-                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
-                   --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-amd64,mode=max
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-noargs-amd64
+                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-noargs-amd64
+                   --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-noargs-amd64
+                   --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-noargs-amd64
+                   --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-noargs-amd64,mode=max
                    --file containers/debian/Dockerfile
                    containers/debian
                    2>&1 | tee build.log
