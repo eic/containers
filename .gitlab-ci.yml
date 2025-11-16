@@ -446,6 +446,13 @@ eic:
                    }
                    --file containers/eic/Dockerfile
                    --platform ${PLATFORM}
+                   --build-arg BENCHMARK_COM_VERSION=$(sh .ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git master)
+                   --build-arg BENCHMARK_DET_VERSION=$(sh .ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git master)
+                   --build-arg BENCHMARK_REC_VERSION=$(sh .ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git master)
+                   --build-arg BENCHMARK_PHY_VERSION=$(sh .ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git master)
+                   --build-arg CAMPAIGNS_HEPMC3_VERSION=$(sh .ci/resolve_git_ref eic/simulation_campaign_hepmc3 main)
+                   --build-arg CAMPAIGNS_CONDOR_VERSION=$(sh .ci/resolve_git_ref eic/job_submission_condor main)
+                   --build-arg CAMPAIGNS_SLURM_VERSION=$(sh .ci/resolve_git_ref eic/job_submission_slurm main)
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
                    --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE}

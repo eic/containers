@@ -297,6 +297,21 @@ jobs:
           dotnet: true
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Resolve benchmarks versions
+        id: benchmarks
+        shell: bash
+        run: |
+          echo "common_bench=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git master)" | tee -a $GITHUB_OUTPUT
+          echo "detector_benchmarks=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
+          echo "reconstruction_benchmarks=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
+          echo "physics_benchmarks=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
+      - name: Resolve campaign versions
+        id: campaigns
+        shell: bash
+        run: |
+          echo "simulation_campaign_hepmc3=$(.ci/resolve_git_ref eic/simulation_campaign_hepmc3 main)" | tee -a $GITHUB_OUTPUT
+          echo "job_submission_condor=$(.ci/resolve_git_ref eic/job_submission_condor main)" | tee -a $GITHUB_OUTPUT
+          echo "job_submission_slurm=$(.ci/resolve_git_ref eic/job_submission_slurm main)" | tee -a $GITHUB_OUTPUT
       - name: Load secrets into mirrors.yaml
         id: mirrors
         run: |
@@ -381,6 +396,13 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
+            BENCHMARK_COM_VERSION=${{ steps.benchmarks.outputs.common_bench }}
+            BENCHMARK_DET_VERSION=${{ steps.benchmarks.outputs.detector_benchmarks }}
+            BENCHMARK_REC_VERSION=${{ steps.benchmarks.outputs.reconstruction_benchmarks }}
+            BENCHMARK_PHY_VERSION=${{ steps.benchmarks.outputs.physics_benchmarks }}
+            CAMPAIGNS_HEPMC3_VERSION=${{ steps.campaigns.outputs.simulation_campaign_hepmc3 }}
+            CAMPAIGNS_CONDOR_VERSION=${{ steps.campaigns.outputs.job_submission_condor }}
+            CAMPAIGNS_SLURM_VERSION=${{ steps.campaigns.outputs.job_submission_slurm }}
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
             BUILDER_IMAGE=${{ matrix.BUILDER_IMAGE }}
             RUNTIME_IMAGE=${{ matrix.RUNTIME_IMAGE }}

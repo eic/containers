@@ -364,23 +364,32 @@ ARG BENCHMARK_COM_VERSION="master"
 ARG BENCHMARK_DET_VERSION="master"
 ARG BENCHMARK_REC_VERSION="master"
 ARG BENCHMARK_PHY_VERSION="master"
-ADD https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git#${BENCHMARK_COM_VERSION} /opt/benchmarks/common_bench
-ADD https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git#${BENCHMARK_DET_VERSION} /opt/benchmarks/detector_benchmarks
-ADD https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git#${BENCHMARK_REC_VERSION} /opt/benchmarks/reconstruction_benchmarks
-ADD https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git#${BENCHMARK_PHY_VERSION} /opt/benchmarks/physics_benchmarks
 RUN <<EOF
-ln -sf ../common_bench /opt/benchmarks/detector_benchmarks/.local
-ln -sf ../common_bench /opt/benchmarks/reconstruction_benchmarks/.local
-ln -sf ../common_bench /opt/benchmarks/physics_benchmarks/.local
+git clone https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git /opt/benchmarks/common_bench
+git -C /opt/benchmarks/common_bench checkout ${BENCHMARK_COM_VERSION}
+git clone https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git /opt/benchmarks/detector_benchmarks
+git -C /opt/benchmarks/detector_benchmarks checkout ${BENCHMARK_DET_VERSION}
+ln -sf /opt/benchmarks/common_bench /opt/benchmarks/detector_benchmarks/.local
+git clone https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git /opt/benchmarks/reconstruction_benchmarks
+git -C /opt/benchmarks/reconstruction_benchmarks checkout ${BENCHMARK_REC_VERSION}
+ln -sf /opt/benchmarks/common_bench /opt/benchmarks/reconstruction_benchmarks/.local
+git clone https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git /opt/benchmarks/physics_benchmarks
+git -C /opt/benchmarks/physics_benchmarks checkout ${BENCHMARK_PHY_VERSION}
+ln -sf /opt/benchmarks/common_bench /opt/benchmarks/physics_benchmarks/.local
 EOF
 
 ## Install campaigns into the container
 ARG CAMPAIGNS_HEPMC3_VERSION="main"
 ARG CAMPAIGNS_CONDOR_VERSION="main"
 ARG CAMPAIGNS_SLURM_VERSION="main"
-ADD https://github.com/eic/simulation_campaign_hepmc3.git#${CAMPAIGNS_HEPMC3_VERSION} /opt/campaigns/hepmc3
-ADD https://github.com/eic/job_submission_condor.git#${CAMPAIGNS_CONDOR_VERSION} /opt/campaigns/condor
-ADD https://github.com/eic/job_submission_slurm.git#${CAMPAIGNS_SLURM_VERSION} /opt/campaigns/slurm
+RUN <<EOF
+git clone https://github.com/eic/simulation_campaign_hepmc3.git /opt/campaigns/hepmc3
+git -C /opt/campaigns/hepmc3 checkout ${CAMPAIGNS_HEPMC3_VERSION}
+git clone https://github.com/eic/job_submission_condor.git /opt/campaigns/condor
+git -C /opt/campaigns/condor checkout ${CAMPAIGNS_CONDOR_VERSION}
+git clone https://github.com/eic/job_submission_slurm.git /opt/campaigns/slurm
+git -C /opt/campaigns/slurm checkout ${CAMPAIGNS_SLURM_VERSION}
+EOF
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT ["/opt/local/sbin/entrypoint.sh"]
