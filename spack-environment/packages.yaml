@@ -25,8 +25,6 @@ packages:
     require:
     - '@0.4.56'
     - +examples
-    cmake_args:
-      - '-DFETCHCONTENT_QUIET:BOOL=ON'
   acts-dd4hep:
     require:
     - '@1.0.1'
