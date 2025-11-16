@@ -417,7 +417,8 @@ eic:
       cat mirrors.yaml.in | envsubst > mirrors.yaml
     - attempts=0
     - nocache=""
-    - while !
+    - set -o xtrace ; 
+      while !
       docker buildx build --push ${BUILD_OPTIONS} ${nocache}
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64
                    --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64
