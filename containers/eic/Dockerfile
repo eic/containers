@@ -172,7 +172,7 @@ ARG JUGGLER_VERSION="df87bf1f8643afa8e80bece9d36d6dc26dfe8132"
 # Concretization (custom environment)
 RUN <<EOF
 set -e
-spack env activate --dir ${SPACK_ENV}/epic
+spack env activate --dir ${SPACK_ENV}
 if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
   sed -i "/# EDM4EIC_VERSION$/ s/@[^' ]*/@git.${EDM4EIC_VERSION}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all edm4eic
@@ -276,7 +276,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
 set -e
-spack env activate --dir ${SPACK_ENV}/epic 
+spack env activate --dir ${SPACK_ENV}
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all
 EOF
