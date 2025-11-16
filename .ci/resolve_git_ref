@@ -4,7 +4,7 @@
 # Usage:
 #   resolve_git_ref <repo> <ref>
 #   resolve_git_ref eic/edm4eic main
-#   resolve_git_ref eic/epic v24.11.0
+#   resolve_git_ref https://github.com/eic/epic.git v24.11.0
 #   resolve_git_ref eic/eicrecon abc123def456...
 #
 # Exit codes:
@@ -21,15 +21,17 @@ Usage: resolve_git_ref <repo> <ref>
 Resolves a git reference (branch, tag, or commit SHA) to a full commit SHA.
 
 Arguments:
-  repo        Git repository, in the format org/repo (e.g., eic/edm4eic)
+  repo        Git repository, either:
+              - org/repo format (e.g., eic/edm4eic)
+              - Full URL (e.g., https://github.com/eic/edm4eic.git)
   ref         Git reference: branch name, tag name, or commit SHA
 
 Examples:
-  # Resolve branch to SHA
+  # Resolve branch to SHA (org/repo format)
   resolve_git_ref eic/edm4eic main
 
-  # Resolve tag to SHA
-  resolve_git_ref eic/epic v24.11.0
+  # Resolve tag to SHA (full URL)
+  resolve_git_ref https://github.com/eic/epic.git v24.11.0
 
   # Return commit SHA as-is
   resolve_git_ref eic/eicrecon abc123def456...
@@ -48,7 +50,14 @@ if [ $# -ne 2 ]; then
   exit 1
 fi
 
-repo_url="https://github.com/${1}.git"
+case "${1}" in
+  http*)
+    repo_url="${1}"
+    ;;
+  *)
+    repo_url="https://github.com/${1}.git"
+    ;;
+esac
 ref="${2}"
 
 # Handle empty ref
