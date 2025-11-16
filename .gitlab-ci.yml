@@ -352,7 +352,7 @@ base:no-args:
     - attempts=0
     - nocache=""
     - while !
-      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
+      docker buildx build ${BUILD_OPTIONS} ${nocache}
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-noargs-amd64
                    --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-noargs-amd64
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-noargs-amd64
