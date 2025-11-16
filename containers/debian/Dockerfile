@@ -232,7 +232,7 @@ declare -A target=(
   ["linux/amd64/v4"]="x86_64_v4"
   ["linux/arm64"]="aarch64"
 )
-starget=${target[${TARGETPLATFORM}]}
+target=${target[${TARGETPLATFORM}]}
 spack config --scope site add "packages:all:require:[target=${target}]"
 spack config --scope site add "packages:all:target:[${target}]"
 spack config blame packages
