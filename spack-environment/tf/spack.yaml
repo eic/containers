@@ -3,10 +3,7 @@ spack:
   - ../concretizer.yaml
   - ../packages.yaml
   - ../view.yaml
-  concretizer:
-    unify: true
   specs:
-  - edm4eic
   - edm4hep
   - onnx
   - osg-ca-certs
