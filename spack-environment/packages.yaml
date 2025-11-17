@@ -102,6 +102,7 @@ packages:
     - '@1.16.2:'
   dd4hep:
     require:
+    # ACTS requires same compiler as DD4hep since compiler options reused
     - '%gcc'
     - '@1.33'
     - +ddg4 +ddcad +hepmc3 +xercesc
