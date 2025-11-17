@@ -65,6 +65,7 @@ spack:
   - osg-ca-certs
   - phonebook-cli
   - podio
+  - poppler
   - prmon
   - pyrobird
   - pythia8
