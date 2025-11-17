@@ -47,6 +47,7 @@ ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
 ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
 ENV SPACK_COLOR="always"
+ENV GIT_TERMINAL_PROMPT=0
 
 # Concretization (default environment)
 RUN <<EOF
