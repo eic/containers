@@ -21,6 +21,8 @@ packages:
     - '%clang'
     - '@39.2.0'
     - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 +json +onnx +podio +python +tgeo
+    package_attributes:
+      install_source: true
   actsvg:
     require:
     - '@0.4.26'
@@ -90,6 +92,8 @@ packages:
     - '@1.32.1'
     - +ddg4 +ddcad +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
+    package_attributes:
+      install_source: true
   dpmjet:
     require:
     - '@19.3.5'
@@ -116,6 +120,8 @@ packages:
     require:
     - '%clang'
     - '@1.27.1' # EICRECON_VERSION
+    package_attributes:
+      install_source: true
   eigen:
     require:
     - '@3.4.0'
@@ -125,6 +131,8 @@ packages:
   epic:
     require:
     - 'artifacts=epic_craterlake'
+    package_attributes:
+      install_source: true
   fastjet:
     require:
     - '@3.5.0'
@@ -198,6 +206,8 @@ packages:
   irt:
     require:
     - '@1.0.8'
+    package_attributes:
+      install_source: true
   iwyu:
     require:
     - '@0.23'
@@ -205,6 +215,8 @@ packages:
     require:
     - '@2.4.2'
     - -ipo +podio +root +zmq
+    package_attributes:
+      install_source: true
   juggler:
     require:
     - '%clang'
@@ -293,6 +305,8 @@ packages:
     - '@1.2'
     - cxxstd=20
     - +rntuple
+    package_attributes:
+      install_source: true
   prmon:
     require:
     - +plot
