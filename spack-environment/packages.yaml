@@ -24,8 +24,7 @@ packages:
   acts:
     require:
     - '@44.3.0'
-    - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 ~ipo +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
-    # ~ipo since leads to build errors due to gcc flag injection from dd4hep into clang build of acts
+    - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
   actsvg:
     require:
     - '@0.4.56'
