@@ -232,6 +232,9 @@ packages:
     - '%clang'
     - '@15.0.2' # JUGGLER_VERSION
     - cxxstd=20
+  julia:
+    require:
+    - '@1.11'
   k4actstracking:
     require:
     - '@main'
@@ -307,6 +310,10 @@ packages:
     require:
     - build_system=cmake
     - cflags=-fPIC cxxflags=-fPIC 
+  pcre2:
+    require:
+    # FIXME julia requires libpcre2-8.so, but shared lib is only built by autotools
+    - build_system=autotools
   phonebook-cli:
     require:
     - '@1.0.0'
