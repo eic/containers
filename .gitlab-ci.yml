@@ -355,6 +355,7 @@ eic:
         - jl
         - prod
         - xl
+        - xs
         BUILD_TYPE:
         - default
         BUILDER_IMAGE: debian_stable_base
@@ -365,6 +366,7 @@ eic:
         - ci
         - ci_without_acts
         - xl
+        - xs
         BUILD_TYPE:
         - nightly
         BUILDER_IMAGE: debian_stable_base
