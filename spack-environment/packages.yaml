@@ -310,6 +310,10 @@ packages:
     require:
     - build_system=cmake
     - cflags=-fPIC cxxflags=-fPIC 
+  pcre2:
+    require:
+    # FIXME julia requires libpcre2-8.so, but shared lib is only built by autotools
+    - build_system=autotools
   phonebook-cli:
     require:
     - '@1.0.0'
