@@ -399,7 +399,7 @@ eic:
         PLATFORM: linux/amd64
   rules:
     - if: '$ENV != "ci" && $CI_PIPELINE_SOURCE == "trigger"'
-      when: manual
+      when: never
     - when: always
   extends: .build
   stage: eic
@@ -528,7 +528,7 @@ user_spack_environment:
   rules:
     # Only eic_ci container is built for external trigger
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
-      when: manual
+      when: never
     - when: always
   needs: 
     - job: version
