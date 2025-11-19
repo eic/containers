@@ -1,0 +1,78 @@
+# This file contains geant4 data packages available on cvmfs
+#
+packages:
+  g4abla:
+    buildable: False
+    externals:
+    - spec: g4abla@3.3
+      prefix: /cvmfs/geant4.cern.ch
+  g4channeling:
+    buildable: False
+    externals:
+    - spec: g4channeling@1.0
+      prefix: /cvmfs/geant4.cern.ch
+  g4emlow:
+    buildable: False
+    externals:
+    - spec: g4emlow@8.6.1
+      prefix: /cvmfs/geant4.cern.ch
+  g4ensdfstate:
+    buildable: False
+    externals:
+    - spec: g4ensdfstate@3.0
+      prefix: /cvmfs/geant4.cern.ch
+  g4incl:
+    buildable: False
+    externals:
+    - spec: g4incl@1.2
+      prefix: /cvmfs/geant4.cern.ch
+  g4ndl:
+    buildable: False
+    externals:
+    - spec: g4ndl@4.7.1
+      prefix: /cvmfs/geant4.cern.ch
+  g4nudexlib:
+    buildable: False
+    externals:
+    - spec: g4nudexlib@1.0
+      prefix: /cvmfs/geant4.cern.ch
+  g4particlexs:
+    buildable: False
+    externals:
+    - spec: g4particlexs@4.1
+      prefix: /cvmfs/geant4.cern.ch
+  g4photonevaporation:
+    buildable: False
+    externals:
+    - spec: g4photonevaporation@6.1
+      prefix: /cvmfs/geant4.cern.ch
+  g4pii:
+    buildable: False
+    externals:
+    - spec: g4pii@1.3
+      prefix: /cvmfs/geant4.cern.ch
+  g4radioactivedecay:
+    buildable: False
+    externals:
+    - spec: g4radioactivedecay@6.1.2
+      prefix: /cvmfs/geant4.cern.ch
+  g4realsurface:
+    buildable: False
+    externals:
+    - spec: g4realsurface@2.2
+      prefix: /cvmfs/geant4.cern.ch
+  g4saiddata:
+    buildable: False
+    externals:
+    - spec: g4saiddata@2.0
+      prefix: /cvmfs/geant4.cern.ch
+  g4tendl:
+    buildable: False
+    externals:
+    - spec: g4tendl@1.4
+      prefix: /cvmfs/geant4.cern.ch
+  g4urrpt:
+    buildable: False
+    externals:
+    - spec: g4urrpt@1.1
+      prefix: /cvmfs/geant4.cern.ch
