@@ -6,10 +6,6 @@ on:
   push:
   workflow_dispatch:
 
-concurrency:
-  group: mirror
-  cancel-in-progress: false
-
 jobs:
   build:
     name: Mirror and Trigger EICweb
