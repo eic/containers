@@ -16,6 +16,7 @@ d6f99b8d611cf740eb45e13df2c84044a4ca6ae4
 5c37f836753e8f9683fdc547f3661c5045abcbd1
 c75e10845431600b163c597545bd099e427c62f5
 438a7d95de1b81e15107edbf341b20824ec80635
+2ba80e697faf80613b038615b2345b7a777cc438
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -31,3 +32,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 5c37f836753e8f9683fdc547f3661c5045abcbd1: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
 ## c75e10845431600b163c597545bd099e427c62f5: dd4hep: v1.33
 ## 438a7d95de1b81e15107edbf341b20824ec80635: root: add v6.36.06
+## 2ba80e697faf80613b038615b2345b7a777cc438: py-flatbuffers: add v25.9.23
