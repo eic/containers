@@ -2,13 +2,11 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../view.yaml
   specs:
   - acts
   - cmake
   - dd4hep -ddeve
-  - edm4eic
-  - eicrecon
-  - epic # EPIC_VERSION
   - fastjet
   - fjcontrib
   - geant4 -opengl
