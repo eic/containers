@@ -525,6 +525,11 @@ user_spack_environment:
   stage: benchmarks
   tags:
     - gpu
+  rules:
+    # Only eic_ci container is built for external trigger
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+      when: manual
+    - when: always
   needs: 
     - job: version
     - job: eic
