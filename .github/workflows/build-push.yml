@@ -179,9 +179,9 @@ jobs:
             EICSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
             jobs=${{ env.JOBS }}
           cache-from: |
-            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_HEAD_REF_SLUG }}-${{ matrix.arch }}
+            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }}
             type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_BASE_REF_SLUG }}-${{ matrix.arch }}
-          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_HEAD_REF_SLUG }}-${{ matrix.arch }},mode=max
+          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }},mode=max
       - name: Export digest to file
         # The build-push action outputs the digest at steps.build.outputs.digest
         # We write this to a file for the next job
@@ -409,9 +409,9 @@ jobs:
             INTERNAL_TAG=${{ env.INTERNAL_TAG }}
             ENV=${{ matrix.ENV }}
           cache-from: |
-            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.BUILD_TYPE }}-${{ env.GITHUB_HEAD_REF_SLUG }}-${{ matrix.arch }}
+            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.BUILD_TYPE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }}
             type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.BUILD_TYPE }}-${{ env.GITHUB_BASE_REF_SLUG }}-${{ matrix.arch }}
-          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.BUILD_TYPE }}-${{ env.GITHUB_HEAD_REF_SLUG }}-${{ matrix.arch }},mode=max
+          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.BUILD_TYPE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }},mode=max
       - name: Export digest to file
         # The build-push action outputs the digest at steps.build.outputs.digest
         # We write this to a file for the next job
