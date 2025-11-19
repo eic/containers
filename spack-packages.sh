@@ -71,6 +71,7 @@ be6546b82b43d82edba804f1e362a709809ba537
 f5742718da7bd1d078ddc8423011a82ef2e3c759
 56e5282f7ef78180895b5d99db57d2a166b6d0e1
 922b2f6011dbf01aebb332a1ebf949b105c74247
+2ba80e697faf80613b038615b2345b7a777cc438
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -148,3 +149,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
 ## 56e5282f7ef78180895b5d99db57d2a166b6d0e1: celeritas: new versions 0.6.1, 0.6.2
 ## 922b2f6011dbf01aebb332a1ebf949b105c74247: celeritas: add v0.6.3
+## 2ba80e697faf80613b038615b2345b7a777cc438: py-flatbuffers: add v25.9.23
