@@ -31,7 +31,6 @@ ENV CLICOLOR_FORCE=1                                                    \
 
 ## Install additional packages. Remove the auto-cleanup functionality
 ## for docker, as we're using the new buildkit cache instead.
-## FIXME libpcre2-8-0 is needed to avoid broken dependencies in julia
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 rm -f /etc/apt/apt.conf.d/docker-clean
@@ -59,7 +58,6 @@ apt-get -yqq install --no-install-recommends                            \
         libglew-dev                                                     \
         libglx-dev                                                      \
         libopengl-dev                                                   \
-        libpcre2-8-0                                                    \
         locales                                                         \
         make                                                            \
         moreutils                                                       \
