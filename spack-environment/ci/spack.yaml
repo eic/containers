@@ -11,7 +11,7 @@ spack:
   - afterburner
   - cmake
   - covfie
-  - dd4hep -ddeve
+  - dd4hep -ddeve -utilityapps
   - edm4hep
   - eigen
   - fastjet
@@ -31,7 +31,7 @@ spack:
   - iwyu
   - jana2
   - nopayloadclient
-  - npsim -geocad
+  - npsim -geocad ^dd4hep -ddeve -utilityapps
   - onnx
   - osg-ca-certs
   - podio
