@@ -4,7 +4,7 @@ spack:
   - ../packages.yaml
   - ../view.yaml
   specs:
-  - acts
+  - acts ^dd4hep -ddeve -utilityapps
   - actsvg
   - afterburner
   - cmake

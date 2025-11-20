@@ -6,7 +6,7 @@ spack:
   concretizer:
     unify: when_possible # multiple epic versions
   specs:
-  - acts
+  - acts ^dd4hep +ddeve +utilityapps
   - actsvg
   - afterburner
   - autoconf
