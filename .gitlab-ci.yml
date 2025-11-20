@@ -398,7 +398,7 @@ eic:
         RUNTIME_IMAGE: cuda_devel
         PLATFORM: linux/amd64
   rules:
-    - if: '$ENV != "ci" && $CI_PIPELINE_SOURCE == "trigger"' && $GITHUB_REPOSITORY != "eic/containers"'
+    - if: '$ENV != "ci" && $CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
       when: never
     - when: always
   extends: .build
