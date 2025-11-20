@@ -23,7 +23,7 @@ spack:
   - cppcoro
   - dawn
   - dawncut
-  - dd4hep +ddeve
+  - dd4hep +ddeve +utilityapps
   - east
   - edm4hep
   - eic-smear
@@ -60,7 +60,7 @@ spack:
   - nano
   - ninja
   - nopayloadclient
-  - npsim
+  - npsim ^dd4hep +ddeve +utilityapps
   - ollama
   - onnx
   - opencascade
