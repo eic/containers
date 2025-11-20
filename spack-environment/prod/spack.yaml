@@ -14,6 +14,7 @@ spack:
   - geant4 -opengl
   - hepmc3
   - irt
+  - irt2
   - jana2
   - npsim -geocad
   - root -opengl -webgui
