@@ -41,6 +41,8 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider build concretization image (default configuration, $TARGETPLATFORM)"
 
 ## Copy our default environment
+## Note that a named build context is *required* for this build:
+## e.g. --build-context spack-environment=../../spack-environment
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
@@ -114,6 +116,8 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime concretization image (default configuration, $TARGETPLATFORM)"
 
 ## Copy our default environment
+## Note that a named build context is *required* for this build:
+## e.g. --build-context spack-environment=../../spack-environment
 COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
