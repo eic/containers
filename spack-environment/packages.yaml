@@ -11,7 +11,12 @@
 #
 packages:
   all:
-    require:
+    prefer: # is not overwritten below, but less strict than require
+    - '%gcc'
+    - +ipo
+    - build_system=cmake
+    - build_type=Release
+    require: # is overwritten by package-specific requirements below
     - '%gcc'
     - any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
@@ -97,7 +102,7 @@ packages:
     - '@1.16.2:'
   dd4hep:
     require:
-    - '%gcc'
+    - '%clang'  # ACTS requires same compiler as DD4hep since compiler options reused
     - '@1.32.1'
     - +ddg4 +ddcad +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
