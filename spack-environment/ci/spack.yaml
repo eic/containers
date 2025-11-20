@@ -2,6 +2,7 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../packages_root_without_opengl.yaml
   - ../view.yaml
   specs:
   - acts
@@ -67,11 +68,7 @@ spack:
   - py-toml
   - py-uproot
   - py-vector
-  - root -opengl -webgui
+  - root
   - snakemake
   - spdlog
   - xrootd
-  packages:
-    dd4hep:
-      require:
-      - -ddeve -utilityapps

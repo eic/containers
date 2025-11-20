@@ -2,6 +2,7 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../packages_root_with_opengl.yaml
   - ../view.yaml
   concretizer:
     unify: when_possible # multiple epic versions
@@ -117,7 +118,7 @@ spack:
   - py-wurlitzer
   - py-yapf
   - rivet
-  - root +opengl +webgui +x
+  - root
   - sherpa
   - simsipm
   - slurm sysconfdir=/etc/slurm
@@ -128,7 +129,3 @@ spack:
   - valgrind
   - xrootd
   - xeyes
-  packages:
-    dd4hep:
-      require:
-      - +ddeve +utilityapps
