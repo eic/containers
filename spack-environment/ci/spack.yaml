@@ -2,6 +2,7 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../packages_root_without_opengl.yaml
   - ../view.yaml
   concretizer:
     unify: when_possible  # FIXME Using mixture of gcc and clang
@@ -68,11 +69,7 @@ spack:
   - py-toml
   - py-uproot
   - py-vector
-  - root -opengl -webgui
+  - root
   - snakemake
   - spdlog
   - xrootd
-  packages:
-    dd4hep:
-      require:
-      - -ddeve -utilityapps
