@@ -4,12 +4,12 @@ spack:
   - ../packages.yaml
   - ../view.yaml
   specs:
-  - acts ^dd4hep -ddeve -utilityapps
+  - acts
   - actsvg
   - afterburner
   - cmake
   - covfie
-  - dd4hep -ddeve -utilityapps
+  - dd4hep
   - edm4hep
   - eigen
   - fastjet
@@ -29,7 +29,7 @@ spack:
   - iwyu
   - jana2
   - nopayloadclient
-  - npsim -geocad ^dd4hep -ddeve -utilityapps
+  - npsim -geocad
   - ollama
   - onnx
   - osg-ca-certs
@@ -71,3 +71,7 @@ spack:
   - snakemake
   - spdlog
   - xrootd
+  packages:
+    dd4hep:
+      require:
+      - -ddeve -utilityapps

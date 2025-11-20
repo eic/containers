@@ -6,7 +6,7 @@ spack:
   concretizer:
     unify: when_possible # multiple epic versions
   specs:
-  - acts ^dd4hep +ddeve +utilityapps
+  - acts
   - actsvg
   - afterburner
   - autoconf
@@ -23,7 +23,7 @@ spack:
   - cppcoro
   - dawn
   - dawncut
-  - dd4hep +ddeve +utilityapps
+  - dd4hep
   - east
   - edm4hep
   - eic-smear
@@ -60,7 +60,7 @@ spack:
   - nano
   - ninja
   - nopayloadclient
-  - npsim ^dd4hep +ddeve +utilityapps
+  - npsim
   - ollama
   - onnx
   - opencascade
@@ -128,3 +128,7 @@ spack:
   - valgrind
   - xrootd
   - xeyes
+  packages:
+    dd4hep:
+      require:
+      - +ddeve +utilityapps
