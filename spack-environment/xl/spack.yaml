@@ -6,7 +6,7 @@ spack:
   concretizer:
     unify: when_possible  # FIXME Using mixture of gcc and clang
   specs:
-  - acts
+  - acts ^dd4hep +ddeve +utilityapps
   - actsvg
   - afterburner
   - autoconf
