@@ -391,6 +391,15 @@ eic:
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_devel
         PLATFORM: linux/amd64
+  rules:
+    # Don't build nightly in the following cases
+    - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-(alpha|beta|stable)/'          ## main stable branch: vX.Y-stable
+      when: never
+    - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-(alpha|beta|stable)/'   ## special stable branch: vX.Y-acadia-stable (etc)
+      when: never
+    - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'                         ## commit tags start with vX.Y.Z with optional suffix
+      when: never
+    - when: always
   extends: .build
   stage: eic
   needs:
@@ -567,6 +576,15 @@ eic_xl:singularity:nightly:
   variables:
     BUILD_TYPE: nightly
     BUILD_IMAGE: eic_xl
+  rules:
+    # Don't build nightly in the following cases
+    - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-(alpha|beta|stable)/'          ## main stable branch: vX.Y-stable
+      when: never
+    - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-(alpha|beta|stable)/'   ## special stable branch: vX.Y-acadia-stable (etc)
+      when: never
+    - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'                         ## commit tags start with vX.Y.Z with optional suffix
+      when: never
+    - when: always
   needs:
     - job: version
     - job: eic
@@ -612,6 +630,15 @@ eic_xl:singularity:nightly:
 
 .benchmarks:nightly:
   extends: .benchmarks
+  rules:
+    # Don't build nightly in the following cases
+    - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-(alpha|beta|stable)/'          ## main stable branch: vX.Y-stable
+      when: never
+    - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-(alpha|beta|stable)/'   ## special stable branch: vX.Y-acadia-stable (etc)
+      when: never
+    - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'                         ## commit tags start with vX.Y.Z with optional suffix
+      when: never
+    - when: always
   needs: 
     - job: version
     - job: eic
@@ -651,8 +678,8 @@ benchmarks:detector:default:
 benchmarks:detector:nightly:
   extends: .benchmarks:nightly
   rules:
-    - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
@@ -674,8 +701,8 @@ benchmarks:phyiscs:default:
 benchmarks:physics:nightly:
   extends: .benchmarks:nightly
   rules:
-    - if: '$CI_PIPELINE_SOURCE != "schedule"'
     - !reference ['.nightly', rules]
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
