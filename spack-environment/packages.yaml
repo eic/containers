@@ -350,6 +350,10 @@ packages:
   py-dask:
     require:
     - '@2024.7.1:'
+    - '^py-urllib3@2.3.0:'  # avoid py-urllib3 needed by pyppeteer
+  py-dask-awkward:
+    require:
+    - '^py-urllib3@2.3.0:'  # avoid py-urllib3 needed by pyppeteer
   py-dask-histogram:
     require:
     - '@2025.2.0:'
@@ -439,6 +443,9 @@ packages:
   py-pyyaml:
     require:
     - '@6.0.2:'
+  py-requests:
+    require:
+    - '^py-urllib3@2.3.0:'  # avoid py-urllib3 needed by pyppeteer
   py-rucio-clients:
     require:
     - '@37.3.0:'
