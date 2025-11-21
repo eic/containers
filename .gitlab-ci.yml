@@ -124,7 +124,7 @@ version:
         NIGHTLY_TAG="${VERSION}-nightly"
         EXPORT_TAG="${VERSION}"
         DH_PUSH=""
-      elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ]; then
+      elif [[ "${CI_PIPELINE_SOURCE}" = "trigger" && "${GITHUB_REPOSITORY}" != "eic/containers" ]]; then
         VERSION="${CI_COMMIT_BRANCH}"
         DH_PUSH=""
         GH_PUSH=""
