@@ -4,6 +4,7 @@ variables:
   ## External images
   DOCKER_IMAGE: docker.io/docker:28.3.3
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
+  BINFMT_IMAGE: tonistiigi/binfmt:qemu-v9.2.2
 
   ## CUDA version and container operating system
   CUDA_VERSION: 12.5.1
@@ -53,8 +54,10 @@ variables:
 stages:
   - status-pending
   - config
-  - base            ## base OS image
-  - eic             ## EIC container images
+  - base            ## base OS image (build)
+  - base:multiarch  ## base OS image (merge into multiarch)
+  - eic             ## EIC container images (build)
+  - eic:multiarch   ## EIC container images (merge into multiarch)
   - deploy          ## build/deploy singularity images
   - benchmarks
   - test
@@ -229,9 +232,10 @@ status:pending:
     - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
       for arch in aarch64 ; do
         if ! grep -q enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
-          docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes ;
+          docker run --rm --privileged ${BINFMT_IMAGE} --install $arch ;
         fi ;
       done
+    - docker run --rm --privileged ${BINFMT_IMAGE} --version
     - docker context create context
     # The docker-container cache persistence applies to builders of the same name,
     # so do not change the name to something that has the pipeline or job id.
@@ -244,7 +248,23 @@ status:pending:
   artifacts:
     paths:
       - build.log
+      - metadata/
+    reports:
+      dotenv: build.env
     when: always
+
+## rules for merging the various multiarch digests into a single tag
+.multiarch:
+  extends: .build
+  script:
+    - apk add jq
+    - sources="" ;
+      for build_json in $(find metadata/${BUILD_IMAGE} -name build.json) ; do
+        digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
+        sources="${sources} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${digest}" ;
+      done
+    - docker buildx imagetools create --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG} ${sources}
+    - docker buildx imagetools inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
 
 ## rules for nightly jobs
 .nightly:
@@ -265,18 +285,19 @@ status:pending:
 ## TODO
 ## oneapi_runtime + eic_xl --> oneapi_prod 
 
-base:
+.base-amd64: &base_amd64_parallel
   parallel:
     matrix:
 #      - BASE_IMAGE: debian:testing-slim
 #        BUILD_IMAGE: debian_testing_base
-#        PLATFORM: linux/amd64,linux/arm64/v8
+#        PLATFORM: linux/amd64
       - BASE_IMAGE: debian:trixie-slim
         BUILD_IMAGE: debian_stable_base
-        PLATFORM: linux/amd64
+        PLATFORM:
+        - linux/amd64
 #      - BASE_IMAGE: ubuntu:22.04
 #        BUILD_IMAGE: ubuntu_base
-#        PLATFORM: linux/amd64,linux/arm64/v8
+#        PLATFORM: linux/amd64
 #      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
 #        BUILD_IMAGE: oneapi_base
 #        PLATFORM: linux/amd64
@@ -286,15 +307,27 @@ base:
       - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-runtime-${CUDA_OS}
         BUILD_IMAGE: cuda_runtime
         PLATFORM: linux/amd64
+
+.base-arm64: &base_arm64_parallel
+  parallel:
+    matrix:
+      - BASE_IMAGE: debian:trixie-slim
+        BUILD_IMAGE: debian_stable_base
+        PLATFORM:
+        - linux/arm64/v8
+
+.base:
   extends: .build
   stage: base
   needs:
     - version
   script:
+    - apk add jq
     - source spack.sh ; 
       source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
+    - mkdir -p metadata/${BUILD_IMAGE}/${PLATFORM}
     - attempts=0
     - nocache=""
     - while !
@@ -304,12 +337,7 @@ base:
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
                    --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
                    --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-amd64,mode=max
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}
-                   ${EXPORT_TAG:+
-                     ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                     ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}}
-                   }
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}
                    --file containers/debian/Dockerfile
                    --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
@@ -328,6 +356,8 @@ base:
                    --build-arg EICSPACK_VERSION=$(sh .ci/resolve_git_ref "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
                    --build-arg jobs=${JOBS}
                    --provenance false
+                   --output push-by-digest=true,type=image,push=true
+                   --metadata-file metadata/${BUILD_IMAGE}/${PLATFORM}/build.json
                    containers/debian
                    2>&1 | tee build.log
       ; do
@@ -342,9 +372,51 @@ base:
         fi ;
         let attempts=$attempts+1 ;
       done
+    - BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}/${PLATFORM}/build.json)
+    #- docker image history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${BUILD_DIGEST}
+    - echo "BUILD_DIGEST=${BUILD_DIGEST}" | tee -a build.env
 
+base-amd64:
+  <<: *base_amd64_parallel
+  extends: .base
 
-eic:
+base-arm64:
+  <<: *base_arm64_parallel
+  extends: .base
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "trigger"'
+      when: on_success
+    - when: never
+
+base:multiarch:
+  extends: .build
+  stage: base:multiarch
+  needs:
+    - job: version
+    - job: base-amd64
+    - job: base-arm64
+      optional: true
+  script:
+    - apk add jq
+    - for build_image in $(ls metadata) ; do
+        sources="" ;
+        for build_json in $(find metadata/${build_image} -name build.json) ; do
+          digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
+          sources="${sources} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
+        done ;
+        docker buildx imagetools create --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ${sources} ;
+        docker buildx imagetools inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
+        for export_tag in ${EXPORT_TAG:+
+                            ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${EXPORT_TAG}}
+                            ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
+                            ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
+                          } ; do
+          docker buildx imagetools create --tag ${export_tag} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG} ;
+          docker buildx imagetools inspect ${export_tag} ;
+        done
+      done
+
+.eic-amd64: &eic_amd64_parallel
   parallel:
     matrix:
       - BUILD_IMAGE: eic_
@@ -368,7 +440,8 @@ eic:
         - nightly
         BUILDER_IMAGE: debian_stable_base
         RUNTIME_IMAGE: debian_stable_base
-        PLATFORM: linux/amd64
+        PLATFORM:
+        - linux/amd64
 #      - BUILD_IMAGE: oneapi_
 #        ENV:       
 #        - prod
@@ -401,21 +474,37 @@ eic:
     - if: '$ENV != "ci" && $CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
       when: never
     - when: always
+
+.eic-arm64: &eic_arm64_parallel
+  parallel:
+    matrix:
+      - BUILD_IMAGE: eic_
+        ENV:
+        - ci
+        BUILD_TYPE:
+        - default
+        - nightly
+        BUILDER_IMAGE: debian_stable_base
+        RUNTIME_IMAGE: debian_stable_base
+        PLATFORM:
+        - linux/arm64/v8
+
+.eic:
   extends: .build
   stage: eic
-  needs:
-    - version
-    - base
   script:
     - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY= ; fi
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT= ; fi
-    - apk add envsubst git
+    - apk add envsubst git jq
     - source spack.sh ; 
       source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
       export SPACKPACKAGES_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
+    - mkdir -p metadata/${BUILD_IMAGE}${ENV}/${PLATFORM}
+    - builder_digest=$(jq -r '."containerimage.digest"' metadata/${BUILDER_IMAGE}/${PLATFORM}/build.json)
+    - runtime_digest=$(jq -r '."containerimage.digest"' metadata/${RUNTIME_IMAGE}/${PLATFORM}/build.json)
     - attempts=0
     - nocache=""
     - set -o xtrace ; 
@@ -426,26 +515,7 @@ eic:
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
                    --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
                    --cache-to type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64,mode=max
-                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}
-                   ${EXPORT_TAG:+
-                     ${IF_BUILD_DEFAULT+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}}
-                     }
-                     ${IF_BUILD_DEFAULT-
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}}
-                     }
-                   }
-                   ${IF_BUILD_NIGHTLY+
-                     ${NIGHTLY:+
-                       ${CI_PUSH:+--tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                       ${DH_PUSH:+--tag ${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                       ${GH_PUSH:+--tag ${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}}
-                     }
-                   }
+                   --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}
                    --file containers/eic/Dockerfile
                    --platform ${PLATFORM}
                    --build-arg BENCHMARK_COM_VERSION=$(sh .ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git master)
@@ -457,8 +527,11 @@ eic:
                    --build-arg CAMPAIGNS_SLURM_VERSION=$(sh .ci/resolve_git_ref eic/job_submission_slurm main)
                    --build-arg DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/
                    --build-arg BUILDER_IMAGE=${BUILDER_IMAGE}
+                   --build-arg BUILDER_SIGIL=@
+                   --build-arg BUILDER_TAG=${builder_digest}
                    --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE}
-                   --build-arg INTERNAL_TAG=${INTERNAL_TAG}
+                   --build-arg RUNTIME_SIGIL=@
+                   --build-arg RUNTIME_TAG=${runtime_digest}
                    --build-arg EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    --build-arg CI_COMMIT_SHA=${CI_COMMIT_SHA}
                    ${IF_BUILD_DEFAULT+
@@ -482,6 +555,8 @@ eic:
                    --secret type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER
                    --secret type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN
                    --provenance false
+                   --output push-by-digest=true,type=image,push=true
+                   --metadata-file metadata/${BUILD_IMAGE}${ENV}/${PLATFORM}/build.json
                    containers/eic
                    2>&1 | tee build.log
       ; do
@@ -496,12 +571,16 @@ eic:
         fi ;
         let attempts=$attempts+1 ;
       done
+    - BUILD_DIGEST=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}${ENV}/${PLATFORM}/build.json)
+    #- docker image history ${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}@${BUILD_DIGEST}
+    - echo "BUILD_DIGEST=${BUILD_DIGEST}" | tee -a build.env
+    - echo "BUILD_TYPE=${BUILD_TYPE}" | tee -a build.env
 
 user_spack_environment:
   stage: benchmarks
   needs:
     - job: version
-    - job: eic
+    - job: eic-amd64
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
@@ -532,7 +611,7 @@ user_spack_environment:
     - when: always
   needs: 
     - job: version
-    - job: eic
+    - job: eic-amd64
       parallel:
         matrix:
           - BUILD_IMAGE: eic_dev_
@@ -552,6 +631,68 @@ cuda:torch:
     - python -c "import torch ; print(torch.cuda.is_available()) ;"
   allow_failure: true
 
+eic-amd64:
+  <<: *eic_amd64_parallel
+  extends: .eic
+  needs:
+    - version
+    - base-amd64
+
+eic-arm64:
+  <<: *eic_arm64_parallel
+  extends: .eic
+  needs:
+    - version
+    - base-arm64
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "trigger"'
+      when: on_success
+    - when: never
+  allow_failure: true
+
+eic:multiarch:
+  extends: .build
+  stage: eic:multiarch
+  needs:
+    - job: version
+    - job: eic-amd64
+    - job: eic-arm64
+      optional: true
+  script:
+    - apk add jq
+    - for build_image in $(ls metadata) ; do
+        sources="" ;
+        for build_json in $(find metadata/${build_image} -name build.json) ; do
+          digest=$(jq -r '."containerimage.digest"' ${build_json}) ;
+          sources="${sources} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}@${digest}" ;
+        done ;
+        docker buildx imagetools create --tag ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ${sources} ;
+        docker buildx imagetools inspect ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ;
+        for export_tag in ${EXPORT_TAG:+
+                            ${IF_BUILD_DEFAULT+
+                              ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${EXPORT_TAG}}
+                              ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
+                              ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}}
+                            }
+                            ${IF_BUILD_DEFAULT-
+                              ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${EXPORT_TAG}-${BUILD_TYPE}}
+                              ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}-${BUILD_TYPE}}
+                              ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${EXPORT_TAG}-${BUILD_TYPE}}
+                            }
+                          }
+                          ${IF_BUILD_NIGHTLY+
+                            ${NIGHTLY:+
+                              ${CI_PUSH:+${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${NIGHTLY_TAG}}
+                              ${DH_PUSH:+${DH_REGISTRY}/${DH_REGISTRY_USER}/${build_image}:${NIGHTLY_TAG}}
+                              ${GH_PUSH:+${GH_REGISTRY}/${GH_REGISTRY_USER}/${build_image}:${NIGHTLY_TAG}}
+                            }
+                          } ; do
+          docker buildx imagetools create --tag ${export_tag} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${build_image}:${INTERNAL_TAG}-${BUILD_TYPE} ;
+          docker buildx imagetools inspect ${export_tag}
+          docker push ${export_tag} ;
+        done ;
+      done
+
 .singularity:
   image:
     name: ${SINGULARITY_IMAGE}
@@ -567,17 +708,20 @@ cuda:torch:
       paths:
         - build/${BUILD_IMAGE}.sif
   script:
+    - apk add jq
     - mkdir build
-    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}:${INTERNAL_TAG}-${BUILD_TYPE}
+    - digest=$(jq -r '."containerimage.digest"' metadata/${BUILD_IMAGE}/${PLATFORM}/build.json)
+    - singularity pull build/${BUILD_IMAGE}.sif docker://${CI_REGISTRY_IMAGE}/${BUILD_IMAGE}@${digest}
 
 eic_xl:singularity:default:
   extends: .singularity
   variables:
     BUILD_TYPE: default
     BUILD_IMAGE: eic_xl
+    PLATFORM: linux/amd64
   needs:
     - job: version
-    - job: eic
+    - job: eic-amd64
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
@@ -595,9 +739,10 @@ eic_xl:singularity:nightly:
   variables:
     BUILD_TYPE: nightly
     BUILD_IMAGE: eic_xl
+    PLATFORM: linux/amd64
   needs:
     - job: version
-    - job: eic
+    - job: eic-amd64
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
@@ -626,7 +771,8 @@ eic_xl:singularity:nightly:
   extends: .benchmarks
   needs: 
     - job: version
-    - job: eic
+    - job: eic-amd64
+      artifacts: true
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
@@ -642,7 +788,8 @@ eic_xl:singularity:nightly:
   extends: .benchmarks
   needs: 
     - job: version
-    - job: eic
+    - job: eic-amd64
+      artifacts: true
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
@@ -660,7 +807,8 @@ benchmarks:geoviewer:default:
    - if: '$CI_PIPELINE_SOURCE != "schedule" && $EPIC_VERSION != ""'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/geoviewer
     strategy: depend
@@ -671,7 +819,8 @@ benchmarks:detector:default:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
@@ -683,7 +832,8 @@ benchmarks:detector:nightly:
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
@@ -694,7 +844,8 @@ benchmarks:phyiscs:default:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
     strategy: depend
@@ -706,7 +857,8 @@ benchmarks:physics:nightly:
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
     strategy: depend
@@ -717,7 +869,8 @@ benchmarks:reconstruction:default:
    - if: '$CI_PIPELINE_SOURCE != "schedule" && $EICRECON_VERSION == ""'
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
     strategy: depend
@@ -729,7 +882,8 @@ benchmarks:reconstruction:nightly:
     - !reference ['.nightly', rules]
   variables:
     BENCHMARKS_CONTAINER: eic_ci
-    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+    BENCHMARKS_SIGIL: "@"
+    BENCHMARKS_TAG: "${BUILD_DIGEST}"
   trigger:
     project: EIC/benchmarks/reconstruction_benchmarks
     strategy: depend

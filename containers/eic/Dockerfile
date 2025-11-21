@@ -2,8 +2,11 @@
 #check=error=true
 ARG DOCKER_REGISTRY="eicweb/"
 ARG BUILDER_IMAGE="debian_stable_base"
+ARG BUILDER_SIGIL=":"
+ARG BUILDER_TAG="master"
 ARG RUNTIME_IMAGE="debian_stable_base"
-ARG INTERNAL_TAG="master"
+ARG RUNTIME_SIGIL=":"
+ARG RUNTIME_TAG="master"
 
 ##
 ## This docker build follows two tracks, in order to ensure that we build all packages
@@ -34,7 +37,7 @@ ARG INTERNAL_TAG="master"
 ## builder_concretization_default
 ## - builder base with concretization of default versions
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}:${INTERNAL_TAG} AS builder_concretization_default
+FROM ${DOCKER_REGISTRY}${BUILDER_IMAGE}${BUILDER_SIGIL}${BUILDER_TAG} AS builder_concretization_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -107,7 +110,7 @@ EOF
 ## runtime_concretization_default
 ## - runtime base with concretization of default versions (taken from equivalent builder)
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} AS runtime_concretization_default
+FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}${RUNTIME_SIGIL}${RUNTIME_TAG} AS runtime_concretization_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
