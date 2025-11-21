@@ -572,15 +572,6 @@ eic_xl:singularity:nightly:
   variables:
     BUILD_TYPE: nightly
     BUILD_IMAGE: eic_xl
-  rules:
-    # Don't build nightly in the following cases
-    - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-(alpha|beta|stable)/'          ## main stable branch: vX.Y-stable
-      when: never
-    - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-(alpha|beta|stable)/'   ## special stable branch: vX.Y-acadia-stable (etc)
-      when: never
-    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'                         ## commit tags start with vX.Y.Z with optional suffix
-      when: never
-    - when: always
   needs:
     - job: version
     - job: eic
