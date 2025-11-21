@@ -45,6 +45,7 @@ spack:
   - heppdt
   - imagemagick
   - irt
+  - irt2
   - iwyu
   - jana2
   - k4actstracking
