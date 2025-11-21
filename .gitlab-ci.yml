@@ -295,10 +295,7 @@ base:
       source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
-    - attempts=0
-    - nocache=""
-    - while !
-      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
+    - docker buildx build --push ${BUILD_OPTIONS}
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-amd64
                    --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-amd64
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
@@ -330,19 +327,6 @@ base:
                    --provenance false
                    containers/debian
                    2>&1 | tee build.log
-      ; do
-        if grep "unknown blob" build.log ; then
-          nocache="--no-cache" ;
-        else
-          exit 1 ;
-        fi ;
-        if test ${attempts} -ge 1 ; then
-          echo "Failed to build on second attempt!" ;
-          exit 1 ;
-        fi ;
-        let attempts=$attempts+1 ;
-      done
-
 
 eic:
   parallel:
@@ -416,11 +400,8 @@ eic:
       source eic-spack.sh ;
       export SPACKPACKAGES_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
-    - attempts=0
-    - nocache=""
     - set -o xtrace ; 
-      while !
-      docker buildx build --push ${BUILD_OPTIONS} ${nocache}
+      docker buildx build --push ${BUILD_OPTIONS}
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64
                    --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_DEFAULT_BRANCH_SLUG}-amd64
@@ -484,18 +465,6 @@ eic:
                    --provenance false
                    containers/eic
                    2>&1 | tee build.log
-      ; do
-        if grep "unknown blob" build.log ; then
-          nocache="--no-cache" ;
-        else
-          exit 1 ;
-        fi ;
-        if test ${attempts} -ge 1 ; then
-          echo "Failed to build on second attempt!" ;
-          exit 1 ;
-        fi ;
-        let attempts=$attempts+1 ;
-      done
 
 user_spack_environment:
   stage: benchmarks
