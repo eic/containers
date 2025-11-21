@@ -329,6 +329,15 @@ for detector in epic-git.*_* ; do
 done
 EOF
 
+## Add /opt/detector/epic-stable
+RUN <<EOF
+set -e
+cd /opt/detector
+EPIC_STABLE_VERSION=$(ls -1 --color=none ./ | cut -d- -f2 | grep -v main | sort -rV | head -n1)
+echo "Latest stable epic geometry version: ${EPIC_STABLE_VERSION}"
+ln -s "epic-${EPIC_STABLE_VERSION}" "epic-stable"
+EOF
+
 ## Fill eic_info
 RUN <<EOF
 set -e
