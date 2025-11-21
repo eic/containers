@@ -165,10 +165,10 @@ ENV SPACK_ENV=/opt/spack-environment/${ENV}/epic
 
 ## 2. Setup our environment with custom versions (on top of cached layer)
 ## Note: these default versions are just the very first commit.
-ARG EDM4EIC_SHA="8aeb507f93a93257c99985efbce0ec1371e0b331"
-ARG EICRECON_SHA="28108da4a1e8919a05dfdb5f11e114800a2cbe96"
-ARG EPIC_SHA="c1827f05430b2051df8a0b421db1cbab87165e0b"
-ARG JUGGLER_SHA="df87bf1f8643afa8e80bece9d36d6dc26dfe8132"
+ARG EDM4EIC_SHA=""
+ARG EICRECON_SHA=""
+ARG EPIC_SHA=""
+ARG JUGGLER_SHA=""
 
 # Concretization (custom environment)
 RUN <<EOF
