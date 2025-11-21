@@ -82,7 +82,8 @@ jobs:
         run: |
           source spack.sh
           echo "orgrepo=${SPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=$(.ci/resolve_git_ref ${SPACK_ORGREPO} ${SPACK_VERSION})" | tee -a $GITHUB_OUTPUT
+          echo "version=${SPACK_VERSION}" | tee -a $GITHUB_OUTPUT
+          echo "sha=$(.ci/resolve_git_ref ${SPACK_ORGREPO} ${SPACK_VERSION})" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks_files=${SPACK_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
       - name: Load spack-packages version and cherry-picks
@@ -91,7 +92,8 @@ jobs:
         run: |
           source spack-packages.sh
           echo "orgrepo=${SPACKPACKAGES_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=$(.ci/resolve_git_ref ${SPACKPACKAGES_ORGREPO} ${SPACKPACKAGES_VERSION})" | tee -a $GITHUB_OUTPUT
+          echo "version=${SPACKPACKAGES_VERSION}" | tee -a $GITHUB_OUTPUT
+          echo "sha=$(.ci/resolve_git_ref ${SPACKPACKAGES_ORGREPO} ${SPACKPACKAGES_VERSION})" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks=${SPACKPACKAGES_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
           echo "cherrypicks_files=${SPACKPACKAGES_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
       - name: Load key4hep-spack version
@@ -99,13 +101,15 @@ jobs:
         run: |
           source key4hep-spack.sh
           echo "orgrepo=${KEY4HEPSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=$(.ci/resolve_git_ref ${KEY4HEPSPACK_ORGREPO} ${KEY4HEPSPACK_VERSION})" | tee -a $GITHUB_OUTPUT
+          echo "version=${KEY4HEPSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
+          echo "sha=$(.ci/resolve_git_ref ${KEY4HEPSPACK_ORGREPO} ${KEY4HEPSPACK_VERSION})" | tee -a $GITHUB_OUTPUT
       - name: Load eic-spack version
         id: eic-spack
         run: |
           source eic-spack.sh
           echo "orgrepo=${EICSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=$(.ci/resolve_git_ref ${EICSPACK_ORGREPO} ${EICSPACK_VERSION})" | tee -a $GITHUB_OUTPUT
+          echo "version=${EICSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
+          echo "sha=$(.ci/resolve_git_ref ${EICSPACK_ORGREPO} ${EICSPACK_VERSION})" | tee -a $GITHUB_OUTPUT
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -167,16 +171,20 @@ jobs:
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
             SPACK_ORGREPO=${{ steps.spack.outputs.orgrepo }}
             SPACK_VERSION=${{ steps.spack.outputs.version }}
+            SPACK_SHA=${{ steps.spack.outputs.sha }}
             SPACK_CHERRYPICKS=${{ steps.spack.outputs.cherrypicks }}
             SPACK_CHERRYPICKS_FILES=${{ steps.spack.outputs.cherrypicks_files }}
             SPACKPACKAGES_ORGREPO=${{ steps.spack-packages.outputs.orgrepo }}
             SPACKPACKAGES_VERSION=${{ steps.spack-packages.outputs.version }}
+            SPACKPACKAGES_SHA=${{ steps.spack-packages.outputs.sha }}
             SPACKPACKAGES_CHERRYPICKS=${{ steps.spack-packages.outputs.cherrypicks }}
             SPACKPACKAGES_CHERRYPICKS_FILES=${{ steps.spack-packages.outputs.cherrypicks_files }}
             KEY4HEPSPACK_ORGREPO=${{ steps.key4hep-spack.outputs.orgrepo }}
             KEY4HEPSPACK_VERSION=${{ steps.key4hep-spack.outputs.version }}
+            KEY4HEPSPACK_SHA=${{ steps.key4hep-spack.outputs.sha }}
             EICSPACK_ORGREPO=${{ steps.eic-spack.outputs.orgrepo }}
             EICSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
+            EICSPACK_SHA=${{ steps.eic-spack.outputs.sha }}
             jobs=${{ env.JOBS }}
           cache-from: |
             type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }}
@@ -396,13 +404,13 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
-            BENCHMARK_COM_VERSION=${{ steps.benchmarks.outputs.common_bench }}
-            BENCHMARK_DET_VERSION=${{ steps.benchmarks.outputs.detector_benchmarks }}
-            BENCHMARK_REC_VERSION=${{ steps.benchmarks.outputs.reconstruction_benchmarks }}
-            BENCHMARK_PHY_VERSION=${{ steps.benchmarks.outputs.physics_benchmarks }}
-            CAMPAIGNS_HEPMC3_VERSION=${{ steps.campaigns.outputs.simulation_campaign_hepmc3 }}
-            CAMPAIGNS_CONDOR_VERSION=${{ steps.campaigns.outputs.job_submission_condor }}
-            CAMPAIGNS_SLURM_VERSION=${{ steps.campaigns.outputs.job_submission_slurm }}
+            BENCHMARK_COM_SHA=${{ steps.benchmarks.outputs.common_bench }}
+            BENCHMARK_DET_SHA=${{ steps.benchmarks.outputs.detector_benchmarks }}
+            BENCHMARK_REC_SHA=${{ steps.benchmarks.outputs.reconstruction_benchmarks }}
+            BENCHMARK_PHY_SHA=${{ steps.benchmarks.outputs.physics_benchmarks }}
+            CAMPAIGNS_HEPMC3_SHA=${{ steps.campaigns.outputs.simulation_campaign_hepmc3 }}
+            CAMPAIGNS_CONDOR_SHA=${{ steps.campaigns.outputs.job_submission_condor }}
+            CAMPAIGNS_SLURM_SHA=${{ steps.campaigns.outputs.job_submission_slurm }}
             DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
             BUILDER_IMAGE=${{ matrix.BUILDER_IMAGE }}
             RUNTIME_IMAGE=${{ matrix.RUNTIME_IMAGE }}
