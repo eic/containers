@@ -455,10 +455,10 @@ eic:
                    --build-arg EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)
                    --build-arg CI_COMMIT_SHA=${CI_COMMIT_SHA}
                    ${IF_BUILD_DEFAULT+
-                     ${EDM4EIC_SHA:+--build-arg EDM4EIC_SHA=$(sh .ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION})}
-                     ${EICRECON_SHA:+--build-arg EICRECON_SHA=$(sh .ci/resolve_git_ref eic/EICrecon ${EICRECON_VERSION})}
-                     ${EPIC_SHA:+--build-arg EPIC_SHA=$(sh .ci/resolve_git_ref eic/epic ${EPIC_VERSION})}
-                     ${JUGGLER_SHA:+--build-arg JUGGLER_SHA=$(sh .ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION})}
+                     ${EDM4EIC_VERSION:+--build-arg EDM4EIC_SHA=$(sh .ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION})}
+                     ${EICRECON_VERSION:+--build-arg EICRECON_SHA=$(sh .ci/resolve_git_ref eic/EICrecon ${EICRECON_VERSION})}
+                     ${EPIC_VERSION:+--build-arg EPIC_SHA=$(sh .ci/resolve_git_ref eic/epic ${EPIC_VERSION})}
+                     ${JUGGLER_VERSION:+--build-arg JUGGLER_SHA=$(sh .ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION})}
                    }
                    ${IF_BUILD_NIGHTLY+
                      --build-arg EDM4EIC_SHA=$(sh .ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION:-main})
