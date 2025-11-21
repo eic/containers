@@ -254,7 +254,7 @@ EOF
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
 spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
-spack mirror add --scope site --unsigned ghcr-${SPACK_VERSION} oci://ghcr.io/eic/spack-${SPACK_VERSION}
+spack mirror add --scope site --unsigned ghcr-${SPACKPACKAGES_VERSION} oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
 spack mirror list
 EOF
 
