@@ -3,8 +3,6 @@ spack:
   - ../concretizer.yaml
   - ../packages.yaml
   - ../view.yaml
-  concretizer:
-    unify: when_possible # multiple epic versions
   specs:
   - acts +cuda cuda_arch=75
   - actsvg
@@ -22,7 +20,6 @@ spack:
   - dawncut
   - dd4hep +ddeve
   - dpmjet
-  - east
   - edm4hep
   - eic-smear
   - eigen
@@ -32,7 +29,7 @@ spack:
   - fmt
   - gaudi
   - gdb
-  - geant4
+  - geant4 +vecgeom
   - graphviz
   - hepmc3
   - heppdt
@@ -93,5 +90,6 @@ spack:
   - spdlog
   - stow
   - valgrind
+  - vecgeom +cuda cuda_arch=75
   - xrootd
   - xeyes
