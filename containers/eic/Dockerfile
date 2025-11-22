@@ -46,6 +46,7 @@ ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
 ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+ARG SPACK_DUPLICATE_ALLOWLIST="epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
 ENV SPACK_COLOR="always"
 ENV GIT_TERMINAL_PROMPT=0
 
@@ -57,7 +58,7 @@ spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/c
 spack external find --scope env:${SPACK_ENV} llvm
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-setuptools\|py-urllib3\)" \
+| uniq -D -f2 | grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
@@ -193,7 +194,7 @@ if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
 fi
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-setuptools\|py-urllib3\)" \
+| uniq -D -f2 | grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
