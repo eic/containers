@@ -351,11 +351,11 @@ eic:
       - BUILD_IMAGE: eic_
         ENV:
         - ci
+        - cvmfs
         - dbg
         - jl
         - prod
         - xl
-        - xs
         BUILD_TYPE:
         - default
         BUILDER_IMAGE: debian_stable_base
@@ -365,8 +365,8 @@ eic:
         ENV:
         - ci
         - ci_without_acts
+        - cvmfs
         - xl
-        - xs
         BUILD_TYPE:
         - nightly
         BUILDER_IMAGE: debian_stable_base
