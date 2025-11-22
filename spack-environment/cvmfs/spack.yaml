@@ -1,0 +1,72 @@
+spack:
+  include:
+  - ../concretizer.yaml
+  - ../packages.yaml
+  - ../packages_cvmfs_geant4data.yaml
+  - ../view.yaml
+  specs:
+  - acts
+  - actsvg
+  - afterburner
+  - cmake
+  - covfie
+  - dd4hep -ddeve
+  - edm4hep
+  - eigen
+  - fastjet
+  - fjcontrib
+  - fmt
+  - gaudi
+  - geant4 -opengl
+  - gfal2
+  - gfal2-util
+  - graphviz
+  - hepmc3
+  - hepmcmerger
+  - heppdt
+  - imagemagick
+  - irt
+  - iwyu
+  - jana2
+  - nopayloadclient
+  - npsim -geocad
+  - onnx
+  - osg-ca-certs
+  - podio
+  - prmon
+  - pythia8
+  - py-awkward
+  - py-bokeh
+  - py-boost-histogram
+  - py-dask
+  - py-dask-histogram
+  - py-deepdiff
+  - py-eic-rucio-policy-package
+  - py-epic-capybara
+  - py-graphviz
+  - py-hepunits
+  - py-hist
+  - py-histoprint
+  - py-jinja2
+  - py-jinja2-cli
+  - py-lmfit
+  - py-lxml
+  - py-matplotlib
+  - py-mplhep
+  - py-htgettoken
+  - py-numpy
+  - py-onnx
+  - py-onnxruntime
+  - py-pandas
+  - py-particle
+  - py-pip
+  - py-rucio-clients
+  - py-scipy
+  - py-seaborn
+  - py-toml
+  - py-uproot
+  - py-vector
+  - root -opengl -webgui
+  - snakemake
+  - spdlog
+  - xrootd
