@@ -165,30 +165,30 @@ ENV SPACK_ENV=/opt/spack-environment/${ENV}/epic
 
 ## 2. Setup our environment with custom versions (on top of cached layer)
 ## Note: these default versions are just the very first commit.
-ARG EDM4EIC_VERSION="8aeb507f93a93257c99985efbce0ec1371e0b331"
-ARG EICRECON_VERSION="28108da4a1e8919a05dfdb5f11e114800a2cbe96"
-ARG EPIC_VERSION="c1827f05430b2051df8a0b421db1cbab87165e0b"
-ARG JUGGLER_VERSION="df87bf1f8643afa8e80bece9d36d6dc26dfe8132"
+ARG EDM4EIC_SHA=""
+ARG EICRECON_SHA=""
+ARG EPIC_SHA=""
+ARG JUGGLER_SHA=""
 
 # Concretization (custom environment)
 RUN <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
-if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
-  sed -i "/# EDM4EIC_VERSION$/ s/@[^' ]*/@git.${EDM4EIC_VERSION}=main/" /opt/spack-environment/packages.yaml
+if [ -n "${EDM4EIC_SHA}" ] ; then
+  sed -i "/# EDM4EIC_VERSION$/ s/@[^' ]*/@git.${EDM4EIC_SHA}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all edm4eic
 fi
-if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; then
-  sed -i "/# EICRECON_VERSION$/ s/@[^' ]*/@git.${EICRECON_VERSION}=main/" /opt/spack-environment/packages.yaml
+if [ -n "${EICRECON_SHA}" ] ; then
+  sed -i "/# EICRECON_VERSION$/ s/@[^' ]*/@git.${EICRECON_SHA}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all eicrecon
 fi
-if [ "${EPIC_VERSION}" != "c1827f05430b2051df8a0b421db1cbab87165e0b" ] ; then
-  sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
-  sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
+if [ -n "${EPIC_SHA}" ] ; then
+  sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_SHA}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
+  sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_SHA}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
   spack deconcretize -y --all epic
 fi
-if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
-  sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_VERSION}=main/" /opt/spack-environment/packages.yaml
+if [ -n "${JUGGLER_SHA}" ] ; then
+  sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_SHA}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all juggler
 fi
 spack concretize --force
@@ -370,35 +370,35 @@ spack config blame upstreams
 EOF
 
 ## Install benchmarks into the container
-ARG BENCHMARK_COM_VERSION="master"
-ARG BENCHMARK_DET_VERSION="master"
-ARG BENCHMARK_REC_VERSION="master"
-ARG BENCHMARK_PHY_VERSION="master"
+ARG BENCHMARK_COM_SHA=""
+ARG BENCHMARK_DET_SHA=""
+ARG BENCHMARK_REC_SHA=""
+ARG BENCHMARK_PHY_SHA=""
 RUN <<EOF
 git clone https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git /opt/benchmarks/common_bench
-git -C /opt/benchmarks/common_bench checkout ${BENCHMARK_COM_VERSION}
+git -C /opt/benchmarks/common_bench checkout ${BENCHMARK_COM_SHA:-master}
 git clone https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git /opt/benchmarks/detector_benchmarks
-git -C /opt/benchmarks/detector_benchmarks checkout ${BENCHMARK_DET_VERSION}
+git -C /opt/benchmarks/detector_benchmarks checkout ${BENCHMARK_DET_SHA:-master}
 ln -sf /opt/benchmarks/common_bench /opt/benchmarks/detector_benchmarks/.local
 git clone https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git /opt/benchmarks/reconstruction_benchmarks
-git -C /opt/benchmarks/reconstruction_benchmarks checkout ${BENCHMARK_REC_VERSION}
+git -C /opt/benchmarks/reconstruction_benchmarks checkout ${BENCHMARK_REC_SHA:-master}
 ln -sf /opt/benchmarks/common_bench /opt/benchmarks/reconstruction_benchmarks/.local
 git clone https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git /opt/benchmarks/physics_benchmarks
-git -C /opt/benchmarks/physics_benchmarks checkout ${BENCHMARK_PHY_VERSION}
+git -C /opt/benchmarks/physics_benchmarks checkout ${BENCHMARK_PHY_SHA:-master}
 ln -sf /opt/benchmarks/common_bench /opt/benchmarks/physics_benchmarks/.local
 EOF
 
 ## Install campaigns into the container
-ARG CAMPAIGNS_HEPMC3_VERSION="main"
-ARG CAMPAIGNS_CONDOR_VERSION="main"
-ARG CAMPAIGNS_SLURM_VERSION="main"
+ARG CAMPAIGNS_HEPMC3_SHA=""
+ARG CAMPAIGNS_CONDOR_SHA=""
+ARG CAMPAIGNS_SLURM_SHA=""
 RUN <<EOF
 git clone https://github.com/eic/simulation_campaign_hepmc3.git /opt/campaigns/hepmc3
-git -C /opt/campaigns/hepmc3 checkout ${CAMPAIGNS_HEPMC3_VERSION}
+git -C /opt/campaigns/hepmc3 checkout ${CAMPAIGNS_HEPMC3_SHA:-main}
 git clone https://github.com/eic/job_submission_condor.git /opt/campaigns/condor
-git -C /opt/campaigns/condor checkout ${CAMPAIGNS_CONDOR_VERSION}
+git -C /opt/campaigns/condor checkout ${CAMPAIGNS_CONDOR_SHA:-main}
 git clone https://github.com/eic/job_submission_slurm.git /opt/campaigns/slurm
-git -C /opt/campaigns/slurm checkout ${CAMPAIGNS_SLURM_VERSION}
+git -C /opt/campaigns/slurm checkout ${CAMPAIGNS_SLURM_SHA:-main}
 EOF
 
 ## make sure we have the entrypoints setup correctly
