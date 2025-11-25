@@ -484,6 +484,11 @@ eic:
 
 user_spack_environment:
   stage: benchmarks
+  rules:
+    # Skip for epic or EICrecon trigger
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - when: always
   needs:
     - job: version
     - job: eic
