@@ -503,7 +503,10 @@ user_spack_environment:
     - source /opt/spack/share/spack/setup-env.sh
     - spack env activate --create edm4eic
     - spack add edm4eic@git.main
-    - spack install
+    - spack concretize 
+    - spack install --only dependencies edm4eic
+    - ls -al /opt/software/linux-*/compiler-wrapper-1.0-*/libexec/spack/gcc/g++
+    - spack install --verbose
     - ls $HOME/spack/
 
 .cuda:
