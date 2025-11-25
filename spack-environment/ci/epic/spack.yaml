@@ -9,5 +9,6 @@ spack:
   - algorithms
   - edm4eic
   - eicrecon
+  - epic
   - epic@main # EPIC_VERSION
   - juggler
