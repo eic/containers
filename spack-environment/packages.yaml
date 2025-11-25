@@ -276,9 +276,9 @@ packages:
     require:
     - '@6.5.5'
     - +python
-  llvm:
-    require:
-    - any_of: [~gold, '@:']
+  #llvm:
+    #require:
+    #- any_of: [~gold, '@:']
     # FIXME any ipo requirement breaks llvm external reuse
     #- any_of: [~ipo, '@:']
   madx:
