@@ -33,6 +33,11 @@ permissions:
   packages: write
 
 env:
+  ## CUDA version and container operating system
+  CUDA_VERSION: 12.5.1
+  CUDA_OS: ubuntu24.04
+  ## FIXME env context is not available in matrix, only in steps
+  
   ## Default versions are specified in packages.yaml but can be overridden
   ## note: nightly builds will always use the master/main branch
   EDM4EIC_VERSION: ${{ inputs.EDM4EIC_VERSION }}
@@ -55,9 +60,23 @@ env:
   INTERNAL_TAG: pipeline-${{ github.run_id }}
 
 jobs:
+  env:
+    name: Turn env into outputs
+    runs-on: ubuntu-latest
+    outputs:
+      CUDA_VERSION: ${{ steps.env.outputs.CUDA_VERSION }}
+      CUDA_OS: ${{ steps.env.outputs.CUDA_OS }}
+    steps:
+      - name: Turn env into outputs
+        id: env
+        run: |
+          echo "CUDA_VERSION=${{ env.CUDA_VERSION }}" >> $GITHUB_OUTPUT
+          echo "CUDA_OS=${{ env.CUDA_OS }}" >> $GITHUB_OUTPUT
+
   base:
     name: Build base on ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
+    needs: env
     strategy:
       matrix:
         include:
@@ -71,6 +90,16 @@ jobs:
           PLATFORM: linux/arm64
           runner: ubuntu-24.04-arm
           arch: arm64
+        - BASE_IMAGE: nvidia/cuda:${{ needs.env.outputs.CUDA_VERSION }}-devel-${{ needs.env.outputs.CUDA_OS }}
+          BUILD_IMAGE: cuda_devel
+          PLATFORM: linux/amd64
+          runner: ubuntu-latest
+          arch: amd64
+        - BASE_IMAGE: nvidia/cuda:${{ needs.env.outputs.CUDA_VERSION }}-runtime-${{ needs.env.outputs.CUDA_OS }}
+          BUILD_IMAGE: cuda_runtime
+          PLATFORM: linux/amd64
+          runner: ubuntu-latest
+          arch: amd64
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
@@ -125,16 +154,16 @@ jobs:
         uses: actions/cache@v4
         id: cache-base-mounts
         with:
-          path: cache-mount-base-${{ matrix.arch }}
-          key: ${{ matrix.arch }}-base-mounts-${{ github.ref_name }}
+          path: cache-mount-base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}
+          key: ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-${{ github.ref_name }}
           restore-keys: |
-            ${{ matrix.arch }}-base-mounts-main
-            ${{ matrix.arch }}-base-mounts-
+            ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-main
+            ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-
       - name: Inject cache mounts into builder
         uses: reproducible-containers/buildkit-cache-dance@v3
         with:
           builder: ${{ steps.buildx.outputs.name }}
-          cache-dir: cache-mount-base-${{ matrix.arch }}
+          cache-dir: cache-mount-base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}
           cache-map: |
             {
               "var-cache-apt": "/var/cache/apt",
@@ -195,18 +224,24 @@ jobs:
         # We write this to a file for the next job
         run: |
           mkdir -p /tmp/digests
-          echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}.digest
+          echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: base-${{ matrix.arch }}-digest
-          path: /tmp/digests/${{ matrix.arch }}.digest
+          name: base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-digest
+          path: /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
           retention-days: 1
 
   base-manifest:
     name: Push base manifest
     runs-on: ubuntu-latest
-    needs: base
+    needs: [base, env]
+    strategy:
+      matrix:
+        include:
+        - BUILD_IMAGE: debian_stable_base
+        - BUILD_IMAGE: cuda_devel
+        - BUILD_IMAGE: cuda_runtime
     steps:
       - name: Set up QEMU (for imagetools)
         uses: docker/setup-qemu-action@v3
@@ -230,14 +265,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: /tmp/digests
-          pattern: base-*-digest
+          pattern: base-${{ matrix.BUILD_IMAGE }}-*-digest
           merge-multiple: true
       - name: Analyze digest artifacts
         id: digests
         run: |
           # Read the digests from the files
-          DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
-          DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
+          DIGEST_AMD64=$(cat /tmp/digests/${{ matrix.BUILD_IMAGE }}-amd64.digest)
+          DIGEST_ARM64=$(cat /tmp/digests/${{ matrix.BUILD_IMAGE }}-arm64.digest)
           # Get the base image name from the digests (they'll be the same)
           REGISTRY_IMAGE_TAG=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
           REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
