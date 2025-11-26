@@ -237,7 +237,7 @@ jobs:
   base-manifest:
     name: Push base manifest
     runs-on: ubuntu-latest
-    needs: [base, env]
+    needs: base
     strategy:
       matrix:
         include:
