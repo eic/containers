@@ -46,6 +46,13 @@ ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
 ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+# The SPACK_DUPLICATE_ALLOWLIST specifies packages that are allowed to have duplicate concretizations.
+# This is necessary for certain packages (e.g., epic, llvm, py-setuptools, py-urllib3, py-dask) due to
+# their complex dependency trees or compatibility requirements. The new additions (py-dask-awkward,
+# py-dask-histogram, py-distributed, py-requests) are included because they may be required in multiple
+# versions or configurations by different packages in the environment, and allowing duplicates prevents
+# build failures or conflicts during concretization. This list should be reviewed periodically to ensure
+# only necessary packages are included.
 ARG SPACK_DUPLICATE_ALLOWLIST="epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
 ENV SPACK_COLOR="always"
 ENV GIT_TERMINAL_PROMPT=0
