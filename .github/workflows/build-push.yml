@@ -36,7 +36,6 @@ env:
   ## CUDA version and container operating system
   CUDA_VERSION: 12.5.1
   CUDA_OS: ubuntu24.04
-  ## FIXME env context is not available in matrix, only in steps
   
   ## Default versions are specified in packages.yaml but can be overridden
   ## note: nightly builds will always use the master/main branch
@@ -61,6 +60,9 @@ env:
 
 jobs:
   env:
+    ## The env context is not available in matrix, only in steps,
+    ## so this job is merely to transfer env to job outputs which
+    ## can be used in matrix.
     name: Turn env into outputs
     runs-on: ubuntu-latest
     outputs:
