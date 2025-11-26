@@ -74,7 +74,7 @@ jobs:
           echo "CUDA_OS=${{ env.CUDA_OS }}" >> $GITHUB_OUTPUT
 
   base:
-    name: Build base on ${{ matrix.arch }}
+    name: Build ${{ matrix.BUILD_IMAGE }} on ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
     needs: env
     strategy:
