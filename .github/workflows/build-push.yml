@@ -331,6 +331,7 @@ jobs:
         RUNTIME_IMAGE: [debian_stable_base]
         ENV: [ci, xl]
         arch: [amd64, arm64]
+        target: [final]
         include:
         - arch: amd64
           runner: ubuntu-latest
@@ -442,6 +443,7 @@ jobs:
           secret-files: |
             mirrors=mirrors.yaml
           platforms: ${{ matrix.PLATFORM }}
+          target: ${{ matrix.target }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
