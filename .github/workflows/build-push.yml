@@ -280,7 +280,11 @@ jobs:
           # Read the digests from the files
           DIGEST_AMD64=$(cat /tmp/digests/${{ matrix.BUILD_IMAGE }}-amd64.digest)
           DIGEST_AMD64_V3=$(cat /tmp/digests/${{ matrix.BUILD_IMAGE }}-amd64_v3.digest)
-          DIGEST_ARM64=$(cat /tmp/digests/${{ matrix.BUILD_IMAGE }}-arm64.digest)
+          if [ -f /tmp/digests/${{ matrix.BUILD_IMAGE }}-arm64.digest ]; then
+            DIGEST_ARM64=$(cat /tmp/digests/${{ matrix.BUILD_IMAGE }}-arm64.digest)
+          else
+            DIGEST_ARM64=""
+          fi
           # Get the base image name from the digests (they'll be the same)
           REGISTRY_IMAGE_TAG=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
           REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
