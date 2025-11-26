@@ -44,6 +44,7 @@ bc25e5eb2f8f7a8733cdc10d92e9787358c82cfa
 c4d983b764d7b1ee2b63da79f5f25365ac61ce7a
 44da889cc86bb8a5315c729a7c79f2c002c9c951
 5c37f836753e8f9683fdc547f3661c5045abcbd1
+c75e10845431600b163c597545bd099e427c62f5
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -89,3 +90,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## c4d983b764d7b1ee2b63da79f5f25365ac61ce7a: Julia: add v1.11.6
 ## 44da889cc86bb8a5315c729a7c79f2c002c9c951: Julia: add v1.11.7
 ## 5c37f836753e8f9683fdc547f3661c5045abcbd1: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
+## c75e10845431600b163c597545bd099e427c62f5: dd4hep: v1.33
