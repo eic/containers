@@ -444,6 +444,9 @@ packages:
   py-pyyaml:
     require:
     - '@6.0.2:'
+  py-rich:
+    require:
+    - '@13:'
   py-rucio-clients:
     require:
     - '@37.3.0:'
