@@ -288,7 +288,7 @@ EOF
 ## ========================================================================================
 ## final image, based on runtime_installation_custom
 ## ========================================================================================
-FROM runtime_installation_custom as final
+FROM runtime_installation_custom AS final
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
