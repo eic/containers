@@ -389,6 +389,9 @@ packages:
   py-jsonschema:
     require:
     - +format-nongpl # non-default required for jupyter stack
+  py-jupyterlab:
+    require:
+    - '@4.3.5:'
   py-keras:
     require:
     - '@3.12:'
