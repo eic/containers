@@ -113,7 +113,7 @@ specs:
 - Jupyter notebook ecosystem
 - Additional Monte Carlo generators
 
-### EPIC Subenviroment
+### EPIC Subenvironment
 
 Both CI and XL have an `epic/` subdirectory with the EPIC detector packages:
 
