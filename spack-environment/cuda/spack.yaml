@@ -50,6 +50,7 @@ spack:
   - npsim
   - onnx
   - opencascade
+  - optix-dev
   - osg-ca-certs
   - phonebook-cli
   - podio
