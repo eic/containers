@@ -351,7 +351,7 @@ packages:
     - '@2.6.6:'
   py-beautifulsoup4:
     require:
-    - '@7.16:'
+    - '@4.12:'
   py-bokeh:
     require:
     - '@3.5.2:'
