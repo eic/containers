@@ -275,16 +275,20 @@ jobs:
           # Loop over all available architecture artifacts
           ALL_DIGESTS=""
           FIRST_DIGEST=""
+          shopt -s nullglob
           for digest_file in /tmp/digests/${{ matrix.BUILD_IMAGE }}-*.digest; do
-            if [ -f "$digest_file" ]; then
-              DIGEST=$(cat "$digest_file")
-              echo "Found digest: $DIGEST"
+            DIGEST=$(cat "$digest_file")
+            echo "Found digest: $DIGEST"
+            if [ -z "$ALL_DIGESTS" ]; then
+              ALL_DIGESTS="$DIGEST"
+            else
               ALL_DIGESTS="$ALL_DIGESTS $DIGEST"
-              if [ -z "$FIRST_DIGEST" ]; then
-                FIRST_DIGEST="$DIGEST"
-              fi
+            fi
+            if [ -z "$FIRST_DIGEST" ]; then
+              FIRST_DIGEST="$DIGEST"
             fi
           done
+          shopt -u nullglob
           # Get the base image name from the first digest
           REGISTRY_IMAGE_TAG=$(echo $FIRST_DIGEST | cut -d'@' -f1)
           REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
@@ -517,16 +521,20 @@ jobs:
           # Loop over all available architecture artifacts
           ALL_DIGESTS=""
           FIRST_DIGEST=""
+          shopt -s nullglob
           for digest_file in /tmp/digests/*.digest; do
-            if [ -f "$digest_file" ]; then
-              DIGEST=$(cat "$digest_file")
-              echo "Found digest: $DIGEST"
+            DIGEST=$(cat "$digest_file")
+            echo "Found digest: $DIGEST"
+            if [ -z "$ALL_DIGESTS" ]; then
+              ALL_DIGESTS="$DIGEST"
+            else
               ALL_DIGESTS="$ALL_DIGESTS $DIGEST"
-              if [ -z "$FIRST_DIGEST" ]; then
-                FIRST_DIGEST="$DIGEST"
-              fi
+            fi
+            if [ -z "$FIRST_DIGEST" ]; then
+              FIRST_DIGEST="$DIGEST"
             fi
           done
+          shopt -u nullglob
           # Get the base image name from the first digest
           REGISTRY_IMAGE_TAG=$(echo $FIRST_DIGEST | cut -d'@' -f1)
           REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
