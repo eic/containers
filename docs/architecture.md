@@ -95,10 +95,9 @@ flowchart TB
         E[eic/eic-spack<br/>EIC-specific packages]
         K[key4hep/key4hep-spack<br/>Key4HEP packages]
         SP[spack/spack-packages<br/>Community packages]
-        S[spack/spack<br/>Built-in packages]
     end
     
-    E --> K --> SP --> S
+    E --> K --> SP
     
     P[Package Resolution] --> E
 ```
