@@ -349,6 +349,9 @@ packages:
   py-awkward:
     require:
     - '@2.6.6:'
+  py-beautifulsoup4:
+    require:
+    - '@7.16:'
   py-bokeh:
     require:
     - '@3.5.2:'
