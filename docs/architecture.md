@@ -117,8 +117,8 @@ flowchart TB
     subgraph "Cache Locations"
         RC --> R1[ghcr.io/eic/buildcache:*]
         GC --> G1[ccache]
-        GC --> G2[/var/cache/apt]
-        GC --> G3[/var/cache/spack]
+        GC --> G2["/var/cache/apt"]
+        GC --> G3["/var/cache/spack"]
         BC --> B1[ghcr.io/eic/spack-v2025.07.0]
     end
 ```
