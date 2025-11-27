@@ -453,7 +453,7 @@ packages:
     - '@1.17.0'
   py-onnxruntime:
     require:
-    - '@1.21.0'
+    - '@1.22.2:'
   py-pandas:
     require:
     - '@2.2.3:'
