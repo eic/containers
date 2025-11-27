@@ -289,6 +289,11 @@ jobs:
             fi
           done
           shopt -u nullglob
+          # Check if at least one digest was found
+          if [ -z "$FIRST_DIGEST" ]; then
+            echo "Error: No digest files found"
+            exit 1
+          fi
           # Get the base image name from the first digest
           REGISTRY_IMAGE_TAG=$(echo $FIRST_DIGEST | cut -d'@' -f1)
           REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
@@ -535,6 +540,11 @@ jobs:
             fi
           done
           shopt -u nullglob
+          # Check if at least one digest was found
+          if [ -z "$FIRST_DIGEST" ]; then
+            echo "Error: No digest files found"
+            exit 1
+          fi
           # Get the base image name from the first digest
           REGISTRY_IMAGE_TAG=$(echo $FIRST_DIGEST | cut -d'@' -f1)
           REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
