@@ -342,23 +342,70 @@ jobs:
     needs: base-manifest
     strategy:
       matrix:
-        BUILD_IMAGE: [eic_]
-        BUILD_TYPE: [default]
-        BUILDER_IMAGE: [debian_stable_base]
-        RUNTIME_IMAGE: [debian_stable_base]
-        ENV: [ci, xl]
-        arch: [amd64, amd64_v3, arm64]
-        target: [final]
         include:
-        - arch: amd64
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: ci
+          arch: amd64
           runner: ubuntu-latest
           PLATFORM: linux/amd64
-        - arch: amd64_v3
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: ci
+          arch: amd64_v3
           runner: ubuntu-latest
           PLATFORM: linux/amd64/v3
-        - arch: arm64
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: ci
+          arch: arm64
           runner: ubuntu-24.04-arm
           PLATFORM: linux/arm64
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: xl
+          arch: amd64
+          runner: ubuntu-latest
+          PLATFORM: linux/amd64
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: xl
+          arch: amd64_v3
+          runner: ubuntu-latest
+          PLATFORM: linux/amd64/v3
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: xl
+          arch: arm64
+          runner: ubuntu-24.04-arm
+          PLATFORM: linux/arm64
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: cuda_devel
+          RUNTIME_IMAGE: cuda_devel
+          ENV: cuda
+          arch: amd64
+          runner: ubuntu-latest
+          PLATFORM: linux/amd64
+          target: builder_concretization_default
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
