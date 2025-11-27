@@ -240,7 +240,7 @@ jobs:
           retention-days: 1
 
   base-manifest:
-    name: Push base manifest
+    name: Push ${{ matrix.BUILD_IMAGE }} manifest
     runs-on: ubuntu-latest
     needs: base
     strategy:
@@ -497,11 +497,12 @@ jobs:
           retention-days: 1
 
   eic-manifest:
-    name: Push eic manifest
+    name: Push ${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }} manifest
     runs-on: ubuntu-latest
     needs: eic
     strategy:
       matrix:
+        BUILD_IMAGE: [eic_]
         ENV: [ci, xl]
     steps:
       - name: Set up QEMU (for imagetools)
