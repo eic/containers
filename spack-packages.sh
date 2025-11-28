@@ -65,6 +65,8 @@ f201ecd5e5923b394d14f74bc220dea06b9ab28f
 2e05bbbe808442e761647da571500ee128654f4f
 9ec50db07733195bba922b8c6dcbbb1de9c56adf
 d95db21e9c9fa6eab1a9e62e2ba56066f2f955a7
+9cf8ee9c28465568d0b8871f245c400470e74ec7
+78a6c5f0a2531a78be5c9dd9235cf92036d541f5
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -73,6 +75,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 [7fad8a78d35b5556e1d7aa92a71a4e1c58a1665a]=repos/spack_repo/builtin/packages/py_tensorflow/package.py,repos/spack_repo/builtin/packages/py_tensorboard/package.py
 [4ef82e75f5cae7b4d093e41043e26b259498264e]=repos/spack_repo/builtin/packages/podio/package.py
 [158693457ba1717a89a9e2f9614c6982b6aff441]=repos/spack_repo/builtin/packages/acts/package.py
+[9cf8ee9c28465568d0b8871f245c400470e74ec7]=repos/spack_repo/builtin/packages/edm4hep/package.py
 ---
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
@@ -133,3 +136,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 2e05bbbe808442e761647da571500ee128654f4f: acts: add v44.3.0
 ## 9ec50db07733195bba922b8c6dcbbb1de9c56adf: ollama: add through v0.13.1
 ## d95db21e9c9fa6eab1a9e62e2ba56066f2f955a7: root: add v6.38.00
+## 9cf8ee9c28465568d0b8871f245c400470e74ec7: Deprecation removals: E-H
+## 78a6c5f0a2531a78be5c9dd9235cf92036d541f5: edm4hep: Add latest tags and update dependencies
