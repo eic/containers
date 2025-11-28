@@ -485,7 +485,7 @@ packages:
     - hepmc=3 plugin-match=HERA,LEP,MC
   root:
     require:
-    - '@6.36.04'
+    - '@6.36.06'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
