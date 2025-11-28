@@ -2,9 +2,10 @@ spack:
   include:
   - ../../concretizer.yaml
   - ../../packages.yaml
+  - ../../packages_cvmfs_geant4data.yaml
   - ../../view.yaml
   include_concrete:
-  - /opt/spack-environment/ci
+  - /opt/spack-environment/cvmfs
   specs:
   - algorithms
   - edm4eic
