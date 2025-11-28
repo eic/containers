@@ -5,6 +5,10 @@ spack:
   - ../../view.yaml
   include_concrete:
   - /opt/spack-environment/ci
+  packages:
+    dd4hep:
+      require:
+      - ~ddeve
   specs:
   - algorithms
   - edm4eic
