@@ -45,12 +45,15 @@ c4d983b764d7b1ee2b63da79f5f25365ac61ce7a
 44da889cc86bb8a5315c729a7c79f2c002c9c951
 5c37f836753e8f9683fdc547f3661c5045abcbd1
 c75e10845431600b163c597545bd099e427c62f5
+9cf8ee9c28465568d0b8871f245c400470e74ec7
+78a6c5f0a2531a78be5c9dd9235cf92036d541f5
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 --- || true
 [b063312bb52fb62010e04588f6b16d37e16c8d02]=repos/spack_repo/builtin/packages/py_tensorflow/package.py
 [7fad8a78d35b5556e1d7aa92a71a4e1c58a1665a]=repos/spack_repo/builtin/packages/py_tensorflow/package.py,repos/spack_repo/builtin/packages/py_tensorboard/package.py
+[9cf8ee9c28465568d0b8871f245c400470e74ec7]=repos/spack_repo/builtin/packages/edm4hep/package.py
 ---
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
@@ -91,3 +94,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 44da889cc86bb8a5315c729a7c79f2c002c9c951: Julia: add v1.11.7
 ## 5c37f836753e8f9683fdc547f3661c5045abcbd1: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
 ## c75e10845431600b163c597545bd099e427c62f5: dd4hep: v1.33
+## 9cf8ee9c28465568d0b8871f245c400470e74ec7: Deprecation removals: E-H
+## 78a6c5f0a2531a78be5c9dd9235cf92036d541f5: edm4hep: Add latest tags and update dependencies
