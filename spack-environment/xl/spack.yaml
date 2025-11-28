@@ -3,8 +3,6 @@ spack:
   - ../concretizer.yaml
   - ../packages.yaml
   - ../view.yaml
-  concretizer:
-    unify: when_possible # multiple epic versions
   specs:
   - acts
   - actsvg
