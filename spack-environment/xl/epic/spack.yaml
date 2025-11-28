@@ -8,9 +8,9 @@ spack:
   concretizer:
     unify: when_possible # multiple epic versions
   packages:
-    dd4hep:
+    geant4:
       require:
-      - +ddeve
+      - +opengl
   specs:
   - algorithms
   - edm4eic
