@@ -26,6 +26,7 @@ spack:
   - heppdt
   - imagemagick
   - irt
+  - irt2
   - iwyu
   - jana2
   - nopayloadclient
