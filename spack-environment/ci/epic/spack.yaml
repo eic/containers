@@ -6,9 +6,9 @@ spack:
   include_concrete:
   - /opt/spack-environment/ci
   packages:
-    dd4hep:
+    geant4:
       require:
-      - ~ddeve
+      - ~opengl
   specs:
   - algorithms
   - edm4eic
