@@ -63,9 +63,14 @@ jobs:
         include:
         - BASE_IMAGE: debian:stable-slim
           BUILD_IMAGE: debian_stable_base
-          PLATFORM: linux/amd64 
+          PLATFORM: linux/amd64
           runner: ubuntu-latest
           arch: amd64
+        - BASE_IMAGE: debian:stable-slim
+          BUILD_IMAGE: debian_stable_base
+          PLATFORM: linux/amd64/v3
+          runner: ubuntu-latest
+          arch: amd64_v3
         - BASE_IMAGE: debian:stable-slim
           BUILD_IMAGE: debian_stable_base
           PLATFORM: linux/arm64
@@ -113,7 +118,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/amd64/v3,linux/arm64
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         id: buildx
@@ -237,6 +242,7 @@ jobs:
         run: |
           # Read the digests from the files
           DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
+          DIGEST_AMD64_V3=$(cat /tmp/digests/amd64_v3.digest)
           DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
           # Get the base image name from the digests (they'll be the same)
           REGISTRY_IMAGE_TAG=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
@@ -248,11 +254,13 @@ jobs:
           echo "Image Name: $IMAGE"
           echo "Tag Name: $TAG"
           echo "AMD64 Digest: $DIGEST_AMD64"
+          echo "AMD64_V3 Digest: $DIGEST_AMD64_V3"
           echo "ARM64 Digest: $DIGEST_ARM64"
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "amd64=$DIGEST_AMD64" >> $GITHUB_OUTPUT
+          echo "amd64_v3=$DIGEST_AMD64_V3" >> $GITHUB_OUTPUT
           echo "arm64=$DIGEST_ARM64" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
         id: meta
@@ -276,6 +284,7 @@ jobs:
           docker buildx imagetools create \
             $TAG_ARGS \
             ${{ steps.digests.outputs.amd64 }} \
+            ${{ steps.digests.outputs.amd64_v3 }} \
             ${{ steps.digests.outputs.arm64 }}
 
   eic:
@@ -289,11 +298,14 @@ jobs:
         BUILDER_IMAGE: [debian_stable_base]
         RUNTIME_IMAGE: [debian_stable_base]
         ENV: [ci, xl]
-        arch: [amd64, arm64]
+        arch: [amd64, amd64_v3, arm64]
         include:
         - arch: amd64
           runner: ubuntu-latest
           PLATFORM: linux/amd64
+        - arch: amd64_v3
+          runner: ubuntu-latest
+          PLATFORM: linux/amd64/v3
         - arch: arm64
           runner: ubuntu-24.04-arm
           PLATFORM: linux/arm64
@@ -333,7 +345,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/amd64/v3,linux/arm64
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         id: buildx
@@ -470,6 +482,7 @@ jobs:
         run: |
           # Read the digests from the files
           DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
+          DIGEST_AMD64_V3=$(cat /tmp/digests/amd64_v3.digest)
           DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
           # Get the base image name from the digests (they'll be the same)
           REGISTRY_IMAGE_TAG=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
@@ -481,11 +494,13 @@ jobs:
           echo "Image Name: $IMAGE"
           echo "Tag Name: $TAG"
           echo "AMD64 Digest: $DIGEST_AMD64"
+          echo "AMD64_V3 Digest: $DIGEST_AMD64_V3"
           echo "ARM64 Digest: $DIGEST_ARM64"
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "amd64=$DIGEST_AMD64" >> $GITHUB_OUTPUT
+          echo "amd64_v3=$DIGEST_AMD64_V3" >> $GITHUB_OUTPUT
           echo "arm64=$DIGEST_ARM64" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
         id: meta
@@ -509,4 +524,5 @@ jobs:
           docker buildx imagetools create \
             $TAG_ARGS \
             ${{ steps.digests.outputs.amd64 }} \
+            ${{ steps.digests.outputs.amd64_v3 }} \
             ${{ steps.digests.outputs.arm64 }}
