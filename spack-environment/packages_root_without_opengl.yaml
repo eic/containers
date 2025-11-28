@@ -1,4 +1,4 @@
 packages:
   root:
     require:
-    - ~opengl ~webgui ~x
+    - ~opengl ~webgui
