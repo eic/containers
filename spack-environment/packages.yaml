@@ -316,7 +316,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@1.6'
+    - '@git.127fe2f1fb828e353013de82d78841b448e2152f=1.6'
     - cxxstd=20
     - +rntuple
     package_attributes:
