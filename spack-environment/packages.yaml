@@ -103,7 +103,7 @@ packages:
     require:
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - '@1.33'
-    - +ddg4 +ddcad +hepmc3 +xercesc
+    - +ddg4 +ddcad +edm4hep +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   dpmjet:
     require:
