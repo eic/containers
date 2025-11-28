@@ -223,7 +223,7 @@ packages:
     - '@0.23'
   jana2:
     require:
-    - '@2.4.2'
+    - '@2.4.3'
     - -ipo +podio +root +zmq
   juggler:
     require:
