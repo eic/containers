@@ -46,6 +46,10 @@ c4d983b764d7b1ee2b63da79f5f25365ac61ce7a
 5c37f836753e8f9683fdc547f3661c5045abcbd1
 c75e10845431600b163c597545bd099e427c62f5
 438a7d95de1b81e15107edbf341b20824ec80635
+c71f8e48245012565ac7b0648dfda137b0071de7
+8d027b1651840631350d0ba9f30624f2baf26350
+566e1b070e17ffe8c2d0bf4122568af8a81db1cd
+048bffaea064919ccfc2f740e14bbb987e7f5c7e
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -93,3 +97,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 5c37f836753e8f9683fdc547f3661c5045abcbd1: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
 ## c75e10845431600b163c597545bd099e427c62f5: dd4hep: v1.33
 ## 438a7d95de1b81e15107edbf341b20824ec80635: root: add v6.36.06
+## c71f8e48245012565ac7b0648dfda137b0071de7: podio: Add latest tag 1.4 and 1.4.1
+## 8d027b1651840631350d0ba9f30624f2baf26350: podio: Add version 1.5
+## 566e1b070e17ffe8c2d0bf4122568af8a81db1cd: podio: add v1.6
+## 048bffaea064919ccfc2f740e14bbb987e7f5c7e: podio: Add the conditional value 23 for cxxstd
