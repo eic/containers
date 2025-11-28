@@ -227,7 +227,7 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@15.0.2' # JUGGLER_VERSION
+    - '@git.03a0fdcb0d712e60120b21fb56049129da7ade9e=15.0.2' # JUGGLER_VERSION
     - cxxstd=20
   julia:
     require:
