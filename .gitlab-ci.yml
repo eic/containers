@@ -351,6 +351,7 @@ eic:
       - BUILD_IMAGE: eic_
         ENV:
         - ci
+        - cvmfs
         - dbg
         - jl
         - prod
@@ -364,6 +365,7 @@ eic:
         ENV:
         - ci
         - ci_without_acts
+        - cvmfs
         - xl
         BUILD_TYPE:
         - nightly

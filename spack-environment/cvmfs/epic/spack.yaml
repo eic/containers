@@ -1,0 +1,14 @@
+spack:
+  include:
+  - ../../concretizer.yaml
+  - ../../packages.yaml
+  - ../../packages_cvmfs_geant4data.yaml
+  - ../../view.yaml
+  include_concrete:
+  - /opt/spack-environment/cvmfs
+  specs:
+  - algorithms
+  - edm4eic
+  - eicrecon
+  - epic@main # EPIC_VERSION
+  - juggler
