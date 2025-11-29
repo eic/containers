@@ -52,6 +52,7 @@ c71f8e48245012565ac7b0648dfda137b0071de7
 566e1b070e17ffe8c2d0bf4122568af8a81db1cd
 048bffaea064919ccfc2f740e14bbb987e7f5c7e
 6b57d7a93de84dd5492b9308a9612924ab641dce
+ba94c07db577eaf5eb4b0450721fbc7e98879922
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -106,3 +107,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 566e1b070e17ffe8c2d0bf4122568af8a81db1cd: podio: add v1.6
 ## 048bffaea064919ccfc2f740e14bbb987e7f5c7e: podio: Add the conditional value 23 for cxxstd
 ## 6b57d7a93de84dd5492b9308a9612924ab641dce: podio: ensure Python.h is found in ROOT ACLiC
+## ba94c07db577eaf5eb4b0450721fbc7e98879922: podio: use headers.directories[0] to get str, not list
