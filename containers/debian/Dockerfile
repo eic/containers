@@ -246,7 +246,7 @@ spack config --scope user add "config:source_cache:/var/cache/spack"
 spack config --scope user add "config:install_tree:root:/opt/software"
 spack config --scope user add "config:ccache:true"
 spack config blame config
-spack compiler find --scope site
+spack compiler find --scope site --mixed-toolchain
 spack config blame compilers
 EOF
 
