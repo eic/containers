@@ -251,9 +251,6 @@ packages:
     require:
     - '@6.5.5'
     - +python
-  llvm:
-    require:
-    - ~gold
   madx:
     require:
     - '@5.08.01:'
@@ -330,7 +327,10 @@ packages:
   pyrobird:
     require:
     - '@0.1.23:'
-    - +batch +xrootd
+    - +xrootd
+    - spec: ~batch
+      when: '@:0.2.6'
+      message: "through at least 0.2.6, +batch requires py-pyppeteer which requires py-urllib3@1"
   pythia8:
     require:
     - '@8.315'
@@ -356,6 +356,9 @@ packages:
   py-epic-capybara:
     require:
     - '@git.ef2a8790312b9b697655b28a07b353e601bfa3b8'
+  py-flatbuffers:
+    require:
+    - '@25.9.23:'
   py-hepunits:
     require:
     - '@2.3.2:'

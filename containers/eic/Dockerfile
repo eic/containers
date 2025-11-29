@@ -46,6 +46,14 @@ ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
 ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+# The SPACK_DUPLICATE_ALLOWLIST specifies packages that are allowed to have duplicate concretizations.
+# This is necessary for certain packages (e.g., epic, llvm, py-setuptools, py-urllib3, py-dask) due to
+# their complex dependency trees or compatibility requirements. The new additions (py-dask-awkward,
+# py-dask-histogram, py-distributed, py-requests) are included because they may be required in multiple
+# versions or configurations by different packages in the environment, and allowing duplicates prevents
+# build failures or conflicts during concretization. This list should be reviewed periodically to ensure
+# only necessary packages are included.
+ARG SPACK_DUPLICATE_ALLOWLIST="epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
 ENV SPACK_COLOR="always"
 ENV GIT_TERMINAL_PROMPT=0
 
@@ -57,7 +65,7 @@ spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/c
 spack external find --scope env:${SPACK_ENV} llvm
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-setuptools\|py-urllib3\)" \
+| uniq -D -f2 | grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
@@ -98,6 +106,7 @@ export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+spack clean --downloads --stage
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -193,7 +202,7 @@ if [ -n "${JUGGLER_SHA}" ] ; then
 fi
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-setuptools\|py-urllib3\)" \
+| uniq -D -f2 | grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" \
 | tee /tmp/duplicates.txt
 if [ -s /tmp/duplicates.txt ] ; then
   echo "Duplicate packages found"
@@ -232,6 +241,7 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
 set -e
 export CCACHE_DIR=/ccache
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
 ccache --zero-stats
