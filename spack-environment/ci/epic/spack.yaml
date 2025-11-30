@@ -5,6 +5,10 @@ spack:
   - ../../view.yaml
   include_concrete:
   - /opt/spack-environment/ci
+  packages:
+    geant4:
+      require:
+      - ~opengl
   specs:
   - algorithms
   - edm4eic

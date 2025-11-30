@@ -11,7 +11,12 @@
 #
 packages:
   all:
-    require:
+    prefer: # is not overwritten below, but less strict than require
+    - '%gcc'
+    - +ipo
+    - build_system=cmake
+    - build_type=Release
+    require: # is overwritten by package-specific requirements below
     - '%gcc'
     - any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
@@ -96,9 +101,9 @@ packages:
     - '@1.16.2:'
   dd4hep:
     require:
-    - '%gcc'
+    # ACTS requires same compiler as DD4hep since compiler options are reused
     - '@1.33'
-    - +ddg4 +ddcad +hepmc3 +xercesc
+    - +ddg4 +ddcad +edm4hep +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   dpmjet:
     require:
@@ -341,6 +346,9 @@ packages:
   py-awkward:
     require:
     - '@2.6.6:'
+  py-beautifulsoup4:
+    require:
+    - '@4.12:'
   py-bokeh:
     require:
     - '@3.5.2:'
@@ -378,6 +386,9 @@ packages:
   py-jsonschema:
     require:
     - +format-nongpl # non-default required for jupyter stack
+  py-jupyterlab:
+    require:
+    - '@4.3.5:'
   py-keras:
     require:
     - '@3.12:'
@@ -436,6 +447,9 @@ packages:
   py-pyyaml:
     require:
     - '@6.0.2:'
+  py-rich:
+    require:
+    - '@13:'
   py-rucio-clients:
     require:
     - '@37.3.0:'

@@ -7,6 +7,10 @@ spack:
   - /opt/spack-environment/xl
   concretizer:
     unify: when_possible # multiple epic versions
+  packages:
+    geant4:
+      require:
+      - +opengl
   specs:
   - algorithms
   - edm4eic
