@@ -52,6 +52,8 @@ c71f8e48245012565ac7b0648dfda137b0071de7
 048bffaea064919ccfc2f740e14bbb987e7f5c7e
 6b57d7a93de84dd5492b9308a9612924ab641dce
 ba94c07db577eaf5eb4b0450721fbc7e98879922
+57a0c5d83aba319c37e51c7a6f965f28f49cdb77
+d0b0e511376f74be2cd3a2878bed781d39a6066a
 a6762cd1b4dff3297dd83664a6c09450324fc7bd
 158693457ba1717a89a9e2f9614c6982b6aff441
 a46e40be55d002e4708303735f7eb4aca2482d0a
@@ -116,6 +118,8 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 048bffaea064919ccfc2f740e14bbb987e7f5c7e: podio: Add the conditional value 23 for cxxstd
 ## 6b57d7a93de84dd5492b9308a9612924ab641dce: podio: ensure Python.h is found in ROOT ACLiC
 ## ba94c07db577eaf5eb4b0450721fbc7e98879922: podio: use headers.directories[0] to get str, not list
+## 57a0c5d83aba319c37e51c7a6f965f28f49cdb77: eigen: add v3.4.0-44-g37248b26a
+## d0b0e511376f74be2cd3a2878bed781d39a6066a: eigen: Use Release build type by default
 ## a6762cd1b4dff3297dd83664a6c09450324fc7bd: acts: only init submodules when +odd; HEP: rm opendatadetector
 ## 158693457ba1717a89a9e2f9614c6982b6aff441: Deprecation removals: A-D
 ## a46e40be55d002e4708303735f7eb4aca2482d0a: acts: deprecate versions :38

@@ -127,7 +127,7 @@ packages:
     - '@1.32.0' # EICRECON_VERSION
   eigen:
     require:
-    - '@3.4.0'
+    - '@3.4.1'
   emacs:
     require:
     - '@28.2:'
