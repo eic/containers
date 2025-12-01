@@ -22,7 +22,6 @@ a118c877bcca1d71810528ba481b8d3f819035f1
 0c164b846058d9c57c9adb6b17ef86ead9f4b8c4
 b440c61b9cddfab0fd59dd5fc607c95247a18bc9
 698ce0531e4be2d55ca667d6f9341636397c2662
-387d9a5213cc6e3fd738b995b25d6facde4cc902
 1d53be2a26ecb7809c1f6006ed8cbfe7febee7a9
 a115a811bdfce4db5298a9ba9b7903ccfb0de101
 22dadd619053ff0872903549db616200bda082f0
@@ -53,6 +52,15 @@ c71f8e48245012565ac7b0648dfda137b0071de7
 048bffaea064919ccfc2f740e14bbb987e7f5c7e
 6b57d7a93de84dd5492b9308a9612924ab641dce
 ba94c07db577eaf5eb4b0450721fbc7e98879922
+a6762cd1b4dff3297dd83664a6c09450324fc7bd
+158693457ba1717a89a9e2f9614c6982b6aff441
+a46e40be55d002e4708303735f7eb4aca2482d0a
+96d1e30c389599be9b3d95a0af16b49afd8b6e31
+2050ba18c273506ebfd90744315850e55766fff7
+3c85253b0bd2bb61eae6b5532d657a34e0939c69
+d6b78b9ed0cf6ac3d6ddfcbc287bc0db3cd645e7
+f201ecd5e5923b394d14f74bc220dea06b9ab28f
+2e05bbbe808442e761647da571500ee128654f4f
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -60,6 +68,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 [b063312bb52fb62010e04588f6b16d37e16c8d02]=repos/spack_repo/builtin/packages/py_tensorflow/package.py
 [7fad8a78d35b5556e1d7aa92a71a4e1c58a1665a]=repos/spack_repo/builtin/packages/py_tensorflow/package.py,repos/spack_repo/builtin/packages/py_tensorboard/package.py
 [4ef82e75f5cae7b4d093e41043e26b259498264e]=repos/spack_repo/builtin/packages/podio/package.py
+[158693457ba1717a89a9e2f9614c6982b6aff441]=repos/spack_repo/builtin/packages/acts/package.py
 ---
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
@@ -77,7 +86,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 0c164b846058d9c57c9adb6b17ef86ead9f4b8c4: g4vg: new version 1.0.5
 ## b440c61b9cddfab0fd59dd5fc607c95247a18bc9: force CMAKE_INSTALL_RPATH to prefix/lib/root for ROOT
 ## 698ce0531e4be2d55ca667d6f9341636397c2662: root: add v6.36.02
-## 387d9a5213cc6e3fd738b995b25d6facde4cc902: acts: only init submodules when +odd
 ## 1d53be2a26ecb7809c1f6006ed8cbfe7febee7a9: root: add v6.36.04
 ## a115a811bdfce4db5298a9ba9b7903ccfb0de101: github-copilot: new package
 ## 22dadd619053ff0872903549db616200bda082f0: claude-code: new package
@@ -108,3 +116,12 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 048bffaea064919ccfc2f740e14bbb987e7f5c7e: podio: Add the conditional value 23 for cxxstd
 ## 6b57d7a93de84dd5492b9308a9612924ab641dce: podio: ensure Python.h is found in ROOT ACLiC
 ## ba94c07db577eaf5eb4b0450721fbc7e98879922: podio: use headers.directories[0] to get str, not list
+## a6762cd1b4dff3297dd83664a6c09450324fc7bd: acts: only init submodules when +odd; HEP: rm opendatadetector
+## 158693457ba1717a89a9e2f9614c6982b6aff441: Deprecation removals: A-D
+## a46e40be55d002e4708303735f7eb4aca2482d0a: acts: deprecate versions :38
+## 96d1e30c389599be9b3d95a0af16b49afd8b6e31: eigen: add versions 5.0.0 and 3.4.1
+## 2050ba18c273506ebfd90744315850e55766fff7: acts: add upper limit on podio
+## 3c85253b0bd2bb61eae6b5532d657a34e0939c69: acts: add v44.0.0, v44.0.1, v44.1.0
+## d6b78b9ed0cf6ac3d6ddfcbc287bc0db3cd645e7: acts: Add +gnn variant and add necessary dependencies
+## f201ecd5e5923b394d14f74bc220dea06b9ab28f: acts: add v44.2.0
+## 2e05bbbe808442e761647da571500ee128654f4f: acts: add v44.3.0

@@ -18,7 +18,7 @@ packages:
     - any_of: [build_type=Release, '@:']
   acts:
     require:
-    - '@39.2.0'
+    - '@44.3.0'
     - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
   actsvg:
     require:
