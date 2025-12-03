@@ -234,7 +234,7 @@ packages:
     - '@1.11'
   k4actstracking:
     require:
-    - '@main'
+    - '@0.1'
   k4fwcore:
     require:
     - '@1.1.2'
