@@ -237,7 +237,7 @@ packages:
     - '@0.1'
   k4fwcore:
     require:
-    - '@1.1.2'
+    - '@1.3'
   lapack:
     require:
     - openblas
