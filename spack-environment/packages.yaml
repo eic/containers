@@ -18,7 +18,7 @@ packages:
     - any_of: [build_type=Release, '@:']
   acts:
     require:
-    - '@39.2.0'
+    - '@44.3.0'
     - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
   actsvg:
     require:
@@ -127,7 +127,7 @@ packages:
     - '@1.32.0' # EICRECON_VERSION
   eigen:
     require:
-    - '@3.4.0'
+    - '@3.4.1'
   emacs:
     require:
     - '@28.2:'
@@ -227,7 +227,7 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@15.0.3' # JUGGLER_VERSION
+    - '@15.0.5' # JUGGLER_VERSION
     - cxxstd=20
   julia:
     require:
