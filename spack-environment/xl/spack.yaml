@@ -61,6 +61,7 @@ spack:
   - ninja
   - nopayloadclient
   - npsim
+  - ollama
   - onnx
   - opencascade
   - osg-ca-certs

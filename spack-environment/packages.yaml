@@ -278,6 +278,9 @@ packages:
     - '@1.4.6'
     - +http
     - any_of: [+geocad, -geocad]
+  ollama:
+    require:
+    - '@0.13.1:'
   onnx:
     require:
     - '@1.17.0'
