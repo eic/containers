@@ -30,6 +30,7 @@ spack:
   - jana2
   - nopayloadclient
   - npsim -geocad
+  - ollama
   - onnx
   - osg-ca-certs
   - podio
