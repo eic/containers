@@ -64,6 +64,7 @@ d6b78b9ed0cf6ac3d6ddfcbc287bc0db3cd645e7
 f201ecd5e5923b394d14f74bc220dea06b9ab28f
 2e05bbbe808442e761647da571500ee128654f4f
 9ec50db07733195bba922b8c6dcbbb1de9c56adf
+d95db21e9c9fa6eab1a9e62e2ba56066f2f955a7
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -131,3 +132,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## f201ecd5e5923b394d14f74bc220dea06b9ab28f: acts: add v44.2.0
 ## 2e05bbbe808442e761647da571500ee128654f4f: acts: add v44.3.0
 ## 9ec50db07733195bba922b8c6dcbbb1de9c56adf: ollama: add through v0.13.1
+## d95db21e9c9fa6eab1a9e62e2ba56066f2f955a7: root: add v6.38.00
