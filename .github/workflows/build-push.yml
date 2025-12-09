@@ -33,6 +33,10 @@ permissions:
   packages: write
 
 env:
+  ## CUDA version and container operating system
+  CUDA_VERSION: 12.5.1
+  CUDA_OS: ubuntu24.04
+  
   ## Default versions are specified in packages.yaml but can be overridden
   ## note: nightly builds will always use the master/main branch
   EDM4EIC_VERSION: ${{ inputs.EDM4EIC_VERSION }}
@@ -55,9 +59,26 @@ env:
   INTERNAL_TAG: pipeline-${{ github.run_id }}
 
 jobs:
+  env:
+    ## The env context is not available in matrix, only in steps,
+    ## so this job is merely to transfer env to job outputs which
+    ## can be used in matrix.
+    name: Turn env into outputs
+    runs-on: ubuntu-latest
+    outputs:
+      CUDA_VERSION: ${{ steps.env.outputs.CUDA_VERSION }}
+      CUDA_OS: ${{ steps.env.outputs.CUDA_OS }}
+    steps:
+      - name: Turn env into outputs
+        id: env
+        run: |
+          echo "CUDA_VERSION=${{ env.CUDA_VERSION }}" >> $GITHUB_OUTPUT
+          echo "CUDA_OS=${{ env.CUDA_OS }}" >> $GITHUB_OUTPUT
+
   base:
-    name: Build base on ${{ matrix.arch }}
+    name: Build ${{ matrix.BUILD_IMAGE }} on ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
+    needs: env
     strategy:
       matrix:
         include:
@@ -76,6 +97,16 @@ jobs:
           PLATFORM: linux/arm64
           runner: ubuntu-24.04-arm
           arch: arm64
+        - BASE_IMAGE: nvidia/cuda:${{ needs.env.outputs.CUDA_VERSION }}-devel-${{ needs.env.outputs.CUDA_OS }}
+          BUILD_IMAGE: cuda_devel
+          PLATFORM: linux/amd64
+          runner: ubuntu-latest
+          arch: amd64
+        - BASE_IMAGE: nvidia/cuda:${{ needs.env.outputs.CUDA_VERSION }}-runtime-${{ needs.env.outputs.CUDA_OS }}
+          BUILD_IMAGE: cuda_runtime
+          PLATFORM: linux/amd64
+          runner: ubuntu-latest
+          arch: amd64
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
@@ -130,16 +161,16 @@ jobs:
         uses: actions/cache@v4
         id: cache-base-mounts
         with:
-          path: cache-mount-base-${{ matrix.arch }}
-          key: ${{ matrix.arch }}-base-mounts-${{ github.ref_name }}
+          path: cache-mount-base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}
+          key: ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-${{ github.ref_name }}
           restore-keys: |
-            ${{ matrix.arch }}-base-mounts-main
-            ${{ matrix.arch }}-base-mounts-
+            ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-main
+            ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-
       - name: Inject cache mounts into builder
         uses: reproducible-containers/buildkit-cache-dance@v3
         with:
           builder: ${{ steps.buildx.outputs.name }}
-          cache-dir: cache-mount-base-${{ matrix.arch }}
+          cache-dir: cache-mount-base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}
           cache-map: |
             {
               "var-cache-apt": "/var/cache/apt",
@@ -200,18 +231,24 @@ jobs:
         # We write this to a file for the next job
         run: |
           mkdir -p /tmp/digests
-          echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}.digest
+          echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: base-${{ matrix.arch }}-digest
-          path: /tmp/digests/${{ matrix.arch }}.digest
+          name: base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-digest
+          path: /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
           retention-days: 1
 
   base-manifest:
-    name: Push base manifest
+    name: Push ${{ matrix.BUILD_IMAGE }} manifest
     runs-on: ubuntu-latest
     needs: base
+    strategy:
+      matrix:
+        include:
+        - BUILD_IMAGE: debian_stable_base
+        - BUILD_IMAGE: cuda_devel
+        - BUILD_IMAGE: cuda_runtime
     steps:
       - name: Set up QEMU (for imagetools)
         uses: docker/setup-qemu-action@v3
@@ -235,17 +272,35 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: /tmp/digests
-          pattern: base-*-digest
+          pattern: base-${{ matrix.BUILD_IMAGE }}-*-digest
           merge-multiple: true
       - name: Analyze digest artifacts
         id: digests
         run: |
-          # Read the digests from the files
-          DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
-          DIGEST_AMD64_V3=$(cat /tmp/digests/amd64_v3.digest)
-          DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
-          # Get the base image name from the digests (they'll be the same)
-          REGISTRY_IMAGE_TAG=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
+          # Loop over all available architecture artifacts
+          ALL_DIGESTS=""
+          FIRST_DIGEST=""
+          shopt -s nullglob
+          for digest_file in /tmp/digests/${{ matrix.BUILD_IMAGE }}-*.digest; do
+            DIGEST=$(cat "$digest_file")
+            echo "Found digest: $DIGEST"
+            if [ -z "$ALL_DIGESTS" ]; then
+              ALL_DIGESTS="$DIGEST"
+            else
+              ALL_DIGESTS="$ALL_DIGESTS $DIGEST"
+            fi
+            if [ -z "$FIRST_DIGEST" ]; then
+              FIRST_DIGEST="$DIGEST"
+            fi
+          done
+          shopt -u nullglob
+          # Check if at least one digest was found
+          if [ -z "$FIRST_DIGEST" ]; then
+            echo "Error: No digest files found"
+            exit 1
+          fi
+          # Get the base image name from the first digest
+          REGISTRY_IMAGE_TAG=$(echo $FIRST_DIGEST | cut -d'@' -f1)
           REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
           REGISTRY=$(echo $REGISTRY_IMAGE | cut -d'/' -f1-2)
           IMAGE=$(echo $REGISTRY_IMAGE | cut -d'/' -f3)
@@ -253,15 +308,11 @@ jobs:
           echo "Registry Name: $REGISTRY"
           echo "Image Name: $IMAGE"
           echo "Tag Name: $TAG"
-          echo "AMD64 Digest: $DIGEST_AMD64"
-          echo "AMD64_V3 Digest: $DIGEST_AMD64_V3"
-          echo "ARM64 Digest: $DIGEST_ARM64"
+          echo "All Digests: $ALL_DIGESTS"
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "amd64=$DIGEST_AMD64" >> $GITHUB_OUTPUT
-          echo "amd64_v3=$DIGEST_AMD64_V3" >> $GITHUB_OUTPUT
-          echo "arm64=$DIGEST_ARM64" >> $GITHUB_OUTPUT
+          echo "all=$ALL_DIGESTS" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
         id: meta
         uses: docker/metadata-action@v5
@@ -283,9 +334,7 @@ jobs:
           # Create the manifest list and tag it with the final tags
           docker buildx imagetools create \
             $TAG_ARGS \
-            ${{ steps.digests.outputs.amd64 }} \
-            ${{ steps.digests.outputs.amd64_v3 }} \
-            ${{ steps.digests.outputs.arm64 }}
+            ${{ steps.digests.outputs.all }}
 
   eic:
     name: Build ${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }} on ${{ matrix.arch }}
@@ -293,22 +342,70 @@ jobs:
     needs: base-manifest
     strategy:
       matrix:
-        BUILD_IMAGE: [eic_]
-        BUILD_TYPE: [default]
-        BUILDER_IMAGE: [debian_stable_base]
-        RUNTIME_IMAGE: [debian_stable_base]
-        ENV: [ci, xl]
-        arch: [amd64, amd64_v3, arm64]
         include:
-        - arch: amd64
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: ci
+          arch: amd64
           runner: ubuntu-latest
           PLATFORM: linux/amd64
-        - arch: amd64_v3
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: ci
+          arch: amd64_v3
           runner: ubuntu-latest
           PLATFORM: linux/amd64/v3
-        - arch: arm64
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: ci
+          arch: arm64
           runner: ubuntu-24.04-arm
           PLATFORM: linux/arm64
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: xl
+          arch: amd64
+          runner: ubuntu-latest
+          PLATFORM: linux/amd64
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: xl
+          arch: amd64_v3
+          runner: ubuntu-latest
+          PLATFORM: linux/amd64/v3
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: debian_stable_base
+          RUNTIME_IMAGE: debian_stable_base
+          ENV: xl
+          arch: arm64
+          runner: ubuntu-24.04-arm
+          PLATFORM: linux/arm64
+          target: final
+        - BUILD_IMAGE: eic_
+          BUILD_TYPE: default
+          BUILDER_IMAGE: cuda_devel
+          RUNTIME_IMAGE: cuda_devel
+          ENV: cuda
+          arch: amd64
+          runner: ubuntu-latest
+          PLATFORM: linux/amd64
+          target: builder_concretization_default
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
@@ -413,6 +510,7 @@ jobs:
           secret-files: |
             mirrors=mirrors.yaml
           platforms: ${{ matrix.PLATFORM }}
+          target: ${{ matrix.target }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
@@ -446,11 +544,12 @@ jobs:
           retention-days: 1
 
   eic-manifest:
-    name: Push eic manifest
+    name: Push ${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }} manifest
     runs-on: ubuntu-latest
     needs: eic
     strategy:
       matrix:
+        BUILD_IMAGE: [eic_]
         ENV: [ci, xl]
     steps:
       - name: Set up QEMU (for imagetools)
@@ -480,12 +579,30 @@ jobs:
       - name: Analyze digest artifacts
         id: digests
         run: |
-          # Read the digests from the files
-          DIGEST_AMD64=$(cat /tmp/digests/amd64.digest)
-          DIGEST_AMD64_V3=$(cat /tmp/digests/amd64_v3.digest)
-          DIGEST_ARM64=$(cat /tmp/digests/arm64.digest)
-          # Get the base image name from the digests (they'll be the same)
-          REGISTRY_IMAGE_TAG=$(echo $DIGEST_AMD64 | cut -d'@' -f1)
+          # Loop over all available architecture artifacts
+          ALL_DIGESTS=""
+          FIRST_DIGEST=""
+          shopt -s nullglob
+          for digest_file in /tmp/digests/*.digest; do
+            DIGEST=$(cat "$digest_file")
+            echo "Found digest: $DIGEST"
+            if [ -z "$ALL_DIGESTS" ]; then
+              ALL_DIGESTS="$DIGEST"
+            else
+              ALL_DIGESTS="$ALL_DIGESTS $DIGEST"
+            fi
+            if [ -z "$FIRST_DIGEST" ]; then
+              FIRST_DIGEST="$DIGEST"
+            fi
+          done
+          shopt -u nullglob
+          # Check if at least one digest was found
+          if [ -z "$FIRST_DIGEST" ]; then
+            echo "Error: No digest files found"
+            exit 1
+          fi
+          # Get the base image name from the first digest
+          REGISTRY_IMAGE_TAG=$(echo $FIRST_DIGEST | cut -d'@' -f1)
           REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
           REGISTRY=$(echo $REGISTRY_IMAGE | cut -d'/' -f1-2)
           IMAGE=$(echo $REGISTRY_IMAGE | cut -d'/' -f3)
@@ -493,15 +610,11 @@ jobs:
           echo "Registry Name: $REGISTRY"
           echo "Image Name: $IMAGE"
           echo "Tag Name: $TAG"
-          echo "AMD64 Digest: $DIGEST_AMD64"
-          echo "AMD64_V3 Digest: $DIGEST_AMD64_V3"
-          echo "ARM64 Digest: $DIGEST_ARM64"
+          echo "All Digests: $ALL_DIGESTS"
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "amd64=$DIGEST_AMD64" >> $GITHUB_OUTPUT
-          echo "amd64_v3=$DIGEST_AMD64_V3" >> $GITHUB_OUTPUT
-          echo "arm64=$DIGEST_ARM64" >> $GITHUB_OUTPUT
+          echo "all=$ALL_DIGESTS" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
         id: meta
         uses: docker/metadata-action@v5
@@ -523,6 +636,4 @@ jobs:
           # Create the manifest list and tag it with the final tags
           docker buildx imagetools create \
             $TAG_ARGS \
-            ${{ steps.digests.outputs.amd64 }} \
-            ${{ steps.digests.outputs.amd64_v3 }} \
-            ${{ steps.digests.outputs.arm64 }}
+            ${{ steps.digests.outputs.all }}
