@@ -259,6 +259,7 @@ packages:
   llvm:
     require:
     - ~gold
+    - ~ipo
   madx:
     require:
     - '@5.08.01:'
