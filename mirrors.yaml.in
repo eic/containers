@@ -1,7 +1,7 @@
 mirrors:
   eicweb:
     autopush: true
-    url: oci://${CI_REGISTRY}/${CI_PROJECT_PATH}/spack-${SPACK_VERSION}
+    url: oci://${CI_REGISTRY}/${CI_PROJECT_PATH}/spack-${SPACKPACKAGES_VERSION}
     signed: false
     fetch:
       access_pair:
@@ -13,7 +13,7 @@ mirrors:
         secret_variable: CI_REGISTRY_PASSWORD
   ghcr:
     autopush: true
-    url: oci://ghcr.io/eic/spack-${SPACK_VERSION}
+    url: oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
     signed: false
     fetch:
       access_pair:

@@ -18,13 +18,12 @@ packages:
     - any_of: [build_type=Release, '@:']
   acts:
     require:
-    - '%clang'
-    - '@39.2.0'
-    - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 +json +onnx +podio +python +tgeo +pr4496 +pr4502 +pr4620
+    - '@44.3.0'
+    - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
   actsvg:
     require:
-    - '@0.4.26'
-    - +examples
+    - '@0.4.56'
+    - ~examples  # +examples is fixed in actsvg@0.4.57
   acts-dd4hep:
     require:
     - '@1.0.1'
@@ -98,7 +97,7 @@ packages:
   dd4hep:
     require:
     - '%gcc'
-    - '@1.32.1'
+    - '@1.33'
     - +ddg4 +ddcad +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   dpmjet:
@@ -109,11 +108,11 @@ packages:
     - '@656aa3192b097a631ddd1e0380e80c26fd6644a7'
   edm4eic:
     require:
-    - '@8.0.1' # EDM4EIC_VERSION
+    - '@8.5.0' # EDM4EIC_VERSION
     - cxxstd=20
   edm4hep:
     require:
-    - '@0.99.1'
+    - '@0.99.4'
     - cxxstd=20
   egl:
     buildable: False
@@ -122,11 +121,10 @@ packages:
       prefix: /usr
   eic-smear:
     require:
-    - '@1.1.12'
+    - '@1.1.15'
   eicrecon:
     require:
-    - '%clang'
-    - '@1.29.1' # EICRECON_VERSION
+    - '@1.32.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
@@ -136,6 +134,10 @@ packages:
   epic:
     require:
     - 'artifacts=epic_craterlake'
+  estarlight:
+    require:
+    - '@1.2.0'
+    -  ~dpmjet +hepmc3 ~pythia6 ~pythia8
   fastjet:
     require:
     - '@3.5.0'
@@ -213,24 +215,29 @@ packages:
   irt:
     require:
     - '@1.0.8'
+  irt2:
+    require:
+    - '@2.1.0'
   iwyu:
     require:
     - '@0.23'
   jana2:
     require:
-    - '@2.4.2'
+    - '@2.4.3'
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '%clang'
-    - '@15.0.2' # JUGGLER_VERSION
+    - '@15.0.5' # JUGGLER_VERSION
     - cxxstd=20
+  julia:
+    require:
+    - '@1.11'
   k4actstracking:
     require:
-    - '@main'
+    - '@0.1'
   k4fwcore:
     require:
-    - '@1.1.2'
+    - '@1.3'
   lapack:
     require:
     - openblas
@@ -271,6 +278,9 @@ packages:
     - '@1.4.6'
     - +http
     - any_of: [+geocad, -geocad]
+  ollama:
+    require:
+    - '@0.13.1:'
   onnx:
     require:
     - '@1.17.0'
@@ -300,14 +310,20 @@ packages:
     require:
     - build_system=cmake
     - cflags=-fPIC cxxflags=-fPIC 
+  pcre2:
+    require:
+    # FIXME julia requires libpcre2-8.so, but shared lib is only built by autotools
+    - build_system=autotools
   phonebook-cli:
     require:
     - '@1.0.0'
   podio:
     require:
-    - '@1.3'
+    - '@1.6'
     - cxxstd=20
     - +rntuple
+    package_attributes:
+      run_tests: true
   prmon:
     require:
     - +plot
@@ -324,7 +340,7 @@ packages:
     - +fastjet +root
   python:
     require:
-    - '@3.12'
+    - '@3.13'
   py-awkward:
     require:
     - '@2.6.6:'
@@ -367,7 +383,7 @@ packages:
     - +format-nongpl # non-default required for jupyter stack
   py-keras:
     require:
-    - '@3.7.0'
+    - '@3.12:'
     - backend=tensorflow
   py-lmfit:
     require:
@@ -438,7 +454,7 @@ packages:
   py-tensorflow:
     require:
     - '%clang'
-    - '@2.18'
+    - '@2.20'
   py-toml:
     require:
     - '@0.10.2:'
@@ -472,7 +488,7 @@ packages:
     - hepmc=3 plugin-match=HERA,LEP,MC
   root:
     require:
-    - '@6.36.02'
+    - '@6.38.00'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:

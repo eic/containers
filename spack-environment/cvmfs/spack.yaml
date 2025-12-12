@@ -2,73 +2,54 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../packages_cvmfs_geant4data.yaml
   - ../view.yaml
-  concretizer:
-    unify: when_possible # multiple epic versions
   specs:
-  - acts +cuda cuda_arch=75
+  - acts
   - actsvg
   - afterburner
-  - cairo
-  - catch2
-  - celeritas +cuda cuda_arch=75
-  - cernlib
-  - cli11
   - cmake
-  - cnpy
   - covfie
-  - cppcoro
-  - dawn
-  - dawncut
-  - dd4hep +ddeve
-  - dpmjet
-  - east
+  - dd4hep -ddeve
   - edm4hep
-  - eic-smear
   - eigen
-  - emacs
   - fastjet
   - fjcontrib
   - fmt
   - gaudi
-  - gdb
-  - geant4
+  - geant4 -opengl
+  - gfal2
+  - gfal2-util
   - graphviz
   - hepmc3
+  - hepmcmerger
   - heppdt
   - imagemagick
   - irt
   - irt2
+  - iwyu
   - jana2
-  - k4actstracking
-  - k4fwcore
-  - lcov
-  - lhapdf
-  - madx
-  - nano
   - nopayloadclient
-  - npsim
+  - npsim -geocad
   - onnx
-  - opencascade
-  - optix-dev
   - osg-ca-certs
-  - phonebook-cli
   - podio
   - prmon
   - pythia8
   - py-awkward
   - py-bokeh
-  - py-boto3
+  - py-boost-histogram
   - py-dask
   - py-dask-histogram
   - py-deepdiff
   - py-eic-rucio-policy-package
   - py-epic-capybara
-  - py-ipython
+  - py-graphviz
+  - py-hepunits
+  - py-hist
+  - py-histoprint
   - py-jinja2
   - py-jinja2-cli
-  - py-jupyter-console
-  - py-jupyterlab
   - py-lmfit
   - py-lxml
   - py-matplotlib
@@ -78,22 +59,15 @@ spack:
   - py-onnx
   - py-onnxruntime
   - py-pandas
+  - py-particle
   - py-pip
-  - py-pre-commit
-  - py-pycairo
-  - py-pyyaml
   - py-rucio-clients
   - py-scipy
   - py-seaborn
   - py-toml
-  - py-torch +cuda cuda_arch=75
   - py-uproot
-  - py-wurlitzer
-  - py-yapf
-  - root +cuda +opengl +webgui +x
+  - py-vector
+  - root -opengl -webgui
   - snakemake
   - spdlog
-  - stow
-  - valgrind
   - xrootd
-  - xeyes

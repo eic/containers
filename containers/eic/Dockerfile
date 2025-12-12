@@ -47,6 +47,7 @@ ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
 ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
 ENV SPACK_COLOR="always"
+ENV GIT_TERMINAL_PROMPT=0
 
 # Concretization (default environment)
 RUN <<EOF
@@ -98,6 +99,7 @@ export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+spack clean --downloads --stage
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -146,7 +148,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     <<EOF
 set -e
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
-spack gc --yes-to-all
+spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
 
@@ -160,40 +162,35 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build concretization image (custom configuration, $TARGETPLATFORM)"
 
+# Set spack environment directory
+ENV SPACK_ENV=/opt/spack-environment/${ENV}/epic
+
 ## 2. Setup our environment with custom versions (on top of cached layer)
 ## Note: these default versions are just the very first commit.
-ARG EDM4EIC_VERSION="8aeb507f93a93257c99985efbce0ec1371e0b331"
-ARG EICRECON_VERSION="28108da4a1e8919a05dfdb5f11e114800a2cbe96"
-ARG EPIC_VERSION="c1827f05430b2051df8a0b421db1cbab87165e0b"
-ARG JUGGLER_VERSION="df87bf1f8643afa8e80bece9d36d6dc26dfe8132"
-ADD https://api.github.com/repos/eic/edm4eic/commits/${EDM4EIC_VERSION} /tmp/edm4eic.json
-ADD https://api.github.com/repos/eic/eicrecon/commits/${EICRECON_VERSION} /tmp/eicrecon.json
-ADD https://api.github.com/repos/eic/epic/commits/${EPIC_VERSION} /tmp/epic.json
-ADD https://api.github.com/repos/eic/juggler/commits/${JUGGLER_VERSION} /tmp/juggler.json
+ARG EDM4EIC_SHA=""
+ARG EICRECON_SHA=""
+ARG EPIC_SHA=""
+ARG JUGGLER_SHA=""
 
 # Concretization (custom environment)
 RUN <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
-if [ "${EDM4EIC_VERSION}" != "8aeb507f93a93257c99985efbce0ec1371e0b331" ] ; then
-  export EDM4EIC_VERSION=$(jq -r .sha /tmp/edm4eic.json)
-  sed -i "/# EDM4EIC_VERSION$/ s/@[^' ]*/@git.${EDM4EIC_VERSION}=main/" /opt/spack-environment/packages.yaml
+if [ -n "${EDM4EIC_SHA}" ] ; then
+  sed -i "/# EDM4EIC_VERSION$/ s/@[^' ]*/@git.${EDM4EIC_SHA}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all edm4eic
 fi
-if [ "${EICRECON_VERSION}" != "28108da4a1e8919a05dfdb5f11e114800a2cbe96" ] ; then
-  export EICRECON_VERSION=$(jq -r .sha /tmp/eicrecon.json)
-  sed -i "/# EICRECON_VERSION$/ s/@[^' ]*/@git.${EICRECON_VERSION}=main/" /opt/spack-environment/packages.yaml
+if [ -n "${EICRECON_SHA}" ] ; then
+  sed -i "/# EICRECON_VERSION$/ s/@[^' ]*/@git.${EICRECON_SHA}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all eicrecon
 fi
-if [ "${EPIC_VERSION}" != "c1827f05430b2051df8a0b421db1cbab87165e0b" ] ; then
-  export EPIC_VERSION=$(jq -r .sha /tmp/epic.json)
-  sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/spack.yaml
-  sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_VERSION}=main /" /opt/spack-environment/${ENV}/spack.yaml
+if [ -n "${EPIC_SHA}" ] ; then
+  sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_SHA}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
+  sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_SHA}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
   spack deconcretize -y --all epic
 fi
-if [ "${JUGGLER_VERSION}" != "df87bf1f8643afa8e80bece9d36d6dc26dfe8132" ] ; then
-  export JUGGLER_VERSION=$(jq -r .sha /tmp/juggler.json)
-  sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_VERSION}=main/" /opt/spack-environment/packages.yaml
+if [ -n "${JUGGLER_SHA}" ] ; then
+  sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_SHA}=main/" /opt/spack-environment/packages.yaml
   spack deconcretize -y --all juggler
 fi
 spack concretize --force
@@ -237,8 +234,8 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
 set -e
 export CCACHE_DIR=/ccache
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
-
-spack gc --yes-to-all
+spack clean --downloads --stage
+spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -254,9 +251,15 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime concretization image (custom configuration, $TARGETPLATFORM)"
 
+# Set spack environment directory
+ENV SPACK_ENV=/opt/spack-environment/${ENV}/epic
+
 COPY --from=builder_installation_custom \
   /opt/spack-environment/${ENV}/spack.* \
   /opt/spack-environment/${ENV}/
+COPY --from=builder_installation_custom \
+  /opt/spack-environment/${ENV}/epic/spack.* \
+  /opt/spack-environment/${ENV}/epic/
 COPY --from=builder_installation_custom \
   /opt/spack-environment/packages.yaml \
   /opt/spack-environment/
@@ -277,15 +280,16 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
 set -e
+spack env activate --dir ${SPACK_ENV}
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
-spack gc --yes-to-all
+spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
 
 ## ========================================================================================
 ## final image, based on runtime_installation_custom
 ## ========================================================================================
-FROM runtime_installation_custom
+FROM runtime_installation_custom AS final
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -369,27 +373,36 @@ spack config blame upstreams
 EOF
 
 ## Install benchmarks into the container
-ARG BENCHMARK_COM_VERSION="master"
-ARG BENCHMARK_DET_VERSION="master"
-ARG BENCHMARK_REC_VERSION="master"
-ARG BENCHMARK_PHY_VERSION="master"
-ADD https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git#${BENCHMARK_COM_VERSION} /opt/benchmarks/common_bench
-ADD https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git#${BENCHMARK_DET_VERSION} /opt/benchmarks/detector_benchmarks
-ADD https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git#${BENCHMARK_REC_VERSION} /opt/benchmarks/reconstruction_benchmarks
-ADD https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git#${BENCHMARK_PHY_VERSION} /opt/benchmarks/physics_benchmarks
+ARG BENCHMARK_COM_SHA=""
+ARG BENCHMARK_DET_SHA=""
+ARG BENCHMARK_REC_SHA=""
+ARG BENCHMARK_PHY_SHA=""
 RUN <<EOF
-ln -sf ../common_bench /opt/benchmarks/detector_benchmarks/.local
-ln -sf ../common_bench /opt/benchmarks/reconstruction_benchmarks/.local
-ln -sf ../common_bench /opt/benchmarks/physics_benchmarks/.local
+git clone https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git /opt/benchmarks/common_bench
+git -C /opt/benchmarks/common_bench checkout ${BENCHMARK_COM_SHA:-master}
+git clone https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git /opt/benchmarks/detector_benchmarks
+git -C /opt/benchmarks/detector_benchmarks checkout ${BENCHMARK_DET_SHA:-master}
+ln -sf /opt/benchmarks/common_bench /opt/benchmarks/detector_benchmarks/.local
+git clone https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git /opt/benchmarks/reconstruction_benchmarks
+git -C /opt/benchmarks/reconstruction_benchmarks checkout ${BENCHMARK_REC_SHA:-master}
+ln -sf /opt/benchmarks/common_bench /opt/benchmarks/reconstruction_benchmarks/.local
+git clone https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git /opt/benchmarks/physics_benchmarks
+git -C /opt/benchmarks/physics_benchmarks checkout ${BENCHMARK_PHY_SHA:-master}
+ln -sf /opt/benchmarks/common_bench /opt/benchmarks/physics_benchmarks/.local
 EOF
 
 ## Install campaigns into the container
-ARG CAMPAIGNS_HEPMC3_VERSION="main"
-ARG CAMPAIGNS_CONDOR_VERSION="main"
-ARG CAMPAIGNS_SLURM_VERSION="main"
-ADD https://github.com/eic/simulation_campaign_hepmc3.git#${CAMPAIGNS_HEPMC3_VERSION} /opt/campaigns/hepmc3
-ADD https://github.com/eic/job_submission_condor.git#${CAMPAIGNS_CONDOR_VERSION} /opt/campaigns/condor
-ADD https://github.com/eic/job_submission_slurm.git#${CAMPAIGNS_SLURM_VERSION} /opt/campaigns/slurm
+ARG CAMPAIGNS_HEPMC3_SHA=""
+ARG CAMPAIGNS_CONDOR_SHA=""
+ARG CAMPAIGNS_SLURM_SHA=""
+RUN <<EOF
+git clone https://github.com/eic/simulation_campaign_hepmc3.git /opt/campaigns/hepmc3
+git -C /opt/campaigns/hepmc3 checkout ${CAMPAIGNS_HEPMC3_SHA:-main}
+git clone https://github.com/eic/job_submission_condor.git /opt/campaigns/condor
+git -C /opt/campaigns/condor checkout ${CAMPAIGNS_CONDOR_SHA:-main}
+git clone https://github.com/eic/job_submission_slurm.git /opt/campaigns/slurm
+git -C /opt/campaigns/slurm checkout ${CAMPAIGNS_SLURM_SHA:-main}
+EOF
 
 ## make sure we have the entrypoints setup correctly
 ENTRYPOINT ["/opt/local/sbin/entrypoint.sh"]

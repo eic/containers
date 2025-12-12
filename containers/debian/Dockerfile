@@ -157,15 +157,21 @@ EOF
 ENV SPACK_ROOT=/opt/spack
 ARG SPACK_ORGREPO="spack/spack"
 ARG SPACK_VERSION="develop"
+ARG SPACK_SHA=""
 ENV SPACK_PYTHON=/usr/bin/python3
 ARG SPACK_CHERRYPICKS=""
 ARG SPACK_CHERRYPICKS_FILES=""
-ADD https://api.github.com/repos/${SPACK_ORGREPO}/commits/${SPACK_VERSION} /tmp/spack.json
+# Dockerfile ADD --keep-git-dir clones a shallow copy preventing cherry-picking
+#ADD --keep-git-dir https://github.com/${SPACK_ORGREPO}.git#${SPACK_VERSION} ${SPACK_ROOT}
+# so we git clone the default branch and checkout the specific commit
 RUN <<EOF
+set -e
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
-git -C ${SPACK_ROOT} checkout ${SPACK_VERSION}
+git -C ${SPACK_ROOT} checkout ${SPACK_SHA:-${SPACK_VERSION}}
 if [ -n "${SPACK_CHERRYPICKS}" ] ; then
-  SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo ${SPACK_CHERRYPICKS} | wc -w)  "${SPACK_CHERRYPICKS}" | tac)
+  SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS// /$'\n'}"
+  SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES// /$'\n'}"
+  SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo "${SPACK_CHERRYPICKS}" | wc -l)  "${SPACK_CHERRYPICKS}" | tac)
   eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
   for hash in ${SPACK_CHERRYPICKS} ; do
     if [ -n "${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
@@ -190,15 +196,20 @@ SHELL ["docker-shell"]
 ENV SPACKPACKAGES_ROOT=/opt/spack-packages
 ARG SPACKPACKAGES_ORGREPO="spack/spack-packages"
 ARG SPACKPACKAGES_VERSION="develop"
+ARG SPACKPACKAGES_SHA=""
 ARG SPACKPACKAGES_CHERRYPICKS=""
 ARG SPACKPACKAGES_CHERRYPICKS_FILES=""
-ADD https://api.github.com/repos/${SPACKPACKAGES_ORGREPO}/commits/${SPACKPACKAGES_VERSION} /tmp/spack-packages.json
+# Dockerfile ADD --keep-git-dir clones a shallow copy preventing cherry-picking
+#ADD --keep-git-dir https://github.com/${SPACKPACKAGES_ORGREPO}.git#${SPACKPACKAGES_VERSION} ${SPACKPACKAGES_ROOT}
+# so we git clone the default branch and checkout the specific commit
 RUN <<EOF
 set -e
 git clone --filter=tree:0 https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPACKPACKAGES_ROOT}
-git -C ${SPACKPACKAGES_ROOT} checkout ${SPACKPACKAGES_VERSION}
+git -C ${SPACKPACKAGES_ROOT} checkout ${SPACKPACKAGES_SHA:-${SPACKPACKAGES_VERSION}}
 if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
-  SPACKPACKAGES_CHERRYPICKS=$(git -C ${SPACKPACKAGES_ROOT} rev-list --topo-order ${SPACKPACKAGES_CHERRYPICKS} | grep -m $(echo ${SPACKPACKAGES_CHERRYPICKS} | wc -w)  "${SPACKPACKAGES_CHERRYPICKS}" | tac)
+  SPACKPACKAGES_CHERRYPICKS="${SPACKPACKAGES_CHERRYPICKS// /$'\n'}"
+  SPACKPACKAGES_CHERRYPICKS_FILES="${SPACKPACKAGES_CHERRYPICKS_FILES// /$'\n'}"
+  SPACKPACKAGES_CHERRYPICKS=$(git -C ${SPACKPACKAGES_ROOT} rev-list --topo-order ${SPACKPACKAGES_CHERRYPICKS} | grep -m $(echo "${SPACKPACKAGES_CHERRYPICKS}" | wc -l)  "${SPACKPACKAGES_CHERRYPICKS}" | tac)
   eval "declare -A SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY=(${SPACKPACKAGES_CHERRYPICKS_FILES})"
   for hash in ${SPACKPACKAGES_CHERRYPICKS} ; do
     if [ -n "${SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
@@ -217,7 +228,13 @@ EOF
 ARG jobs=1
 RUN <<EOF
 set -e
-declare -A target=(["linux/amd64"]="x86_64_v2" ["linux/arm64"]="aarch64")
+declare -A target=(
+  ["linux/amd64"]="x86_64_v2"
+  ["linux/amd64/v2"]="x86_64_v2"
+  ["linux/amd64/v3"]="x86_64_v3"
+  ["linux/amd64/v4"]="x86_64_v4"
+  ["linux/arm64"]="aarch64"
+)
 target=${target[${TARGETPLATFORM}]}
 spack config --scope site add "packages:all:require:[target=${target}]"
 spack config --scope site add "packages:all:target:[${target}]"
@@ -239,20 +256,30 @@ EOF
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
 spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
-spack mirror add --scope site --unsigned ghcr-${SPACK_VERSION} oci://ghcr.io/eic/spack-${SPACK_VERSION}
+spack mirror add --scope site --unsigned ghcr-${SPACKPACKAGES_VERSION} oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
 spack mirror list
 EOF
 
-## Setup key4hep-spack
+## Setup key4hep-spack (no need for cherry-picks)
 ENV KEY4HEPSPACK_ROOT=${SPACKPACKAGES_ROOT}/repos/key4hep-spack
 ARG KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
 ARG KEY4HEPSPACK_VERSION="main"
-ADD https://github.com/${KEY4HEPSPACK_ORGREPO}.git#${KEY4HEPSPACK_VERSION} ${KEY4HEPSPACK_ROOT}
-RUN spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
+ARG KEY4HEPSPACK_SHA=""
+RUN <<EOF
+set -e
+git clone --filter=tree:0 https://github.com/${KEY4HEPSPACK_ORGREPO}.git ${KEY4HEPSPACK_ROOT}
+git -C ${KEY4HEPSPACK_ROOT} checkout ${KEY4HEPSPACK_SHA:-${KEY4HEPSPACK_VERSION}}
+spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
+EOF
 
-## Setup eic-spack
+## Setup eic-spack (no need for cherry-picks)
 ENV EICSPACK_ROOT=${SPACKPACKAGES_ROOT}/repos/eic-spack
 ARG EICSPACK_ORGREPO="eic/eic-spack"
 ARG EICSPACK_VERSION="develop"
-ADD https://github.com/${EICSPACK_ORGREPO}.git#${EICSPACK_VERSION} ${EICSPACK_ROOT}
-RUN spack repo add --scope site "${EICSPACK_ROOT}"
+ARG EICSPACK_SHA=""
+RUN <<EOF
+set -e
+git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
+git -C ${EICSPACK_ROOT} checkout ${EICSPACK_SHA:-${EICSPACK_VERSION}}
+spack repo add --scope site "${EICSPACK_ROOT}"
+EOF

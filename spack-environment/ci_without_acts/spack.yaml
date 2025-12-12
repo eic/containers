@@ -6,14 +6,11 @@ spack:
   specs:
   - actsvg
   - afterburner
-  - algorithms
   - cmake
   - covfie
   - dd4hep -ddeve
-  - edm4eic
   - edm4hep
   - eigen
-  - epic@main # EPIC_VERSION
   - fastjet
   - fjcontrib
   - fmt
@@ -27,6 +24,7 @@ spack:
   - heppdt
   - imagemagick
   - irt
+  - irt2
   - iwyu
   - jana2
   - nopayloadclient

@@ -7,15 +7,11 @@ spack:
   - acts
   - actsvg
   - afterburner
-  - algorithms
   - cmake
   - covfie
   - dd4hep -ddeve
-  - edm4eic
   - edm4hep
-  - eicrecon
   - eigen
-  - epic@main # EPIC_VERSION
   - fastjet
   - fjcontrib
   - fmt
@@ -29,11 +25,12 @@ spack:
   - heppdt
   - imagemagick
   - irt
+  - irt2
   - iwyu
   - jana2
-  - juggler
   - nopayloadclient
   - npsim -geocad
+  - ollama
   - onnx
   - osg-ca-certs
   - podio

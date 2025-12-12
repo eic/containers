@@ -3,10 +3,7 @@ spack:
   - ../concretizer.yaml
   - ../packages.yaml
   - ../view.yaml
-  concretizer:
-    unify: true
   specs:
-  - edm4eic
   - edm4hep
   - onnx
   - osg-ca-certs
@@ -44,7 +41,7 @@ spack:
   - py-rucio-clients
   - py-scipy
   - py-seaborn
-  - py-tensorflow
+  - py-tensorflow +cuda cuda_arch=75
   - py-toml
   - py-uproot
   - py-vector

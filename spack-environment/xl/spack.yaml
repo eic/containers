@@ -9,13 +9,13 @@ spack:
   - acts
   - actsvg
   - afterburner
-  - algorithms
   - autoconf
   - automake
   - cairo
   - catch2
   - celeritas
   - clang-build-analyzer
+  - claude-code
   - cli11
   - cmake
   - cnpy
@@ -25,18 +25,11 @@ spack:
   - dawncut
   - dd4hep +ddeve
   - east
-  - edm4eic
   - edm4hep
   - eic-smear
-  - eicrecon
   - eigen
   - emacs
-  - epic@main # EPIC_VERSION
-  - epic@25.06.0
-  - epic@25.06.1
-  - epic@25.07.0
-  - epic@25.08.0
-  - epic@25.09.0
+  - estarlight
   - fastjet
   - fjcontrib
   - fmt
@@ -45,15 +38,16 @@ spack:
   - geant4 +opengl
   - gfal2
   - gfal2-util
+  - github-copilot
   - graphviz
   - hepmc3
   - hepmcmerger
   - heppdt
   - imagemagick
   - irt
+  - irt2
   - iwyu
   - jana2
-  - juggler
   - k4actstracking
   - k4fwcore
   - lcov
@@ -67,11 +61,13 @@ spack:
   - ninja
   - nopayloadclient
   - npsim
+  - ollama
   - onnx
   - opencascade
   - osg-ca-certs
   - phonebook-cli
   - podio
+  - poppler
   - prmon
   - pyrobird
   - pythia8
