@@ -5,32 +5,53 @@ on:
     types: [closed]
     branches:
     - master
+  workflow_dispatch:
+    inputs:
+      ref_slug:
+        description: 'Branch slug (GITHUB_REF_POINT_SLUG) to clean up'
+        required: true
+        type: string
 
 permissions:
   packages: write
 
 jobs:
   cleanup-buildcache:
-    name: Cleanup buildcache for PR ${{ github.event.pull_request.number }}
+    name: Cleanup buildcache for ${{ github.event.pull_request.number || inputs.ref_slug }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
       - name: Inject enhanced GitHub environment variables
         uses: rlespinasse/github-slug-action@v5
+      - name: Set ref slug
+        id: ref_slug
+        run: |
+          # For workflow_dispatch, use the input value
+          # For pull_request, use the GITHUB_REF_POINT_SLUG set by slug action
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            REF_SLUG="${{ inputs.ref_slug }}"
+          else
+            REF_SLUG="${GITHUB_REF_POINT_SLUG}"
+          fi
+          echo "ref_slug=${REF_SLUG}" >> $GITHUB_OUTPUT
+          echo "Using ref slug: ${REF_SLUG}"
       - name: Cleanup buildcache tags from ghcr.io
         env:
           GH_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+          REF_SLUG: ${{ steps.ref_slug.outputs.ref_slug }}
         run: |
-          # Delete buildcache tags for this PR from ghcr.io
+          # Delete buildcache tags for this branch from ghcr.io
           # The buildcache image is at ghcr.io/eic/buildcache
           # Tags follow patterns:
           #   - Base images: {BUILD_IMAGE}-{GITHUB_REF_POINT_SLUG}-{arch}
           #   - EIC images: {BUILD_IMAGE}{ENV}-{BUILD_TYPE}-{GITHUB_REF_POINT_SLUG}-{arch}
-          # For PRs, GITHUB_REF_POINT_SLUG is the PR number (e.g., "123")
-          # The pattern contains("-{PR_NUM}-") matches both formats
+          # GITHUB_REF_POINT_SLUG is derived from the branch name (e.g., "my-feature" for branch "my-feature")
+          # The pattern contains("-{REF_SLUG}-") matches both formats
           
-          echo "Cleaning up buildcache tags for PR #${GITHUB_REF_POINT_SLUG} from ghcr.io"
+          echo "Cleaning up buildcache tags for branch slug '${REF_SLUG}' from ghcr.io"
           
           # List all versions of the buildcache package
           echo "Fetching buildcache package versions..."
@@ -39,10 +60,10 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "/orgs/eic/packages/container/buildcache/versions?per_page=100" \
             --paginate \
-            --jq --arg pr_num "${GITHUB_REF_POINT_SLUG}" '.[] | select(.metadata.container.tags[]? | contains("-\($pr_num)-")) | .id')
+            --jq --arg ref_slug "${REF_SLUG}" '.[] | select(.metadata.container.tags[]? | contains("-\($ref_slug)-")) | .id')
           
           if [ -z "$VERSIONS" ]; then
-            echo "No buildcache versions found for PR #${GITHUB_REF_POINT_SLUG} in ghcr.io"
+            echo "No buildcache versions found for branch slug '${REF_SLUG}' in ghcr.io"
           else
             # Delete each matching version
             echo "Found buildcache versions to delete from ghcr.io:"
@@ -65,21 +86,22 @@ jobs:
             done
           fi
           
-          echo "Buildcache cleanup from ghcr.io completed for PR #${GITHUB_REF_POINT_SLUG}"
+          echo "Buildcache cleanup from ghcr.io completed for branch slug '${REF_SLUG}'"
 
       - name: Cleanup buildcache tags from eicweb.phy.anl.gov
         env:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          REF_SLUG: ${{ steps.ref_slug.outputs.ref_slug }}
         run: |
-          # Delete buildcache tags for this PR from eicweb.phy.anl.gov GitLab Container Registry
+          # Delete buildcache tags for this branch from eicweb.phy.anl.gov GitLab Container Registry
           # The buildcache image is at eicweb.phy.anl.gov/containers/eic_container/buildcache
           # Tags follow patterns:
           #   - Base images: {BUILD_IMAGE}-{GITHUB_REF_POINT_SLUG}-{arch}
           #   - EIC images: {BUILD_IMAGE}{ENV}-{BUILD_TYPE}-{GITHUB_REF_POINT_SLUG}-{arch}
-          # For PRs, GITHUB_REF_POINT_SLUG is the PR number (e.g., "123")
-          # The pattern contains("-{PR_NUM}-") matches both formats
+          # GITHUB_REF_POINT_SLUG is derived from the branch name (e.g., "my-feature" for branch "my-feature")
+          # The pattern contains("-{REF_SLUG}-") matches both formats
           
-          echo "Cleaning up buildcache tags for PR #${GITHUB_REF_POINT_SLUG} from eicweb.phy.anl.gov"
+          echo "Cleaning up buildcache tags for branch slug '${REF_SLUG}' from eicweb.phy.anl.gov"
           
           GITLAB_API="https://eicweb.phy.anl.gov/api/v4"
           GITLAB_PROJECT_ID="290"  # containers/eic_container project ID
@@ -97,13 +119,13 @@ jobs:
           
           echo "Found buildcache repository ID: ${REPOSITORY_ID}"
           
-          # Fetch all tags and filter for this PR
+          # Fetch all tags and filter for this branch
           TAGS_TO_DELETE=$(curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
             "${GITLAB_API}/projects/${GITLAB_PROJECT_ID}/registry/repositories/${REPOSITORY_ID}/tags?per_page=100" \
-            | jq -r --arg pr_num "${GITHUB_REF_POINT_SLUG}" '.[] | select(.name | contains("-\($pr_num)-")) | .name')
+            | jq -r --arg ref_slug "${REF_SLUG}" '.[] | select(.name | contains("-\($ref_slug)-")) | .name')
           
           if [ -z "$TAGS_TO_DELETE" ]; then
-            echo "No buildcache tags found for PR #${GITHUB_REF_POINT_SLUG} in eicweb.phy.anl.gov"
+            echo "No buildcache tags found for branch slug '${REF_SLUG}' in eicweb.phy.anl.gov"
           else
             # Delete each matching tag
             echo "Found buildcache tags to delete from eicweb.phy.anl.gov:"
@@ -116,4 +138,4 @@ jobs:
             done
           fi
           
-          echo "Buildcache cleanup from eicweb.phy.anl.gov completed for PR #${GITHUB_REF_POINT_SLUG}"
+          echo "Buildcache cleanup from eicweb.phy.anl.gov completed for branch slug '${REF_SLUG}'"
