@@ -107,10 +107,14 @@ jobs:
           
           # List all repository tags for the buildcache image
           echo "Fetching buildcache repository tags..."
-          REPOSITORY_ID=$(curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+          REPOSITORY_ID=$(curl -s --fail --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
             "${GITLAB_API}/projects/${GITLAB_PROJECT_ID}/registry/repositories" \
             | jq -r '.[] | select(.name == "buildcache") | .id')
-          
+          CURL_STATUS=${PIPESTATUS[0]}
+          if [ $CURL_STATUS -ne 0 ]; then
+            echo "Error: Failed to fetch registry repositories from GitLab API"
+            exit 1
+          fi
           if [ -z "$REPOSITORY_ID" ]; then
             echo "Warning: Could not find buildcache repository in GitLab registry"
             exit 0
