@@ -24,8 +24,11 @@ jobs:
         run: |
           # Delete buildcache tags for this PR from ghcr.io
           # The buildcache image is at ghcr.io/eic/buildcache
-          # Tags follow the pattern: {BUILD_IMAGE}-{GITHUB_REF_POINT_SLUG}-{arch}
+          # Tags follow patterns:
+          #   - Base images: {BUILD_IMAGE}-{GITHUB_REF_POINT_SLUG}-{arch}
+          #   - EIC images: {BUILD_IMAGE}{ENV}-{BUILD_TYPE}-{GITHUB_REF_POINT_SLUG}-{arch}
           # For PRs, GITHUB_REF_POINT_SLUG is the PR number (e.g., "123")
+          # The pattern contains("-{PR_NUM}-") matches both formats
           
           echo "Cleaning up buildcache tags for PR #${GITHUB_REF_POINT_SLUG} from ghcr.io"
           
@@ -70,8 +73,11 @@ jobs:
         run: |
           # Delete buildcache tags for this PR from eicweb.phy.anl.gov GitLab Container Registry
           # The buildcache image is at eicweb.phy.anl.gov/containers/eic_container/buildcache
-          # Tags follow the pattern: {BUILD_IMAGE}-{GITHUB_REF_POINT_SLUG}-{arch}
+          # Tags follow patterns:
+          #   - Base images: {BUILD_IMAGE}-{GITHUB_REF_POINT_SLUG}-{arch}
+          #   - EIC images: {BUILD_IMAGE}{ENV}-{BUILD_TYPE}-{GITHUB_REF_POINT_SLUG}-{arch}
           # For PRs, GITHUB_REF_POINT_SLUG is the PR number (e.g., "123")
+          # The pattern contains("-{PR_NUM}-") matches both formats
           
           echo "Cleaning up buildcache tags for PR #${GITHUB_REF_POINT_SLUG} from eicweb.phy.anl.gov"
           
