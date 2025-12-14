@@ -165,7 +165,7 @@ Pre-built binaries are stored in OCI registries:
 
 | Trigger | Behavior |
 |---------|----------|
-| Pull Request closed | Automatically removes all buildcache tags for the PR from ghcr.io and eicweb.phy.anl.gov |
+| Pull Request closed | Automatically removes all buildcache tags associated with the branch slug (typically unique to the PR) from ghcr.io and eicweb.phy.anl.gov |
 
 ## Environment Matrix
 
