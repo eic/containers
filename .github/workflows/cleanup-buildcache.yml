@@ -22,10 +22,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref }}
       - name: Inject enhanced GitHub environment variables
         uses: rlespinasse/github-slug-action@v5
+        if: github.event_name == 'pull_request'
       - name: Set ref slug
         id: ref_slug
         run: |
