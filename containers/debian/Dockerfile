@@ -100,7 +100,7 @@ case ${ID} in
     apt-get -yqq install software-properties-common
     add-apt-repository ppa:ubuntu-toolchain-r/ppa
     case ${VERSION_CODENAME} in
-      noble) GCC="-13" ; CLANG="-17" ;;
+      noble) GCC="-14" ; CLANG="-20" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   *) echo "Unsupported ID=${ID}" ; exit 1 ;;
