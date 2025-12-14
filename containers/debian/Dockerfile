@@ -126,6 +126,7 @@ update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++${GCC} 100
 update-alternatives --install /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar${GCC} 100
 update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran${GCC} 100
 update-alternatives --install /usr/bin/clang clang /usr/bin/clang${CLANG} 100
+update-alternatives --install /usr/bin/flang flang /usr/bin/flang${CLANG} 100
 update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++${CLANG} 100
 update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format${CLANG} 100
 update-alternatives --install /usr/bin/clang-format-diff clang-format-diff /usr/bin/clang-format-diff${CLANG} 100
