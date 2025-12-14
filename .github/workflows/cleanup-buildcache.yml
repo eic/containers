@@ -122,11 +122,25 @@ jobs:
           
           echo "Found buildcache repository ID: ${REPOSITORY_ID}"
           
-          # Fetch all tags and filter for this branch
-          TAGS_TO_DELETE=$(curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
-            "${GITLAB_API}/projects/${GITLAB_PROJECT_ID}/registry/repositories/${REPOSITORY_ID}/tags?per_page=100" \
-            | jq -r --arg ref_slug "${REF_SLUG}" '.[] | select(.name | contains("-\($ref_slug)-")) | .name')
-          
+          # Fetch all tags and filter for this branch, handling pagination
+          TAGS_TO_DELETE=""
+          PAGE=1
+          while :; do
+            RESPONSE=$(curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+              "${GITLAB_API}/projects/${GITLAB_PROJECT_ID}/registry/repositories/${REPOSITORY_ID}/tags?per_page=100&page=${PAGE}")
+            TAGS=$(echo "$RESPONSE" | jq -r --arg ref_slug "${REF_SLUG}" '.[] | select(.name | contains("-\($ref_slug)-")) | .name')
+            if [ -z "$TAGS" ]; then
+              break
+            fi
+            TAGS_TO_DELETE="${TAGS_TO_DELETE}
+${TAGS}"
+            # If fewer than 100 tags returned, this is the last page
+            COUNT=$(echo "$RESPONSE" | jq 'length')
+            if [ "$COUNT" -lt 100 ]; then
+              break
+            fi
+            PAGE=$((PAGE+1))
+          done
           if [ -z "$TAGS_TO_DELETE" ]; then
             echo "No buildcache tags found for branch slug '${REF_SLUG}' in eicweb.phy.anl.gov"
           else
