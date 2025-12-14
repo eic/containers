@@ -130,6 +130,8 @@ cache-from: |
 cache-to: type=registry,ref=ghcr.io/eic/buildcache:{image}-{branch}-{arch},mode=max
 ```
 
+**Buildcache Cleanup**: When a pull request is closed or merged, the `cleanup-buildcache` workflow automatically removes all buildcache tags associated with that PR from both ghcr.io and eicweb.phy.anl.gov registries. This prevents buildcache accumulation and keeps the registries clean.
+
 ### Build Mount Cache
 
 Uses [buildkit-cache-dance](https://github.com/reproducible-containers/buildkit-cache-dance) to persist mount caches:
@@ -150,12 +152,20 @@ Pre-built binaries are stored in OCI registries:
 
 ## Workflow Triggers
 
+### build-push workflow
+
 | Trigger | Behavior |
 |---------|----------|
 | Schedule (cron) | Every 6 hours - nightly builds |
 | Push to master | Build and push with `pipeline-*` tag |
 | Pull Request | Build with `unstable-pr-*` tag |
 | Manual Dispatch | Allows overriding EDM4EIC, EICRECON, JUGGLER versions |
+
+### cleanup-buildcache workflow
+
+| Trigger | Behavior |
+|---------|----------|
+| Pull Request closed | Automatically removes all buildcache tags for the PR from ghcr.io and eicweb.phy.anl.gov |
 
 ## Environment Matrix
 
