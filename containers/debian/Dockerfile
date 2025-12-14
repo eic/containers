@@ -115,7 +115,7 @@ fi
 # Install packages
 apt-get -yqq update
 apt-get -yqq install cpp${GCC} gcc${GCC} g++${GCC} gfortran${GCC}
-apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev
+apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev flang${CLANG}
 apt-get -yqq autoremove
 # Remove symlinks loop in nvidia/cuda:12.5.1-devel-ubuntu24.04
 rm -f /usr/bin/cpp /etc/alternatives/cpp
