@@ -32,7 +32,7 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "/orgs/eic/packages/container/buildcache/versions?per_page=100" \
             --paginate \
-            --jq '.[] | select(.metadata.container.tags[]? | contains("-'"${PR_NUMBER}"'-")) | .id')
+            --jq --arg pr_num "${PR_NUMBER}" '.[] | select(.metadata.container.tags[]? | contains("-\($pr_num)-")) | .id')
           
           if [ -z "$VERSIONS" ]; then
             echo "No buildcache versions found for PR #${PR_NUMBER} in ghcr.io"
@@ -72,12 +72,12 @@ jobs:
           echo "Cleaning up buildcache tags for PR #${PR_NUMBER} from eicweb.phy.anl.gov"
           
           GITLAB_API="https://eicweb.phy.anl.gov/api/v4"
-          PROJECT_ID="290"  # containers/eic_container project ID
+          GITLAB_PROJECT_ID="290"  # containers/eic_container project ID
           
           # List all repository tags for the buildcache image
           echo "Fetching buildcache repository tags..."
           REPOSITORY_ID=$(curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
-            "${GITLAB_API}/projects/${PROJECT_ID}/registry/repositories" \
+            "${GITLAB_API}/projects/${GITLAB_PROJECT_ID}/registry/repositories" \
             | jq -r '.[] | select(.name == "buildcache") | .id')
           
           if [ -z "$REPOSITORY_ID" ]; then
@@ -89,8 +89,8 @@ jobs:
           
           # Fetch all tags and filter for this PR
           TAGS_TO_DELETE=$(curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
-            "${GITLAB_API}/projects/${PROJECT_ID}/registry/repositories/${REPOSITORY_ID}/tags?per_page=100" \
-            | jq -r '.[] | select(.name | contains("-'"${PR_NUMBER}"'-")) | .name')
+            "${GITLAB_API}/projects/${GITLAB_PROJECT_ID}/registry/repositories/${REPOSITORY_ID}/tags?per_page=100" \
+            | jq -r --arg pr_num "${PR_NUMBER}" '.[] | select(.name | contains("-\($pr_num)-")) | .name')
           
           if [ -z "$TAGS_TO_DELETE" ]; then
             echo "No buildcache tags found for PR #${PR_NUMBER} in eicweb.phy.anl.gov"
@@ -101,7 +101,7 @@ jobs:
               echo "  Deleting tag: ${tag}"
               
               curl -s -X DELETE --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
-                "${GITLAB_API}/projects/${PROJECT_ID}/registry/repositories/${REPOSITORY_ID}/tags/${tag}" \
+                "${GITLAB_API}/projects/${GITLAB_PROJECT_ID}/registry/repositories/${REPOSITORY_ID}/tags/${tag}" \
                 || echo "  Warning: Failed to delete tag ${tag}"
             done
           fi
