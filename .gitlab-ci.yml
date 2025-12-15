@@ -621,7 +621,6 @@ eic_xl:singularity:nightly:
   extends: .benchmarks
   variables:
     - BUILD_TYPE: default
-    - !reference ['.benchmarks', variables]
   needs: 
     - job: version
     - job: eic
@@ -640,7 +639,6 @@ eic_xl:singularity:nightly:
   extends: .benchmarks
   variables:
     - BUILD_TYPE: nightly
-    - !reference ['.benchmarks', variables]
   needs: 
     - job: version
     - job: eic
