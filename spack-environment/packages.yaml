@@ -264,6 +264,13 @@ packages:
   mosquitto:
     require:
     - '@2.0.18:'
+  mpi:
+    require:
+    - mpich
+  mpich:
+    require:
+    - '@4.2.1'
+    - -fortran
   nlohmann-json:
     require:
     - '@3.11.2:'
