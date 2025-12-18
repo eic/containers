@@ -68,6 +68,7 @@ d95db21e9c9fa6eab1a9e62e2ba56066f2f955a7
 9cf8ee9c28465568d0b8871f245c400470e74ec7
 78a6c5f0a2531a78be5c9dd9235cf92036d541f5
 be6546b82b43d82edba804f1e362a709809ba537
+f5742718da7bd1d078ddc8423011a82ef2e3c759
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -140,3 +141,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 9cf8ee9c28465568d0b8871f245c400470e74ec7: Deprecation removals: E-H
 ## 78a6c5f0a2531a78be5c9dd9235cf92036d541f5: edm4hep: Add latest tags and update dependencies
 ## be6546b82b43d82edba804f1e362a709809ba537: gaudi: allow newer fmt for v39
+## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
