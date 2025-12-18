@@ -35,45 +35,109 @@ jobs:
       - name: Setup Spack
         uses: spack/setup-spack@v2.1.1
         with:
-          ref: develop
+          ref: v1.0.2
           color: true
           path: ${{ github.workspace }}/spack
+      
+      - name: Apply Spack cherry-picks
+        run: |
+          cd ${{ github.workspace }}/spack
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git cherry-pick 09f75ee426a2e05e0543570821582480ff823ba5
+          git cherry-pick a462612b64e97fa7dfe461c32c58553fd6ec63c5
+          git cherry-pick 292b0dcaba3b2a5e3f9668d205d39fee2c715721
+      
+      - name: Checkout and configure spack-packages
+        run: |
+          cd ${{ github.workspace }}/spack
+          git clone https://github.com/spack/spack-packages.git var/spack/repos/spack-packages
+          cd var/spack/repos/spack-packages
+          git checkout v2025.07.0
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          # Apply cherry-picks from spack-packages.sh
+          git cherry-pick b5ffbcc4aa43bffbffa96ff9a436a68773e10933
+          git cherry-pick b6b6d79c25c1496472f9535ec33c9030b27353ab
+          git cherry-pick 405e97751385dccbd6ec6e6f3b57dc28fc04c76b
+          git cherry-pick ba00d764b91db70bce8236bc528a1d4af37c4ce9
+          git cherry-pick 4b243eb07a483a6bf527c2f74e5766b35afa528b
+          git cherry-pick 948d4ea14409e38d47882b5a5c2d61d99d02b30b
+          git cherry-pick 215e9f93f4de43095bd12e39809b9afeb89655f0
+          git cherry-pick 8aaec9b76104af2cf58e7be55485d6c2385b41ab
+          git cherry-pick 8751ca4c4ba54559b40cdaa3c319bf14db72e28e
+          git cherry-pick 2c1e68ded81add6d3d0fbc005ad19b0727639204
+          git cherry-pick a118c877bcca1d71810528ba481b8d3f819035f1
+          git cherry-pick 0c164b846058d9c57c9adb6b17ef86ead9f4b8c4
+          git cherry-pick b440c61b9cddfab0fd59dd5fc607c95247a18bc9
+          git cherry-pick 698ce0531e4be2d55ca667d6f9341636397c2662
+          git cherry-pick 1d53be2a26ecb7809c1f6006ed8cbfe7febee7a9
+          git cherry-pick a115a811bdfce4db5298a9ba9b7903ccfb0de101
+          git cherry-pick 22dadd619053ff0872903549db616200bda082f0
+          git cherry-pick 7fad8a78d35b5556e1d7aa92a71a4e1c58a1665a
+          git cherry-pick 1b976bbdf7c5bce37d6541beb93445791f9292c6
+          git cherry-pick 20aa538bd0d33743b8cd9dd9179c759b85615d47
+          git cherry-pick 795ad32793a7dfda1086f31b7e49cf4ae52672f6
+          git cherry-pick e61079273e806301d76cc64f53fb034980988583
+          git cherry-pick b063312bb52fb62010e04588f6b16d37e16c8d02
+          git cherry-pick b7870dfad11c4e8ca9690b0895c98f16d79f5398
+          git cherry-pick 1e8f896b2807bcc48553e90d6212f0931fa5262f
+          git cherry-pick e998e20d3979c5aa47faaf59a8020e3fab13ab97
+          git cherry-pick 904792d49dc4236c5394dbc0aebbe45175b59187
+          git cherry-pick a3f3a80e2877645c72cca0381c820307fe1d4523
+          git cherry-pick 559789f67245a40306aeea636b61348e97d4f092
+          git cherry-pick 95c45b6c3322e151fd29ed00ea10567b97705ee4
+          git cherry-pick d6f99b8d611cf740eb45e13df2c84044a4ca6ae4
+          git cherry-pick bc25e5eb2f8f7a8733cdc10d92e9787358c82cfa
+          git cherry-pick c4d983b764d7b1ee2b63da79f5f25365ac61ce7a
+          git cherry-pick 44da889cc86bb8a5315c729a7c79f2c002c9c951
+          git cherry-pick 5c37f836753e8f9683fdc547f3661c5045abcbd1
+          git cherry-pick c75e10845431600b163c597545bd099e427c62f5
+          git cherry-pick 438a7d95de1b81e15107edbf341b20824ec80635
+          git cherry-pick c71f8e48245012565ac7b0648dfda137b0071de7
+          git cherry-pick 4ef82e75f5cae7b4d093e41043e26b259498264e
+          git cherry-pick 8d027b1651840631350d0ba9f30624f2baf26350
+          git cherry-pick 566e1b070e17ffe8c2d0bf4122568af8a81db1cd
+          git cherry-pick 048bffaea064919ccfc2f740e14bbb987e7f5c7e
+          git cherry-pick 6b57d7a93de84dd5492b9308a9612924ab641dce
+          git cherry-pick ba94c07db577eaf5eb4b0450721fbc7e98879922
+          git cherry-pick 57a0c5d83aba319c37e51c7a6f965f28f49cdb77
+          git cherry-pick d0b0e511376f74be2cd3a2878bed781d39a6066a
+          git cherry-pick a6762cd1b4dff3297dd83664a6c09450324fc7bd
+          git cherry-pick 158693457ba1717a89a9e2f9614c6982b6aff441
+          git cherry-pick a46e40be55d002e4708303735f7eb4aca2482d0a
+          git cherry-pick 96d1e30c389599be9b3d95a0af16b49afd8b6e31
+          git cherry-pick 2050ba18c273506ebfd90744315850e55766fff7
+          git cherry-pick 3c85253b0bd2bb61eae6b5532d657a34e0939c69
+          git cherry-pick d6b78b9ed0cf6ac3d6ddfcbc287bc0db3cd645e7
+          git cherry-pick f201ecd5e5923b394d14f74bc220dea06b9ab28f
+          git cherry-pick 2e05bbbe808442e761647da571500ee128654f4f
+          git cherry-pick 9ec50db07733195bba922b8c6dcbbb1de9c56adf
+          git cherry-pick d95db21e9c9fa6eab1a9e62e2ba56066f2f955a7
+          git cherry-pick 9cf8ee9c28465568d0b8871f245c400470e74ec7
+          git cherry-pick 78a6c5f0a2531a78be5c9dd9235cf92036d541f5
+          git cherry-pick be6546b82b43d82edba804f1e362a709809ba537
+          git cherry-pick f5742718da7bd1d078ddc8423011a82ef2e3c759
+          cd ${{ github.workspace }}/spack
+          spack repo add var/spack/repos/spack-packages
       
       - name: Add Spack environment
         run: |
           spack env create ci spack-environment/ci
           spack env activate ci
           spack -e ci compiler find
+          spack -e ci external find llvm
           spack -e ci external find --not-buildable cmake
       
       - name: Concretize
         run: |
           spack -e ci concretize -f
       
-      - name: Setup buildcache access
-        uses: spack/github-actions-buildcache@v2
-        with:
-          mode: readwrite
-          key: macos-${{ matrix.compiler }}-ci
+      - name: Configure buildcache
+        run: |
+          spack -e ci mirror add eic oci://ghcr.io/eic/spack-v2025.07.0
+          spack -e ci buildcache keys --install --trust
       
       - name: Install
         run: |
           spack -e ci install --no-check-signature --show-log-on-error
-      
-      - name: Push to buildcache
-        if: always()
-        run: |
-          spack -e ci buildcache push --update-index --only=package --unsigned ${{ github.workspace }}/buildcache-macos
-      
-      - name: Show environment info
-        if: always()
-        run: |
-          spack -e ci find -lv
-          spack -e ci graph --dot > ci-graph.dot
-      
-      - name: Upload environment graph
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ci-environment-graph-${{ matrix.compiler }}
-          path: ci-graph.dot
