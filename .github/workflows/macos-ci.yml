@@ -65,10 +65,10 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           
-          # Apply cherry-picks from spack.sh (filter out heredoc delimiters and empty lines)
-          echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -v '^---$' | grep -v '^$' | while read -r commit; do
+          # Apply cherry-picks from spack.sh (match only valid git commit hashes)
+          echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' | while read -r commit; do
             echo "Cherry-picking ${commit}"
-            git cherry-pick ${commit}
+            git cherry-pick "${commit}"
           done
       
       - name: Checkout and configure spack-packages
@@ -80,10 +80,10 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           
-          # Apply cherry-picks from spack-packages.sh (filter out heredoc delimiters and empty lines)
-          echo "${{ steps.spack-config.outputs.spackpackages-cherrypicks }}" | grep -v '^---$' | grep -v '^$' | while read -r commit; do
+          # Apply cherry-picks from spack-packages.sh (match only valid git commit hashes)
+          echo "${{ steps.spack-config.outputs.spackpackages-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' | while read -r commit; do
             echo "Cherry-picking ${commit}"
-            git cherry-pick ${commit}
+            git cherry-pick "${commit}"
           done
           
           cd ${{ github.workspace }}/spack
