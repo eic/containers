@@ -98,6 +98,12 @@ packages:
   cppcoro:
     require:
     - '@10bbcdbf2be3ad3aa56febcf4c7662d771460a99'
+  cuda:
+    require:
+    # We disable CUDA's maximum supported compiler versions, e.g.:
+    #    conflicts("%clang@20:", when="+cuda ^cuda@:12.9")
+    # https://github.com/spack/spack-packages/blob/develop/repos/spack_repo/builtin/build_systems/cuda.py
+    - +allow-unsupported-compilers
   dawn:
     require:
     - '@3_91a'
