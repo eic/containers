@@ -6,5 +6,5 @@
 ## Single source of truth: scripts/build-base.sh sources this file to derive
 ## BASE_IMAGE for cuda_devel and cuda_runtime, in GitHub Actions, GitLab CI and
 ## local builds alike. Values already set in the environment take precedence.
-CUDA_VERSION="${CUDA_VERSION:-12.8.2}"
+CUDA_VERSION="${CUDA_VERSION:-13.0.2}"
 CUDA_OS="${CUDA_OS:-ubuntu24.04}"
