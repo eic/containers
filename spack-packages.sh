@@ -69,6 +69,7 @@ d95db21e9c9fa6eab1a9e62e2ba56066f2f955a7
 78a6c5f0a2531a78be5c9dd9235cf92036d541f5
 be6546b82b43d82edba804f1e362a709809ba537
 f5742718da7bd1d078ddc8423011a82ef2e3c759
+5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
@@ -142,3 +143,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 78a6c5f0a2531a78be5c9dd9235cf92036d541f5: edm4hep: Add latest tags and update dependencies
 ## be6546b82b43d82edba804f1e362a709809ba537: gaudi: allow newer fmt for v39
 ## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
+## 5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf: py-onnxruntime: add v1.21.1, v1.22.2
