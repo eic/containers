@@ -73,6 +73,8 @@ f5742718da7bd1d078ddc8423011a82ef2e3c759
 922b2f6011dbf01aebb332a1ebf949b105c74247
 ---
 ## Optional hash table with comma-separated file list
+## For these commits, the cherry-pick will be restricted to the listed files only.
+## For all other commits, the cherry-pick will be applied without restriction (default).
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 --- || true
 [b063312bb52fb62010e04588f6b16d37e16c8d02]=repos/spack_repo/builtin/packages/py_tensorflow/package.py
