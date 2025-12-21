@@ -57,8 +57,8 @@ packages:
     - -ipo
   celeritas:
     require:
-    - '@0.5:'
-    - +geant4 +hepmc3  +vecgeom
+    - '@0.6.3:'
+    - +covfie +geant4 +hepmc3  +vecgeom
     - one_of: [~cuda +root, +cuda +ipo ~root]
   cernlib:
     require:
