@@ -1,0 +1,158 @@
+name: Cleanup Buildcache
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+    - master
+  workflow_dispatch:
+    inputs:
+      ref_slug:
+        description: 'Branch slug (GITHUB_REF_POINT_SLUG) to clean up'
+        required: true
+        type: string
+
+permissions:
+  packages: write
+
+jobs:
+  cleanup-buildcache:
+    name: Cleanup buildcache for ${{ github.event.pull_request.number || inputs.ref_slug }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Inject enhanced GitHub environment variables
+        uses: rlespinasse/github-slug-action@v5
+        if: github.event_name == 'pull_request'
+      - name: Set ref slug
+        id: ref_slug
+        run: |
+          # For workflow_dispatch, use the input value
+          # For pull_request, use the GITHUB_REF_POINT_SLUG set by slug action
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            REF_SLUG="${{ inputs.ref_slug }}"
+          else
+            REF_SLUG="${GITHUB_REF_POINT_SLUG}"
+          fi
+          echo "ref_slug=${REF_SLUG}" >> $GITHUB_OUTPUT
+          echo "Using ref slug: ${REF_SLUG}"
+      - name: Cleanup buildcache tags from ghcr.io
+        env:
+          GH_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+          REF_SLUG: ${{ steps.ref_slug.outputs.ref_slug }}
+        run: |
+          # Delete buildcache tags for this branch from ghcr.io
+          # The buildcache image is at ghcr.io/eic/buildcache
+          # Tags follow patterns:
+          #   - Base images: {BUILD_IMAGE}-{GITHUB_REF_POINT_SLUG}-{arch}
+          #   - EIC images: {BUILD_IMAGE}{ENV}-{BUILD_TYPE}-{GITHUB_REF_POINT_SLUG}-{arch}
+          # GITHUB_REF_POINT_SLUG is derived from the branch name (e.g., "my-feature" for branch "my-feature")
+          # The pattern contains("-{REF_SLUG}-") matches both formats
+          
+          echo "Cleaning up buildcache tags for branch slug '${REF_SLUG}' from ghcr.io"
+          
+          # List all versions of the buildcache package
+          echo "Fetching buildcache package versions..."
+          VERSIONS=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/orgs/eic/packages/container/buildcache/versions?per_page=100" \
+            --paginate \
+            --jq --arg ref_slug "${REF_SLUG}" '.[] | select(.metadata.container.tags[]? | contains("-\($ref_slug)-")) | .id')
+          
+          if [ -z "$VERSIONS" ]; then
+            echo "No buildcache versions found for branch slug '${REF_SLUG}' in ghcr.io"
+          else
+            # Delete each matching version
+            echo "Found buildcache versions to delete from ghcr.io:"
+            for version_id in $VERSIONS; do
+              # Get the tags for this version for logging
+              TAGS=$(gh api \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "/orgs/eic/packages/container/buildcache/versions/${version_id}" \
+                --jq '.metadata.container.tags[]? | select(. != null)' 2>/dev/null | tr '\n' ',' | sed 's/,$//')
+              
+              echo "  Deleting version ${version_id} with tags: ${TAGS}"
+              
+              gh api \
+                --method DELETE \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "/orgs/eic/packages/container/buildcache/versions/${version_id}" \
+                || echo "  Warning: Failed to delete version ${version_id}"
+            done
+          fi
+          
+          echo "Buildcache cleanup from ghcr.io completed for branch slug '${REF_SLUG}'"
+
+      - name: Cleanup buildcache tags from eicweb.phy.anl.gov
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          REF_SLUG: ${{ steps.ref_slug.outputs.ref_slug }}
+        run: |
+          # Delete buildcache tags for this branch from eicweb.phy.anl.gov GitLab Container Registry
+          # The buildcache image is at eicweb.phy.anl.gov/containers/eic_container/buildcache
+          # Tags follow patterns:
+          #   - Base images: {BUILD_IMAGE}-{GITHUB_REF_POINT_SLUG}-{arch}
+          #   - EIC images: {BUILD_IMAGE}{ENV}-{BUILD_TYPE}-{GITHUB_REF_POINT_SLUG}-{arch}
+          # GITHUB_REF_POINT_SLUG is derived from the branch name (e.g., "my-feature" for branch "my-feature")
+          # The pattern contains("-{REF_SLUG}-") matches both formats
+          
+          echo "Cleaning up buildcache tags for branch slug '${REF_SLUG}' from eicweb.phy.anl.gov"
+          
+          GITLAB_API="https://eicweb.phy.anl.gov/api/v4"
+          GITLAB_PROJECT_ID="290"  # containers/eic_container project ID
+          
+          # List all repository tags for the buildcache image
+          echo "Fetching buildcache repository tags..."
+          REPOSITORY_ID=$(curl -s --fail --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+            "${GITLAB_API}/projects/${GITLAB_PROJECT_ID}/registry/repositories" \
+            | jq -r '.[] | select(.name == "buildcache") | .id')
+          CURL_STATUS=${PIPESTATUS[0]}
+          if [ $CURL_STATUS -ne 0 ]; then
+            echo "Error: Failed to fetch registry repositories from GitLab API"
+            exit 1
+          fi
+          if [ -z "$REPOSITORY_ID" ]; then
+            echo "Warning: Could not find buildcache repository in GitLab registry"
+            exit 0
+          fi
+          
+          echo "Found buildcache repository ID: ${REPOSITORY_ID}"
+          
+          # Fetch all tags and filter for this branch, handling pagination
+          TAGS_TO_DELETE=""
+          PAGE=1
+          while :; do
+            RESPONSE=$(curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+              "${GITLAB_API}/projects/${GITLAB_PROJECT_ID}/registry/repositories/${REPOSITORY_ID}/tags?per_page=100&page=${PAGE}")
+            TAGS=$(echo "$RESPONSE" | jq -r --arg ref_slug "${REF_SLUG}" '.[] | select(.name | contains("-\($ref_slug)-")) | .name')
+            if [ -z "$TAGS" ]; then
+              break
+            fi
+            TAGS_TO_DELETE="${TAGS_TO_DELETE}
+${TAGS}"
+            # If fewer than 100 tags returned, this is the last page
+            COUNT=$(echo "$RESPONSE" | jq 'length')
+            if [ "$COUNT" -lt 100 ]; then
+              break
+            fi
+            PAGE=$((PAGE+1))
+          done
+          if [ -z "$TAGS_TO_DELETE" ]; then
+            echo "No buildcache tags found for branch slug '${REF_SLUG}' in eicweb.phy.anl.gov"
+          else
+            # Delete each matching tag
+            echo "Found buildcache tags to delete from eicweb.phy.anl.gov:"
+            for tag in $TAGS_TO_DELETE; do
+              echo "  Deleting tag: ${tag}"
+              
+              curl -s -X DELETE --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+                "${GITLAB_API}/projects/${GITLAB_PROJECT_ID}/registry/repositories/${REPOSITORY_ID}/tags/${tag}" \
+                || echo "  Warning: Failed to delete tag ${tag}"
+            done
+          fi
+          
+          echo "Buildcache cleanup from eicweb.phy.anl.gov completed for branch slug '${REF_SLUG}'"
