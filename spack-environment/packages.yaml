@@ -11,12 +11,15 @@
 #
 packages:
   all:
-    prefer: # is not overwritten below, but less strict than require
+    # duplication between the prefer and require sections is intentional
+    # since 'require' for 'all' is overwritten by package-specific entries,
+    # and 'prefer' at least retains some (less strict) preference in that case
+    prefer:
     - '%gcc'
     - +ipo
     - build_system=cmake
     - build_type=Release
-    require: # is overwritten by package-specific requirements below
+    require:
     - '%gcc'
     - any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
