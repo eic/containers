@@ -406,6 +406,9 @@ packages:
   py-mplhep:
     require:
     - '@0.4.0:'
+  py-hatchling:
+    require:
+    - '@1.27:'
   py-htgettoken:
     require:
     - '@1.16-33-g3788bb4'
