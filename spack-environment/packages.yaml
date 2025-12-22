@@ -28,6 +28,11 @@ packages:
     require:
     - '@44.3.0'
     - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
+    # ACTS requires same compiler as DD4hep since compiler options are reused
+    - '%gcc'
+      when: "'^dd4hep%gcc'
+    - '%clang'
+      when: "'^dd4hep%clang'
   actsvg:
     require:
     - '@0.4.56'
@@ -104,7 +109,6 @@ packages:
     - '@1.16.2:'
   dd4hep:
     require:
-    # ACTS requires same compiler as DD4hep since compiler options are reused
     - '@1.33'
     - +ddg4 +ddcad +edm4hep +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
