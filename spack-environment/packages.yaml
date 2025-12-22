@@ -368,6 +368,9 @@ packages:
   py-epic-capybara:
     require:
     - '@git.ef2a8790312b9b697655b28a07b353e601bfa3b8'
+  py-hatchling:
+    require:
+    - '@1.27:'
   py-hepunits:
     require:
     - '@2.3.2:'
@@ -378,6 +381,9 @@ packages:
   py-histoprint:
     require:
     - '@2.4.0:'
+  py-htgettoken:
+    require:
+    - '@1.16-33-g3788bb4'
   py-ipython:
     require:
     - '@8.28:'
@@ -397,24 +403,18 @@ packages:
     require:
     - '@3.12:'
     - backend=tensorflow
-  py-lmfit:
-    require:
-    - '@1.0.2:'
   py-llvmlite:
     require:
     - '@0.44.0'
-  py-mplhep:
+  py-lmfit:
     require:
-    - '@0.4.0:'
-  py-hatchling:
-    require:
-    - '@1.27:'
-  py-htgettoken:
-    require:
-    - '@1.16-33-g3788bb4'
+    - '@1.0.2:'
   py-matplotlib:
     require:
     - '%clang' # https://github.com/spack/spack-packages/issues/1068
+  py-mplhep:
+    require:
+    - '@0.4.0:'
   py-nbformat:
     require:
     - '@5.8:' # avoid py-jupyter-server and snakemake divergence
