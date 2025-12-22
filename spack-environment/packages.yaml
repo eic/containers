@@ -30,9 +30,9 @@ packages:
     - cxxstd=20 +dd4hep ~edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - '%gcc'
-      when: "'^dd4hep%gcc'
+      when: '^dd4hep%gcc'
     - '%clang'
-      when: "'^dd4hep%clang'
+      when: '^dd4hep%clang'
   actsvg:
     require:
     - '@0.4.56'
