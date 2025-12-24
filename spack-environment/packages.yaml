@@ -300,6 +300,9 @@ packages:
   openblas:
     require:
     - ~fortran
+    - spec: build_system=makefile
+      when: +ilp64
+      # https://github.com/spack/spack-packages/pull/2890
   opencascade:
     require:
     - '@7.8.1:'
