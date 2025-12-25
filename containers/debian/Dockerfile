@@ -175,7 +175,7 @@ if [ -n "${SPACK_CHERRYPICKS}" ] ; then
   eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
   for hash in ${SPACK_CHERRYPICKS} ; do
     if git -C ${SPACK_ROOT} merge-base --is-ancestor "${hash}" HEAD ; then
-      echo "Skipping already-applied ${hash}"
+      echo "Skipping already applied ${hash}"
       continue
     fi
     if [ -n "${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
@@ -217,7 +217,7 @@ if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
   eval "declare -A SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY=(${SPACKPACKAGES_CHERRYPICKS_FILES})"
   for hash in ${SPACKPACKAGES_CHERRYPICKS} ; do
     if git -C ${SPACKPACKAGES_ROOT} merge-base --is-ancestor "${hash}" HEAD ; then
-      echo "Skipping already-applied ${hash}"
+      echo "Skipping already applied ${hash}"
       continue
     fi
     if [ -n "${SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
