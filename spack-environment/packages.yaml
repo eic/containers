@@ -374,7 +374,7 @@ packages:
     - '@1.5:'
   py-dask:
     require:
-    - '@2025.3.0:'
+    - '@2024.12.1:'
   py-dask-histogram:
     require:
     - '@2025.2.0:'

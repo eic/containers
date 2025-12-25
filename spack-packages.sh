@@ -28,6 +28,8 @@ f5742718da7bd1d078ddc8423011a82ef2e3c759
 2ba80e697faf80613b038615b2345b7a777cc438
 9e8f996350ac51c620e61a3a3980577fe471e35a
 a4cc9fad86c9c3353e65bd379f708f70d9984bf0
+760f3889877f17df24229a03d5dda25189b88a29
+2de6b7a78840d8e67113f190783a1c936709b643
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -57,3 +59,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 2ba80e697faf80613b038615b2345b7a777cc438: py-flatbuffers: add v25.9.23
 ## 9e8f996350ac51c620e61a3a3980577fe471e35a: py-dask: add v2025.3.0 (for py-dask-awkward)
 ## a4cc9fad86c9c3353e65bd379f708f70d9984bf0: py-distributed: fix typo
+## 760f3889877f17df24229a03d5dda25189b88a29: py-dask, py-distributed: add v2024.12.1 (for py-hist)
+## 2de6b7a78840d8e67113f190783a1c936709b643: py-dask, py-distributed: fix style
