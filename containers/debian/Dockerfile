@@ -174,6 +174,10 @@ if [ -n "${SPACK_CHERRYPICKS}" ] ; then
   SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo "${SPACK_CHERRYPICKS}" | wc -l)  "${SPACK_CHERRYPICKS}" | tac)
   eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
   for hash in ${SPACK_CHERRYPICKS} ; do
+    if git merge-base --is-ancestor ${hash} HEAD ; then
+      echo "Skipping already-applied ${hash}"
+      continue
+    fi
     if [ -n "${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
       git -C ${SPACK_ROOT} show ${hash} -- ${SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]//,/ } | patch -p1 -d ${SPACK_ROOT}
       git -C ${SPACK_ROOT} commit --all --message "$(git -C ${SPACK_ROOT} show --no-patch --pretty=format:%s ${hash})"
@@ -212,6 +216,10 @@ if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
   SPACKPACKAGES_CHERRYPICKS=$(git -C ${SPACKPACKAGES_ROOT} rev-list --topo-order ${SPACKPACKAGES_CHERRYPICKS} | grep -m $(echo "${SPACKPACKAGES_CHERRYPICKS}" | wc -l)  "${SPACKPACKAGES_CHERRYPICKS}" | tac)
   eval "declare -A SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY=(${SPACKPACKAGES_CHERRYPICKS_FILES})"
   for hash in ${SPACKPACKAGES_CHERRYPICKS} ; do
+    if git merge-base --is-ancestor ${hash} HEAD ; then
+      echo "Skipping already-applied ${hash}"
+      continue
+    fi
     if [ -n "${SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY[${hash}]+found}" ] ; then
       git -C ${SPACKPACKAGES_ROOT} show ${hash} -- ${SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY[${hash}]//,/ } | patch -p1 -d ${SPACKPACKAGES_ROOT}
       git -C ${SPACKPACKAGES_ROOT} commit --all --message "$(git -C ${SPACKPACKAGES_ROOT} show --no-patch --pretty=format:%s ${hash})"
