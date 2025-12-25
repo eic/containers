@@ -174,7 +174,7 @@ if [ -n "${SPACK_CHERRYPICKS}" ] ; then
   SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo "${SPACK_CHERRYPICKS}" | wc -l)  "${SPACK_CHERRYPICKS}" | tac)
   eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
   for hash in ${SPACK_CHERRYPICKS} ; do
-    if git merge-base --is-ancestor ${hash} HEAD ; then
+    if git -C ${SPACK_ROOT} merge-base --is-ancestor "${hash}" HEAD ; then
       echo "Skipping already-applied ${hash}"
       continue
     fi
@@ -216,7 +216,7 @@ if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
   SPACKPACKAGES_CHERRYPICKS=$(git -C ${SPACKPACKAGES_ROOT} rev-list --topo-order ${SPACKPACKAGES_CHERRYPICKS} | grep -m $(echo "${SPACKPACKAGES_CHERRYPICKS}" | wc -l)  "${SPACKPACKAGES_CHERRYPICKS}" | tac)
   eval "declare -A SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY=(${SPACKPACKAGES_CHERRYPICKS_FILES})"
   for hash in ${SPACKPACKAGES_CHERRYPICKS} ; do
-    if git merge-base --is-ancestor ${hash} HEAD ; then
+    if git -C ${SPACKPACKAGES_ROOT} merge-base --is-ancestor "${hash}" HEAD ; then
       echo "Skipping already-applied ${hash}"
       continue
     fi
