@@ -26,6 +26,8 @@ be6546b82b43d82edba804f1e362a709809ba537
 f5742718da7bd1d078ddc8423011a82ef2e3c759
 922b2f6011dbf01aebb332a1ebf949b105c74247
 2ba80e697faf80613b038615b2345b7a777cc438
+9e8f996350ac51c620e61a3a3980577fe471e35a
+a4cc9fad86c9c3353e65bd379f708f70d9984bf0
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -53,3 +55,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
 ## 922b2f6011dbf01aebb332a1ebf949b105c74247: celeritas: add v0.6.3
 ## 2ba80e697faf80613b038615b2345b7a777cc438: py-flatbuffers: add v25.9.23
+## 9e8f996350ac51c620e61a3a3980577fe471e35a: py-dask: add v2025.3.0 (for py-dask-awkward)
+## a4cc9fad86c9c3353e65bd379f708f70d9984bf0: py-distributed: fix typo
