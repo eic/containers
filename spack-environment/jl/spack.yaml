@@ -2,11 +2,12 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../packages_root_without_opengl.yaml
   - ../view.yaml
   specs:
   - acts
   - cmake
-  - dd4hep -ddeve
+  - dd4hep
   - fastjet
   - fjcontrib
   - geant4 -opengl
@@ -20,5 +21,5 @@ spack:
   - py-jinja2
   - py-jinja2-cli
   - py-pip
-  - root -opengl
+  - root
   - xrootd
