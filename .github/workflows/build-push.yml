@@ -159,7 +159,7 @@ jobs:
         # This is separate from the registry cache which stores image layers
         # Reference: https://docs.docker.com/build/ci/github-actions/cache/#cache-mounts
         # Implementation: https://github.com/reproducible-containers/buildkit-cache-dance
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-base-mounts
         with:
           path: cache-mount-base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}
@@ -453,7 +453,7 @@ jobs:
         # This is separate from the registry cache which stores image layers
         # Reference: https://docs.docker.com/build/ci/github-actions/cache/#cache-mounts
         # Implementation: https://github.com/reproducible-containers/buildkit-cache-dance
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-eic-mounts
         with:
           path: cache-mount-eic-${{ matrix.arch }}
