@@ -374,7 +374,7 @@ packages:
     - '@1.5:'
   py-dask:
     require:
-    - '@2024.12.1:'
+    - '@2024.12.1'
   py-dask-histogram:
     require:
     - '@2025.2.0:'
@@ -470,6 +470,9 @@ packages:
   py-pyyaml:
     require:
     - '@6.0.2:'
+  py-requests:
+    require:
+    - '@2.32.5:'
   py-rich:
     require:
     - '@13:'
