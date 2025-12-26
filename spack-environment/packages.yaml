@@ -576,6 +576,9 @@ packages:
     require:
     - '@5.7.0:'
     - cxxstd=20 -davix +python +scitokens-cpp
+  yoda:
+    require:
+    - '@2.1.0:'
   zlib-api:
     require:
     - zlib-ng
