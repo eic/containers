@@ -374,7 +374,7 @@ packages:
     - '@1.5:'
   py-dask:
     require:
-    - '@2024.12.1'
+    - '@2024.12.1'  # pinned within py-hist's supported range 2023:2024
   py-dask-histogram:
     require:
     - '@2025.2.0:'
