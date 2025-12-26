@@ -16,12 +16,14 @@ packages:
     # and 'prefer' at least retains some (less strict) preference in that case
     prefer:
     - '%gcc'
-    - +ipo
+    # FIXME any ipo preference breaks llvm external reuse
+    #- +ipo
     - build_system=cmake
     - build_type=Release
     require:
     - '%gcc'
-    - any_of: [+ipo, '@:']
+    # FIXME any ipo requirement breaks llvm external reuse
+    #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
     - any_of: [build_type=Release, '@:']
   acts:
