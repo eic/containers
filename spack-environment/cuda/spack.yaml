@@ -91,7 +91,7 @@ spack:
   - py-uproot
   - py-wurlitzer
   - py-yapf
-  - root
+  - root +cuda
   - snakemake
   - spdlog
   - stow
