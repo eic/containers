@@ -502,7 +502,7 @@ packages:
     - '@0.10.2:'
   py-torch:
     require:
-    - '@2.5.1'
+    - '@2.7.1:'
     - -mkldnn
   py-vector:
     require:
