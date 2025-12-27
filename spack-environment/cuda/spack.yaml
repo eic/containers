@@ -2,6 +2,7 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../packages_root_with_opengl.yaml
   - ../view.yaml
   concretizer:
     unify: when_possible # multiple epic versions
@@ -20,7 +21,7 @@ spack:
   - cppcoro
   - dawn
   - dawncut
-  - dd4hep +ddeve
+  - dd4hep
   - dpmjet
   - east
   - edm4hep
@@ -90,7 +91,7 @@ spack:
   - py-uproot
   - py-wurlitzer
   - py-yapf
-  - root +cuda +opengl +webgui +x
+  - root +cuda
   - snakemake
   - spdlog
   - stow

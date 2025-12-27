@@ -2,10 +2,11 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../packages_root_without_opengl.yaml
   - ../view.yaml
   specs:
   - acts
-  - dd4hep -ddeve
+  - dd4hep
   - fastjet
   - fjcontrib
   - geant4 -opengl
@@ -14,5 +15,5 @@ spack:
   - irt2
   - jana2
   - npsim -geocad
-  - root -opengl -webgui
+  - root
   - xrootd
