@@ -195,7 +195,7 @@ jobs:
           username: ${{ secrets.GHCR_REGISTRY_USER }}
           password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         id: build
         with:
           file: containers/debian/Dockerfile
@@ -497,7 +497,7 @@ jobs:
           username: ${{ secrets.GHCR_REGISTRY_USER }}
           password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         id: build
         with:
           file: containers/eic/Dockerfile
