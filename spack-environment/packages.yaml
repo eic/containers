@@ -265,7 +265,6 @@ packages:
     - +python
   llvm:
     require:
-    - ~gold
     - any_of: [~ipo, '@:']
   madx:
     require:
