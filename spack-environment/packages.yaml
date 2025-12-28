@@ -450,7 +450,7 @@ packages:
     - '@0.61.0:'
   py-numpy:
     require:
-    - '@2.0.2:'
+    - '@2.2'  # pin to avoid duplicates in eic_tf
   py-onnx:
     require:
     - '@1.17.0'
@@ -576,6 +576,9 @@ packages:
   strace:
     require:
     - -mpers
+  swig:
+    require:
+    - '@4.1:'  # constrain to avoid duplicates in eic_tf
   tbb:
     require:
     - 'intel-tbb'
