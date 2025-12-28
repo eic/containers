@@ -206,6 +206,11 @@ packages:
     require:
     - '@12.1.0:'
     - +expat ~ghostscript +pangocairo
+  harfbuzz:
+    require:
+    # harfbuzz fails to find cairo.h in the gir parts of cmake builds when cairo is meson-built
+    - spec: build_system=meson
+      when: +gobject ^cairo build_system=meson
   hdf5:
     require:
     - ~cxx ~fortran +hl +ipo ~java ~map +mpi +shared ~subfiling ~szip ~threadsafe +tools
