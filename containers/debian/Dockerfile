@@ -260,6 +260,7 @@ EOF
 
 ## Bootstrap
 RUN <<EOF
+set -e
 spack bootstrap root /opt/spack/bootstrap
 spack bootstrap now
 EOF
