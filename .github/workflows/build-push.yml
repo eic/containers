@@ -353,6 +353,7 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64
           target: final
+          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: debian_stable_base
@@ -362,6 +363,7 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64/v3
           target: final
+          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: debian_stable_base
@@ -371,6 +373,7 @@ jobs:
           runner: ubuntu-24.04-arm
           PLATFORM: linux/arm64
           target: final
+          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: debian_stable_base
@@ -380,6 +383,7 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64
           target: final
+          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: debian_stable_base
@@ -389,6 +393,7 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64/v3
           target: final
+          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: debian_stable_base
@@ -398,6 +403,7 @@ jobs:
           runner: ubuntu-24.04-arm
           PLATFORM: linux/arm64
           target: final
+          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: cuda_devel
@@ -407,6 +413,7 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64
           target: builder_concretization_default
+          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: cuda_devel
@@ -416,6 +423,7 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64
           target: builder_concretization_default
+          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3"
       fail-fast: false
     steps:
       - name: Free Disk Space (Ubuntu)
@@ -537,6 +545,7 @@ jobs:
             RUNTIME_IMAGE=${{ matrix.RUNTIME_IMAGE }}
             INTERNAL_TAG=${{ env.INTERNAL_TAG }}
             ENV=${{ matrix.ENV }}
+            SPACK_DUPLICATE_ALLOWLIST=${{ matrix.SPACK_DUPLICATE_ALLOWLIST }}
           cache-from: |
             type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.BUILD_TYPE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }}
             type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.BUILD_TYPE }}-${{ env.GITHUB_BASE_REF_SLUG }}-${{ matrix.arch }}
