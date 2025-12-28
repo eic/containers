@@ -2,7 +2,9 @@
 SPACKPACKAGES_ORGREPO="spack/spack-packages"
 
 ## Spack github version, e.g. v2025.07.0 or commit hash
-## note: nightly builds will use e.g. develop
+## Note: nightly builds will use e.g. develop
+## Note: when changing this, also make new buildcache public
+## (default is only visible with internal authentication)
 SPACKPACKAGES_VERSION="v2025.11.0"
 
 ## Space-separated list of spack-packages cherry-picks
