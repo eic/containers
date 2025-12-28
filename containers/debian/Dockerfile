@@ -258,6 +258,12 @@ spack compiler find --scope site
 spack config blame compilers
 EOF
 
+## Bootstrap
+RUN <<EOF
+spack bootstrap root /opt/spack/bootstrap
+spack bootstrap now
+EOF
+
 ## Setup buildcache mirrors
 ## - this always adds the read-only mirror to the container
 ## - the write-enabled mirror is provided later as a secret mount
