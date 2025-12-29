@@ -59,7 +59,7 @@ spack external find --scope env:${SPACK_ENV} llvm
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
 | uniq -D -f2 \
-| /tmp/duplicates_all.txt \
+| tee /tmp/duplicates_all.txt \
 | grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" \
 | tee /tmp/duplicates_disallowed.txt
 if [ -s /tmp/duplicates_disallowed.txt ] ; then
@@ -199,7 +199,7 @@ fi
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
 | uniq -D -f2 \
-| /tmp/duplicates_all.txt \
+| tee /tmp/duplicates_all.txt \
 | grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" \
 | tee /tmp/duplicates_disallowed.txt
 if [ -s /tmp/duplicates_disallowed.txt ] ; then
