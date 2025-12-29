@@ -281,7 +281,7 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
 set -e
 spack env activate --dir ${SPACK_ENV}
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
-spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin || true
+spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
 
