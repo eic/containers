@@ -52,7 +52,7 @@ ENV GIT_TERMINAL_PROMPT=0
 
 # Concretization (default environment)
 RUN <<EOF
-set -ex
+set -e
 spack env activate --without-view --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
 spack external find --scope env:${SPACK_ENV} llvm
