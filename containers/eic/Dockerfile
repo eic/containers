@@ -52,14 +52,16 @@ ENV GIT_TERMINAL_PROMPT=0
 
 # Concretization (default environment)
 RUN <<EOF
-set -e
+set -ex
 spack env activate --without-view --dir ${SPACK_ENV}
 spack external find --not-buildable --scope env:${SPACK_ENV} --path /usr/local/cuda/bin cuda
 spack external find --scope env:${SPACK_ENV} llvm
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 > /tmp/duplicates_all.txt
-grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" /tmp/duplicates_all.txt > /tmp/duplicates_disallowed.txt
+| uniq -D -f2 \
+| /tmp/duplicates_all.txt \
+| grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" \
+| tee /tmp/duplicates_disallowed.txt
 if [ -s /tmp/duplicates_disallowed.txt ] ; then
   echo "Duplicate packages found:"
   cat /tmp/duplicates_disallowed.txt
@@ -196,8 +198,10 @@ if [ -n "${JUGGLER_SHA}" ] ; then
 fi
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 > /tmp/duplicates_all.txt
-grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" /tmp/duplicates_all.txt > /tmp/duplicates_disallowed.txt
+| uniq -D -f2 \
+| /tmp/duplicates_all.txt \
+| grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" \
+| tee /tmp/duplicates_disallowed.txt
 if [ -s /tmp/duplicates_disallowed.txt ] ; then
   echo "Duplicate packages found:"
   cat /tmp/duplicates_disallowed.txt
