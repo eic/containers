@@ -90,6 +90,7 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (default configuration, $TARGETPLATFORM)"
 
 # Installation (default environment)
+# Mount SPACK_SIGNING_KEY secret for signing during autopush
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
@@ -97,15 +98,29 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key,required=true \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
+
+# Import private key for signing (only in this RUN context, not persisted)
+export GNUPGHOME=/tmp/gnupg-build
+mkdir -p ${GNUPGHOME}
+chmod 700 ${GNUPGHOME}
+gpg --batch --import /tmp/spack-signing-key
+# Re-import public key into Spack for consistency
+spack gpg trust ${SPACK_ROOT}/spack-public-key.pub
+
+# Install packages - autopush will sign with the mounted key
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 spack clean --downloads --stage
 ccache --show-stats
 ccache --zero-stats
+
+# Clean up - private key exists only in this RUN, not in final layer
+rm -rf ${GNUPGHOME}
 EOF
 
 
@@ -247,6 +262,7 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (custom configuration, $TARGETPLATFORM)"
 
 # Installation (custom environment)
+# Mount SPACK_SIGNING_KEY secret for signing during autopush
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
@@ -254,14 +270,28 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key,required=true \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
+
+# Import private key for signing (only in this RUN context, not persisted)
+export GNUPGHOME=/tmp/gnupg-build
+mkdir -p ${GNUPGHOME}
+chmod 700 ${GNUPGHOME}
+gpg --batch --import /tmp/spack-signing-key
+# Re-import public key into Spack for consistency
+spack gpg trust ${SPACK_ROOT}/spack-public-key.pub
+
+# Install packages - autopush will sign with the mounted key
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
 ccache --zero-stats
+
+# Clean up - private key exists only in this RUN, not in final layer
+rm -rf ${GNUPGHOME}
 EOF
 
 

@@ -4,27 +4,42 @@
 
 The container build process uses Spack buildcaches to distribute pre-built binary packages. These buildcaches are signed using GPG keys to ensure integrity and authenticity.
 
+**SECURITY MODEL**: The GPG private key is **NEVER** stored in container layers. It is provided as a Docker secret during build and mounted only when needed for signing operations. Only the public key is embedded in the container for verification purposes.
+
 ## How It Works
 
 ### Build Process
 
-1. **Builder Stage**: During the build, packages are compiled from source and automatically pushed to the OCI buildcache (configured in `mirrors.yaml.in` with `autopush: true` and `signed: true`)
-2. **GPG Signing**: Spack automatically signs packages during autopush using the configured GPG key
-3. **Public Key Export**: The public key is exported and made available to the runtime stage
-4. **Runtime Stage**: The runtime stage imports the public key and verifies signatures when installing from the buildcache
+1. **Base Layer Setup**: 
+   - GPG private key is provided via SPACK_SIGNING_KEY secret (required)
+   - Public key is extracted and stored at `${SPACK_ROOT}/spack-public-key.pub`
+   - Private key is NOT persisted in any container layer
+
+2. **Builder Stage**: 
+   - During package compilation, the private key is mounted as a secret
+   - Packages are compiled from source and automatically pushed to OCI buildcache
+   - Spack autopush signs packages using the mounted private key
+   - Private key is only available during the RUN step, not in final layer
+
+3. **Runtime Stage**: 
+   - Only the public key (from base layer) is available
+   - Signatures are verified when installing from buildcache
+   - Private key is never present in runtime containers
 
 ### Security Layers
 
-The buildcache security model includes multiple layers:
+The buildcache security model provides:
 
-1. **OCI Registry Integrity**: The OCI registry (ghcr.io) provides SHA256 digest verification for all artifacts
-2. **HTTPS/TLS**: All communication with the registry is encrypted
-3. **Access Control**: Write access to the registry requires authentication
-4. **GPG Signatures**: Packages are signed with GPG keys, providing cryptographic verification
+1. **GPG Signatures**: Cryptographic signing with private key stored externally (GitHub Secrets)
+2. **Key Isolation**: Private key never embedded in container layers, only mounted during build
+3. **Authenticity Verification**: Signatures prove packages were signed by holder of private key
+4. **OCI Registry Integrity**: SHA256 digest verification for all artifacts
+5. **HTTPS/TLS**: Encrypted communication with the registry
+6. **Access Control**: Write access to the registry requires authentication
 
-## Production Setup (Recommended)
+## Production Setup (Required)
 
-For production use, you should provide a persistent GPG key via GitHub Secrets. This ensures buildcaches can be verified across multiple builds.
+A persistent GPG key **MUST** be provided via GitHub Secrets. There is no fallback - builds will fail without this secret.
 
 ### Generate GPG Key
 
@@ -64,82 +79,87 @@ secrets: |
   "SPACK_SIGNING_KEY=${{ secrets.SPACK_SIGNING_KEY }}"
 ```
 
-## Development/Testing Setup
-
-For local development and testing, the build will automatically create a temporary GPG key if `SPACK_SIGNING_KEY` is not provided. This works for single builds but won't allow buildcache reuse across builds.
-
-## Migration Notes
-
-When enabling signature verification for existing buildcaches:
-
-1. **Clear Old Buildcaches**: Old unsigned buildcaches may need to be cleared
-2. **Transition Period**: During the transition, some builds may fail if they try to use old unsigned buildcaches
-3. **Key Rotation**: If you need to rotate keys, clear the buildcache and create a new key
+**NOTE**: The SPACK_SIGNING_KEY secret is now **REQUIRED**. Builds will fail if not provided.
 
 ## Security Considerations
 
-### Current Implementation Limitations
+### Security Model
 
-**⚠️ IMPORTANT SECURITY NOTICE**: The current implementation has a significant security limitation:
+**✅ SECURE IMPLEMENTATION**: The private key is **NEVER** stored in container layers.
 
-- **Private Key Exposure**: When a GPG private key is imported into the container (either temporary or via SPACK_SIGNING_KEY secret), it becomes embedded in the container layer
-- **Public Accessibility**: Since the container base layer is published publicly, anyone can extract the private key using tools like `docker save` and layer inspection
-- **Limited Authenticity**: While signatures verify package integrity (not tampered), they don't prove authenticity (who created them) since the signing key is publicly accessible
-- **Attack Vector**: An attacker could extract the private key, create malicious packages, sign them with the extracted key, and users would trust them as legitimate
+**Key Security Features:**
+- **Private Key Isolation**: Stored only in GitHub Secrets, never in container filesystem
+- **Secret Mounting**: Private key is mounted during build steps that need signing, then discarded
+- **Public Key Only**: Container layers contain only the public key for verification
+- **No Extraction Risk**: Private key cannot be extracted from published containers
+- **Strong Authenticity**: Signatures prove packages were signed by holder of the secret private key
 
 ### Trust Model
 
-The current GPG signature model provides:
+The GPG signature model provides:
 - ✅ **Integrity verification**: Packages haven't been modified after signing
+- ✅ **Authenticity verification**: Packages signed by holder of private key in GitHub Secrets
+- ✅ **Non-repudiation**: Only authorized CI/CD with access to secret can sign packages
+- ✅ **Key Protection**: Private key never exposed in public container layers
 - ✅ **Transition compatibility**: Graceful migration from unsigned to signed buildcaches
-- ❌ **Authenticity verification**: Cannot prove WHO signed the packages (key is public)
-- ❌ **Non-repudiation**: Signatures don't prevent unauthorized signing
 
-This is acceptable for:
-- Internal use where container access is restricted
-- Transition period to enable signing infrastructure
-- Integrity checks within a trusted environment
+### How It Works
 
-This is NOT recommended for:
-- Production environments requiring strong authenticity guarantees
-- Public distribution with security-critical packages
-- Scenarios where attackers have motivation to inject malicious packages
+1. **Private Key Storage**: Stored securely in GitHub Secrets (SPACK_SIGNING_KEY)
+2. **Build-Time Mounting**: 
+   - Private key mounted as Docker secret during builder RUN steps
+   - Used for signing packages during autopush
+   - Exists only in memory during RUN, never written to filesystem layer
+3. **Public Key Embedding**: 
+   - Public key extracted and stored at `${SPACK_ROOT}/spack-public-key.pub`
+   - Safe to include in public containers (used only for verification)
+4. **Verification**: Runtime containers use embedded public key to verify signatures
 
-### Recommended Improvements for Production
+### Key Protection
 
-For stronger security in production environments:
+- **GitHub Secrets**: Private key encrypted at rest in GitHub's secure storage
+- **Limited Access**: Only authorized repository collaborators can modify secrets
+- **Audit Trail**: GitHub tracks who accesses and modifies secrets
+- **No Container Exposure**: Private key never persisted in any Docker layer
+- **Temporary Usage**: Private key exists only during RUN execution, then removed
 
-1. **Separate Signing from Container Build**:
-   - Sign buildcaches in CI/CD environment (GitHub Actions runner) before pushing to registry
-   - Only embed public key in container for verification, not private key
-   - Keep private key in GitHub Secrets, never in container layers
+### Key Rotation
 
-2. **Use OCI-Native Signing**:
-   - Consider using OCI registry signing mechanisms (e.g., cosign, notation)
-   - These tools are designed for container/artifact signing with proper key isolation
-   - Provides stronger guarantees and better key management
+When rotating keys:
 
-3. **Key Rotation**:
-   - If using current approach, rotate keys regularly (e.g., every 3-6 months)
-   - When rotating keys, clear old buildcaches to prevent verification failures
-   - Document key rotation procedures
+1. Generate new GPG key (see instructions above)
+2. Update SPACK_SIGNING_KEY secret in GitHub
+3. Clear old buildcaches (signed with old key)
+4. Rebuild containers to generate new signed buildcaches
+5. Securely delete old private key
 
-4. **Access Control**:
-   - Limit who can modify SPACK_SIGNING_KEY secret
-   - Monitor buildcache registry for unauthorized packages
-   - Implement additional verification layers (e.g., checksums, dependency scanning)
+Recommended rotation frequency: Every 6-12 months or when:
+- Key may have been compromised
+- Team member with key access leaves
+- As part of regular security hygiene
 
-### Current Best Practices
+### Best Practices
 
-While the current implementation has limitations:
-
-- **Key Protection**: Store keys in GitHub Secrets, never commit to repository
-- **Key Rotation**: Rotate GPG keys periodically (recommended: every 3-6 months)
-- **Buildcache Clearing**: When rotating keys, clear old buildcaches to prevent signature verification failures
+- **Key Protection**: Store private key only in GitHub Secrets, never commit to repository or share
+- **Access Control**: Limit who can view/modify SPACK_SIGNING_KEY secret in repository settings
+- **Key Rotation**: Rotate GPG keys periodically (recommended: every 6-12 months)
+- **Buildcache Clearing**: When rotating keys, clear old buildcaches signed with previous key
 - **Monitoring**: Monitor for suspicious packages or signature verification failures
-- **Documentation**: Clearly communicate the security model to users
+- **Audit**: Review GitHub Actions logs for unauthorized build attempts
 
 ## Troubleshooting
+
+### Build Fails: SPACK_SIGNING_KEY Required
+
+If you see:
+```
+ERROR: SPACK_SIGNING_KEY secret is required but not provided
+```
+
+Solution:
+- The secret is mandatory - generate a GPG key and add it to GitHub Secrets
+- Follow the "Production Setup" instructions above
+- Ensure the secret is named exactly `SPACK_SIGNING_KEY`
 
 ### Signature Verification Failures
 
@@ -155,11 +175,6 @@ Possible causes:
 
 Solutions:
 - Clear the buildcache and rebuild
-- Ensure SPACK_SIGNING_KEY secret is configured
+- Ensure SPACK_SIGNING_KEY secret is configured correctly
 - Check that the public key is being exported and imported correctly
-
-### Temporary Key Issues
-
-If builds are failing because they can't reuse buildcaches:
-- Add the SPACK_SIGNING_KEY secret with a persistent key
-- Or, clear buildcaches between builds
+- Verify key consistency across builds

@@ -258,37 +258,53 @@ spack compiler find --scope site
 spack config blame compilers
 EOF
 
-## Setup GPG key for buildcache signing
-## For production use, provide a persistent GPG key via SPACK_SIGNING_KEY secret to ensure
-## buildcaches can be verified across builds. Without this secret, a temporary key is created
-## which works for single-build scenarios but prevents buildcache reuse across builds.
+## Setup GPG public key for buildcache verification
+## REQUIRED: A persistent GPG key MUST be provided via SPACK_SIGNING_KEY secret.
+## Only the PUBLIC key is stored in container layers for verification.
+## The PRIVATE key is mounted as a secret during build steps that require signing.
 ##
-## SECURITY NOTICE: The private key (whether temporary or imported) is embedded in this
-## public container layer and can be extracted by anyone. This provides integrity verification
-## but NOT authenticity (anyone can sign packages with the extracted key). For production
-## environments requiring strong security, consider signing buildcaches in CI/CD before
-## pushing to registry, and only embed the public key in the container.
-## See docs/BUILDCACHE_SIGNING.md for detailed security considerations.
-RUN --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key \
+## SECURITY MODEL:
+## - Private key: Stored in GitHub Secrets, mounted during builds, NEVER in container layers
+## - Public key: Embedded in container at ${SPACK_ROOT}/spack-public-key.pub for verification
+## - Signing: Happens during builder install steps, using --mount=type=secret for private key
+## - Verification: Happens during runtime install steps, using embedded public key
+RUN --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key,required=true \
     <<EOF
 set -e
+# Verify secret is provided
+if [ ! -f /tmp/spack-signing-key ] || [ ! -s /tmp/spack-signing-key ]; then
+  echo "ERROR: SPACK_SIGNING_KEY secret is required but not provided"
+  echo "Please provide a GPG key via --secret id=SPACK_SIGNING_KEY,src=<path-to-key>"
+  echo "See docs/BUILDCACHE_SIGNING.md for instructions on generating a key"
+  exit 1
+fi
+
 # Initialize Spack's GPG environment
 spack gpg init
-# Import signing key if provided, otherwise create a new one
-if [ -f /tmp/spack-signing-key ] && [ -s /tmp/spack-signing-key ]; then
-  # Import the GPG key (expects ASCII-armored key with both public and private parts)
-  # First import into GPG, then Spack will use it from there
-  cat /tmp/spack-signing-key | gpg --batch --import
-  # Also trust the public key in Spack's keyring for verification
-  cat /tmp/spack-signing-key | gpg --batch --export | spack gpg trust
+
+# Extract and store ONLY the public key (not the private key)
+# Import to temporary GPG home to extract public key
+export GNUPGHOME=/tmp/gnupg-temp
+mkdir -p ${GNUPGHOME}
+chmod 700 ${GNUPGHOME}
+gpg --batch --import /tmp/spack-signing-key
+# Export only the public key
+gpg --batch --export > ${SPACK_ROOT}/spack-public-key.pub
+# Import public key into Spack's keyring for verification
+spack gpg trust ${SPACK_ROOT}/spack-public-key.pub
+# Clean up temporary GPG home (private key never persisted in container)
+rm -rf ${GNUPGHOME}
+unset GNUPGHOME
+
+# Verify we have the public key
+if [ -f ${SPACK_ROOT}/spack-public-key.pub ]; then
+  echo "Public key successfully exported to ${SPACK_ROOT}/spack-public-key.pub"
+  echo "Private key was NOT stored in container - will be mounted during build steps"
 else
-  # Create a temporary GPG key for signing (non-interactive)
-  # Note: For production, a persistent key should be provided via SPACK_SIGNING_KEY secret
-  spack gpg create "EIC Containers" eic-containers@github.com
+  echo "ERROR: Failed to export public key"
+  exit 1
 fi
-# Export public key to SPACK_ROOT for use by derived images
-spack gpg export > ${SPACK_ROOT}/spack-public-key.pub
-# List keys to verify setup
+
 spack gpg list
 EOF
 
