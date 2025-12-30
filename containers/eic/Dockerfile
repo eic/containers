@@ -6,7 +6,7 @@ ARG RUNTIME_IMAGE="debian_stable_base"
 ARG INTERNAL_TAG="master"
 
 ##
-## This docker build follows two tracks, in order to ensure that we build all packages
+## This docker build follows three tracks, in order to ensure that we build all packages
 ## in a builder image, but install them in a runtime image, while at the same time
 ## avoiding a expensive filesystem copy operation at the end that breaks layering.
 ##
@@ -18,15 +18,20 @@ ARG INTERNAL_TAG="master"
 ## The separation in a builder and runtime image is particularly relevant to end up with
 ## lightweight images for expensive build dependencies, such as for example CUDA.
 ##
-## builder track                         runtime track
-## ----------------------------------------------------------------------
+## builder track:                        runtime track:
+## concretization:     installation:     concretization/installation:
+## ---------------------------------------------------------------------------------------
 ## builder_image                         runtime_image
 ## builder_concretization_default   
-## builder_installation_default     ->   runtime_concretization_default  (copy spack.lock)
-##                                 \->   runtime_installation_default    (from buildcache)
-## builder_concretization_custom
-## builder_installation_custom      ->   runtime_concretization_custom   (copy spack.lock)
-##                                 \->   runtime_installation_custom     (from buildcache)
+##                \->  builder_installation_default
+##                                       runtime_default
+##                                       (copy spack.lock from builder_installation_default)
+##                                       (install via buildcache)
+## \->  builder_concretization_custom
+##                     \->  builder_installation_custom
+##                                       \->   runtime_custom
+##                                             (copy spack.lock from builder_installation_custom)
+##                                             (install via buildcache)
 ##
 
 
@@ -105,14 +110,14 @@ EOF
 
 
 ## ========================================================================================
-## runtime_concretization_default
-## - runtime base with concretization of default versions (taken from equivalent builder)
+## runtime_installation_default
+## - runtime base with installation of default versions (buildcache populated by builder)
 ## ========================================================================================
-FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} AS runtime_concretization_default
+FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} AS runtime_default
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
-LABEL org.opencontainers.image.title="Electron-Ion Collider runtime concretization image (default configuration, $TARGETPLATFORM)"
+LABEL org.opencontainers.image.title="Electron-Ion Collider runtime image (default configuration, $TARGETPLATFORM)"
 
 ## Copy our default environment
 COPY --from=spack-environment . /opt/spack-environment/
@@ -125,17 +130,6 @@ ENV SPACK_COLOR="always"
 COPY --from=builder_installation_default \
   /opt/spack-environment/${ENV}/spack.* \
   /opt/spack-environment/${ENV}/
-
-
-## ========================================================================================
-## runtime_installation_default
-## - runtime base with installation of default versions (buildcache populated by builder)
-## ========================================================================================
-FROM runtime_concretization_default AS runtime_installation_default
-ARG TARGETPLATFORM
-
-# Open Container Initiative labels
-LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (default configuration, $TARGETPLATFORM)"
 
 # Installation (default environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
@@ -155,7 +149,7 @@ EOF
 ## builder_concretization_custom
 ## - builder base with concretization of custom versions
 ## ========================================================================================
-FROM builder_installation_default AS builder_concretization_custom
+FROM builder_concretization_default AS builder_concretization_custom
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
@@ -241,14 +235,14 @@ EOF
 
 
 ## ========================================================================================
-## runtime_concretization_custom
-## - runtime base with concretization of custom versions (taken from equivalent builder)
+## runtime_installation_custom
+## - runtime base with installation of custom versions (buildcache populated by builder)
 ## ========================================================================================
-FROM runtime_installation_default AS runtime_concretization_custom
+FROM runtime_default AS runtime_custom
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
-LABEL org.opencontainers.image.title="Electron-Ion Collider runtime concretization image (custom configuration, $TARGETPLATFORM)"
+LABEL org.opencontainers.image.title="Electron-Ion Collider runtime image (custom configuration, $TARGETPLATFORM)"
 
 # Set spack environment directory
 ENV SPACK_ENV=/opt/spack-environment/${ENV}/epic
@@ -263,17 +257,6 @@ COPY --from=builder_installation_custom \
   /opt/spack-environment/packages.yaml \
   /opt/spack-environment/
 
-
-## ========================================================================================
-## runtime_installation_custom
-## - runtime base with installation of custom versions (buildcache populated by builder)
-## ========================================================================================
-FROM runtime_concretization_custom AS runtime_installation_custom
-ARG TARGETPLATFORM
-
-# Open Container Initiative labels
-LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
-
 # Installation (default environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
@@ -286,13 +269,13 @@ EOF
 
 
 ## ========================================================================================
-## final image, based on runtime_installation_custom
+## final image, based on runtime_custom
 ## ========================================================================================
-FROM runtime_installation_custom AS final
+FROM runtime_custom AS final
 ARG TARGETPLATFORM
 
 # Open Container Initiative labels
-LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
+LABEL org.opencontainers.image.title="Electron-Ion Collider runtime image (custom configuration, $TARGETPLATFORM)"
 
 ## Ensure views directories, not symlinks
 RUN <<EOF
