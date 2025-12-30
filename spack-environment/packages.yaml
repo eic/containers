@@ -31,10 +31,10 @@ packages:
     - '@44.4.0'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
-    - spec: '%gcc'
-      when: '^dd4hep%gcc'
-    - spec: '%clang'
-      when: '^dd4hep%clang'
+    - spec: '%c=gcc %cxx=gcc'
+      when: '^dd4hep %c=gcc %cxx=gcc'
+    - spec: '%c=clang %cxx=clang'
+      when: '^dd4hep %c=clang %cxx=clang'
   actsvg:
     require:
     - '@0.4.56'
@@ -501,7 +501,7 @@ packages:
     - '@0.13.2:'
   py-tensorflow:
     require:
-    - '%clang'
+    - '%cxx=clang'
     - '@2.20'
   py-toml:
     require:
