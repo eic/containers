@@ -89,6 +89,25 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (default configuration, $TARGETPLATFORM)"
 
+# Set up GPG key for buildcache signing
+RUN --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key \
+    <<EOF
+set -e
+# Initialize Spack's GPG environment
+spack gpg init
+# Import signing key if provided, otherwise create a new one
+if [ -f /tmp/spack-signing-key ] && [ -s /tmp/spack-signing-key ]; then
+  # Import the GPG key (both public and private)
+  spack gpg trust /tmp/spack-signing-key
+else
+  # Create a temporary GPG key for signing (non-interactive)
+  # Note: For production, a persistent key should be provided via SPACK_SIGNING_KEY secret
+  spack gpg create "EIC Containers" eic-containers@github.com
+fi
+# List keys to verify setup
+spack gpg list
+EOF
+
 # Installation (default environment)
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
@@ -106,6 +125,8 @@ spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 spack clean --downloads --stage
 ccache --show-stats
 ccache --zero-stats
+# Export public key for runtime image verification
+spack gpg export > /tmp/spack-public-key.pub
 EOF
 
 
@@ -124,12 +145,23 @@ COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
-ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+ARG SPACK_INSTALL_FLAGS="--show-log-on-error --yes-to-all"
 ENV SPACK_COLOR="always"
 
 COPY --from=builder_installation_default \
   /opt/spack-environment/${ENV}/spack.* \
   /opt/spack-environment/${ENV}/
+COPY --from=builder_installation_default \
+  /tmp/spack-public-key.pub \
+  /tmp/spack-public-key.pub
+
+# Import public key for buildcache verification
+RUN <<EOF
+set -e
+spack gpg init
+spack gpg trust /tmp/spack-public-key.pub
+spack gpg list
+EOF
 
 # Installation (default environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
@@ -231,6 +263,8 @@ spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
 ccache --zero-stats
+# Export public key for runtime image verification
+spack gpg export > /tmp/spack-public-key.pub
 EOF
 
 
