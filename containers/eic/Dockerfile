@@ -90,6 +90,9 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (default configuration, $TARGETPLATFORM)"
 
 # Set up GPG key for buildcache signing
+# For production use, provide a persistent GPG key via SPACK_SIGNING_KEY secret to ensure
+# buildcaches can be verified across builds. Without this secret, a temporary key is created
+# for each build, which works for single-build scenarios but prevents buildcache reuse.
 RUN --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key \
     <<EOF
 set -e
