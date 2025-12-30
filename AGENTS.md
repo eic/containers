@@ -133,6 +133,12 @@ Common stages:
 
 ### CI/CD Pipeline
 
+This repository uses **dual CI workflows**: GitHub Actions and GitLab CI (EICweb).
+
+**Important**: Passing GitHub Actions is **necessary but not sufficient**, and vice versa. Both CI systems must pass for changes to be considered validated.
+
+#### GitHub Actions Workflow
+
 The GitHub Actions workflow (`build-push.yml`) runs on:
 - **Schedule**: Every 6 hours
 - **Push**: To `master` branch
@@ -145,6 +151,21 @@ Job flow:
 3. `base-manifest` - Create multi-arch manifest
 4. `eic` (parallel per-env and per-arch) - Build `eic_ci` and `eic_xl`
 5. `eic-manifest` - Create multi-arch manifests
+
+#### GitLab CI Workflow (EICweb)
+
+The repository is **mirrored to GitLab** at `eicweb.phy.anl.gov/containers/eic_container` (project ID 290). The `mirror.yaml` workflow:
+- Syncs all pushes to the GitLab mirror
+- Triggers GitLab CI pipeline with context from GitHub (repository, SHA, PR number)
+- Reports GitLab CI status back to GitHub as `eicweb/eic_container` status check
+
+The GitLab CI configuration (`.gitlab-ci.yml`) runs similar build jobs but in the GitLab environment with different runner configurations and registry targets.
+
+**Key Differences:**
+- GitHub Actions uses fewer parallel jobs (`JOBS: 4`) due to runner limitations
+- GitLab CI uses more parallel jobs (`JOBS: 32`) on dedicated hardware
+- Both systems push to their respective registries (GitHub Container Registry and GitLab Registry)
+- GitLab CI status appears as a separate check on GitHub PRs
 
 ## Coding Conventions
 

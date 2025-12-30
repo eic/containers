@@ -64,8 +64,15 @@ When updating package versions:
 Before submitting:
 1. Test concretization with builder stage builds
 2. Verify no unexpected duplicate packages
-3. Check CI workflow passes
+3. **Check BOTH CI workflows pass** (GitHub Actions AND GitLab/EICweb)
 4. Update documentation if architecture changes
+
+### Dual CI Workflow
+
+This repository uses **both** GitHub Actions and GitLab CI (EICweb):
+- **GitHub Actions**: Primary workflow for GitHub-hosted builds
+- **GitLab CI**: Mirrored workflow on `eicweb.phy.anl.gov` with dedicated hardware
+- **Both must pass** - passing one is necessary but not sufficient
 
 ## Registry Information
 
