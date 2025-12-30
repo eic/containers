@@ -100,8 +100,11 @@ set -e
 spack gpg init
 # Import signing key if provided, otherwise create a new one
 if [ -f /tmp/spack-signing-key ] && [ -s /tmp/spack-signing-key ]; then
-  # Import the GPG key (both public and private)
-  spack gpg trust /tmp/spack-signing-key
+  # Import the GPG key (expects ASCII-armored key with both public and private parts)
+  # First import into GPG, then Spack will use it from there
+  cat /tmp/spack-signing-key | gpg --batch --import
+  # Also trust the public key in Spack's keyring for verification
+  cat /tmp/spack-signing-key | gpg --batch --export | spack gpg trust
 else
   # Create a temporary GPG key for signing (non-interactive)
   # Note: For production, a persistent key should be provided via SPACK_SIGNING_KEY secret
@@ -251,6 +254,8 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (custom configuration, $TARGETPLATFORM)"
 
 # Set up GPG key for buildcache signing
+# Note: This setup is duplicated from builder_installation_default due to Dockerfile limitations.
+# Both builder stages need independent GPG setup as they don't share a common parent with GPG configured.
 # For production use, provide a persistent GPG key via SPACK_SIGNING_KEY secret to ensure
 # buildcaches can be verified across builds. Without this secret, a temporary key is created
 # for each build, which works for single-build scenarios but prevents buildcache reuse.
@@ -261,8 +266,11 @@ set -e
 spack gpg init
 # Import signing key if provided, otherwise create a new one
 if [ -f /tmp/spack-signing-key ] && [ -s /tmp/spack-signing-key ]; then
-  # Import the GPG key (both public and private)
-  spack gpg trust /tmp/spack-signing-key
+  # Import the GPG key (expects ASCII-armored key with both public and private parts)
+  # First import into GPG, then Spack will use it from there
+  cat /tmp/spack-signing-key | gpg --batch --import
+  # Also trust the public key in Spack's keyring for verification
+  cat /tmp/spack-signing-key | gpg --batch --export | spack gpg trust
 else
   # Create a temporary GPG key for signing (non-interactive)
   # Note: For production, a persistent key should be provided via SPACK_SIGNING_KEY secret
@@ -320,8 +328,11 @@ COPY --from=builder_installation_custom \
   /tmp/spack-public-key-custom.pub
 
 # Import public key from custom builder for buildcache verification
-# Note: runtime_custom inherits the key from runtime_default, but we also need
-# the key from builder_installation_custom in case temporary keys are used
+# Note: This stage is based on runtime_default (FROM runtime_default AS runtime_custom at line 300),
+# which already has the public key from builder_installation_default imported.
+# However, we also import the key from builder_installation_custom to handle the case
+# where temporary keys are used (each builder stage creates a different temporary key).
+# With a persistent SPACK_SIGNING_KEY secret, both builders use the same key, making this redundant but harmless.
 RUN <<EOF
 set -e
 spack gpg trust /tmp/spack-public-key-custom.pub
