@@ -141,6 +141,7 @@ EOF
 
 # Installation (default environment, from buildcache)
 # Transition strategy: Try with signature verification first, fall back to unsigned if needed
+# This allows graceful migration from unsigned buildcaches (pre-signing) to signed ones
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
@@ -151,12 +152,15 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
 set -e
 # Try to install with signature verification (signed buildcaches)
 if ! spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only 2>&1 | tee /tmp/install.log; then
-  # Check if the failure was due to signature verification
-  if grep -q "signature" /tmp/install.log || grep -q "gpg" /tmp/install.log; then
-    echo "Signature verification failed, retrying with --no-check-signature for transition compatibility"
+  # Check if the failure was due to signature verification issues
+  # Look for specific Spack error patterns related to signatures and GPG
+  if grep -qE "(NoVerifyException|signature.*verif|gpg.*trust|gpg.*key|buildcache.*sign)" /tmp/install.log; then
+    echo "==> Signature verification issue detected, retrying with --no-check-signature for transition compatibility"
+    echo "==> This fallback allows installation of unsigned buildcaches created before signature enforcement"
     spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --no-check-signature --use-buildcache only
   else
-    # Different error, fail the build
+    # Different error (not signature-related), fail the build with full log
+    echo "==> Installation failed with non-signature error:"
     cat /tmp/install.log
     exit 1
   fi
@@ -282,6 +286,7 @@ COPY --from=builder_installation_custom \
 
 # Installation (custom environment, from buildcache)
 # Transition strategy: Try with signature verification first, fall back to unsigned if needed
+# This allows graceful migration from unsigned buildcaches (pre-signing) to signed ones
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
@@ -289,12 +294,15 @@ set -e
 spack env activate --dir ${SPACK_ENV}
 # Try to install with signature verification (signed buildcaches)
 if ! spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only 2>&1 | tee /tmp/install.log; then
-  # Check if the failure was due to signature verification
-  if grep -q "signature" /tmp/install.log || grep -q "gpg" /tmp/install.log; then
-    echo "Signature verification failed, retrying with --no-check-signature for transition compatibility"
+  # Check if the failure was due to signature verification issues
+  # Look for specific Spack error patterns related to signatures and GPG
+  if grep -qE "(NoVerifyException|signature.*verif|gpg.*trust|gpg.*key|buildcache.*sign)" /tmp/install.log; then
+    echo "==> Signature verification issue detected, retrying with --no-check-signature for transition compatibility"
+    echo "==> This fallback allows installation of unsigned buildcaches created before signature enforcement"
     spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --no-check-signature --use-buildcache only
   else
-    # Different error, fail the build
+    # Different error (not signature-related), fail the build with full log
+    echo "==> Installation failed with non-signature error:"
     cat /tmp/install.log
     exit 1
   fi
