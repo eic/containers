@@ -67,7 +67,7 @@ All images support both `linux/amd64` and `linux/arm64` architectures through pa
 
 Spack package definitions come from multiple repositories with **priority ordering** (highest to lowest):
 1. **eic/eic-spack** - EIC-specific packages
-2. **key4hep/key4hep-spack** - Key4HEP packages  
+2. **key4hep/key4hep-spack** - Key4HEP packages
 3. **spack/spack-packages** - Community packages
 
 ### Version Management
