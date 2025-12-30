@@ -110,7 +110,7 @@ EOF
 
 
 ## ========================================================================================
-## runtime_installation_default
+## runtime_default
 ## - runtime base with installation of default versions (buildcache populated by builder)
 ## ========================================================================================
 FROM ${DOCKER_REGISTRY}${RUNTIME_IMAGE}:${INTERNAL_TAG} AS runtime_default
@@ -235,7 +235,7 @@ EOF
 
 
 ## ========================================================================================
-## runtime_installation_custom
+## runtime_custom
 ## - runtime base with installation of custom versions (buildcache populated by builder)
 ## ========================================================================================
 FROM runtime_default AS runtime_custom
@@ -257,7 +257,7 @@ COPY --from=builder_installation_custom \
   /opt/spack-environment/packages.yaml \
   /opt/spack-environment/
 
-# Installation (default environment, from buildcache)
+# Installation (custom environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
