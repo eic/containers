@@ -250,6 +250,28 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (custom configuration, $TARGETPLATFORM)"
 
+# Set up GPG key for buildcache signing
+# For production use, provide a persistent GPG key via SPACK_SIGNING_KEY secret to ensure
+# buildcaches can be verified across builds. Without this secret, a temporary key is created
+# for each build, which works for single-build scenarios but prevents buildcache reuse.
+RUN --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key \
+    <<EOF
+set -e
+# Initialize Spack's GPG environment
+spack gpg init
+# Import signing key if provided, otherwise create a new one
+if [ -f /tmp/spack-signing-key ] && [ -s /tmp/spack-signing-key ]; then
+  # Import the GPG key (both public and private)
+  spack gpg trust /tmp/spack-signing-key
+else
+  # Create a temporary GPG key for signing (non-interactive)
+  # Note: For production, a persistent key should be provided via SPACK_SIGNING_KEY secret
+  spack gpg create "EIC Containers" eic-containers@github.com
+fi
+# List keys to verify setup
+spack gpg list
+EOF
+
 # Installation (custom environment)
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
@@ -293,6 +315,18 @@ COPY --from=builder_installation_custom \
 COPY --from=builder_installation_custom \
   /opt/spack-environment/packages.yaml \
   /opt/spack-environment/
+COPY --from=builder_installation_custom \
+  /tmp/spack-public-key.pub \
+  /tmp/spack-public-key-custom.pub
+
+# Import public key from custom builder for buildcache verification
+# Note: runtime_custom inherits the key from runtime_default, but we also need
+# the key from builder_installation_custom in case temporary keys are used
+RUN <<EOF
+set -e
+spack gpg trust /tmp/spack-public-key-custom.pub
+spack gpg list
+EOF
 
 # Installation (custom environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \

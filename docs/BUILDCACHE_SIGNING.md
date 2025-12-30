@@ -2,7 +2,7 @@
 
 ## Overview
 
-The container build process uses Spack buildcaches to distribute pre-built binary packages. As of [PR #XXX], these buildcaches are signed using GPG keys to ensure integrity and authenticity.
+The container build process uses Spack buildcaches to distribute pre-built binary packages. These buildcaches are signed using GPG keys to ensure integrity and authenticity.
 
 ## How It Works
 
