@@ -258,13 +258,42 @@ spack compiler find --scope site
 spack config blame compilers
 EOF
 
+## Setup GPG key for buildcache signing
+## For production use, provide a persistent GPG key via SPACK_SIGNING_KEY secret to ensure
+## buildcaches can be verified across builds. Without this secret, a temporary key is created
+## which works for single-build scenarios but prevents buildcache reuse across builds.
+RUN --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key \
+    <<EOF
+set -e
+# Initialize Spack's GPG environment
+spack gpg init
+# Import signing key if provided, otherwise create a new one
+if [ -f /tmp/spack-signing-key ] && [ -s /tmp/spack-signing-key ]; then
+  # Import the GPG key (expects ASCII-armored key with both public and private parts)
+  # First import into GPG, then Spack will use it from there
+  cat /tmp/spack-signing-key | gpg --batch --import
+  # Also trust the public key in Spack's keyring for verification
+  cat /tmp/spack-signing-key | gpg --batch --export | spack gpg trust
+else
+  # Create a temporary GPG key for signing (non-interactive)
+  # Note: For production, a persistent key should be provided via SPACK_SIGNING_KEY secret
+  spack gpg create "EIC Containers" eic-containers@github.com
+fi
+# Export public key to SPACK_ROOT for use by derived images
+spack gpg export > ${SPACK_ROOT}/spack-public-key.pub
+# List keys to verify setup
+spack gpg list
+EOF
+
 ## Setup buildcache mirrors
 ## - this always adds the read-only mirror to the container
 ## - the write-enabled mirror is provided later as a secret mount
+## - ghcr mirror is configured as signed, but installation will attempt both signed and unsigned
+##   during transition period (before all artifacts are signed)
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
 spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
-spack mirror add --scope site --unsigned ghcr-${SPACKPACKAGES_VERSION} oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
+spack mirror add --scope site --signed ghcr-${SPACKPACKAGES_VERSION} oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
 spack mirror list
 EOF
 

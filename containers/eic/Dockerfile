@@ -89,31 +89,6 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (default configuration, $TARGETPLATFORM)"
 
-# Set up GPG key for buildcache signing
-# For production use, provide a persistent GPG key via SPACK_SIGNING_KEY secret to ensure
-# buildcaches can be verified across builds. Without this secret, a temporary key is created
-# for each build, which works for single-build scenarios but prevents buildcache reuse.
-RUN --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key \
-    <<EOF
-set -e
-# Initialize Spack's GPG environment
-spack gpg init
-# Import signing key if provided, otherwise create a new one
-if [ -f /tmp/spack-signing-key ] && [ -s /tmp/spack-signing-key ]; then
-  # Import the GPG key (expects ASCII-armored key with both public and private parts)
-  # First import into GPG, then Spack will use it from there
-  cat /tmp/spack-signing-key | gpg --batch --import
-  # Also trust the public key in Spack's keyring for verification
-  cat /tmp/spack-signing-key | gpg --batch --export | spack gpg trust
-else
-  # Create a temporary GPG key for signing (non-interactive)
-  # Note: For production, a persistent key should be provided via SPACK_SIGNING_KEY secret
-  spack gpg create "EIC Containers" eic-containers@github.com
-fi
-# List keys to verify setup
-spack gpg list
-EOF
-
 # Installation (default environment)
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
@@ -131,8 +106,6 @@ spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 spack clean --downloads --stage
 ccache --show-stats
 ccache --zero-stats
-# Export public key for runtime image verification
-spack gpg export > /tmp/spack-public-key.pub
 EOF
 
 
@@ -157,19 +130,17 @@ ENV SPACK_COLOR="always"
 COPY --from=builder_installation_default \
   /opt/spack-environment/${ENV}/spack.* \
   /opt/spack-environment/${ENV}/
-COPY --from=builder_installation_default \
-  /tmp/spack-public-key.pub \
-  /tmp/spack-public-key.pub
 
-# Import public key for buildcache verification
+# Public key is already available from base layer at ${SPACK_ROOT}/spack-public-key.pub
+# Trust it in case the base layer GPG was created with a temporary key
 RUN <<EOF
 set -e
-spack gpg init
-spack gpg trust /tmp/spack-public-key.pub
+spack gpg trust ${SPACK_ROOT}/spack-public-key.pub
 spack gpg list
 EOF
 
 # Installation (default environment, from buildcache)
+# Transition strategy: Try with signature verification first, fall back to unsigned if needed
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
@@ -178,7 +149,18 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
 set -e
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
+# Try to install with signature verification (signed buildcaches)
+if ! spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only 2>&1 | tee /tmp/install.log; then
+  # Check if the failure was due to signature verification
+  if grep -q "signature" /tmp/install.log || grep -q "gpg" /tmp/install.log; then
+    echo "Signature verification failed, retrying with --no-check-signature for transition compatibility"
+    spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --no-check-signature --use-buildcache only
+  else
+    # Different error, fail the build
+    cat /tmp/install.log
+    exit 1
+  fi
+fi
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
@@ -253,33 +235,6 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (custom configuration, $TARGETPLATFORM)"
 
-# Set up GPG key for buildcache signing
-# Note: This setup is duplicated from builder_installation_default due to Dockerfile limitations.
-# Both builder stages need independent GPG setup as they don't share a common parent with GPG configured.
-# For production use, provide a persistent GPG key via SPACK_SIGNING_KEY secret to ensure
-# buildcaches can be verified across builds. Without this secret, a temporary key is created
-# for each build, which works for single-build scenarios but prevents buildcache reuse.
-RUN --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key \
-    <<EOF
-set -e
-# Initialize Spack's GPG environment
-spack gpg init
-# Import signing key if provided, otherwise create a new one
-if [ -f /tmp/spack-signing-key ] && [ -s /tmp/spack-signing-key ]; then
-  # Import the GPG key (expects ASCII-armored key with both public and private parts)
-  # First import into GPG, then Spack will use it from there
-  cat /tmp/spack-signing-key | gpg --batch --import
-  # Also trust the public key in Spack's keyring for verification
-  cat /tmp/spack-signing-key | gpg --batch --export | spack gpg trust
-else
-  # Create a temporary GPG key for signing (non-interactive)
-  # Note: For production, a persistent key should be provided via SPACK_SIGNING_KEY secret
-  spack gpg create "EIC Containers" eic-containers@github.com
-fi
-# List keys to verify setup
-spack gpg list
-EOF
-
 # Installation (custom environment)
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
@@ -296,8 +251,6 @@ spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
 ccache --zero-stats
-# Export public key for runtime image verification
-spack gpg export > /tmp/spack-public-key.pub
 EOF
 
 
@@ -323,29 +276,29 @@ COPY --from=builder_installation_custom \
 COPY --from=builder_installation_custom \
   /opt/spack-environment/packages.yaml \
   /opt/spack-environment/
-COPY --from=builder_installation_custom \
-  /tmp/spack-public-key.pub \
-  /tmp/spack-public-key-custom.pub
 
-# Import public key from custom builder for buildcache verification
-# Note: This stage is based on runtime_default (FROM runtime_default AS runtime_custom at line 300),
-# which already has the public key from builder_installation_default imported.
-# However, we also import the key from builder_installation_custom to handle the case
-# where temporary keys are used (each builder stage creates a different temporary key).
-# With a persistent SPACK_SIGNING_KEY secret, both builders use the same key, making this redundant but harmless.
-RUN <<EOF
-set -e
-spack gpg trust /tmp/spack-public-key-custom.pub
-spack gpg list
-EOF
+# GPG key is already set up and trusted from base layer (debian/Dockerfile)
+# runtime_custom inherits from runtime_default which has already trusted the public key
 
 # Installation (custom environment, from buildcache)
+# Transition strategy: Try with signature verification first, fall back to unsigned if needed
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
+# Try to install with signature verification (signed buildcaches)
+if ! spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only 2>&1 | tee /tmp/install.log; then
+  # Check if the failure was due to signature verification
+  if grep -q "signature" /tmp/install.log || grep -q "gpg" /tmp/install.log; then
+    echo "Signature verification failed, retrying with --no-check-signature for transition compatibility"
+    spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --no-check-signature --use-buildcache only
+  else
+    # Different error, fail the build
+    cat /tmp/install.log
+    exit 1
+  fi
+fi
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
