@@ -265,6 +265,15 @@ spack bootstrap root /opt/spack/bootstrap
 spack bootstrap now
 EOF
 
+## Find external packages (if not already found as compilers)
+## - allow llvm to be buildable for py-numba > py-llvmlite
+RUN <<EOF
+set -e
+spack external find --scope site llvm
+spack external find --scope site --not-buildable gcc
+spack external find --scope site --not-buildable --path /usr/local/cuda/bin cuda
+EOF
+
 ## Setup buildcache mirrors
 ## - this always adds the read-only mirror to the container
 ## - the write-enabled mirror is provided later as a secret mount
