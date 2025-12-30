@@ -132,9 +132,14 @@ COPY --from=builder_installation_default \
   /opt/spack-environment/${ENV}/
 
 # Public key is already available from base layer at ${SPACK_ROOT}/spack-public-key.pub
-# Trust it in case the base layer GPG was created with a temporary key
+# Trust it for buildcache verification
 RUN <<EOF
 set -e
+if [ ! -f ${SPACK_ROOT}/spack-public-key.pub ]; then
+  echo "ERROR: GPG public key not found at ${SPACK_ROOT}/spack-public-key.pub"
+  echo "This indicates the base layer GPG setup failed or was not run"
+  exit 1
+fi
 spack gpg trust ${SPACK_ROOT}/spack-public-key.pub
 spack gpg list
 EOF
@@ -142,6 +147,8 @@ EOF
 # Installation (default environment, from buildcache)
 # Transition strategy: Try with signature verification first, fall back to unsigned if needed
 # This allows graceful migration from unsigned buildcaches (pre-signing) to signed ones
+# NOTE: The error pattern regex is duplicated in runtime_custom stage due to Dockerfile limitations
+#       (cannot share variables across RUN commands). Keep both patterns in sync.
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \

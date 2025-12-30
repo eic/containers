@@ -288,8 +288,11 @@ EOF
 ## Setup buildcache mirrors
 ## - this always adds the read-only mirror to the container
 ## - the write-enabled mirror is provided later as a secret mount
-## - ghcr mirror is configured as signed, but installation will attempt both signed and unsigned
-##   during transition period (before all artifacts are signed)
+## - ghcr mirror is configured as --signed (changed from --unsigned)
+##   The transition strategy in runtime stages (eic/Dockerfile) handles both signed and unsigned
+##   artifacts during migration period, attempting signed first and falling back to unsigned
+## - New buildcaches will be automatically signed via autopush (mirrors.yaml.in has signed: true)
+## - Deploy order: This change is safe as long as runtime stages have transition logic in place
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
 spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
