@@ -78,10 +78,66 @@ When enabling signature verification for existing buildcaches:
 
 ## Security Considerations
 
-- **Key Protection**: The private key should be stored securely in GitHub Secrets and never committed to the repository
-- **Key Rotation**: Consider rotating the GPG key periodically (e.g., annually)
+### Current Implementation Limitations
+
+**⚠️ IMPORTANT SECURITY NOTICE**: The current implementation has a significant security limitation:
+
+- **Private Key Exposure**: When a GPG private key is imported into the container (either temporary or via SPACK_SIGNING_KEY secret), it becomes embedded in the container layer
+- **Public Accessibility**: Since the container base layer is published publicly, anyone can extract the private key using tools like `docker save` and layer inspection
+- **Limited Authenticity**: While signatures verify package integrity (not tampered), they don't prove authenticity (who created them) since the signing key is publicly accessible
+- **Attack Vector**: An attacker could extract the private key, create malicious packages, sign them with the extracted key, and users would trust them as legitimate
+
+### Trust Model
+
+The current GPG signature model provides:
+- ✅ **Integrity verification**: Packages haven't been modified after signing
+- ✅ **Transition compatibility**: Graceful migration from unsigned to signed buildcaches
+- ❌ **Authenticity verification**: Cannot prove WHO signed the packages (key is public)
+- ❌ **Non-repudiation**: Signatures don't prevent unauthorized signing
+
+This is acceptable for:
+- Internal use where container access is restricted
+- Transition period to enable signing infrastructure
+- Integrity checks within a trusted environment
+
+This is NOT recommended for:
+- Production environments requiring strong authenticity guarantees
+- Public distribution with security-critical packages
+- Scenarios where attackers have motivation to inject malicious packages
+
+### Recommended Improvements for Production
+
+For stronger security in production environments:
+
+1. **Separate Signing from Container Build**:
+   - Sign buildcaches in CI/CD environment (GitHub Actions runner) before pushing to registry
+   - Only embed public key in container for verification, not private key
+   - Keep private key in GitHub Secrets, never in container layers
+
+2. **Use OCI-Native Signing**:
+   - Consider using OCI registry signing mechanisms (e.g., cosign, notation)
+   - These tools are designed for container/artifact signing with proper key isolation
+   - Provides stronger guarantees and better key management
+
+3. **Key Rotation**:
+   - If using current approach, rotate keys regularly (e.g., every 3-6 months)
+   - When rotating keys, clear old buildcaches to prevent verification failures
+   - Document key rotation procedures
+
+4. **Access Control**:
+   - Limit who can modify SPACK_SIGNING_KEY secret
+   - Monitor buildcache registry for unauthorized packages
+   - Implement additional verification layers (e.g., checksums, dependency scanning)
+
+### Current Best Practices
+
+While the current implementation has limitations:
+
+- **Key Protection**: Store keys in GitHub Secrets, never commit to repository
+- **Key Rotation**: Rotate GPG keys periodically (recommended: every 3-6 months)
 - **Buildcache Clearing**: When rotating keys, clear old buildcaches to prevent signature verification failures
-- **Trust Model**: The GPG signature verifies that packages were signed by someone with access to the private key, which should be limited to the CI/CD system
+- **Monitoring**: Monitor for suspicious packages or signature verification failures
+- **Documentation**: Clearly communicate the security model to users
 
 ## Troubleshooting
 

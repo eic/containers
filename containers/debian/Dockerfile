@@ -262,6 +262,13 @@ EOF
 ## For production use, provide a persistent GPG key via SPACK_SIGNING_KEY secret to ensure
 ## buildcaches can be verified across builds. Without this secret, a temporary key is created
 ## which works for single-build scenarios but prevents buildcache reuse across builds.
+##
+## SECURITY NOTICE: The private key (whether temporary or imported) is embedded in this
+## public container layer and can be extracted by anyone. This provides integrity verification
+## but NOT authenticity (anyone can sign packages with the extracted key). For production
+## environments requiring strong security, consider signing buildcaches in CI/CD before
+## pushing to registry, and only embed the public key in the container.
+## See docs/BUILDCACHE_SIGNING.md for detailed security considerations.
 RUN --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key \
     <<EOF
 set -e
