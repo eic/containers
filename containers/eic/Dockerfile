@@ -8,7 +8,7 @@ ARG INTERNAL_TAG="master"
 ##
 ## This docker build follows three tracks, in order to ensure that we build all packages
 ## in a builder image, but install them in a runtime image, while at the same time
-## avoiding a expensive filesystem copy operation at the end that breaks layering.
+## avoiding an expensive filesystem copy operation at the end that breaks layering.
 ##
 ## The build is split in an infrequently-changing default environment, upon which
 ## an environment with custom versions (e.g. individual commits) is layered. The
