@@ -90,6 +90,7 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (default configuration, $TARGETPLATFORM)"
 
 # Installation (default environment)
+# Mount SPACK_SIGNING_KEY secret for signing during autopush
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
@@ -97,15 +98,29 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key,required=true \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
 mkdir -p /var/cache/spack/blobs/sha256/
 find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
+
+# Import private key for signing (only in this RUN context, not persisted)
+export GNUPGHOME=/tmp/gnupg-build
+mkdir -p ${GNUPGHOME}
+chmod 700 ${GNUPGHOME}
+gpg --batch --import /tmp/spack-signing-key
+# Re-import public key into Spack for consistency
+spack gpg trust ${SPACK_ROOT}/spack-public-key.pub
+
+# Install packages - autopush will sign with the mounted key
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 spack clean --downloads --stage
 ccache --show-stats
 ccache --zero-stats
+
+# Clean up - private key exists only in this RUN, not in final layer
+rm -rf ${GNUPGHOME}
 EOF
 
 
@@ -124,14 +139,31 @@ COPY --from=spack-environment . /opt/spack-environment/
 ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
-ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+ARG SPACK_INSTALL_FLAGS="--show-log-on-error --yes-to-all"
 ENV SPACK_COLOR="always"
 
 COPY --from=builder_installation_default \
   /opt/spack-environment/${ENV}/spack.* \
   /opt/spack-environment/${ENV}/
 
+# Public key is already available from base layer at ${SPACK_ROOT}/spack-public-key.pub
+# Trust it for buildcache verification
+RUN <<EOF
+set -e
+if [ ! -f ${SPACK_ROOT}/spack-public-key.pub ]; then
+  echo "ERROR: GPG public key not found at ${SPACK_ROOT}/spack-public-key.pub"
+  echo "This indicates the base layer GPG setup failed or was not run"
+  exit 1
+fi
+spack gpg trust ${SPACK_ROOT}/spack-public-key.pub
+spack gpg list
+EOF
+
 # Installation (default environment, from buildcache)
+# Transition strategy: Try with signature verification first, fall back to unsigned if needed
+# This allows graceful migration from unsigned buildcaches (pre-signing) to signed ones
+# NOTE: The error pattern regex is duplicated in runtime_custom stage due to Dockerfile limitations
+#       (cannot share variables across RUN commands). Keep both patterns in sync.
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
@@ -140,7 +172,21 @@ RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
 set -e
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
+# Try to install with signature verification (signed buildcaches)
+if ! spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only 2>&1 | tee /tmp/install.log; then
+  # Check if the failure was due to signature verification issues
+  # Look for specific Spack error patterns related to signatures and GPG
+  if grep -qE "(NoVerifyException|signature.*verif|gpg.*trust|gpg.*key|buildcache.*sign)" /tmp/install.log; then
+    echo "==> Signature verification issue detected, retrying with --no-check-signature for transition compatibility"
+    echo "==> This fallback allows installation of unsigned buildcaches created before signature enforcement"
+    spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --no-check-signature --use-buildcache only
+  else
+    # Different error (not signature-related), fail the build with full log
+    echo "==> Installation failed with non-signature error:"
+    cat /tmp/install.log
+    exit 1
+  fi
+fi
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
@@ -216,6 +262,7 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (custom configuration, $TARGETPLATFORM)"
 
 # Installation (custom environment)
+# Mount SPACK_SIGNING_KEY secret for signing during autopush
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
@@ -223,14 +270,28 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key,required=true \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
+
+# Import private key for signing (only in this RUN context, not persisted)
+export GNUPGHOME=/tmp/gnupg-build
+mkdir -p ${GNUPGHOME}
+chmod 700 ${GNUPGHOME}
+gpg --batch --import /tmp/spack-signing-key
+# Re-import public key into Spack for consistency
+spack gpg trust ${SPACK_ROOT}/spack-public-key.pub
+
+# Install packages - autopush will sign with the mounted key
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
 ccache --zero-stats
+
+# Clean up - private key exists only in this RUN, not in final layer
+rm -rf ${GNUPGHOME}
 EOF
 
 
@@ -257,13 +318,32 @@ COPY --from=builder_installation_custom \
   /opt/spack-environment/packages.yaml \
   /opt/spack-environment/
 
+# GPG key is already set up and trusted from base layer (debian/Dockerfile)
+# runtime_custom inherits from runtime_default which has already trusted the public key
+
 # Installation (custom environment, from buildcache)
+# Transition strategy: Try with signature verification first, fall back to unsigned if needed
+# This allows graceful migration from unsigned buildcaches (pre-signing) to signed ones
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
+# Try to install with signature verification (signed buildcaches)
+if ! spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only 2>&1 | tee /tmp/install.log; then
+  # Check if the failure was due to signature verification issues
+  # Look for specific Spack error patterns related to signatures and GPG
+  if grep -qE "(NoVerifyException|signature.*verif|gpg.*trust|gpg.*key|buildcache.*sign)" /tmp/install.log; then
+    echo "==> Signature verification issue detected, retrying with --no-check-signature for transition compatibility"
+    echo "==> This fallback allows installation of unsigned buildcaches created before signature enforcement"
+    spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --no-check-signature --use-buildcache only
+  else
+    # Different error (not signature-related), fail the build with full log
+    echo "==> Installation failed with non-signature error:"
+    cat /tmp/install.log
+    exit 1
+  fi
+fi
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 

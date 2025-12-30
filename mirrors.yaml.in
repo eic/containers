@@ -2,7 +2,7 @@ mirrors:
   eicweb:
     autopush: true
     url: oci://${CI_REGISTRY}/${CI_PROJECT_PATH}/spack-${SPACKPACKAGES_VERSION}
-    signed: false
+    signed: true
     fetch:
       access_pair:
         id_variable: CI_REGISTRY_USER
@@ -14,7 +14,7 @@ mirrors:
   ghcr:
     autopush: true
     url: oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
-    signed: false
+    signed: true
     fetch:
       access_pair:
         id_variable: GITHUB_REGISTRY_USER

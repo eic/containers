@@ -258,13 +258,68 @@ spack compiler find --scope site
 spack config blame compilers
 EOF
 
+## Setup GPG public key for buildcache verification
+## REQUIRED: A persistent GPG key MUST be provided via SPACK_SIGNING_KEY secret.
+## Only the PUBLIC key is stored in container layers for verification.
+## The PRIVATE key is mounted as a secret during build steps that require signing.
+##
+## SECURITY MODEL:
+## - Private key: Stored in GitHub Secrets, mounted during builds, NEVER in container layers
+## - Public key: Embedded in container at ${SPACK_ROOT}/spack-public-key.pub for verification
+## - Signing: Happens during builder install steps, using --mount=type=secret for private key
+## - Verification: Happens during runtime install steps, using embedded public key
+RUN --mount=type=secret,id=SPACK_SIGNING_KEY,target=/tmp/spack-signing-key,required=true \
+    <<EOF
+set -e
+# Verify secret is provided
+if [ ! -f /tmp/spack-signing-key ] || [ ! -s /tmp/spack-signing-key ]; then
+  echo "ERROR: SPACK_SIGNING_KEY secret is required but not provided"
+  echo "Please provide a GPG key via --secret id=SPACK_SIGNING_KEY,src=<path-to-key>"
+  echo "See docs/BUILDCACHE_SIGNING.md for instructions on generating a key"
+  exit 1
+fi
+
+# Initialize Spack's GPG environment
+spack gpg init
+
+# Extract and store ONLY the public key (not the private key)
+# Import to temporary GPG home to extract public key
+export GNUPGHOME=/tmp/gnupg-temp
+mkdir -p ${GNUPGHOME}
+chmod 700 ${GNUPGHOME}
+gpg --batch --import /tmp/spack-signing-key
+# Export only the public key
+gpg --batch --export > ${SPACK_ROOT}/spack-public-key.pub
+# Import public key into Spack's keyring for verification
+spack gpg trust ${SPACK_ROOT}/spack-public-key.pub
+# Clean up temporary GPG home (private key never persisted in container)
+rm -rf ${GNUPGHOME}
+unset GNUPGHOME
+
+# Verify we have the public key
+if [ -f ${SPACK_ROOT}/spack-public-key.pub ]; then
+  echo "Public key successfully exported to ${SPACK_ROOT}/spack-public-key.pub"
+  echo "Private key was NOT stored in container - will be mounted during build steps"
+else
+  echo "ERROR: Failed to export public key"
+  exit 1
+fi
+
+spack gpg list
+EOF
+
 ## Setup buildcache mirrors
 ## - this always adds the read-only mirror to the container
 ## - the write-enabled mirror is provided later as a secret mount
+## - ghcr mirror is configured as --signed (changed from --unsigned)
+##   The transition strategy in runtime stages (eic/Dockerfile) handles both signed and unsigned
+##   artifacts during migration period, attempting signed first and falling back to unsigned
+## - New buildcaches will be automatically signed via autopush (mirrors.yaml.in has signed: true)
+## - Deploy order: This change is safe as long as runtime stages have transition logic in place
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
 spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
-spack mirror add --scope site --unsigned ghcr-${SPACKPACKAGES_VERSION} oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
+spack mirror add --scope site --signed ghcr-${SPACKPACKAGES_VERSION} oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
 spack mirror list
 EOF
 
