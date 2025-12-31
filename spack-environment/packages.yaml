@@ -16,12 +16,14 @@ packages:
     # and 'prefer' at least retains some (less strict) preference in that case
     prefer:
     - '%gcc'
-    - +ipo
+    # FIXME any ipo preference breaks llvm external reuse
+    #- +ipo
     - build_system=cmake
     - build_type=Release
     require:
     - '%gcc'
-    - any_of: [+ipo, '@:']
+    # FIXME any ipo requirement breaks llvm external reuse
+    #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
     - any_of: [build_type=Release, '@:']
   acts:
@@ -204,6 +206,11 @@ packages:
     require:
     - '@12.1.0:'
     - +expat ~ghostscript +pangocairo
+  harfbuzz:
+    require:
+    # harfbuzz fails to find cairo.h in the gir parts of cmake builds when cairo is meson-built
+    - spec: build_system=meson
+      when: +gobject ^cairo build_system=meson
   hdf5:
     require:
     - ~cxx ~fortran +hl +ipo ~java ~map +mpi +shared ~subfiling ~szip ~threadsafe +tools
@@ -265,8 +272,9 @@ packages:
     - +python
   llvm:
     require:
-    - ~gold
-    - any_of: [~ipo, '@:']
+    - any_of: [~gold, '@:']
+    # FIXME any ipo requirement breaks llvm external reuse
+    #- any_of: [~ipo, '@:']
   madx:
     require:
     - '@5.08.01:'
@@ -374,7 +382,7 @@ packages:
     - '@1.5:'
   py-dask:
     require:
-    - '@2024.7.1:'
+    - '@2024.12.1'  # pinned within py-hist's supported range 2023:2024
   py-dask-histogram:
     require:
     - '@2025.2.0:'
@@ -470,6 +478,9 @@ packages:
   py-pyyaml:
     require:
     - '@6.0.2:'
+  py-requests:
+    require:
+    - '@2.32.5:'
   py-rich:
     require:
     - '@13:'
