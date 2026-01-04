@@ -257,7 +257,22 @@ spack config --scope user add "config:install_tree:root:/opt/software"
 spack config --scope user add "config:ccache:true"
 spack config blame config
 spack compiler find --scope site
-# add extra_attributes:environment to gcc externals
+# Ensure GCC externals have LTO‑safe binutils configured.
+# 
+# 1. LTO issue being worked around:
+#    When GCC is built/used with LTO support, archive creation for objects
+#    that may contain LTO bytecode must use the plugin‑aware wrappers
+#    (gcc-ar/gcc-ranlib) instead of the system "ar"/"ranlib".  If plain "ar"
+#    is used, link steps can fail with LTO plugin errors or produce archives
+#    that cannot be linked correctly.
+#
+# 2. Why GCC_AR must be set in Spack's external configuration:
+#    Spack discovers the system GCC as an "external" compiler and records it
+#    in packages.yaml/compilers.yaml.  However, Spack does not automatically
+#    export GCC_AR to all build environments for that external GCC.  By
+#    adding extra_attributes.environment.set.GCC_AR here, we force Spack to
+#    set GCC_AR=gcc-ar whenever it uses this external GCC, so that LTO builds
+#    consistently invoke the correct archive tool.
 yq -iy '.packages.gcc.externals[].extra_attributes += {"environment": {"set": {"GCC_AR": "gcc-ar"}}}' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame compilers
 EOF
