@@ -276,6 +276,7 @@ spack compiler find --scope site
 # Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
 yq -iy '.packages.gcc.externals[].extra_attributes += {"environment": {"set": {"GCC_AR": "gcc-ar"}}}' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame compilers
+spack config blame packages
 EOF
 
 ## Bootstrap
@@ -292,6 +293,7 @@ set -e
 spack external find --scope site llvm
 spack external find --scope site --not-buildable gcc
 spack external find --scope site --not-buildable --path /usr/local/cuda/bin cuda
+spack config blame packages
 EOF
 
 ## Setup buildcache mirrors
