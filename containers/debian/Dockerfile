@@ -117,6 +117,7 @@ rm -f /usr/bin/cpp /etc/alternatives/cpp
 update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp${GCC} 100
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc${GCC} 100
 update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++${GCC} 100
+update-alternatives --install /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar${GCC} 100
 update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran${GCC} 100
 update-alternatives --install /usr/bin/clang clang /usr/bin/clang${CLANG} 100
 update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++${CLANG} 100
@@ -257,7 +258,7 @@ spack config --scope user add "config:ccache:true"
 spack config blame config
 spack compiler find --scope site
 # add extra_attributes:environment to gcc externals
-yq -i '.packages.gcc.externals[].extra_attributes += {"environment": {"GCC_AR": "gcc-ar"}}' ${SPACK_ROOT}/etc/spack/packages.yaml
+yq -iy '.packages.gcc.externals[].extra_attributes += {"environment": {"set": {"GCC_AR": "gcc-ar"}}}' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame compilers
 EOF
 
