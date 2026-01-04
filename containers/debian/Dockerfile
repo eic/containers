@@ -68,7 +68,8 @@ apt-get -yqq install --no-install-recommends                            \
         time                                                            \
         unzip                                                           \
         vim-nox                                                         \
-        wget
+        wget                                                            \
+        yq
 apt-get -yqq autoremove
 localedef -i en_US -f UTF-8 en_US.UTF-8
 EOF
@@ -255,6 +256,8 @@ spack config --scope user add "config:install_tree:root:/opt/software"
 spack config --scope user add "config:ccache:true"
 spack config blame config
 spack compiler find --scope site
+# add extra_attributes:environment to gcc externals
+yq -i '.packages.gcc.externals[].extra_attributes += {"environment": {"GCC_AR": "gcc-ar"}}' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame compilers
 EOF
 
