@@ -273,6 +273,7 @@ spack compiler find --scope site
 #    adding extra_attributes.environment.set.GCC_AR here, we force Spack to
 #    set GCC_AR=gcc-ar whenever it uses this external GCC, so that LTO builds
 #    consistently invoke the correct archive tool.
+# Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
 yq -iy '.packages.gcc.externals[].extra_attributes += {"environment": {"set": {"GCC_AR": "gcc-ar"}}}' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame compilers
 EOF
