@@ -366,13 +366,13 @@ RUN ldconfig
 ENV SPACK_DISABLE_LOCAL_CONFIG="true"
 RUN <<EOF
 set -e
-spack config --scope site add "config:install_tree:root:~/spack"
-spack config --scope site add "config:source_cache:~/.spack/cache"
-spack config --scope site add "config:binary_index_root:~/.spack"
-spack config --scope site add "config:environments_root:~/.spack/env"
-spack config --scope site add "config:suppress_gpg_warnings:true"
+spack config --scope spack add "config:install_tree:root:~/spack"
+spack config --scope spack add "config:source_cache:~/.spack/cache"
+spack config --scope spack add "config:binary_index_root:~/.spack"
+spack config --scope spack add "config:environments_root:~/.spack/env"
+spack config --scope spack add "config:suppress_gpg_warnings:true"
 spack config blame config
-spack config --scope site add "upstreams:eic-shell:install_tree:/opt/software"
+spack config --scope spack add "upstreams:eic-shell:install_tree:/opt/software"
 spack config blame upstreams
 EOF
 
