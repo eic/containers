@@ -504,8 +504,8 @@ packages:
     require:
     - '@2.7.1:'
     - -mkldnn
-    - # avoid compilation error in third_party/XNNPACK/src/f16-avgpool/f16-avgpool-9p8x-minmax-neonfp16arith-c8.c
-      spec: cxxflags=-Wno-error=incompatible-pointer-types
+    # avoid compilation error in third_party/XNNPACK/src/f16-avgpool/f16-avgpool-9p8x-minmax-neonfp16arith-c8.c
+    - spec: cxxflags=-Wno-error=incompatible-pointer-types
       when: 'target=aarch64:'
   py-vector:
     require:
