@@ -68,7 +68,8 @@ apt-get -yqq install --no-install-recommends                            \
         time                                                            \
         unzip                                                           \
         vim-nox                                                         \
-        wget
+        wget                                                            \
+        yq
 apt-get -yqq autoremove
 localedef -i en_US -f UTF-8 en_US.UTF-8
 EOF
@@ -116,6 +117,7 @@ rm -f /usr/bin/cpp /etc/alternatives/cpp
 update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp${GCC} 100
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc${GCC} 100
 update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++${GCC} 100
+update-alternatives --install /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar${GCC} 100
 update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran${GCC} 100
 update-alternatives --install /usr/bin/clang clang /usr/bin/clang${CLANG} 100
 update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++${CLANG} 100
@@ -255,7 +257,26 @@ spack config --scope user add "config:install_tree:root:/opt/software"
 spack config --scope user add "config:ccache:true"
 spack config blame config
 spack compiler find --scope site
+# Ensure GCC externals have LTO‑safe binutils configured.
+# 
+# 1. LTO issue being worked around:
+#    When GCC is built/used with LTO support, archive creation for objects
+#    that may contain LTO bytecode must use the plugin‑aware wrappers
+#    (gcc-ar/gcc-ranlib) instead of the system "ar"/"ranlib".  If plain "ar"
+#    is used, link steps can fail with LTO plugin errors or produce archives
+#    that cannot be linked correctly.
+#
+# 2. Why GCC_AR must be set in Spack's external configuration:
+#    Spack discovers the system GCC as an "external" compiler and records it
+#    in packages.yaml/compilers.yaml.  However, Spack does not automatically
+#    export GCC_AR to all build environments for that external GCC.  By
+#    adding extra_attributes.environment.set.GCC_AR here, we force Spack to
+#    set GCC_AR=gcc-ar whenever it uses this external GCC, so that LTO builds
+#    consistently invoke the correct archive tool.
+# Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
+yq -iy '.packages.gcc.externals[].extra_attributes += {"environment": {"set": {"GCC_AR": "gcc-ar"}}}' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame compilers
+spack config blame packages
 EOF
 
 ## Bootstrap
@@ -272,6 +293,7 @@ set -e
 spack external find --scope site llvm
 spack external find --scope site --not-buildable gcc
 spack external find --scope site --not-buildable --path /usr/local/cuda/bin cuda
+spack config blame packages
 EOF
 
 ## Setup buildcache mirrors

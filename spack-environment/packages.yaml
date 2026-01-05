@@ -433,9 +433,6 @@ packages:
   py-lmfit:
     require:
     - '@1.0.2:'
-  py-matplotlib:
-    require:
-    - '%clang' # https://github.com/spack/spack-packages/issues/1068
   py-mplhep:
     require:
     - '@0.4.0:'
