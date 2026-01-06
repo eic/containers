@@ -304,6 +304,7 @@ set -e
 spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
 spack mirror add --scope site --unsigned ghcr-${SPACKPACKAGES_VERSION} oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
 spack mirror list
+rm /tmp/root/spack-stage/spack-stage-py-onnxruntime-1.22.2-fgbhkfnixaeltmjoy77sab2gutudjel3/5630b081cd25e4eccc7516a652ff956e51676794.tar.gz
 EOF
 
 ## Setup key4hep-spack (no need for cherry-picks)
