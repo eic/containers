@@ -406,7 +406,7 @@ jobs:
           arch: amd64
           runner: ubuntu-latest
           PLATFORM: linux/amd64
-          target: builder_concretization_custom
+          target: builder_concretization_default
       fail-fast: false
     steps:
       - name: Free Disk Space (Ubuntu)
