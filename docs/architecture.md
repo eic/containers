@@ -4,30 +4,29 @@ The EIC container infrastructure uses a multi-stage build approach with separate
 
 ## Build Strategy
 
-The container build follows a three-track approach:
+The container build follows a two-track approach:
 
 ```mermaid
 flowchart TB
-    subgraph "Builder Concretization Track"
+    subgraph "Builder Track"
         A[builder_image<br/>debian_stable_base] --> B[builder_concretization_default<br/>Concretize spack environment]
-        B --> C[builder_concretization_custom<br/>Concretize custom versions]
-    end
-    
-    subgraph "Builder Installation Track"
-        B --> D[builder_installation_default<br/>Build packages]
-        C --> E[builder_installation_custom<br/>Build custom packages]
+        B --> C[builder_installation_default<br/>Build packages]
+        C --> D[builder_concretization_custom<br/>Concretize custom versions]
+        D --> E[builder_installation_custom<br/>Build custom packages]
     end
     
     subgraph "Runtime Track"
-        F[runtime_image<br/>debian_stable_base] --> G[runtime_default<br/>Copy spack.lock, install from buildcache]
-        G --> H[runtime_custom<br/>Copy custom spack.lock, install from buildcache]
-        H --> K[Final Image<br/>eic_ci / eic_xl]
+        F[runtime_image<br/>debian_stable_base] --> G[runtime_concretization_default<br/>Copy spack.lock from builder]
+        G --> H[runtime_installation_default<br/>Install from buildcache]
+        H --> I[runtime_concretization_custom<br/>Copy custom spack.lock]
+        I --> J[runtime_installation_custom<br/>Install custom from buildcache]
+        J --> K[Final Image<br/>eic_ci / eic_xl]
     end
     
-    D -.->|spack.lock| G
-    D -.->|buildcache| G
-    E -.->|spack.lock| H
-    E -.->|buildcache| H
+    C -.->|spack.lock| G
+    C -.->|buildcache| H
+    E -.->|spack.lock| I
+    E -.->|buildcache| J
 ```
 
 ## Multi-Architecture Support
