@@ -19,7 +19,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Push to EICweb
-      uses: eic/gitlab-sync@master
+      uses: eic/gitlab-sync@pr/git_push_prune
       with:
         url: https://eicweb.phy.anl.gov/containers/eic_container.git/
         token: ${{ secrets.GITLAB_TOKEN }}
