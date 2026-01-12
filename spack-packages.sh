@@ -37,6 +37,7 @@ b9ad19ee2ce47f8b7fbe187d41d898f873bbc121
 931b8f47ff9470b3f957f0bb462964702277301a
 5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf
 58593e5d028737fef024c8136045b9d3f988e3e3
+a1437186c1d979ce112d52be178d0fb88b70f332
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -73,3 +74,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 931b8f47ff9470b3f957f0bb462964702277301a: openblas: patch for +dynamic_dispatch target=aarch64
 ## 5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf: py-onnxruntime: add v1.21.1, v1.22.2
 ## 58593e5d028737fef024c8136045b9d3f988e3e3: py-onnxruntime: patch to add linker flag -z noexecstack
+## a1437186c1d979ce112d52be178d0fb88b70f332: acts: narrow when range on podio when +edm4hep +examples
