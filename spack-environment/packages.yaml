@@ -28,7 +28,7 @@ packages:
     - any_of: [build_type=Release, '@:']
   acts:
     require:
-    - '@44.3.0'
+    - '@44.4.0'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
