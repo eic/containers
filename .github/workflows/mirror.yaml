@@ -32,7 +32,7 @@ jobs:
       with:
         url: https://eicweb.phy.anl.gov
         project_id: 290
-        token: ${{ secrets.EICWEB_EIC_CONTAINER_TRIGGER }}
+        token: ${{ secrets.EICWEB_CONTAINER_TRIGGER }}
         ref_name: ${{ github.event.pull_request.head.ref || github.ref }}
         variables: |
           GITHUB_REPOSITORY=${{ github.repository }}
