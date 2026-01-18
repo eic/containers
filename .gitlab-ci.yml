@@ -780,6 +780,8 @@ prune:gpu:
   extends: .prune
   tags:
     - gpu
+  variables:
+    NVIDIA_DISABLE_REQUIRE: "true"
 
 prune:docker-new:
   extends: .prune
@@ -831,6 +833,8 @@ clean_unstable_mr:gpu:
   extends: .clean_unstable_mr
   tags:
     - gpu
+  variables:
+    NVIDIA_DISABLE_REQUIRE: "true"
 
 clean_unstable_mr:docker-new:
   extends: .clean_unstable_mr
@@ -884,6 +888,8 @@ clean_pipeline:gpu:
   extends: .clean_pipeline
   tags:
     - gpu
+  variables:
+    NVIDIA_DISABLE_REQUIRE: "true"
 
 clean_pipeline:docker-new:
   extends: .clean_pipeline
