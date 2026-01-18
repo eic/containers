@@ -103,6 +103,8 @@ nvidia-smi:
   image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
   tags:
     - gpu
+  variables:
+    NVIDIA_DISABLE_REQUIRE: "true"
   script:
     - |
       nvidia-smi
