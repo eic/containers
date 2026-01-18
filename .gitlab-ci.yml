@@ -479,9 +479,9 @@ eic:
                    --build-arg ENV=${ENV}
                    --build-arg SPACK_DUPLICATE_ALLOWLIST=$(
                      case "${ENV}" in
-                       ci|ci_without_acts|dbg|jl|prod)
+                       ci|ci_without_acts|cuda|dbg|jl|prod)
                          echo "epic|llvm|py-setuptools|py-urllib3" ;;
-                       xl|cuda|tf)
+                       xl|tf)
                          echo "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests" ;;
                        *)
                          echo "epic|llvm|py-setuptools|py-urllib3" ;;
