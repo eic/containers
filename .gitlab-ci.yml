@@ -234,12 +234,14 @@ status:pending:
     - docker-new
   before_script:
     - !reference [.docker, before_script]
-    - mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
-      for arch in aarch64 ; do
-        if ! grep -q enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
-          docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes ;
-        fi ;
-      done
+    - if [ "$SKIP_BINFMT" != "true" ]; then
+        mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
+        for arch in aarch64 ; do
+          if ! grep -q enabled /proc/sys/fs/binfmt_misc/qemu-$arch ; then
+            docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes ;
+          fi ;
+        done ;
+      fi
     - docker context create context
     # The docker-container cache persistence applies to builders of the same name,
     # so do not change the name to something that has the pipeline or job id.
@@ -782,6 +784,7 @@ prune:gpu:
     - gpu
   variables:
     NVIDIA_DISABLE_REQUIRE: "true"
+    SKIP_BINFMT: "true"
 
 prune:docker-new:
   extends: .prune
@@ -835,6 +838,7 @@ clean_unstable_mr:gpu:
     - gpu
   variables:
     NVIDIA_DISABLE_REQUIRE: "true"
+    SKIP_BINFMT: "true"
 
 clean_unstable_mr:docker-new:
   extends: .clean_unstable_mr
@@ -890,6 +894,7 @@ clean_pipeline:gpu:
     - gpu
   variables:
     NVIDIA_DISABLE_REQUIRE: "true"
+    SKIP_BINFMT: "true"
 
 clean_pipeline:docker-new:
   extends: .clean_pipeline
