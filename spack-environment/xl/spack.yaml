@@ -25,6 +25,7 @@ spack:
   - dawn
   - dawncut
   - dd4hep
+  - doxygen
   - east
   - edm4hep
   - eic-smear
