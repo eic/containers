@@ -39,6 +39,9 @@ b9ad19ee2ce47f8b7fbe187d41d898f873bbc121
 58593e5d028737fef024c8136045b9d3f988e3e3
 e87325e40627e4113c5e374f83e086f2421e005a
 a1437186c1d979ce112d52be178d0fb88b70f332
+bf324ce8df932ae55701fc7e7d46ae835583654f
+d9c75526e8e218806c331d19e5d0a3a5ddc37afb
+bacfc0e267518496447810d77ed2e477ee32f7d5
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -77,3 +80,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 58593e5d028737fef024c8136045b9d3f988e3e3: py-onnxruntime: patch to add linker flag -z noexecstack
 ## e87325e40627e4113c5e374f83e086f2421e005a: acts: add v44.4.0
 ## a1437186c1d979ce112d52be178d0fb88b70f332: acts: narrow when range on podio when +edm4hep +examples
+## bf324ce8df932ae55701fc7e7d46ae835583654f: clhep: use the blessed Gitlab instance instead of proj-clhep.web.cern.ch
+## d9c75526e8e218806c331d19e5d0a3a5ddc37afb: geant4: disable the timemory variant starting with 11.3.0
+## bacfc0e267518496447810d77ed2e477ee32f7d5: geant4: add v11.4.0 and versions of other packages needed
