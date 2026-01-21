@@ -47,6 +47,9 @@ cfa8d650480c409de2d568cf1355bf7e509f4c1c
 688d5e5e20fa9aa2647026143205c8aaa0625590
 b2f469de6a7c823bf93b9fa408b0ef4b67442f5f
 3368f8849e57da0ad1eaa0086b1855538e5db03e
+bf324ce8df932ae55701fc7e7d46ae835583654f
+d9c75526e8e218806c331d19e5d0a3a5ddc37afb
+bacfc0e267518496447810d77ed2e477ee32f7d5
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -94,3 +97,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 688d5e5e20fa9aa2647026143205c8aaa0625590: dd4hep: add v1.35
 ## b2f469de6a7c823bf93b9fa408b0ef4b67442f5f: py-snakemake-storage-plugin-rucio: add v0.4.1
 ## 3368f8849e57da0ad1eaa0086b1855538e5db03e: just: add 1.46.0
+## bf324ce8df932ae55701fc7e7d46ae835583654f: clhep: use the blessed Gitlab instance instead of proj-clhep.web.cern.ch
+## d9c75526e8e218806c331d19e5d0a3a5ddc37afb: geant4: disable the timemory variant starting with 11.3.0
+## bacfc0e267518496447810d77ed2e477ee32f7d5: geant4: add v11.4.0 and versions of other packages needed
