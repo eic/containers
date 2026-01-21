@@ -26,6 +26,10 @@ packages:
     #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
     - any_of: [build_type=Release, '@:']
+  abseil-cpp:
+    require:
+    # Without constraints on abseil-cpp, we end up with cxxstd=14 branches
+    - cxxstd=17
   acts:
     require:
     - '@44.4.0'
