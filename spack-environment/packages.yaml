@@ -81,7 +81,7 @@ packages:
     - -shared
   clhep:
     require:
-    - '@2.4.7.1'
+    - '@2.4.7.2'
     - cxxstd=20
   cli11:
     require:
@@ -190,8 +190,8 @@ packages:
       prefix: /opt/software/externals/g4ndl
   geant4:
     require:
-    - '@11.3.2.east'
-    - cxxstd=20 -vecgeom +threads -timemory -vtk
+    - '@11.4.0.east'
+    - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   gettext: 
     require:
