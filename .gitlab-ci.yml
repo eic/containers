@@ -513,7 +513,7 @@ user_spack_environment:
   script:
     - source /opt/spack/share/spack/setup-env.sh
     - spack env activate --create edm4eic
-    - spack add edm4eic@git.main
+    - spack add edm4eic@git.main cxxstd=20
     - spack concretize 
     - spack install --only dependencies edm4eic
     - ls -al /opt/software/linux-*/compiler-wrapper-1.0-*/libexec/spack/gcc/g++
