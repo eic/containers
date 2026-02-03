@@ -74,6 +74,13 @@ apt-get -yqq autoremove
 localedef -i en_US -f UTF-8 en_US.UTF-8
 EOF
 
+# Override SHA-1 second pre-image resistance deadline
+## FIXME Remove when LLVM has fixed their signature
+COPY /etc/crypto-policies/back-ends/sequoia.config << EOF
+[hash_algorithms]
+sha1 = 2026-03-01
+EOF
+
 # Install updated compilers, with support for multiple base images
 ## Ubuntu: latest gcc from toolchain ppa, latest stable clang
 ## Debian: default gcc with distribution, latest stable clang
