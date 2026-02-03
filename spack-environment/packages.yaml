@@ -125,7 +125,7 @@ packages:
     - '@656aa3192b097a631ddd1e0380e80c26fd6644a7'
   edm4eic:
     require:
-    - '@8.6.0' # EDM4EIC_VERSION
+    - '@8.7.0' # EDM4EIC_VERSION
     - cxxstd=20
   edm4hep:
     require:
@@ -138,7 +138,7 @@ packages:
       prefix: /usr
   eic-smear:
     require:
-    - '@1.1.15'
+    - '@1.1.16'
   eicrecon:
     require:
     - '@1.33.1' # EICRECON_VERSION
