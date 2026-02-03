@@ -76,7 +76,7 @@ EOF
 
 # Override SHA-1 second pre-image resistance deadline
 ## FIXME Remove when LLVM has fixed their signature
-COPY /etc/crypto-policies/back-ends/sequoia.config <<EOF
+COPY <<EOF /etc/crypto-policies/back-ends/sequoia.config
 [hash_algorithms]
 sha1 = 2026-03-01
 EOF
