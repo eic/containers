@@ -138,7 +138,7 @@ packages:
       prefix: /usr
   eic-smear:
     require:
-    - '@1.1.15'
+    - '@1.1.16'
   eicrecon:
     require:
     - '@1.33.1' # EICRECON_VERSION
