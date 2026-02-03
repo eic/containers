@@ -44,6 +44,7 @@ cfa8d650480c409de2d568cf1355bf7e509f4c1c
 50433a4a02370e9035b85820cd438a64d5433749
 9686af7a77fb96d177a825c9ea2343ed15512d75
 6eeb0dd820467e5542d41d6784ee86de8f84d4a0
+688d5e5e20fa9aa2647026143205c8aaa0625590
 090c7437cff0352a9d69b9b9c6c9f60a4600862f
 58597d3567384cb7be500b336c5c4edabb343be7
 4b77ca9bd1e6e828ea2c6027bca817cb82d8ac61
@@ -91,6 +92,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 50433a4a02370e9035b85820cd438a64d5433749: python ecosystem: bulk update
 ## 9686af7a77fb96d177a825c9ea2343ed15512d75: snakemake: add v9 versions and dependencies
 ## 6eeb0dd820467e5542d41d6784ee86de8f84d4a0: py-snakemake-storage-plugin-fs: add v1.1.3
+## 688d5e5e20fa9aa2647026143205c8aaa0625590: dd4hep: add v1.35
 ## 090c7437cff0352a9d69b9b9c6c9f60a4600862f: acts: add v45.0.0
 ## 58597d3567384cb7be500b336c5c4edabb343be7: acts: add v45.1.0 and v45.1.1
 ## 4b77ca9bd1e6e828ea2c6027bca817cb82d8ac61: acts: improve variant dependency handling
