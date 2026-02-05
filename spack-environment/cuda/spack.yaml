@@ -25,6 +25,7 @@ spack:
   - dpmjet
   - east
   - edm4hep
+  - eic-opticks
   - eic-smear
   - eigen
   - emacs
