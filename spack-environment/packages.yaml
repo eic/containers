@@ -348,7 +348,7 @@ packages:
     require:
     - '@1.6'
     - cxxstd=20
-    - +rntuple
+    - +datasource +rntuple
     package_attributes:
       run_tests: true
   prmon:
