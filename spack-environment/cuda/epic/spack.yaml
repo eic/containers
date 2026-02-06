@@ -12,6 +12,11 @@ spack:
   - edm4eic
   - eicrecon
   - epic@main # EPIC_VERSION
+  - epic@25.10.0
+  - epic@25.10.1
+  - epic@25.10.2
+  - epic@25.10.3
+  - epic@25.10.4
   - epic@25.11.0
   - epic@25.11.1
   - epic@25.11.2
