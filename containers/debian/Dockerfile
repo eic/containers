@@ -92,16 +92,13 @@ mkdir -p /etc/apt/source.list.d
 case ${ID} in
   debian)
     case ${VERSION_CODENAME} in
-      bookworm) GCC="-12" ; CLANG="-18" ;;
-      trixie) GCC="-14" ; CLANG="-19" ;;
+      trixie) GCC="-14" ; CLANG="-20" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   ubuntu)
     echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/ppa/ubuntu/${VERSION_CODENAME} main" > /etc/apt/source.list.d/ubuntu-toolchain.list
     case ${VERSION_CODENAME} in
-      focal) GCC="-10" ; CLANG="-16" ;;
-      jammy) GCC="-12" ; CLANG="-16" ;;
-      noble) GCC="-13" ; CLANG="-17" ;;
+      noble) GCC="-14" ; CLANG="-20" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   *) echo "Unsupported ID=${ID}" ; exit 1 ;;
@@ -116,7 +113,7 @@ fi
 # Install packages
 apt-get -yqq update
 apt-get -yqq install cpp${GCC} gcc${GCC} g++${GCC} gfortran${GCC}
-apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev
+apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev flang${CLANG}
 apt-get -yqq autoremove
 # Remove symlinks loop in nvidia/cuda:12.5.1-devel-ubuntu24.04
 rm -f /usr/bin/cpp /etc/alternatives/cpp
@@ -127,6 +124,7 @@ update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++${GCC} 100
 update-alternatives --install /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar${GCC} 100
 update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran${GCC} 100
 update-alternatives --install /usr/bin/clang clang /usr/bin/clang${CLANG} 100
+update-alternatives --install /usr/bin/flang flang /usr/bin/flang${CLANG} 100
 update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++${CLANG} 100
 update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format${CLANG} 100
 update-alternatives --install /usr/bin/clang-format-diff clang-format-diff /usr/bin/clang-format-diff${CLANG} 100
