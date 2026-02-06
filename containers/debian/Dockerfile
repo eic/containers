@@ -87,7 +87,7 @@ EOF
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 . /etc/os-release
-mkdir -p /etc/apt/source.list.d
+mkdir -p /etc/apt/sources.list.d
 # GCC and CLANG version and repository
 case ${ID} in
   debian)
