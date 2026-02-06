@@ -242,7 +242,7 @@ packages:
     - '@2.1.0'
   iwyu:
     require:
-    - '@0.23'
+    - '@0.23:'
   jana2:
     require:
     - '@2.4.3'
