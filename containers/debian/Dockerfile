@@ -65,6 +65,7 @@ apt-get -yqq install --no-install-recommends                            \
         openssh-client                                                  \
         parallel                                                        \
         patch                                                           \
+        software-properties-common                                      \
         time                                                            \
         unzip                                                           \
         vim-nox                                                         \
