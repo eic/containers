@@ -65,7 +65,6 @@ apt-get -yqq install --no-install-recommends                            \
         openssh-client                                                  \
         parallel                                                        \
         patch                                                           \
-        software-properties-common                                      \
         time                                                            \
         unzip                                                           \
         vim-nox                                                         \
@@ -97,6 +96,7 @@ case ${ID} in
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   ubuntu)
+    apt-get install -yqq software-properties-common
     add-apt-repository ppa:ubuntu-toolchain-r/ppa
     case ${VERSION_CODENAME} in
       noble) GCC="-13" ; CLANG="-17" ;;
