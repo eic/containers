@@ -96,7 +96,7 @@ case ${ID} in
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   ubuntu)
-    echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/ppa/ubuntu ${VERSION_CODENAME} main" > /etc/apt/sources.list.d/ubuntu-toolchain.list
+    add-apt-repository ppa:ubuntu-toolchain-r/ppa
     case ${VERSION_CODENAME} in
       noble) GCC="-13" ; CLANG="-17" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
