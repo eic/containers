@@ -366,7 +366,7 @@ packages:
       message: "Through at least 0.2.6, +batch requires py-pyppeteer which requires py-urllib3@1"
   pythia8:
     require:
-    - '@8.315'
+    - '@8.316'
     - +fastjet +root
   python:
     require:
