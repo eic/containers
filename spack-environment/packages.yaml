@@ -138,7 +138,7 @@ packages:
       prefix: /usr
   eic-opticks:
     require:
-    - '@7057d7bd7f755253c416b813e59f0af28de98ddc'
+    - '@main'
     - '%clang'
   eic-smear:
     require:
