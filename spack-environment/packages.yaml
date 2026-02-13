@@ -239,7 +239,7 @@ packages:
     - '@1.0.10'
   irt2:
     require:
-    - '@2.1.1'
+    - '@2.1.2'
   iwyu:
     require:
     - '@0.23'
