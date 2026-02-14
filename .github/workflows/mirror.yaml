@@ -3,6 +3,7 @@ name: Mirror and Trigger EICweb
 on:
   delete:
   pull_request:
+  push:
   workflow_dispatch:
 
 jobs:
@@ -19,6 +20,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Push to EICweb
+      if: ${{ github.event_name != 'push' || github.ref == 'ref/head/master' }}
       uses: eic/gitlab-sync@master
       with:
         url: https://eicweb.phy.anl.gov/containers/eic_container.git/
@@ -27,7 +29,7 @@ jobs:
         ciskip: true
     - name: Trigger EICweb
       id: trigger_eicweb
-      if: ${{ github.event_name != 'delete' }}
+      if: ${{ github.event_name != 'delete' && (github.event_name != 'push' || github.ref == 'ref/head/master') }}
       uses: eic/trigger-gitlab-ci@v3
       with:
         url: https://eicweb.phy.anl.gov
@@ -40,7 +42,7 @@ jobs:
           GITHUB_PR=${{ github.event.pull_request.number }}
           PIPELINE_NAME_CONTAINER=${{ github.repository }}: ${{ github.event.pull_request.title || github.ref_name }}
     - name: Set pending EICweb status
-      if: ${{ github.event_name != 'delete' }}
+      if: ${{ github.event_name != 'delete' && (github.event_name != 'push' || github.ref == 'ref/head/master') }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
