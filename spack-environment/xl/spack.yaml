@@ -4,8 +4,6 @@ spack:
   - ../packages.yaml
   - ../packages_root_with_opengl.yaml
   - ../view.yaml
-  concretizer:
-    unify: when_possible # multiple epic versions
   specs:
   - acts
   - actsvg
