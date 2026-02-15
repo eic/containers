@@ -406,7 +406,7 @@ jobs:
           arch: amd64
           runner: ubuntu-latest
           PLATFORM: linux/amd64
-          target: builder_concretization_default
+          target: builder_concretization_custom
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: cuda_devel
@@ -415,7 +415,7 @@ jobs:
           arch: amd64
           runner: ubuntu-latest
           PLATFORM: linux/amd64
-          target: builder_concretization_default
+          target: builder_concretization_custom
       fail-fast: false
     steps:
       - name: Free Disk Space (Ubuntu)
