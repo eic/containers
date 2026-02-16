@@ -37,10 +37,18 @@ b9ad19ee2ce47f8b7fbe187d41d898f873bbc121
 931b8f47ff9470b3f957f0bb462964702277301a
 5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf
 58593e5d028737fef024c8136045b9d3f988e3e3
+ab1175cb7eb83b4b0764233bc4dcdf8c3b902345
+10c88baef26836bcaad5eacaf473eea7defeba09
+6677374f581c270f691ace68d30511d365cc0f9d
+58da510aaeb37d49e2ce658679e95fd79b03d684
 e87325e40627e4113c5e374f83e086f2421e005a
 a1437186c1d979ce112d52be178d0fb88b70f332
 cfa8d650480c409de2d568cf1355bf7e509f4c1c
 580bdd5b82e9329a4b5c0b30411e43ea3221d958
+688d5e5e20fa9aa2647026143205c8aaa0625590
+7e4068a0ae5340de6119277e04ebf68f544b4453
+208b3c478e74e5217724b4894d1db941b0c13555
+9ba7aca4be1e05e17c911aa48f6eb7ca5d3c8df7
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -77,7 +85,15 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 931b8f47ff9470b3f957f0bb462964702277301a: openblas: patch for +dynamic_dispatch target=aarch64
 ## 5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf: py-onnxruntime: add v1.21.1, v1.22.2
 ## 58593e5d028737fef024c8136045b9d3f988e3e3: py-onnxruntime: patch to add linker flag -z noexecstack
+## ab1175cb7eb83b4b0764233bc4dcdf8c3b902345: python: disable tkinter in config_args for Python 3.12+ if ~tkinter in spec
+## 10c88baef26836bcaad5eacaf473eea7defeba09: python: add v3.14.2, v3.13.11
+## 6677374f581c270f691ace68d30511d365cc0f9d: Added GIL removal as option for python
+## 58da510aaeb37d49e2ce658679e95fd79b03d684: Python: more changes for free-threaded support
 ## e87325e40627e4113c5e374f83e086f2421e005a: acts: add v44.4.0
 ## a1437186c1d979ce112d52be178d0fb88b70f332: acts: narrow when range on podio when +edm4hep +examples
 ## cfa8d650480c409de2d568cf1355bf7e509f4c1c: dd4hep: Add version 1.34
 ## 580bdd5b82e9329a4b5c0b30411e43ea3221d958: pythia8: add v8.316
+## 688d5e5e20fa9aa2647026143205c8aaa0625590: dd4hep: add v1.35
+## 7e4068a0ae5340de6119277e04ebf68f544b4453: podio, edm4hep, dd4hep: conflicts ^python +freethreading
+## 208b3c478e74e5217724b4894d1db941b0c13555: podio: Add version 1.7
+## 9ba7aca4be1e05e17c911aa48f6eb7ca5d3c8df7: edm4hep: Add version 1.0 and update podio dependency
