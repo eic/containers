@@ -42,6 +42,9 @@ a1437186c1d979ce112d52be178d0fb88b70f332
 cfa8d650480c409de2d568cf1355bf7e509f4c1c
 580bdd5b82e9329a4b5c0b30411e43ea3221d958
 688d5e5e20fa9aa2647026143205c8aaa0625590
+7e4068a0ae5340de6119277e04ebf68f544b4453
+208b3c478e74e5217724b4894d1db941b0c13555
+9ba7aca4be1e05e17c911aa48f6eb7ca5d3c8df7
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -83,3 +86,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## cfa8d650480c409de2d568cf1355bf7e509f4c1c: dd4hep: Add version 1.34
 ## 580bdd5b82e9329a4b5c0b30411e43ea3221d958: pythia8: add v8.316
 ## 688d5e5e20fa9aa2647026143205c8aaa0625590: dd4hep: add v1.35
+## 7e4068a0ae5340de6119277e04ebf68f544b4453: podio, edm4hep, dd4hep: conflicts ^python +freethreading
+## 208b3c478e74e5217724b4894d1db941b0c13555: podio: Add version 1.7
+## 9ba7aca4be1e05e17c911aa48f6eb7ca5d3c8df7: edm4hep: Add version 1.0 and update podio dependency

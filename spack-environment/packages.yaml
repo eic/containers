@@ -129,7 +129,7 @@ packages:
     - cxxstd=20
   edm4hep:
     require:
-    - '@0.99.4'
+    - '@1.0'
     - cxxstd=20
   egl:
     buildable: False
@@ -346,7 +346,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@1.6'
+    - '@1.7'
     - cxxstd=20
     - +datasource +rntuple
     package_attributes:
