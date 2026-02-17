@@ -41,12 +41,15 @@ e87325e40627e4113c5e374f83e086f2421e005a
 a1437186c1d979ce112d52be178d0fb88b70f332
 cfa8d650480c409de2d568cf1355bf7e509f4c1c
 580bdd5b82e9329a4b5c0b30411e43ea3221d958
+50433a4a02370e9035b85820cd438a64d5433749
+9686af7a77fb96d177a825c9ea2343ed15512d75
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
 ## For all other commits, the cherry-pick will be applied without restriction (default).
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 --- || true
+[50433a4a02370e9035b85820cd438a64d5433749]=repos/spack_repo/builtin/packages/py_snakemake_interface_report_plugins/package.py
 ---
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
@@ -81,3 +84,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## a1437186c1d979ce112d52be178d0fb88b70f332: acts: narrow when range on podio when +edm4hep +examples
 ## cfa8d650480c409de2d568cf1355bf7e509f4c1c: dd4hep: Add version 1.34
 ## 580bdd5b82e9329a4b5c0b30411e43ea3221d958: pythia8: add v8.316
+## 50433a4a02370e9035b85820cd438a64d5433749: python ecosystem: bulk update
+## 9686af7a77fb96d177a825c9ea2343ed15512d75: snakemake: add v9 versions and dependencies
