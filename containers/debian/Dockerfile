@@ -87,20 +87,19 @@ EOF
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 . /etc/os-release
-mkdir -p /etc/apt/source.list.d
+mkdir -p /etc/apt/sources.list.d
 # GCC and CLANG version and repository
 case ${ID} in
   debian)
     case ${VERSION_CODENAME} in
-      bookworm) GCC="-12" ; CLANG="-18" ;;
-      trixie) GCC="-14" ; CLANG="-19" ;;
+      trixie) GCC="-14" ; CLANG="-20" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   ubuntu)
-    echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/ppa/ubuntu/${VERSION_CODENAME} main" > /etc/apt/source.list.d/ubuntu-toolchain.list
+    apt-get -yqq update
+    apt-get -yqq install software-properties-common
+    add-apt-repository ppa:ubuntu-toolchain-r/ppa
     case ${VERSION_CODENAME} in
-      focal) GCC="-10" ; CLANG="-16" ;;
-      jammy) GCC="-12" ; CLANG="-16" ;;
       noble) GCC="-13" ; CLANG="-17" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;

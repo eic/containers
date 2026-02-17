@@ -39,6 +39,8 @@ b9ad19ee2ce47f8b7fbe187d41d898f873bbc121
 58593e5d028737fef024c8136045b9d3f988e3e3
 e87325e40627e4113c5e374f83e086f2421e005a
 a1437186c1d979ce112d52be178d0fb88b70f332
+cfa8d650480c409de2d568cf1355bf7e509f4c1c
+580bdd5b82e9329a4b5c0b30411e43ea3221d958
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -77,3 +79,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 58593e5d028737fef024c8136045b9d3f988e3e3: py-onnxruntime: patch to add linker flag -z noexecstack
 ## e87325e40627e4113c5e374f83e086f2421e005a: acts: add v44.4.0
 ## a1437186c1d979ce112d52be178d0fb88b70f332: acts: narrow when range on podio when +edm4hep +examples
+## cfa8d650480c409de2d568cf1355bf7e509f4c1c: dd4hep: Add version 1.34
+## 580bdd5b82e9329a4b5c0b30411e43ea3221d958: pythia8: add v8.316

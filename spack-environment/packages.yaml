@@ -111,7 +111,7 @@ packages:
     - '@1.16.2:'
   dd4hep:
     require:
-    - '@1.33'
+    - '@1.34'
     - +ddg4 +ddcad +edm4hep +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   doxygen:
@@ -239,13 +239,13 @@ packages:
     - '@7.1.1-11:'
   irt:
     require:
-    - '@1.0.9'
+    - '@1.0.10'
   irt2:
     require:
-    - '@2.1.0'
+    - '@2.1.2'
   iwyu:
     require:
-    - '@0.23'
+    - '@0.23:'
   jana2:
     require:
     - '@2.4.3'
@@ -351,7 +351,7 @@ packages:
     require:
     - '@1.6'
     - cxxstd=20
-    - +rntuple
+    - +datasource +rntuple
     package_attributes:
       run_tests: true
   prmon:
@@ -369,7 +369,7 @@ packages:
       message: "Through at least 0.2.6, +batch requires py-pyppeteer which requires py-urllib3@1"
   pythia8:
     require:
-    - '@8.315'
+    - '@8.316'
     - +fastjet +root
   python:
     require:
