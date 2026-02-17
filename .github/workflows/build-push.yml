@@ -11,6 +11,10 @@ on:
     - master
   workflow_dispatch:
     inputs:
+      EICSPACK_VERSION:
+        required: false
+        default: ''
+        type: string
       EDM4EIC_VERSION:
         required: false
         default: ''
@@ -39,6 +43,7 @@ env:
   
   ## Default versions are specified in packages.yaml but can be overridden
   ## note: nightly builds will always use the master/main branch
+  EICSPACK_VERSION: ${{ inputs.EICSPACK_VERSION }}
   EDM4EIC_VERSION: ${{ inputs.EDM4EIC_VERSION }}
   EICRECON_VERSION: ${{ inputs.EICRECON_VERSION }}
   JUGGLER_VERSION: ${{ inputs.JUGGLER_VERSION }}
@@ -144,6 +149,10 @@ jobs:
         id: eic-spack
         run: |
           source eic-spack.sh
+          # Override with workflow input if provided
+          if [ -n "${{ env.EICSPACK_VERSION }}" ]; then
+            EICSPACK_VERSION="${{ env.EICSPACK_VERSION }}"
+          fi
           echo "orgrepo=${EICSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
           echo "version=${EICSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
           echo "sha=$(.ci/resolve_git_ref ${EICSPACK_ORGREPO} ${EICSPACK_VERSION})" | tee -a $GITHUB_OUTPUT
