@@ -136,6 +136,9 @@ packages:
     externals:
     - spec: egl@1.5.0
       prefix: /usr
+  eic-opticks:
+    require:
+    - '@073ac31a83f9a5651b99a737b30da18117de74d5'
   eic-smear:
     require:
     - '@1.1.16'
