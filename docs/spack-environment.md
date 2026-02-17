@@ -261,10 +261,16 @@ Using custom commit SHA:
 
 ```bash
 # Via workflow dispatch inputs
-EDM4EIC_VERSION=abc123def...
+EICSPACK_VERSION=abc123def...  # Override eic-spack repository version
+EDM4EIC_VERSION=abc123def...   # Override edm4eic package version
+EICRECON_VERSION=abc123def...  # Override eicrecon package version
+JUGGLER_VERSION=abc123def...   # Override juggler package version
 
-# In Dockerfile, this becomes:
-edm4eic@git.abc123def=main
+# In Dockerfile, these become:
+# - eic-spack repository checked out at specified commit
+# - edm4eic@git.abc123def=main
+# - eicrecon@git.abc123def=main
+# - juggler@git.abc123def=main
 ```
 
 ## Inspecting the Environment

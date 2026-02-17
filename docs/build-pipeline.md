@@ -155,7 +155,7 @@ Pre-built binaries are stored in OCI registries:
 | Schedule (cron) | Every 6 hours - nightly builds |
 | Push to master | Build and push with `pipeline-*` tag |
 | Pull Request | Build with `unstable-pr-*` tag |
-| Manual Dispatch | Allows overriding EDM4EIC, EICRECON, JUGGLER versions |
+| Manual Dispatch | Allows overriding EICSPACK, EDM4EIC, EICRECON, JUGGLER versions |
 
 ## Environment Matrix
 
