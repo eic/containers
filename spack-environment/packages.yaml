@@ -549,6 +549,9 @@ packages:
   snakemake:
     require:
     - '@9.6.3'
+  py-snakemake-interface-storage-plugins:
+    require:
+    - '@4.2.3:'
   py-snakemake-storage-plugin-fs:
     require:
     - '@1.0.6:'
