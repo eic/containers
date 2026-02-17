@@ -6,6 +6,19 @@ on:
   push:
     branches:
       - master
+      - v*.*-alpha
+      - v*.*-beta
+      - v*.*-stable
+      - v*.*-*-alpha
+      - v*.*-*-beta
+      - v*.*-*-stable
+    tags:
+      - v*.*.*-alpha
+      - v*.*.*-beta
+      - v*.*.*-stable
+      - v*.*.*-*-alpha
+      - v*.*.*-*-beta
+      - v*.*.*-*-stable
   workflow_dispatch:
 
 jobs:
