@@ -19,10 +19,10 @@ flowchart TB
     E --> K --> SP --> S
     
     subgraph "Locations in Container"
-        E -.- EL[/opt/spack-packages/repos/eic-spack]
-        K -.- KL[/opt/spack-packages/repos/key4hep-spack]
-        SP -.- SPL[/opt/spack-packages/repos/spack_repo/builtin]
-        S -.- SL[/opt/spack/var/spack/repos/builtin]
+        E -.- EL["/opt/spack-packages/repos/eic-spack"]
+        K -.- KL["/opt/spack-packages/repos/key4hep-spack"]
+        SP -.- SPL["/opt/spack-packages/repos/spack_repo/builtin"]
+        S -.- SL["/opt/spack/var/spack/repos/builtin"]
     end
 ```
 
