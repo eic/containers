@@ -42,6 +42,7 @@ spack:
   - irt
   - irt2
   - jana2
+  - just
   - k4actstracking
   - k4fwcore
   - lcov
