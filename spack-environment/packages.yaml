@@ -191,8 +191,9 @@ packages:
   geant4:
     require:
     - '@11.3.2.east'
-    - cxxstd=20 -vecgeom +threads -timemory -vtk
-    - any_of: [+opengl +qt +x11, -opengl -qt -x11]
+    - cxxstd=20 +threads -vtk
+    - one_of: [+opengl +qt +x11, -opengl -qt -x11]
+    - one_of: [-vecgeom, +vecgeom]
   gettext: 
     require:
     - +libxml2
@@ -304,7 +305,7 @@ packages:
     require:
     - '@1.4.6'
     - +http
-    - any_of: [+geocad, -geocad]
+    - one_of: [+geocad, -geocad]
   ollama:
     require:
     - '@0.13.1:'
@@ -538,7 +539,7 @@ packages:
     require:
     - '@6.38.00'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +x +xrootd +ssl
-    - any_of: [+opengl +webgui, -opengl -webgui]
+    - one_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
     require:
     - '@3.0.1'
@@ -586,6 +587,7 @@ packages:
   vecgeom:
     require:
     - '@1.2.11'
+    - cxxstd=20 +gdml ~geant4 +root
   xerces-c:
     require:
     - cxxstd=20
