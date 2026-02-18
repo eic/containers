@@ -2,7 +2,12 @@ name: Mirror and Trigger EICweb
 
 on:
   delete:
+  pull_request:
+    branches:
+    - master
   push:
+    branches:
+    - master
   workflow_dispatch:
 
 jobs:
