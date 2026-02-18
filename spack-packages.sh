@@ -51,6 +51,8 @@ cfa8d650480c409de2d568cf1355bf7e509f4c1c
 b2f469de6a7c823bf93b9fa408b0ef4b67442f5f
 3368f8849e57da0ad1eaa0086b1855538e5db03e
 090c7437cff0352a9d69b9b9c6c9f60a4600862f
+58597d3567384cb7be500b336c5c4edabb343be7
+4b77ca9bd1e6e828ea2c6027bca817cb82d8ac61
 5ec7462a628681522f8cf6016a9aa72fbd40dd91
 a896fdbe5d01981cbc6f9b5139a5d551ac2fe248
 2163a6ae2cad38980f67e8d617743cabfc773304
@@ -107,6 +109,8 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## b2f469de6a7c823bf93b9fa408b0ef4b67442f5f: py-snakemake-storage-plugin-rucio: add v0.4.1
 ## 3368f8849e57da0ad1eaa0086b1855538e5db03e: just: add 1.46.0
 ## 090c7437cff0352a9d69b9b9c6c9f60a4600862f: acts: add v45.0.0
+## 58597d3567384cb7be500b336c5c4edabb343be7: acts: add v45.1.0 and v45.1.1
+## 4b77ca9bd1e6e828ea2c6027bca817cb82d8ac61: acts: improve variant dependency handling
 ## 5ec7462a628681522f8cf6016a9aa72fbd40dd91: arrow: add 20.0.0, 21.0.0, 22.0.0
 ## a896fdbe5d01981cbc6f9b5139a5d551ac2fe248: vecgeom: new release 2.0.0-rc.9
 ## 2163a6ae2cad38980f67e8d617743cabfc773304: vecgeom: add v2.0.0
