@@ -32,6 +32,7 @@ spack:
   - irt2
   - iwyu
   - jana2
+  - just
   - nopayloadclient
   - npsim -geocad
   - onnx
