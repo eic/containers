@@ -38,6 +38,7 @@ b9ad19ee2ce47f8b7fbe187d41d898f873bbc121
 5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf
 58593e5d028737fef024c8136045b9d3f988e3e3
 e87325e40627e4113c5e374f83e086f2421e005a
+d0977a5f941bc01833c923b99a88e53c4be0f04c
 a1437186c1d979ce112d52be178d0fb88b70f332
 cfa8d650480c409de2d568cf1355bf7e509f4c1c
 580bdd5b82e9329a4b5c0b30411e43ea3221d958
@@ -89,6 +90,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf: py-onnxruntime: add v1.21.1, v1.22.2
 ## 58593e5d028737fef024c8136045b9d3f988e3e3: py-onnxruntime: patch to add linker flag -z noexecstack
 ## e87325e40627e4113c5e374f83e086f2421e005a: acts: add v44.4.0
+## d0977a5f941bc01833c923b99a88e53c4be0f04c: acts: rename "tgeo" variant to "root"
 ## a1437186c1d979ce112d52be178d0fb88b70f332: acts: narrow when range on podio when +edm4hep +examples
 ## cfa8d650480c409de2d568cf1355bf7e509f4c1c: dd4hep: Add version 1.34
 ## 580bdd5b82e9329a4b5c0b30411e43ea3221d958: pythia8: add v8.316
