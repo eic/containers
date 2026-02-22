@@ -333,5 +333,5 @@ RUN <<EOF
 set -e
 git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
 git -C ${EICSPACK_ROOT} checkout ${EICSPACK_SHA:-${EICSPACK_VERSION}}
-spack repo add --scope site "${EICSPACK_ROOT}"
+spack repo add --scope site "${EICSPACK_ROOT}/spack_repo/eic"
 EOF
