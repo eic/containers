@@ -74,26 +74,32 @@ apt-get -yqq autoremove
 localedef -i en_US -f UTF-8 en_US.UTF-8
 EOF
 
+# Override SHA-1 second pre-image resistance deadline
+## FIXME Remove when LLVM has fixed their signature
+COPY <<EOF /etc/crypto-policies/back-ends/sequoia.config
+[hash_algorithms]
+sha1 = 2026-03-01
+EOF
+
 # Install updated compilers, with support for multiple base images
 ## Ubuntu: latest gcc from toolchain ppa, latest stable clang
 ## Debian: default gcc with distribution, latest stable clang
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 . /etc/os-release
-mkdir -p /etc/apt/source.list.d
+mkdir -p /etc/apt/sources.list.d
 # GCC and CLANG version and repository
 case ${ID} in
   debian)
     case ${VERSION_CODENAME} in
-      bookworm) GCC="-12" ; CLANG="-18" ;;
-      trixie) GCC="-14" ; CLANG="-19" ;;
+      trixie) GCC="-14" ; CLANG="-20" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   ubuntu)
-    echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/ppa/ubuntu/${VERSION_CODENAME} main" > /etc/apt/source.list.d/ubuntu-toolchain.list
+    apt-get -yqq update
+    apt-get -yqq install software-properties-common
+    add-apt-repository ppa:ubuntu-toolchain-r/ppa
     case ${VERSION_CODENAME} in
-      focal) GCC="-10" ; CLANG="-16" ;;
-      jammy) GCC="-12" ; CLANG="-16" ;;
       noble) GCC="-13" ; CLANG="-17" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
@@ -102,9 +108,9 @@ esac
 # Clang repository
 curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 if [ ${VERSION_CODENAME} = trixie ] ; then
-  echo "deb http://apt.llvm.org/unstable llvm-toolchain${CLANG} main" > /etc/apt/sources.list.d/llvm.list
+  echo "deb [signed-by=/etc/apt/trusted.gpg.d/apt.llvm.org.asc] http://apt.llvm.org/unstable llvm-toolchain${CLANG} main" > /etc/apt/sources.list.d/llvm.list
 else
-  echo "deb http://apt.llvm.org/${VERSION_CODENAME} llvm-toolchain-${VERSION_CODENAME}${CLANG} main" > /etc/apt/sources.list.d/llvm.list
+  echo "deb [signed-by=/etc/apt/trusted.gpg.d/apt.llvm.org.asc] http://apt.llvm.org/${VERSION_CODENAME} llvm-toolchain-${VERSION_CODENAME}${CLANG} main" > /etc/apt/sources.list.d/llvm.list
 fi
 # Install packages
 apt-get -yqq update
