@@ -111,6 +111,7 @@ spack:
   - py-snakemake-executor-plugin-slurm
   - py-snakemake-executor-plugin-slurm-jobstep
   - py-snakemake-storage-plugin-fs
+  - py-snakemake-storage-plugin-rucio
   - py-toml
   - py-torch
   - py-uproot
