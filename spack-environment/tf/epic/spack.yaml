@@ -3,6 +3,8 @@ spack:
   - ../../concretizer.yaml
   - ../../packages.yaml
   - ../../view.yaml
+  concretizer:
+    unify: when_possible  # included environment: py-numba needs a different llvm than the one provided as external
   include_concrete:
   - /opt/spack-environment/tf
   specs:
