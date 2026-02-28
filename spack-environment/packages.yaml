@@ -505,7 +505,7 @@ packages:
     - '@0.13.2:'
   py-tensorflow:
     require:
-    - '%cxx=clang'
+    - '%clang'
     - '@2.20'
   py-toml:
     require:
