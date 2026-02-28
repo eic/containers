@@ -234,7 +234,7 @@ jobs:
           mkdir -p /tmp/digests
           echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
       - name: Upload digest as artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-digest
           path: /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
@@ -548,7 +548,7 @@ jobs:
           mkdir -p /tmp/digests
           echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}.digest
       - name: Upload digest as artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: eic-${{ matrix.ENV }}-${{ matrix.arch }}-digest
           path: /tmp/digests/${{ matrix.arch }}.digest
