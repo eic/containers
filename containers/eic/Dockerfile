@@ -57,9 +57,14 @@ spack env activate --without-view --dir ${SPACK_ENV}
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
 | uniq -D -f2 \
-| tee /tmp/duplicates_all.txt \
-| grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" \
-| tee /tmp/duplicates_disallowed.txt
+| tee /tmp/duplicates_all.txt
+if [ -n "${SPACK_DUPLICATE_ALLOWLIST}" ] ; then
+  grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" /tmp/duplicates_all.txt \
+  | tee /tmp/duplicates_disallowed.txt
+else
+  cat /tmp/duplicates_all.txt \
+  | tee /tmp/duplicates_disallowed.txt
+fi
 if [ -s /tmp/duplicates_disallowed.txt ] ; then
   echo "Duplicate packages found:"
   cat /tmp/duplicates_disallowed.txt
@@ -197,9 +202,14 @@ fi
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
 | uniq -D -f2 \
-| tee /tmp/duplicates_all.txt \
-| grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" \
-| tee /tmp/duplicates_disallowed.txt
+| tee /tmp/duplicates_all.txt
+if [ -n "${SPACK_DUPLICATE_ALLOWLIST}" ] ; then
+  grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" /tmp/duplicates_all.txt \
+  | tee /tmp/duplicates_disallowed.txt
+else
+  cat /tmp/duplicates_all.txt \
+  | tee /tmp/duplicates_disallowed.txt
+fi
 if [ -s /tmp/duplicates_disallowed.txt ] ; then
   echo "Duplicate packages found:"
   cat /tmp/duplicates_disallowed.txt
