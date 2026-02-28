@@ -149,7 +149,7 @@ Spack versions can include cherry-picks from newer commits:
 
 ```bash
 # From spack.sh
-SPACK_VERSION="v1.0.2"
+SPACK_VERSION="v1.1.0"
 SPACK_CHERRYPICKS=$(cat <<- EOF
 09f75ee426a2e05e0543570821582480ff823ba5
 a462612b64e97fa7dfe461c32c58553fd6ec63c5
