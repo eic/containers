@@ -257,6 +257,9 @@ packages:
   julia:
     require:
     - '@1.11'
+  just:
+    require:
+    - '@1.46.0'
   k4actstracking:
     require:
     - '@0.1'
