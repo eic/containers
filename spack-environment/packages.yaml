@@ -508,8 +508,11 @@ packages:
     - '@0.10.2:'
   py-torch:
     require:
-    - '@2.5.1'
+    - '@2.7.1:'
     - -mkldnn
+    # avoid compilation error in third_party/XNNPACK/src/f16-avgpool/f16-avgpool-9p8x-minmax-neonfp16arith-c8.c
+    - spec: ~xnnpack
+      when: 'target=aarch64:'
   py-vector:
     require:
     - '@1.5.1:'
