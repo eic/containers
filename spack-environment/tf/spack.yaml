@@ -3,6 +3,8 @@ spack:
   - ../concretizer.yaml
   - ../packages.yaml
   - ../view.yaml
+  concretizer:
+    unify: when_possible  # py-numba needs a different llvm than the one provided as external
   specs:
   - edm4hep
   - onnx

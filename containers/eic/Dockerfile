@@ -46,6 +46,7 @@ ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
 ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+ARG SPACK_DUPLICATE_ALLOWLIST=""
 ENV SPACK_COLOR="always"
 ENV GIT_TERMINAL_PROMPT=0
 
@@ -55,11 +56,19 @@ set -e
 spack env activate --without-view --dir ${SPACK_ENV}
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-setuptools\|py-urllib3\)" \
-| tee /tmp/duplicates.txt
-if [ -s /tmp/duplicates.txt ] ; then
-  echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read status hash spec ; do
+| uniq -D -f2 \
+| tee /tmp/duplicates_all.txt
+if [ -n "${SPACK_DUPLICATE_ALLOWLIST}" ] ; then
+  grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" /tmp/duplicates_all.txt \
+  | tee /tmp/duplicates_disallowed.txt
+else
+  cat /tmp/duplicates_all.txt \
+  | tee /tmp/duplicates_disallowed.txt
+fi
+if [ -s /tmp/duplicates_disallowed.txt ] ; then
+  echo "Duplicate packages found:"
+  cat /tmp/duplicates_disallowed.txt
+  cat /tmp/duplicates_disallowed.txt | while read status hash spec ; do
     spack --backtrace spec --long /${hash}
     if [ "$prevspec" = "$spec" ] ; then
       spack diff /${hash} /${prevhash}
@@ -192,11 +201,19 @@ if [ -n "${JUGGLER_SHA}" ] ; then
 fi
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 | grep -v -w -e "\(epic\|llvm\|py-setuptools\|py-urllib3\)" \
-| tee /tmp/duplicates.txt
-if [ -s /tmp/duplicates.txt ] ; then
-  echo "Duplicate packages found"
-  cat /tmp/duplicates.txt | while read status hash spec ; do
+| uniq -D -f2 \
+| tee /tmp/duplicates_all.txt
+if [ -n "${SPACK_DUPLICATE_ALLOWLIST}" ] ; then
+  grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" /tmp/duplicates_all.txt \
+  | tee /tmp/duplicates_disallowed.txt
+else
+  cat /tmp/duplicates_all.txt \
+  | tee /tmp/duplicates_disallowed.txt
+fi
+if [ -s /tmp/duplicates_disallowed.txt ] ; then
+  echo "Duplicate packages found:"
+  cat /tmp/duplicates_disallowed.txt
+  cat /tmp/duplicates_disallowed.txt | while read status hash spec ; do
     spack --backtrace spec --long /${hash}
     if [ "$prevspec" = "$spec" ] ; then
       spack diff /${hash} /${prevhash}
@@ -359,13 +376,13 @@ RUN ldconfig
 ENV SPACK_DISABLE_LOCAL_CONFIG="true"
 RUN <<EOF
 set -e
-spack config --scope site add "config:install_tree:root:~/spack"
-spack config --scope site add "config:source_cache:~/.spack/cache"
-spack config --scope site add "config:binary_index_root:~/.spack"
-spack config --scope site add "config:environments_root:~/.spack/env"
-spack config --scope site add "config:suppress_gpg_warnings:true"
+spack config --scope spack add "config:install_tree:root:~/spack"
+spack config --scope spack add "config:source_cache:~/.spack/cache"
+spack config --scope spack add "config:binary_index_root:~/.spack"
+spack config --scope spack add "config:environments_root:~/.spack/env"
+spack config --scope spack add "config:suppress_gpg_warnings:true"
 spack config blame config
-spack config --scope site add "upstreams:eic-shell:install_tree:/opt/software"
+spack config --scope spack add "upstreams:eic-shell:install_tree:/opt/software"
 spack config blame upstreams
 EOF
 

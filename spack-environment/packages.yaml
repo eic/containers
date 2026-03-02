@@ -26,15 +26,19 @@ packages:
     #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
     - any_of: [build_type=Release, '@:']
+  abseil-cpp:
+    require:
+    # Without constraints on abseil-cpp, we end up with cxxstd=14 branches
+    - cxxstd=17
   acts:
     require:
     - '@44.4.0'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
-      when: '^dd4hep%gcc'
+      when: '^dd4hep %gcc'
     - spec: '%clang'
-      when: '^dd4hep%clang'
+      when: '^dd4hep %clang'
   actsvg:
     require:
     - '@0.4.56'
@@ -279,9 +283,9 @@ packages:
     require:
     - '@6.5.5'
     - +python
-  llvm:
-    require:
-    - any_of: [~gold, '@:']
+  #llvm:
+    #require:
+    #- any_of: [~gold, '@:']
     # FIXME any ipo requirement breaks llvm external reuse
     #- any_of: [~ipo, '@:']
   madx:
@@ -453,7 +457,7 @@ packages:
     - '@0.61.0:'
   py-numpy:
     require:
-    - '@2.0.2:'
+    - '@2.2'  # pin to avoid duplicates in eic_tf
   py-onnx:
     require:
     - '@1.17.0'
@@ -579,6 +583,9 @@ packages:
   strace:
     require:
     - -mpers
+  swig:
+    require:
+    - '@4.1:'  # constrain to avoid duplicates in eic_tf
   tbb:
     require:
     - 'intel-tbb'
