@@ -3,4 +3,4 @@ KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
 
 ## Key4HEP spack commit hash or github version, e.g. v0.19.7
 ## note: nightly builds could use a branch e.g. releases/v0.19
-KEY4HEPSPACK_VERSION="9a65e824449f204cf083c29053401cbb60ad39d4"
+KEY4HEPSPACK_VERSION="c53548c3ee19cac56017c5d096aaf5b015d0e5a6"
