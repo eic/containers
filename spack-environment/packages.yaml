@@ -257,6 +257,9 @@ packages:
   julia:
     require:
     - '@1.11'
+  just:
+    require:
+    - '@1.46.0'
   k4actstracking:
     require:
     - '@0.1'
@@ -558,6 +561,9 @@ packages:
   py-snakemake-storage-plugin-http:
     require:
     - '@0.2.3:'
+  py-snakemake-storage-plugin-rucio:
+    require:
+    - '@0.4.1:'
   py-snakemake-storage-plugin-s3:
     require:
     - '@0.2.12:'

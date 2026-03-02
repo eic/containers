@@ -234,7 +234,7 @@ jobs:
           mkdir -p /tmp/digests
           echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
       - name: Upload digest as artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-digest
           path: /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
@@ -270,7 +270,7 @@ jobs:
           username: ${{ secrets.GHCR_REGISTRY_USER }}
           password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
       - name: Download all digest artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: /tmp/digests
           pattern: base-${{ matrix.BUILD_IMAGE }}-*-digest
@@ -548,7 +548,7 @@ jobs:
           mkdir -p /tmp/digests
           echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}.digest
       - name: Upload digest as artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: eic-${{ matrix.ENV }}-${{ matrix.arch }}-digest
           path: /tmp/digests/${{ matrix.arch }}.digest
@@ -582,7 +582,7 @@ jobs:
           username: ${{ secrets.GHCR_REGISTRY_USER }}
           password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
       - name: Download all digest artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: /tmp/digests
           pattern: eic-${{ matrix.ENV }}-*-digest

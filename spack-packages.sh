@@ -45,6 +45,8 @@ cfa8d650480c409de2d568cf1355bf7e509f4c1c
 9686af7a77fb96d177a825c9ea2343ed15512d75
 6eeb0dd820467e5542d41d6784ee86de8f84d4a0
 688d5e5e20fa9aa2647026143205c8aaa0625590
+b2f469de6a7c823bf93b9fa408b0ef4b67442f5f
+3368f8849e57da0ad1eaa0086b1855538e5db03e
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -90,3 +92,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 9686af7a77fb96d177a825c9ea2343ed15512d75: snakemake: add v9 versions and dependencies
 ## 6eeb0dd820467e5542d41d6784ee86de8f84d4a0: py-snakemake-storage-plugin-fs: add v1.1.3
 ## 688d5e5e20fa9aa2647026143205c8aaa0625590: dd4hep: add v1.35
+## b2f469de6a7c823bf93b9fa408b0ef4b67442f5f: py-snakemake-storage-plugin-rucio: add v0.4.1
+## 3368f8849e57da0ad1eaa0086b1855538e5db03e: just: add 1.46.0
