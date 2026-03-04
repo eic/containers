@@ -33,7 +33,7 @@ if [ ! -w "$_outer_eic_shell" ]; then
 fi
 
 # Warn if the outer eic-shell script is older than 6 months (~180 days)
-if find "$_outer_eic_shell" -mtime +180 -print -quit 2>/dev/null | grep -q .; then
+if [ -n "$(find "$_outer_eic_shell" -mtime +180 -print 2>/dev/null)" ]; then
   echo ""
   echo "WARNING: Your eic-shell script appears to be more than 6 months old."
   echo "         Consider upgrading by running outside the container:"
