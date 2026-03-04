@@ -4,7 +4,10 @@
 ## Users can upgrade by running `eic-shell --upgrade` outside the container.
 
 # Only run for interactive shells
-[[ $- == *i* ]] || return 0
+case "$-" in
+  *i*) ;;
+  *) return 0 ;;
+esac
 
 # Only run when inside singularity/apptainer
 if [ -z "${SINGULARITY_CONTAINER:-}" ] && [ -z "${APPTAINER_CONTAINER:-}" ]; then
