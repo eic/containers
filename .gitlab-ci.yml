@@ -477,6 +477,16 @@ eic:
                      --build-arg JUGGLER_SHA=$(sh .ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION:-main})
                    }
                    --build-arg ENV=${ENV}
+                   --build-arg SPACK_DUPLICATE_ALLOWLIST=$(
+                     case "${ENV}" in
+                       ci|ci_without_acts|cuda|dbg|jl|prod)
+                         echo "epic|llvm|py-setuptools|py-urllib3" ;;
+                       xl|tf)
+                         echo "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests" ;;
+                       *)
+                         echo "epic|llvm|py-setuptools|py-urllib3" ;;
+                     esac
+                   )
                    --build-arg jobs=${JOBS}
                    --build-context spack-environment=spack-environment
                    --secret id=mirrors,src=mirrors.yaml

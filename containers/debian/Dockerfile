@@ -237,7 +237,7 @@ if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
   done
 fi
 git -C ${SPACKPACKAGES_ROOT} gc --prune=all --aggressive
-spack repo add --scope site "${SPACKPACKAGES_ROOT}/repos/spack_repo/builtin"
+spack repo add --scope spack "${SPACKPACKAGES_ROOT}/repos/spack_repo/builtin"
 EOF
 
 ## Setup build configuration
@@ -252,9 +252,10 @@ declare -A target=(
   ["linux/arm64"]="aarch64"
 )
 target=${target[${TARGETPLATFORM}]}
-spack config --scope site add "packages:all:require:[target=${target}]"
-spack config --scope site add "packages:all:target:[${target}]"
+spack config --scope spack add "packages:all:require:[target=${target}]"
+spack config --scope spack add "packages:all:target:[${target}]"
 spack config blame packages
+mkdir -p $HOME/.spack/  # workaround for Spack not creating config directory automatically in some versions (see https://github.com/spack/spack/issues/51564)
 spack config --scope user add "config:suppress_gpg_warnings:true"
 spack config --scope user add "config:build_jobs:${jobs}"
 spack config --scope user add "config:db_lock_timeout:${jobs}00"
@@ -262,7 +263,7 @@ spack config --scope user add "config:source_cache:/var/cache/spack"
 spack config --scope user add "config:install_tree:root:/opt/software"
 spack config --scope user add "config:ccache:true"
 spack config blame config
-spack compiler find --scope site
+spack compiler find --scope spack
 # Ensure GCC externals have LTO‑safe binutils configured.
 # 
 # 1. LTO issue being worked around:
@@ -296,9 +297,9 @@ EOF
 ## - allow llvm to be buildable for py-numba > py-llvmlite
 RUN <<EOF
 set -e
-spack external find --scope site llvm
-spack external find --scope site --not-buildable gcc
-spack external find --scope site --not-buildable --path /usr/local/cuda/bin cuda
+spack external find --scope spack llvm
+spack external find --scope spack --not-buildable gcc
+spack external find --scope spack --not-buildable --path /usr/local/cuda/bin cuda
 spack config blame packages
 EOF
 
@@ -307,8 +308,8 @@ EOF
 ## - the write-enabled mirror is provided later as a secret mount
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
-spack mirror add --scope site --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
-spack mirror add --scope site --unsigned ghcr-${SPACKPACKAGES_VERSION} oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
+spack mirror add --scope spack --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
+spack mirror add --scope spack --unsigned ghcr-${SPACKPACKAGES_VERSION} oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
 spack mirror list
 EOF
 
@@ -321,7 +322,7 @@ RUN <<EOF
 set -e
 git clone --filter=tree:0 https://github.com/${KEY4HEPSPACK_ORGREPO}.git ${KEY4HEPSPACK_ROOT}
 git -C ${KEY4HEPSPACK_ROOT} checkout ${KEY4HEPSPACK_SHA:-${KEY4HEPSPACK_VERSION}}
-spack repo add --scope site "${KEY4HEPSPACK_ROOT}"
+spack repo add --scope spack "${KEY4HEPSPACK_ROOT}"
 EOF
 
 ## Setup eic-spack (no need for cherry-picks)
@@ -333,5 +334,5 @@ RUN <<EOF
 set -e
 git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
 git -C ${EICSPACK_ROOT} checkout ${EICSPACK_SHA:-${EICSPACK_VERSION}}
-spack repo add --scope site "${EICSPACK_ROOT}/spack_repo/eic"
+spack repo add --scope spack "${EICSPACK_ROOT}/spack_repo/eic"
 EOF
