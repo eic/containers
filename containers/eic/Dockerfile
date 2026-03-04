@@ -52,6 +52,7 @@ ENV GIT_TERMINAL_PROMPT=0
 # Concretization (default environment)
 RUN <<EOF
 set -e
+spack env create ${ENV}
 spack env activate --without-view --dir ${SPACK_ENV}
 spack concretize --force
 spack --color=never find --long --no-groups --show-concretized --format "{name}" \
