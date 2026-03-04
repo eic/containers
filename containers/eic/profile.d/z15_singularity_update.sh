@@ -11,8 +11,13 @@ if [ -z "${SINGULARITY_CONTAINER:-}" ] && [ -z "${APPTAINER_CONTAINER:-}" ]; the
   return 0
 fi
 
+# Require EIC_SHELL_PREFIX to be set; otherwise we cannot locate the outer eic-shell
+if [ -z "${EIC_SHELL_PREFIX:-}" ]; then
+  return 0
+fi
+
 # Check if the outer eic-shell script is accessible
-_outer_eic_shell="${EIC_SHELL_PREFIX:-}/../eic-shell"
+_outer_eic_shell="${EIC_SHELL_PREFIX}/../eic-shell"
 if [ ! -f "$_outer_eic_shell" ]; then
   unset _outer_eic_shell
   return 0
