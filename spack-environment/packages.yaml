@@ -32,8 +32,8 @@ packages:
     - cxxstd=17
   acts:
     require:
-    - '@44.4.0'
-    - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +tgeo +pr4496 +pr4502 +pr4620
+    - '@45.1.1'
+    - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
       when: '^dd4hep %gcc'
@@ -256,7 +256,7 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@15.0.5' # JUGGLER_VERSION
+    - '@15.1.0' # JUGGLER_VERSION
     - cxxstd=20
   julia:
     require:
