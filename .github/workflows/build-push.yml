@@ -181,7 +181,7 @@ jobs:
           skip-extraction: ${{ steps.cache-base-mounts.outputs.cache-hit }}
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}
@@ -316,7 +316,7 @@ jobs:
           echo "all=$ALL_DIGESTS" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/${{ steps.digests.outputs.image }},enable=${{ env.DH_PUSH != 0 }}
@@ -492,7 +492,7 @@ jobs:
           skip-extraction: ${{ steps.cache-eic-mounts.outputs.cache-hit }}
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }},enable=${{ env.DH_PUSH != 0 }}
@@ -637,7 +637,7 @@ jobs:
           echo "all=$ALL_DIGESTS" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/${{ steps.digests.outputs.image }},enable=${{ env.DH_PUSH != 0 }}
