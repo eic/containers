@@ -148,7 +148,7 @@ jobs:
           echo "version=${EICSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
           echo "sha=$(.ci/resolve_git_ref ${EICSPACK_ORGREPO} ${EICSPACK_VERSION})" | tee -a $GITHUB_OUTPUT
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: linux/amd64,linux/amd64/v3,linux/arm64
       - name: Set up Docker Buildx
@@ -252,7 +252,7 @@ jobs:
         - BUILD_IMAGE: cuda_runtime
     steps:
       - name: Set up QEMU (for imagetools)
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
@@ -459,7 +459,7 @@ jobs:
       - name: Inject enhanced GitHub environment variables
         uses: rlespinasse/github-slug-action@v5
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: linux/amd64,linux/amd64/v3,linux/arm64
       - name: Set up Docker Buildx
@@ -573,7 +573,7 @@ jobs:
         ENV: [ci, xl]
     steps:
       - name: Set up QEMU (for imagetools)
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
