@@ -511,10 +511,8 @@ user_spack_environment:
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
-            ENV:
-            - ci
-            BUILD_TYPE:
-            - default
+            ENV: ci
+            BUILD_TYPE: default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
             PLATFORM: linux/amd64
@@ -545,10 +543,8 @@ user_spack_environment:
       parallel:
         matrix:
           - BUILD_IMAGE: eic_dev_
-            ENV:
-            - cuda
-            BUILD_TYPE:
-            - default
+            ENV: cuda
+            BUILD_TYPE: default
             BUILDER_IMAGE: cuda_devel
             RUNTIME_IMAGE: cuda_devel
             PLATFORM: linux/amd64
@@ -590,10 +586,8 @@ eic_xl:singularity:default:
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
-            ENV:
-            - xl
-            BUILD_TYPE:
-            - default
+            ENV: xl
+            BUILD_TYPE: default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
             PLATFORM: linux/amd64
@@ -610,10 +604,8 @@ eic_xl:singularity:nightly:
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
-            ENV:
-            - xl
-            BUILD_TYPE:
-            - nightly
+            ENV: xl
+            BUILD_TYPE: nightly
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
             PLATFORM: linux/amd64
@@ -641,10 +633,8 @@ eic_xl:singularity:nightly:
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
-            ENV:
-            - ci
-            BUILD_TYPE:
-            - default
+            ENV: ci
+            BUILD_TYPE: default
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
             PLATFORM: linux/amd64
@@ -659,10 +649,8 @@ eic_xl:singularity:nightly:
       parallel:
         matrix:
           - BUILD_IMAGE: eic_
-            ENV:
-            - ci
-            BUILD_TYPE:
-            - nightly
+            ENV: ci
+            BUILD_TYPE: nightly
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
             PLATFORM: linux/amd64
