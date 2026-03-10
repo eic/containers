@@ -497,6 +497,7 @@ packages:
   py-rucio-clients:
     require:
     - '@37.3.0:'
+    - +argcomplete
   py-scipy:
     require:
     - '@1.14.1:'
