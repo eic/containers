@@ -55,7 +55,7 @@ packages:
     - '@1.2.0'
   arrow:
     require:
-    - '@22.0.0'
+    - '@19:'
   binutils:
     require:
     - ~gold
