@@ -38,15 +38,20 @@ b9ad19ee2ce47f8b7fbe187d41d898f873bbc121
 5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf
 58593e5d028737fef024c8136045b9d3f988e3e3
 e87325e40627e4113c5e374f83e086f2421e005a
+d0977a5f941bc01833c923b99a88e53c4be0f04c
 a1437186c1d979ce112d52be178d0fb88b70f332
 cfa8d650480c409de2d568cf1355bf7e509f4c1c
 580bdd5b82e9329a4b5c0b30411e43ea3221d958
 50433a4a02370e9035b85820cd438a64d5433749
 9686af7a77fb96d177a825c9ea2343ed15512d75
 6eeb0dd820467e5542d41d6784ee86de8f84d4a0
+0bb3f0cf0f8f22b5a12286d744355ac85263f600
 688d5e5e20fa9aa2647026143205c8aaa0625590
 b2f469de6a7c823bf93b9fa408b0ef4b67442f5f
 3368f8849e57da0ad1eaa0086b1855538e5db03e
+090c7437cff0352a9d69b9b9c6c9f60a4600862f
+58597d3567384cb7be500b336c5c4edabb343be7
+4b77ca9bd1e6e828ea2c6027bca817cb82d8ac61
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -85,12 +90,17 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf: py-onnxruntime: add v1.21.1, v1.22.2
 ## 58593e5d028737fef024c8136045b9d3f988e3e3: py-onnxruntime: patch to add linker flag -z noexecstack
 ## e87325e40627e4113c5e374f83e086f2421e005a: acts: add v44.4.0
+## d0977a5f941bc01833c923b99a88e53c4be0f04c: acts: rename "tgeo" variant to "root"
 ## a1437186c1d979ce112d52be178d0fb88b70f332: acts: narrow when range on podio when +edm4hep +examples
 ## cfa8d650480c409de2d568cf1355bf7e509f4c1c: dd4hep: Add version 1.34
 ## 580bdd5b82e9329a4b5c0b30411e43ea3221d958: pythia8: add v8.316
 ## 50433a4a02370e9035b85820cd438a64d5433749: python ecosystem: bulk update
 ## 9686af7a77fb96d177a825c9ea2343ed15512d75: snakemake: add v9 versions and dependencies
 ## 6eeb0dd820467e5542d41d6784ee86de8f84d4a0: py-snakemake-storage-plugin-fs: add v1.1.3
+## 0bb3f0cf0f8f22b5a12286d744355ac85263f600: acts: remove "build" type from some dependencies
 ## 688d5e5e20fa9aa2647026143205c8aaa0625590: dd4hep: add v1.35
 ## b2f469de6a7c823bf93b9fa408b0ef4b67442f5f: py-snakemake-storage-plugin-rucio: add v0.4.1
 ## 3368f8849e57da0ad1eaa0086b1855538e5db03e: just: add 1.46.0
+## 090c7437cff0352a9d69b9b9c6c9f60a4600862f: acts: add v45.0.0
+## 58597d3567384cb7be500b336c5c4edabb343be7: acts: add v45.1.0 and v45.1.1
+## 4b77ca9bd1e6e828ea2c6027bca817cb82d8ac61: acts: improve variant dependency handling
