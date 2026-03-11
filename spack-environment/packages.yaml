@@ -54,7 +54,7 @@ packages:
     require:
     - '@1.2.0'
   arrow:
-    requre:
+    require:
     - '@22.0.0'
   binutils:
     require:
