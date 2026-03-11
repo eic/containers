@@ -53,6 +53,9 @@ packages:
   algorithms:
     require:
     - '@1.2.0'
+  arrow:
+    requre:
+    - '@22.0.0'
   binutils:
     require:
     - ~gold
