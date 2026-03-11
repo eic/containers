@@ -53,6 +53,10 @@ packages:
   algorithms:
     require:
     - '@1.2.0'
+  arrow:
+    require:
+    - '@22:'
+    - +brotli +bz2 +dataset +filesystem +glog +ipc +jemalloc +lz4 +parquet +snappy +zlib +zstd
   binutils:
     require:
     - ~gold
