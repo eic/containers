@@ -56,7 +56,7 @@ packages:
   arrow:
     require:
     - '@22:'
-    - +brotli +bz2 +dataset +filesystem +glog +ipc +jemalloc +lz4 +orc +parquet +snappy +zlib +zstd
+    - +brotli +bz2 +dataset +filesystem +glog +ipc +jemalloc +lz4 +parquet +snappy +zlib +zstd
   binutils:
     require:
     - ~gold
