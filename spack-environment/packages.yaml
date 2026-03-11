@@ -545,7 +545,7 @@ packages:
   root:
     require:
     - '@6.38.00'
-    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +x +xrootd +ssl
+    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
     require:
