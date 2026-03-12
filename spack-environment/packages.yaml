@@ -234,7 +234,7 @@ packages:
     - +python +rootio
   hepmcmerger:
     require:
-    - '@2.1.0'
+    - '@2.2.0'
   heppdt:
     require:
     - '@2.06.01'
@@ -260,7 +260,7 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@15.0.5' # JUGGLER_VERSION
+    - '@15.1.0' # JUGGLER_VERSION
     - cxxstd=20
   julia:
     require:
