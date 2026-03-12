@@ -2,18 +2,19 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
+  - ../cuda_arch.yaml
   - ../packages_root_with_opengl.yaml
   - ../view.yaml
   concretizer:
     unify: when_possible # multiple epic versions
   specs:
-  - acts +cuda cuda_arch=75
+  - acts +cuda
   - actsvg
   - afterburner
-  - arrow +cuda cuda_arch=75
+  - arrow +cuda
   - cairo
   - catch2
-  - celeritas +cuda cuda_arch=75
+  - celeritas +cuda
   - cernlib
   - cli11
   - cmake
@@ -90,7 +91,7 @@ spack:
   - py-scipy
   - py-seaborn
   - py-toml
-  - py-torch +cuda cuda_arch=75
+  - py-torch +cuda
   - py-uproot
   - py-wurlitzer
   - py-yapf
