@@ -234,7 +234,7 @@ packages:
     - +python +rootio
   hepmcmerger:
     require:
-    - '@2.1.0'
+    - '@2.2.0'
   heppdt:
     require:
     - '@2.06.01'
@@ -260,7 +260,7 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@15.0.5' # JUGGLER_VERSION
+    - '@15.1.0' # JUGGLER_VERSION
     - cxxstd=20
   julia:
     require:
@@ -549,7 +549,7 @@ packages:
   root:
     require:
     - '@6.38.00'
-    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +vc +x +xrootd +ssl
+    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
     require:
