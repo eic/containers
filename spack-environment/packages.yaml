@@ -53,6 +53,10 @@ packages:
   algorithms:
     require:
     - '@1.2.0'
+  arrow:
+    require:
+    - '@22:'
+    - +brotli +bz2 +dataset +filesystem +glog +ipc +jemalloc +lz4 +parquet +snappy +zlib +zstd
   binutils:
     require:
     - ~gold
@@ -230,7 +234,7 @@ packages:
     - +python +rootio
   hepmcmerger:
     require:
-    - '@2.1.0'
+    - '@2.2.0'
   heppdt:
     require:
     - '@2.06.01'
@@ -256,7 +260,7 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@15.0.5' # JUGGLER_VERSION
+    - '@15.1.0' # JUGGLER_VERSION
     - cxxstd=20
   julia:
     require:
@@ -401,7 +405,7 @@ packages:
     - '@2025.2.0:'
   py-epic-capybara:
     require:
-    - '@git.ef2a8790312b9b697655b28a07b353e601bfa3b8'
+    - '@git.8ba297605f5d3419244643c3332364196552789e'
   py-flatbuffers:
     require:
     - '@25.9.23:'
@@ -497,6 +501,7 @@ packages:
   py-rucio-clients:
     require:
     - '@37.3.0:'
+    - +argcomplete
   py-scipy:
     require:
     - '@1.14.1:'
