@@ -1,0 +1,6 @@
+# This file centralizes the CUDA architecture capability definition.
+# Current target: Compute Capability 7.5 (Turing: T4, RTX 2xxx, Quadro RTX)
+# To target a different GPU architecture, change cuda_arch here.
+packages:
+  all:
+    variants: cuda_arch=75
