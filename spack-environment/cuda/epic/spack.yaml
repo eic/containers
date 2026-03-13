@@ -16,4 +16,5 @@ spack:
   - epic@26.01.0
   - epic@26.02.0
   - epic@26.03.0
+  - epic@26.03.1
   - juggler
