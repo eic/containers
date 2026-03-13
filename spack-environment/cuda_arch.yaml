@@ -3,4 +3,6 @@
 # To target a different GPU architecture, change cuda_arch here.
 packages:
   all:
-    variants: cuda_arch=75
+    require:
+      - when: '+cuda'
+        any_of: [cuda_arch=75, '@:']
