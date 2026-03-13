@@ -26,6 +26,8 @@ packages:
     #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
     - any_of: [build_type=Release, '@:']
+    - when: '+cuda'
+      any_of: [cuda_arch=75, '@:']
   abseil-cpp:
     require:
     # Without constraints on abseil-cpp, we end up with cxxstd=14 branches

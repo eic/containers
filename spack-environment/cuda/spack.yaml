@@ -2,7 +2,6 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
-  - ../cuda_arch.yaml
   - ../packages_root_with_opengl.yaml
   - ../view.yaml
   concretizer:

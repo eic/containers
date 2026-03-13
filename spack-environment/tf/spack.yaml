@@ -2,7 +2,6 @@ spack:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
-  - ../cuda_arch.yaml
   - ../view.yaml
   concretizer:
     unify: when_possible  # py-numba needs a different llvm than the one provided as external
