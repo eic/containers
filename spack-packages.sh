@@ -48,6 +48,7 @@ cfa8d650480c409de2d568cf1355bf7e509f4c1c
 b2f469de6a7c823bf93b9fa408b0ef4b67442f5f
 3368f8849e57da0ad1eaa0086b1855538e5db03e
 5ec7462a628681522f8cf6016a9aa72fbd40dd91
+5e1d32f27d8c8a684bfef2b5301c4eaf525d06c2
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -96,3 +97,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## b2f469de6a7c823bf93b9fa408b0ef4b67442f5f: py-snakemake-storage-plugin-rucio: add v0.4.1
 ## 3368f8849e57da0ad1eaa0086b1855538e5db03e: just: add 1.46.0
 ## 5ec7462a628681522f8cf6016a9aa72fbd40dd91: arrow: add 20.0.0, 21.0.0, 22.0.0
+## 5e1d32f27d8c8a684bfef2b5301c4eaf525d06c2: py-tensorflow: env.set(..., str)
