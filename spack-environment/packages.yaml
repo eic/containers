@@ -397,6 +397,9 @@ packages:
     require:
     - '@2.1.4:'
     - processes=ppvj,ppjj
+  optix-dev:
+    require:
+    - '@9.0.0'
   osg-ca-certs:
     require:
     - '@1.141.igtf.1.141'
