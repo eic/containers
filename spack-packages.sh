@@ -54,6 +54,7 @@ b2f469de6a7c823bf93b9fa408b0ef4b67442f5f
 bf324ce8df932ae55701fc7e7d46ae835583654f
 d9c75526e8e218806c331d19e5d0a3a5ddc37afb
 bacfc0e267518496447810d77ed2e477ee32f7d5
+b6ee05054605774270a66274b32e9e50075591c3
 a896fdbe5d01981cbc6f9b5139a5d551ac2fe248
 2163a6ae2cad38980f67e8d617743cabfc773304
 0d4e42deee0f561013568d1e92205a084cf203bc
@@ -112,6 +113,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## bf324ce8df932ae55701fc7e7d46ae835583654f: clhep: use the blessed Gitlab instance instead of proj-clhep.web.cern.ch
 ## d9c75526e8e218806c331d19e5d0a3a5ddc37afb: geant4: disable the timemory variant starting with 11.3.0
 ## bacfc0e267518496447810d77ed2e477ee32f7d5: geant4: add v11.4.0 and versions of other packages needed
+## b6ee05054605774270a66274b32e9e50075591c3: geant4: add v11.4.1
 ## a896fdbe5d01981cbc6f9b5139a5d551ac2fe248: vecgeom: new release 2.0.0-rc.9
 ## 2163a6ae2cad38980f67e8d617743cabfc773304: vecgeom: add v2.0.0
 ## 0d4e42deee0f561013568d1e92205a084cf203bc: g4hepem: new package
