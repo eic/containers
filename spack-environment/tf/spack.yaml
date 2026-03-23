@@ -47,4 +47,5 @@ spack:
   - py-toml
   - py-uproot
   - py-vector
+  - root
   - xrootd
