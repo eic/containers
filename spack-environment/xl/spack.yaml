@@ -10,6 +10,7 @@ spack:
   - acts
   - actsvg
   - afterburner
+  - arrow
   - autoconf
   - automake
   - cairo
