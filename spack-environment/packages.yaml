@@ -48,7 +48,7 @@ packages:
     - '@1.0.1'
   afterburner:
     require:
-    - '@0.1.3'
+    - '@0.2.0'
     - +root +zlib
   algorithms:
     require:
@@ -133,7 +133,7 @@ packages:
     - '@656aa3192b097a631ddd1e0380e80c26fd6644a7'
   edm4eic:
     require:
-    - '@8.8.0' # EDM4EIC_VERSION
+    - '@8.9.0' # EDM4EIC_VERSION
     - cxxstd=20
   edm4hep:
     require:
