@@ -3,7 +3,6 @@ view:
     root: /opt/local
     exclude:
       - epic
-      - py-pip@23.0
       - py-urllib3@1
     link: roots
     link_type: symlink
