@@ -12,5 +12,7 @@
 if [ -z "${COPILOT_HOME:-}" ]; then
   export COPILOT_HOME=/etc/copilot
 else
-  echo "Note: COPILOT_HOME is already set to '${COPILOT_HOME}'; not overriding with /etc/copilot."
+  case "$-" in
+    *i*) echo "Note: COPILOT_HOME is already set to '${COPILOT_HOME}'; not overriding with /etc/copilot." ;;
+  esac
 fi
