@@ -362,6 +362,25 @@ COPY eic-env.sh /etc/eic-env.sh
 COPY profile.d/* /etc/profile.d
 COPY singularity.d /.singularity.d
 
+## System-level Copilot MCP server defaults
+## The profile.d/z23_copilot_mcp.sh script will seed ~/.copilot/mcp-config.json
+## from this file on first login, enabling default MCP servers for all users
+## (including Singularity/Apptainer users whose home is mounted from the host).
+## /opt/local/bin/xrootd-mcp-server is the Spack view path for the
+## xrootd-mcp-server package (installed like github-copilot via npm --global).
+COPY <<EOF /etc/copilot/mcp-config.json
+{
+  "mcpServers": {
+    "eic-xrootd-mcp-server": {
+      "command": "/opt/local/bin/xrootd-mcp-server",
+      "env": {
+        "XROOTD_SERVER": "root://dtn-eic.jlab.org"
+      }
+    }
+  }
+}
+EOF
+
 ## set ROOT TFile forward compatibility
 RUN sed --in-place --follow-symlinks 's/# \(TFile.v630forwardCompatibility:\) no/\1 yes/' /opt/local/etc/root/system.rootrc
 
