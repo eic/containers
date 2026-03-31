@@ -1,13 +1,16 @@
 #!/bin/sh
 
-## Seed default Copilot MCP server configuration from system template.
-## Only runs if the system template exists and the user does not yet
-## have a ~/.copilot/mcp-config.json (first-login convenience).
-## This is necessary for Singularity/Apptainer users where the home
-## directory is mounted from the host and cannot be pre-populated in
-## the container image.
+## Set COPILOT_HOME to /etc/copilot so github-copilot reads MCP server
+## configuration directly from the system-level config, rather than from
+## ~/.copilot. This works for Singularity/Apptainer users whose home
+## directory is bind-mounted from the host at runtime.
+##
+## To revert to ~/.copilot (or any other directory), add the following
+## to your ~/.bashrc:
+##   unset COPILOT_HOME
 
-if [ -f /etc/copilot/mcp-config.json ] && [ ! -f "${HOME}/.copilot/mcp-config.json" ]; then
-  mkdir -p "${HOME}/.copilot" &&
-  cp /etc/copilot/mcp-config.json "${HOME}/.copilot/mcp-config.json"
+if [ -z "${COPILOT_HOME:-}" ]; then
+  export COPILOT_HOME=/etc/copilot
+else
+  echo "Note: COPILOT_HOME is already set to '${COPILOT_HOME}'; not overriding with /etc/copilot."
 fi
