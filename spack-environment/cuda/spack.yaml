@@ -1,6 +1,7 @@
 spack:
   include:
   - ../concretizer.yaml
+  - ../config.yaml
   - ../packages.yaml
   - ../packages_root_with_opengl.yaml
   - ../view.yaml
