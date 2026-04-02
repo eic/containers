@@ -7,108 +7,29 @@ SPACKPACKAGES_ORGREPO="spack/spack-packages"
 ## Note: nightly builds will use e.g. develop
 ## Note: when changing this, also make new buildcache public
 ## (default is only visible with internal authentication)
-SPACKPACKAGES_VERSION="v2025.11.0"
+SPACKPACKAGES_VERSION="v2026.03.0"
 
 ## Space-separated list of spack-packages cherry-picks
 read -r -d '' SPACKPACKAGES_CHERRYPICKS <<- \
 --- || true
 a115a811bdfce4db5298a9ba9b7903ccfb0de101
 20444b8e9382e659360a1446688d10a8c2d2ad31
-22dadd619053ff0872903549db616200bda082f0
-559789f67245a40306aeea636b61348e97d4f092
-95c45b6c3322e151fd29ed00ea10567b97705ee4
-d6f99b8d611cf740eb45e13df2c84044a4ca6ae4
 5c37f836753e8f9683fdc547f3661c5045abcbd1
-c75e10845431600b163c597545bd099e427c62f5
-438a7d95de1b81e15107edbf341b20824ec80635
-6b57d7a93de84dd5492b9308a9612924ab641dce
-ba94c07db577eaf5eb4b0450721fbc7e98879922
-f201ecd5e5923b394d14f74bc220dea06b9ab28f
-2e05bbbe808442e761647da571500ee128654f4f
-9ec50db07733195bba922b8c6dcbbb1de9c56adf
-d95db21e9c9fa6eab1a9e62e2ba56066f2f955a7
-be6546b82b43d82edba804f1e362a709809ba537
 f5742718da7bd1d078ddc8423011a82ef2e3c759
-922b2f6011dbf01aebb332a1ebf949b105c74247
-2ba80e697faf80613b038615b2345b7a777cc438
-9e8f996350ac51c620e61a3a3980577fe471e35a
-a4cc9fad86c9c3353e65bd379f708f70d9984bf0
-760f3889877f17df24229a03d5dda25189b88a29
-2de6b7a78840d8e67113f190783a1c936709b643
-7743e5ac5cdf9075800b3edacfed628c795a9a5e
-b9ad19ee2ce47f8b7fbe187d41d898f873bbc121
-931b8f47ff9470b3f957f0bb462964702277301a
-5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf
-58593e5d028737fef024c8136045b9d3f988e3e3
-e87325e40627e4113c5e374f83e086f2421e005a
-a1437186c1d979ce112d52be178d0fb88b70f332
-cfa8d650480c409de2d568cf1355bf7e509f4c1c
-580bdd5b82e9329a4b5c0b30411e43ea3221d958
-50433a4a02370e9035b85820cd438a64d5433749
-9686af7a77fb96d177a825c9ea2343ed15512d75
-6eeb0dd820467e5542d41d6784ee86de8f84d4a0
-688d5e5e20fa9aa2647026143205c8aaa0625590
-b2f469de6a7c823bf93b9fa408b0ef4b67442f5f
-3368f8849e57da0ad1eaa0086b1855538e5db03e
-5ec7462a628681522f8cf6016a9aa72fbd40dd91
-a896fdbe5d01981cbc6f9b5139a5d551ac2fe248
-2163a6ae2cad38980f67e8d617743cabfc773304
 0d4e42deee0f561013568d1e92205a084cf203bc
 6346a54e35ee6281b8e8c6a1bc9c102893593c8e
-346babf5aebcf03045fbe10e59750fac8c95947f
-2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
 ## For all other commits, the cherry-pick will be applied without restriction (default).
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 --- || true
-[50433a4a02370e9035b85820cd438a64d5433749]=repos/spack_repo/builtin/packages/py_snakemake_interface_report_plugins/package.py
 ---
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
 ## a115a811bdfce4db5298a9ba9b7903ccfb0de101: github-copilot: new package
 ## 20444b8e9382e659360a1446688d10a8c2d2ad31: github-copilot: add v1.0.8
-## 22dadd619053ff0872903549db616200bda082f0: claude-code: new package
-## 559789f67245a40306aeea636b61348e97d4f092: estarlight: add thru v1.2.0
-## 95c45b6c3322e151fd29ed00ea10567b97705ee4: py-tensorflow: modify cuDNN dependency versions when +cuda
-## d6f99b8d611cf740eb45e13df2c84044a4ca6ae4: py-tensorflow: patch to build with +cuda
 ## 5c37f836753e8f9683fdc547f3661c5045abcbd1: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
-## c75e10845431600b163c597545bd099e427c62f5: dd4hep: v1.33
-## 438a7d95de1b81e15107edbf341b20824ec80635: root: add v6.36.06
-## 6b57d7a93de84dd5492b9308a9612924ab641dce: podio: ensure Python.h is found in ROOT ACLiC
-## ba94c07db577eaf5eb4b0450721fbc7e98879922: podio: use headers.directories[0] to get str, not list
-## f201ecd5e5923b394d14f74bc220dea06b9ab28f: acts: add v44.2.0
-## 2e05bbbe808442e761647da571500ee128654f4f: acts: add v44.3.0
-## 9ec50db07733195bba922b8c6dcbbb1de9c56adf: ollama: add through v0.13.1
-## d95db21e9c9fa6eab1a9e62e2ba56066f2f955a7: root: add v6.38.00
-## be6546b82b43d82edba804f1e362a709809ba537: gaudi: allow newer fmt for v39
 ## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
-## 922b2f6011dbf01aebb332a1ebf949b105c74247: celeritas: add v0.6.3
-## 2ba80e697faf80613b038615b2345b7a777cc438: py-flatbuffers: add v25.9.23
-## 9e8f996350ac51c620e61a3a3980577fe471e35a: py-dask: add v2025.3.0 (for py-dask-awkward)
-## a4cc9fad86c9c3353e65bd379f708f70d9984bf0: py-distributed: fix typo
-## 760f3889877f17df24229a03d5dda25189b88a29: py-dask, py-distributed: add v2024.12.1 (for py-hist)
-## 2de6b7a78840d8e67113f190783a1c936709b643: py-dask, py-distributed: fix style
-## 7743e5ac5cdf9075800b3edacfed628c795a9a5e: harfbuzz: Ensure consistent meson builder with cairo dependency
-## b9ad19ee2ce47f8b7fbe187d41d898f873bbc121: harfbuzz/pango: add harfbuzz gobject variant (& req for pango)
-## 931b8f47ff9470b3f957f0bb462964702277301a: openblas: patch for +dynamic_dispatch target=aarch64
-## 5f36a2b536a22ea3692bfdcd48a6c0c71e6488cf: py-onnxruntime: add v1.21.1, v1.22.2
-## 58593e5d028737fef024c8136045b9d3f988e3e3: py-onnxruntime: patch to add linker flag -z noexecstack
-## e87325e40627e4113c5e374f83e086f2421e005a: acts: add v44.4.0
-## a1437186c1d979ce112d52be178d0fb88b70f332: acts: narrow when range on podio when +edm4hep +examples
-## cfa8d650480c409de2d568cf1355bf7e509f4c1c: dd4hep: Add version 1.34
-## 580bdd5b82e9329a4b5c0b30411e43ea3221d958: pythia8: add v8.316
-## 50433a4a02370e9035b85820cd438a64d5433749: python ecosystem: bulk update
-## 9686af7a77fb96d177a825c9ea2343ed15512d75: snakemake: add v9 versions and dependencies
-## 6eeb0dd820467e5542d41d6784ee86de8f84d4a0: py-snakemake-storage-plugin-fs: add v1.1.3
-## 688d5e5e20fa9aa2647026143205c8aaa0625590: dd4hep: add v1.35
-## b2f469de6a7c823bf93b9fa408b0ef4b67442f5f: py-snakemake-storage-plugin-rucio: add v0.4.1
-## 3368f8849e57da0ad1eaa0086b1855538e5db03e: just: add 1.46.0
-## 5ec7462a628681522f8cf6016a9aa72fbd40dd91: arrow: add 20.0.0, 21.0.0, 22.0.0
-## a896fdbe5d01981cbc6f9b5139a5d551ac2fe248: vecgeom: new release 2.0.0-rc.9
-## 2163a6ae2cad38980f67e8d617743cabfc773304: vecgeom: add v2.0.0
 ## 0d4e42deee0f561013568d1e92205a084cf203bc: g4hepem: new package
 ## 6346a54e35ee6281b8e8c6a1bc9c102893593c8e: g4adept: new package
-## 346babf5aebcf03045fbe10e59750fac8c95947f: py-mplhep(-data): add new versions
-## 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96: py-awkward, py-uproot, py-uhi ecosystem (HEP): add new versions
