@@ -145,14 +145,26 @@ spack:
 
 ### Cherry-picks
 
-Spack versions can include cherry-picks from newer commits:
+Spack versions can include cherry-picks from newer commits. The commit hashes listed
+below are illustrative only — the actual cherry-picks applied may differ from what
+is shown here. Refer to `spack.sh` and `spack-packages.sh` for the current lists.
 
 ```bash
-# From spack.sh
+# From spack.sh (illustrative — see spack.sh for actual commits)
 SPACK_VERSION="v1.1.0"
 SPACK_CHERRYPICKS=$(cat <<- EOF
 09f75ee426a2e05e0543570821582480ff823ba5
 a462612b64e97fa7dfe461c32c58553fd6ec63c5
+# ... (additional commits may be present)
+EOF
+)
+
+# From spack-packages.sh (illustrative — see spack-packages.sh for actual commits)
+SPACKPACKAGES_VERSION="v2025.11.0"
+SPACKPACKAGES_CHERRYPICKS=$(cat <<- EOF
+a115a811bdfce4db5298a9ba9b7903ccfb0de101
+22dadd619053ff0872903549db616200bda082f0
+# ... (additional commits may be present)
 EOF
 )
 ```
