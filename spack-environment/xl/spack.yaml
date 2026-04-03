@@ -130,5 +130,7 @@ spack:
   - stow
   - strace
   - valgrind
-  - xrootd
   - xeyes
+  - xrootd
+  - xrootd-mcp-server
+  - zenodo-mcp-server
