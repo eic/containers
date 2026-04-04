@@ -21,7 +21,7 @@ packages:
     - build_system=cmake
     - build_type=Release
     require:
-    - '%gcc'
+    - any_of: ['%gcc', '%clang']  # allow packages with specific compiler requirements (e.g. py-tensorflow)
     # FIXME any ipo requirement breaks llvm external reuse
     #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
