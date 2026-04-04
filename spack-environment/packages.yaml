@@ -21,7 +21,7 @@ packages:
     - build_system=cmake
     - build_type=Release
     - when: '+cuda'
-      cuda_arch=75
+      spec: cuda_arch=75
     require:
     - '%gcc'
     # FIXME any ipo requirement breaks llvm external reuse
