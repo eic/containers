@@ -512,7 +512,6 @@ packages:
     - '@0.13.2:'
   py-tensorflow:
     require:
-    - '%clang'
     - '@2.20'
   py-toml:
     require:
