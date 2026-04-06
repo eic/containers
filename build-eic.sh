@@ -225,5 +225,5 @@ build_cmd+=(--provenance false)
 build_cmd+=(containers/eic)
 
 ## Execute
-set -o xtrace
+set -o xtrace -o pipefail
 "${build_cmd[@]}" 2>&1 | tee build.log
