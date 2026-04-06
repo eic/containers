@@ -11,9 +11,9 @@
 #
 packages:
   all:
-    # duplication between the prefer and require sections is intentional
-    # since 'require' for 'all' is overwritten by package-specific entries,
-    # and 'prefer' at least retains some (less strict) preference in that case
+    # note: in Spack v1.1+, 'require' for 'all' is NOT overwritten by package-specific
+    # entries; both constraints apply simultaneously. 'prefer' for 'all' retains a
+    # weaker preference that is superseded by package-specific requirements.
     prefer:
     - '%gcc'
     # FIXME any ipo preference breaks llvm external reuse
@@ -21,7 +21,7 @@ packages:
     - build_system=cmake
     - build_type=Release
     require:
-    - any_of: ['%gcc', '%clang']  # allow packages with specific compiler requirements (e.g. py-tensorflow)
+    - '%gcc'
     # FIXME any ipo requirement breaks llvm external reuse
     #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
