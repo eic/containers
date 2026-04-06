@@ -328,6 +328,8 @@ base:
                    --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
+                   --build-arg NVIDIA_VISIBLE_DEVICES=$(case "${BUILD_IMAGE}" in cuda*) echo all ;; esac)
+                   --build-arg NVIDIA_DRIVER_CAPABILITIES=$(case "${BUILD_IMAGE}" in cuda*) echo all ;; esac)
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
                    --build-arg SPACK_VERSION=${SPACK_VERSION}
                    --build-arg SPACK_SHA=$(sh .ci/resolve_git_ref "${SPACK_ORGREPO}" "${SPACK_VERSION}")

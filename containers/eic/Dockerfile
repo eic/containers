@@ -453,8 +453,3 @@ RUN echo -e "\n - eic_container: ${CI_COMMIT_SHA}" | tee -a /etc/eic_info /etc/j
 
 ## Hotfix for misbehaving OSG nodes
 RUN mkdir /hadoop /localscratch
-
-## Ensure NVIDIA driver exposes all capabilities
-## https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/docker-specialized.html
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=all
