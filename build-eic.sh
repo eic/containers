@@ -125,6 +125,8 @@ fi
 
 ## Cache sources
 CACHE_KEY="${BUILD_IMAGE}${ENV}-${BUILD_TYPE}"
+build_cmd+=(--cache-from "type=registry,ref=ghcr.io/eic/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
+build_cmd+=(--cache-from "type=registry,ref=ghcr.io/eic/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
 if [ -n "${CI_REGISTRY}" ]; then
   build_cmd+=(--cache-from "type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG}-${ARCH}")
 fi
