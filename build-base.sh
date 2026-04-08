@@ -32,7 +32,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_IMAGE="${BUILD_IMAGE:-debian_stable_base}"
 BASE_IMAGE="${BASE_IMAGE:-}"
 PLATFORM="${PLATFORM:-linux/amd64}"
-JOBS="${JOBS:-4}"
+JOBS="${JOBS:-$(nproc)}"
 LOCAL_TAG="${LOCAL_TAG:-local}"
 METADATA_FILE="${METADATA_FILE:-/tmp/build-metadata.json}"
 ## CUDA defaults (used when building cuda_devel or cuda_runtime)
