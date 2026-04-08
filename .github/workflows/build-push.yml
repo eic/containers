@@ -68,12 +68,14 @@ jobs:
     outputs:
       CUDA_VERSION: ${{ steps.env.outputs.CUDA_VERSION }}
       CUDA_OS: ${{ steps.env.outputs.CUDA_OS }}
+      BUILDWEEK: ${{ steps.env.outputs.BUILDWEEK }}
     steps:
       - name: Turn env into outputs
         id: env
         run: |
           echo "CUDA_VERSION=${{ env.CUDA_VERSION }}" >> $GITHUB_OUTPUT
           echo "CUDA_OS=${{ env.CUDA_OS }}" >> $GITHUB_OUTPUT
+          echo "BUILDWEEK=$(date +%Yw%V)" >> $GITHUB_OUTPUT
 
   base:
     name: Build ${{ matrix.BUILD_IMAGE }} on ${{ matrix.arch }}
@@ -163,8 +165,9 @@ jobs:
         id: cache-base-mounts
         with:
           path: cache-mount-base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}
-          key: ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-${{ github.ref_name }}
+          key: ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-${{ github.ref_name }}-${{ needs.env.outputs.BUILDWEEK }}
           restore-keys: |
+            ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-main-${{ needs.env.outputs.BUILDWEEK }}
             ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-main
             ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-
       - name: Inject cache mounts into builder
@@ -223,6 +226,7 @@ jobs:
             EICSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
             EICSPACK_SHA=${{ steps.eic-spack.outputs.sha }}
             jobs=${{ env.JOBS }}
+            BUILDWEEK=${{ needs.env.outputs.BUILDWEEK }}
           cache-from: |
             type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }}
             type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_BASE_REF_SLUG }}-${{ matrix.arch }}

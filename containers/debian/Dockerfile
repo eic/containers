@@ -84,6 +84,10 @@ EOF
 # Install updated compilers, with support for multiple base images
 ## Ubuntu: latest gcc from toolchain ppa, latest stable clang
 ## Debian: default gcc with distribution, latest stable clang
+## BUILDWEEK rotates weekly (format: YYYYwWW) to bust apt layer cache and
+## pick up compiler package updates that would otherwise be hidden by the
+## persistent registry layer cache.
+ARG BUILDWEEK=0
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 . /etc/os-release
