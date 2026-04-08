@@ -127,40 +127,6 @@ jobs:
           esac
           echo "visible_devices=${NVIDIA_VISIBLE_DEVICES}" | tee -a $GITHUB_OUTPUT
           echo "driver_capabilities=${NVIDIA_DRIVER_CAPABILITIES}" | tee -a $GITHUB_OUTPUT
-      - name: Load spack version and cherry-picks
-        id: spack
-        shell: bash
-        run: |
-          source spack.sh
-          echo "orgrepo=${SPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=${SPACK_VERSION}" | tee -a $GITHUB_OUTPUT
-          echo "sha=$(.ci/resolve_git_ref ${SPACK_ORGREPO} ${SPACK_VERSION})" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks=${SPACK_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks_files=${SPACK_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
-      - name: Load spack-packages version and cherry-picks
-        id: spack-packages
-        shell: bash
-        run: |
-          source spack-packages.sh
-          echo "orgrepo=${SPACKPACKAGES_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=${SPACKPACKAGES_VERSION}" | tee -a $GITHUB_OUTPUT
-          echo "sha=$(.ci/resolve_git_ref ${SPACKPACKAGES_ORGREPO} ${SPACKPACKAGES_VERSION})" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks=${SPACKPACKAGES_CHERRYPICKS//$'\n'/ }" | tee -a $GITHUB_OUTPUT
-          echo "cherrypicks_files=${SPACKPACKAGES_CHERRYPICKS_FILES//$'\n'/ }" | tee -a $GITHUB_OUTPUT
-      - name: Load key4hep-spack version
-        id: key4hep-spack
-        run: |
-          source key4hep-spack.sh
-          echo "orgrepo=${KEY4HEPSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=${KEY4HEPSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
-          echo "sha=$(.ci/resolve_git_ref ${KEY4HEPSPACK_ORGREPO} ${KEY4HEPSPACK_VERSION})" | tee -a $GITHUB_OUTPUT
-      - name: Load eic-spack version
-        id: eic-spack
-        run: |
-          source eic-spack.sh
-          echo "orgrepo=${EICSPACK_ORGREPO}" | tee -a $GITHUB_OUTPUT
-          echo "version=${EICSPACK_VERSION}" | tee -a $GITHUB_OUTPUT
-          echo "sha=$(.ci/resolve_git_ref ${EICSPACK_ORGREPO} ${EICSPACK_VERSION})" | tee -a $GITHUB_OUTPUT
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
         with:
@@ -194,14 +160,6 @@ jobs:
               "var-cache-spack": "/var/cache/spack"
             }
           skip-extraction: ${{ steps.cache-base-mounts.outputs.cache-hit }}
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          images: |
-            name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}
-          tags: |
-            type=sha,prefix=${{ matrix.arch }}-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v4
         if: ${{ env.GH_PUSH == '1' }}
@@ -210,47 +168,23 @@ jobs:
           username: ${{ secrets.GHCR_REGISTRY_USER }}
           password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
       - name: Build and push
-        uses: docker/build-push-action@v7
-        id: build
-        with:
-          file: containers/debian/Dockerfile
-          context: containers/debian
-          platforms: ${{ matrix.PLATFORM }}
-          labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }},push-by-digest=true,name-canonical=true,push=true
-          build-args: |
-            BASE_IMAGE=${{ matrix.BASE_IMAGE }}
-            BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
-            NVIDIA_VISIBLE_DEVICES=${{ steps.nvidia.outputs.visible_devices }}
-            NVIDIA_DRIVER_CAPABILITIES=${{ steps.nvidia.outputs.driver_capabilities }}
-            SPACK_ORGREPO=${{ steps.spack.outputs.orgrepo }}
-            SPACK_VERSION=${{ steps.spack.outputs.version }}
-            SPACK_SHA=${{ steps.spack.outputs.sha }}
-            SPACK_CHERRYPICKS=${{ steps.spack.outputs.cherrypicks }}
-            SPACK_CHERRYPICKS_FILES=${{ steps.spack.outputs.cherrypicks_files }}
-            SPACKPACKAGES_ORGREPO=${{ steps.spack-packages.outputs.orgrepo }}
-            SPACKPACKAGES_VERSION=${{ steps.spack-packages.outputs.version }}
-            SPACKPACKAGES_SHA=${{ steps.spack-packages.outputs.sha }}
-            SPACKPACKAGES_CHERRYPICKS=${{ steps.spack-packages.outputs.cherrypicks }}
-            SPACKPACKAGES_CHERRYPICKS_FILES=${{ steps.spack-packages.outputs.cherrypicks_files }}
-            KEY4HEPSPACK_ORGREPO=${{ steps.key4hep-spack.outputs.orgrepo }}
-            KEY4HEPSPACK_VERSION=${{ steps.key4hep-spack.outputs.version }}
-            KEY4HEPSPACK_SHA=${{ steps.key4hep-spack.outputs.sha }}
-            EICSPACK_ORGREPO=${{ steps.eic-spack.outputs.orgrepo }}
-            EICSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
-            EICSPACK_SHA=${{ steps.eic-spack.outputs.sha }}
-            jobs=${{ env.JOBS }}
-            BUILDWEEK=${{ needs.env.outputs.BUILDWEEK }}
-          cache-from: |
-            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }}
-            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_BASE_REF_SLUG }}-${{ matrix.arch }}
-          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }},mode=max
+        env:
+          BUILD_IMAGE: ${{ matrix.BUILD_IMAGE }}
+          BASE_IMAGE: ${{ matrix.BASE_IMAGE }}
+          PLATFORM: ${{ matrix.PLATFORM }}
+          GH_REGISTRY: ${{ env.GH_REGISTRY }}
+          GH_REGISTRY_USER: ${{ env.GH_REGISTRY_USER }}
+          GH_PUSH: ${{ env.GH_PUSH }}
+          JOBS: ${{ env.JOBS }}
+          BUILDWEEK: ${{ needs.env.outputs.BUILDWEEK }}
+          METADATA_FILE: /tmp/build-metadata.json
+        run: bash build-base.sh
       - name: Export digest to file
-        # The build-push action outputs the digest at steps.build.outputs.digest
-        # We write this to a file for the next job
         run: |
+          DIGEST=$(jq -r '."containerimage.digest"' /tmp/build-metadata.json)
+          IMAGE="${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}"
           mkdir -p /tmp/digests
-          echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
+          echo "${IMAGE}@${DIGEST}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v7
         with:
@@ -371,7 +305,6 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64
           target: final
-          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: debian_stable_base
@@ -381,7 +314,6 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64/v3
           target: final
-          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: debian_stable_base
@@ -391,7 +323,6 @@ jobs:
           runner: ubuntu-24.04-arm
           PLATFORM: linux/arm64
           target: final
-          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: debian_stable_base
@@ -401,7 +332,6 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64
           target: final
-          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: debian_stable_base
@@ -411,7 +341,6 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64/v3
           target: final
-          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: debian_stable_base
@@ -421,7 +350,6 @@ jobs:
           runner: ubuntu-24.04-arm
           PLATFORM: linux/arm64
           target: final
-          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: cuda_devel
@@ -431,7 +359,6 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64
           target: builder_concretization_default
-          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3"
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: cuda_devel
@@ -441,7 +368,6 @@ jobs:
           runner: ubuntu-latest
           PLATFORM: linux/amd64
           target: final
-          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
       fail-fast: false
     steps:
       - name: Free Disk Space (Ubuntu)
@@ -451,29 +377,6 @@ jobs:
           dotnet: true
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Resolve benchmarks versions
-        id: benchmarks
-        shell: bash
-        run: |
-          echo "common_bench=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git master)" | tee -a $GITHUB_OUTPUT
-          echo "detector_benchmarks=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
-          echo "reconstruction_benchmarks=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
-          echo "physics_benchmarks=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
-      - name: Resolve campaign versions
-        id: campaigns
-        shell: bash
-        run: |
-          echo "simulation_campaign_hepmc3=$(.ci/resolve_git_ref eic/simulation_campaign_hepmc3 main)" | tee -a $GITHUB_OUTPUT
-          echo "job_submission_condor=$(.ci/resolve_git_ref eic/job_submission_condor main)" | tee -a $GITHUB_OUTPUT
-          echo "job_submission_slurm=$(.ci/resolve_git_ref eic/job_submission_slurm main)" | tee -a $GITHUB_OUTPUT
-      - name: Load secrets into mirrors.yaml
-        id: mirrors
-        run: |
-          source spack-packages.sh
-          export SPACKPACKAGES_VERSION
-          export CI_REGISTRY=ghcr.io
-          export CI_PROJECT_PATH=eic
-          cat mirrors.yaml.in | envsubst > mirrors.yaml
       - name: Inject enhanced GitHub environment variables
         uses: rlespinasse/github-slug-action@v5
       - name: Set up QEMU
@@ -508,15 +411,6 @@ jobs:
               "var-cache-spack": "/var/cache/spack"
             }
           skip-extraction: ${{ steps.cache-eic-mounts.outputs.cache-hit }}
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          images: |
-            name=${{ env.DH_REGISTRY }}/${{ env.DH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }},enable=${{ env.DH_PUSH != 0 }}
-            name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }},enable=${{ env.GH_PUSH != 0 }}
-          tags: |
-            type=sha,prefix=${{ matrix.arch }}-
       - name: Login to Docker Hub
         uses: docker/login-action@v4
         if: ${{ env.DH_PUSH == '1' }}
@@ -532,48 +426,37 @@ jobs:
           username: ${{ secrets.GHCR_REGISTRY_USER }}
           password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
       - name: Build and push
-        uses: docker/build-push-action@v7
-        id: build
-        with:
-          file: containers/eic/Dockerfile
-          context: containers/eic
-          build-contexts: |
-            spack-environment=spack-environment
-          secrets: |
-            "CI_REGISTRY_USER=${{ secrets.GHCR_REGISTRY_USER }}"
-            "CI_REGISTRY_PASSWORD=${{ secrets.GHCR_REGISTRY_TOKEN }}"
-            "GITHUB_REGISTRY_USER=${{ secrets.GHCR_REGISTRY_USER }}"
-            "GITHUB_REGISTRY_TOKEN=${{ secrets.GHCR_REGISTRY_TOKEN }}"
-          secret-files: |
-            mirrors=mirrors.yaml
-          platforms: ${{ matrix.PLATFORM }}
-          target: ${{ matrix.target }}
-          labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }},push-by-digest=true,name-canonical=true,push=true
-          build-args: |
-            BENCHMARK_COM_SHA=${{ steps.benchmarks.outputs.common_bench }}
-            BENCHMARK_DET_SHA=${{ steps.benchmarks.outputs.detector_benchmarks }}
-            BENCHMARK_REC_SHA=${{ steps.benchmarks.outputs.reconstruction_benchmarks }}
-            BENCHMARK_PHY_SHA=${{ steps.benchmarks.outputs.physics_benchmarks }}
-            CAMPAIGNS_HEPMC3_SHA=${{ steps.campaigns.outputs.simulation_campaign_hepmc3 }}
-            CAMPAIGNS_CONDOR_SHA=${{ steps.campaigns.outputs.job_submission_condor }}
-            CAMPAIGNS_SLURM_SHA=${{ steps.campaigns.outputs.job_submission_slurm }}
-            DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/
-            BUILDER_IMAGE=${{ matrix.BUILDER_IMAGE }}
-            RUNTIME_IMAGE=${{ matrix.RUNTIME_IMAGE }}
-            INTERNAL_TAG=${{ env.INTERNAL_TAG }}
-            ENV=${{ matrix.ENV }}
-            SPACK_DUPLICATE_ALLOWLIST=${{ matrix.SPACK_DUPLICATE_ALLOWLIST }}
-          cache-from: |
-            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.BUILD_TYPE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }}
-            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.BUILD_TYPE }}-${{ env.GITHUB_BASE_REF_SLUG }}-${{ matrix.arch }}
-          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}-${{ matrix.BUILD_TYPE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }},mode=max
+        env:
+          BUILD_IMAGE: ${{ matrix.BUILD_IMAGE }}
+          ENV: ${{ matrix.ENV }}
+          BUILD_TYPE: ${{ matrix.BUILD_TYPE }}
+          BUILD_TARGET: ${{ matrix.target }}
+          BUILDER_IMAGE: ${{ matrix.BUILDER_IMAGE }}
+          RUNTIME_IMAGE: ${{ matrix.RUNTIME_IMAGE }}
+          PLATFORM: ${{ matrix.PLATFORM }}
+          GH_REGISTRY: ${{ env.GH_REGISTRY }}
+          GH_REGISTRY_USER: ${{ env.GH_REGISTRY_USER }}
+          GH_PUSH: ${{ env.GH_PUSH }}
+          DH_REGISTRY: ${{ env.DH_REGISTRY }}
+          DH_REGISTRY_USER: ${{ env.DH_REGISTRY_USER }}
+          DH_PUSH: ${{ env.DH_PUSH }}
+          JOBS: ${{ env.JOBS }}
+          INTERNAL_TAG: ${{ env.INTERNAL_TAG }}
+          EDM4EIC_VERSION: ${{ env.EDM4EIC_VERSION }}
+          EICRECON_VERSION: ${{ env.EICRECON_VERSION }}
+          JUGGLER_VERSION: ${{ env.JUGGLER_VERSION }}
+          CI_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
+          CI_REGISTRY_PASSWORD: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+          GITHUB_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
+          GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+          METADATA_FILE: /tmp/build-metadata.json
+        run: bash build-eic.sh
       - name: Export digest to file
-        # The build-push action outputs the digest at steps.build.outputs.digest
-        # We write this to a file for the next job
         run: |
+          DIGEST=$(jq -r '."containerimage.digest"' /tmp/build-metadata.json)
+          IMAGE="${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
           mkdir -p /tmp/digests
-          echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}.digest
+          echo "${IMAGE}@${DIGEST}" > /tmp/digests/${{ matrix.arch }}.digest
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v7
         with:
