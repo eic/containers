@@ -59,11 +59,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-## Source version files
-source "${SCRIPT_DIR}/spack.sh"
+## Source version files (only spack-packages version is needed for mirrors.yaml)
 source "${SCRIPT_DIR}/spack-packages.sh"
-source "${SCRIPT_DIR}/key4hep-spack.sh"
-source "${SCRIPT_DIR}/eic-spack.sh"
 
 ## Detect CI mode and normalise environment variables
 if [ -n "${CI_REGISTRY}" ]; then
