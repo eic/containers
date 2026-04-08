@@ -1,13 +1,13 @@
 #!/bin/bash
 # Build the EIC base container image (debian_stable_base, cuda_devel, or cuda_runtime).
 #
-# This script is used both in CI (via .gitlab-ci.yml) and for local builds.
-# CI mode is detected by the presence of the CI_REGISTRY environment variable.
+# This script is used in GitLab CI, GitHub Actions, and for local builds.
+# CI mode is detected via CI_REGISTRY (GitLab) or GITHUB_ACTIONS=true (GitHub Actions).
 #
 # Usage (local):
 #   bash build-base.sh [options]
 #
-# Usage (CI, called from .gitlab-ci.yml with matrix variables in env):
+# Usage (CI, called from .gitlab-ci.yml or build-push.yml with matrix variables in env):
 #   bash build-base.sh
 #
 # Options:
@@ -18,6 +18,11 @@
 #                       (default: $PLATFORM or linux/amd64)
 #   --jobs N            Number of parallel Spack build jobs (default: $JOBS or 4)
 #   --tag TAG           Local tag for the image (default: local; ignored in CI)
+#
+# GitHub Actions mode (GITHUB_ACTIONS=true):
+#   Set GH_REGISTRY, GH_REGISTRY_USER, JOBS.  The script reads GITHUB_REF_POINT_SLUG
+#   and GITHUB_BASE_REF_SLUG (from rlespinasse/github-slug-action) for cache keys, and
+#   writes the image digest to METADATA_FILE (default: /tmp/build-metadata.json).
 
 set -e
 
@@ -29,6 +34,7 @@ BASE_IMAGE="${BASE_IMAGE:-}"
 PLATFORM="${PLATFORM:-linux/amd64}"
 JOBS="${JOBS:-4}"
 LOCAL_TAG="${LOCAL_TAG:-local}"
+METADATA_FILE="${METADATA_FILE:-/tmp/build-metadata.json}"
 ## CUDA defaults (used when building cuda_devel or cuda_runtime)
 CUDA_VERSION="${CUDA_VERSION:-12.5.1}"
 CUDA_OS="${CUDA_OS:-ubuntu24.04}"
@@ -49,6 +55,22 @@ source "${SCRIPT_DIR}/spack.sh"
 source "${SCRIPT_DIR}/spack-packages.sh"
 source "${SCRIPT_DIR}/key4hep-spack.sh"
 source "${SCRIPT_DIR}/eic-spack.sh"
+
+## Detect CI mode and normalise environment variables
+if [ -n "${CI_REGISTRY}" ]; then
+  ## GitLab CI — all CI_* variables are already set by the runner
+  CI_MODE="gitlab"
+elif [ "${GITHUB_ACTIONS}" = "true" ]; then
+  ## GitHub Actions — map GitHub variables to the names used below
+  ## GITHUB_REF_POINT_SLUG and GITHUB_BASE_REF_SLUG are set by rlespinasse/github-slug-action
+  CI_MODE="github"
+  CI_COMMIT_REF_SLUG="${GITHUB_REF_POINT_SLUG:-master}"
+  CI_DEFAULT_BRANCH_SLUG="${GITHUB_BASE_REF_SLUG:-master}"
+  CI_COMMIT_SHA="${GITHUB_SHA:-}"
+  INTERNAL_TAG="${INTERNAL_TAG:-pipeline-${GITHUB_RUN_ID}}"
+else
+  CI_MODE="local"
+fi
 
 ## Derive BASE_IMAGE from BUILD_IMAGE if not provided
 if [ -z "${BASE_IMAGE}" ]; then
@@ -74,9 +96,13 @@ ARCH=$(echo "${PLATFORM}" | sed 's|linux/||; s|/v[0-9]*$||')
 build_cmd=(docker buildx build)
 build_cmd+=(${BUILD_OPTIONS})  ## allow user to pass extra flags via BUILD_OPTIONS
 
-## Output mode: push in CI, load locally
-if [ -n "${CI_REGISTRY}" ]; then
+## Output mode: push in GitLab CI, push-by-digest in GitHub Actions, load locally
+if [ "${CI_MODE}" = "gitlab" ]; then
   build_cmd+=(--push)
+elif [ "${CI_MODE}" = "github" ]; then
+  ## Push by digest; the manifest job will create the final tagged manifest
+  build_cmd+=(--output "type=image,name=${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE},push-by-digest=true,name-canonical=true,push=true")
+  build_cmd+=(--metadata-file "${METADATA_FILE}")
 else
   build_cmd+=(--load)
 fi
@@ -84,13 +110,13 @@ fi
 ## Cache sources
 build_cmd+=(--cache-from "type=registry,ref=ghcr.io/eic/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
 build_cmd+=(--cache-from "type=registry,ref=ghcr.io/eic/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
-if [ -n "${CI_REGISTRY}" ]; then
+if [ "${CI_MODE}" = "gitlab" ]; then
   build_cmd+=(--cache-from "type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-${ARCH}")
 fi
 if [ -n "${GH_REGISTRY}" ] && [ -n "${GH_REGISTRY_USER}" ]; then
   build_cmd+=(--cache-from "type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
 fi
-if [ -n "${CI_REGISTRY}" ]; then
+if [ "${CI_MODE}" = "gitlab" ]; then
   build_cmd+=(--cache-from "type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-${ARCH}")
 fi
 if [ -n "${GH_REGISTRY}" ] && [ -n "${GH_REGISTRY_USER}" ]; then
@@ -98,12 +124,14 @@ if [ -n "${GH_REGISTRY}" ] && [ -n "${GH_REGISTRY_USER}" ]; then
 fi
 
 ## Cache destination (CI only)
-if [ -n "${CI_REGISTRY}" ]; then
+if [ "${CI_MODE}" = "gitlab" ]; then
   build_cmd+=(--cache-to "type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-${ARCH},mode=max")
+elif [ "${CI_MODE}" = "github" ]; then
+  build_cmd+=(--cache-to "type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-${ARCH},mode=max")
 fi
 
-## Image tags
-if [ -n "${CI_REGISTRY}" ]; then
+## Image tags (GitLab CI and local only; GitHub Actions uses push-by-digest above)
+if [ "${CI_MODE}" = "gitlab" ]; then
   ## Always tag with INTERNAL_TAG in CI
   build_cmd+=(--tag "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}")
   ## Optionally tag with EXPORT_TAG on public registries
@@ -112,7 +140,7 @@ if [ -n "${CI_REGISTRY}" ]; then
     [ -n "${DH_PUSH}" ] && build_cmd+=(--tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}")
     [ -n "${GH_PUSH}" ] && build_cmd+=(--tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}")
   fi
-else
+elif [ "${CI_MODE}" = "local" ]; then
   build_cmd+=(--tag "${BUILD_IMAGE}:${LOCAL_TAG}")
 fi
 
