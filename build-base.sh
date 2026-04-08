@@ -96,12 +96,17 @@ ARCH=$(echo "${PLATFORM}" | sed 's|linux/||; s|/v[0-9]*$||')
 build_cmd=(docker buildx build)
 build_cmd+=(${BUILD_OPTIONS})  ## allow user to pass extra flags via BUILD_OPTIONS
 
-## Output mode: push in GitLab CI, push-by-digest in GitHub Actions, load locally
+## Determine image repository for CI (used for push-by-digest output and tagging)
 if [ "${CI_MODE}" = "gitlab" ]; then
-  build_cmd+=(--push)
+  IMAGE_REPO="${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}"
 elif [ "${CI_MODE}" = "github" ]; then
-  ## Push by digest; the manifest job will create the final tagged manifest
-  build_cmd+=(--output "type=image,name=${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE},push-by-digest=true,name-canonical=true,push=true")
+  IMAGE_REPO="${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}"
+fi
+
+## Output mode: push-by-digest in all CI modes; load locally
+if [ "${CI_MODE}" != "local" ]; then
+  ## Push by digest; CI wrapper creates final tags via imagetools create
+  build_cmd+=(--output "type=image,name=${IMAGE_REPO},push-by-digest=true,name-canonical=true,push=true")
   build_cmd+=(--metadata-file "${METADATA_FILE}")
 else
   build_cmd+=(--load)
@@ -130,17 +135,8 @@ elif [ "${CI_MODE}" = "github" ]; then
   build_cmd+=(--cache-to "type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-${ARCH},mode=max")
 fi
 
-## Image tags (GitLab CI and local only; GitHub Actions uses push-by-digest above)
-if [ "${CI_MODE}" = "gitlab" ]; then
-  ## Always tag with INTERNAL_TAG in CI
-  build_cmd+=(--tag "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}")
-  ## Optionally tag with EXPORT_TAG on public registries
-  if [ -n "${EXPORT_TAG}" ]; then
-    [ -n "${CI_PUSH}" ] && build_cmd+=(--tag "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${EXPORT_TAG}")
-    [ -n "${DH_PUSH}" ] && build_cmd+=(--tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}")
-    [ -n "${GH_PUSH}" ] && build_cmd+=(--tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}")
-  fi
-elif [ "${CI_MODE}" = "local" ]; then
+## Image tag (local only; CI creates tags via imagetools create after build)
+if [ "${CI_MODE}" = "local" ]; then
   build_cmd+=(--tag "${BUILD_IMAGE}:${LOCAL_TAG}")
 fi
 
@@ -185,3 +181,14 @@ build_cmd+=(containers/debian)
 ## Execute
 set -o xtrace -o pipefail
 "${build_cmd[@]}" 2>&1 | tee build.log
+
+## Create image tags from digest (GitLab CI only; GitHub Actions manifest jobs handle tagging)
+if [ "${CI_MODE}" = "gitlab" ]; then
+  DIGEST=$(jq -r '."containerimage.digest"' "${METADATA_FILE}")
+  docker buildx imagetools create --tag "${IMAGE_REPO}:${INTERNAL_TAG}" "${IMAGE_REPO}@${DIGEST}"
+  if [ -n "${EXPORT_TAG}" ]; then
+    [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+    [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+    [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+  fi
+fi
