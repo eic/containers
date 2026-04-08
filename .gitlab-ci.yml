@@ -309,7 +309,7 @@ base:
     - version
   script:
     - export BUILDWEEK=$(date +%Yw%V)
-    - apk add git
+    - apk add git bash
     - bash build-base.sh
 
 eic:
