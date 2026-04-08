@@ -309,7 +309,7 @@ base:
     - version
   script:
     - export BUILDWEEK=$(date +%Yw%V)
-    - apk add git bash
+    - apk add git bash jq
     - bash build-base.sh
 
 eic:
@@ -376,7 +376,7 @@ eic:
     - version
     - base
   script:
-    - apk add git
+    - apk add git bash jq
     - bash build-eic.sh
 
 user_spack_environment:

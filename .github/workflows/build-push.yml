@@ -115,18 +115,6 @@ jobs:
         uses: actions/checkout@v6
       - name: Inject enhanced GitHub environment variables
         uses: rlespinasse/github-slug-action@v5
-      - name: Load NVIDIA visible devices and driver capabilities
-        id: nvidia
-        shell: bash
-        run: |
-          case "${{ matrix.BUILD_IMAGE }}" in
-            cuda*)
-              NVIDIA_VISIBLE_DEVICES=all
-              NVIDIA_DRIVER_CAPABILITIES=all
-              ;;
-          esac
-          echo "visible_devices=${NVIDIA_VISIBLE_DEVICES}" | tee -a $GITHUB_OUTPUT
-          echo "driver_capabilities=${NVIDIA_DRIVER_CAPABILITIES}" | tee -a $GITHUB_OUTPUT
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
         with:
@@ -172,10 +160,6 @@ jobs:
           BUILD_IMAGE: ${{ matrix.BUILD_IMAGE }}
           BASE_IMAGE: ${{ matrix.BASE_IMAGE }}
           PLATFORM: ${{ matrix.PLATFORM }}
-          GH_REGISTRY: ${{ env.GH_REGISTRY }}
-          GH_REGISTRY_USER: ${{ env.GH_REGISTRY_USER }}
-          GH_PUSH: ${{ env.GH_PUSH }}
-          JOBS: ${{ env.JOBS }}
           BUILDWEEK: ${{ needs.env.outputs.BUILDWEEK }}
           METADATA_FILE: /tmp/build-metadata.json
         run: bash build-base.sh
@@ -434,17 +418,6 @@ jobs:
           BUILDER_IMAGE: ${{ matrix.BUILDER_IMAGE }}
           RUNTIME_IMAGE: ${{ matrix.RUNTIME_IMAGE }}
           PLATFORM: ${{ matrix.PLATFORM }}
-          GH_REGISTRY: ${{ env.GH_REGISTRY }}
-          GH_REGISTRY_USER: ${{ env.GH_REGISTRY_USER }}
-          GH_PUSH: ${{ env.GH_PUSH }}
-          DH_REGISTRY: ${{ env.DH_REGISTRY }}
-          DH_REGISTRY_USER: ${{ env.DH_REGISTRY_USER }}
-          DH_PUSH: ${{ env.DH_PUSH }}
-          JOBS: ${{ env.JOBS }}
-          INTERNAL_TAG: ${{ env.INTERNAL_TAG }}
-          EDM4EIC_VERSION: ${{ env.EDM4EIC_VERSION }}
-          EICRECON_VERSION: ${{ env.EICRECON_VERSION }}
-          JUGGLER_VERSION: ${{ env.JUGGLER_VERSION }}
           CI_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
           CI_REGISTRY_PASSWORD: ${{ secrets.GHCR_REGISTRY_TOKEN }}
           GITHUB_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
