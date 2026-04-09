@@ -142,7 +142,7 @@ bash build-base.sh [options]
   --image IMAGE       Image to build: debian_stable_base (default), cuda_devel, cuda_runtime
   --base-image IMAGE  Upstream image (derived automatically from --image if omitted)
   --platform PLATFORM linux/amd64 (default), linux/arm64
-  --jobs N            Parallel Spack build jobs (default: 4)
+  --jobs N            Parallel Spack build jobs (default: nproc)
   --tag TAG           Output image tag (default: local)
 ```
 
