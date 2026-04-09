@@ -23,12 +23,10 @@ repos:
         - --failure-threshold=warning
       exclude: ^containers/eic/Dockerfile$
 
-- repo: local
+- repo: https://github.com/shellcheck-py/shellcheck-py
+  rev: v0.10.0.1
   hooks:
     - id: shellcheck
-      name: shellcheck
-      entry: shellcheck
-      language: system
       types: [shell]
       args: [--severity=warning, -x]
       files: (^[^/]+\.sh$|^\.ci/resolve_git_ref$)
