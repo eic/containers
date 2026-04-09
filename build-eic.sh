@@ -70,6 +70,8 @@ elif [ "${GITHUB_ACTIONS}" = "true" ]; then
   ## GitHub Actions — map GitHub variables to the names used below
   ## GITHUB_REF_POINT_SLUG and GITHUB_BASE_REF_SLUG are set by rlespinasse/github-slug-action
   CI_MODE="github"
+  CI_REGISTRY="${GH_REGISTRY}"
+  CI_PROJECT_PATH="${GH_REGISTRY_USER}"
   CI_COMMIT_REF_SLUG="${GITHUB_REF_POINT_SLUG:-master}"
   CI_DEFAULT_BRANCH_SLUG="${GITHUB_BASE_REF_SLUG:-master}"
   CI_COMMIT_SHA="${GITHUB_SHA:-}"
@@ -80,16 +82,10 @@ fi
 
 ## Generate mirrors.yaml from template or create a public-only version.
 ## Uses sed rather than envsubst to avoid a runtime dependency on gettext.
-if [ "${CI_MODE}" = "gitlab" ]; then
-  ## GitLab CI mode: expand the three CI-specific variables in the template
+if [ "${CI_MODE}" != "local" ]; then
+  ## CI mode: expand CI_REGISTRY/CI_PROJECT_PATH variables in the template
   sed -e "s|\${CI_REGISTRY}|${CI_REGISTRY}|g" \
       -e "s|\${CI_PROJECT_PATH}|${CI_PROJECT_PATH}|g" \
-      -e "s|\${SPACKPACKAGES_VERSION}|${SPACKPACKAGES_VERSION}|g" \
-      "${SCRIPT_DIR}/mirrors.yaml.in" > "${SCRIPT_DIR}/mirrors.yaml"
-elif [ "${CI_MODE}" = "github" ]; then
-  ## GitHub Actions mode: use ghcr.io as the registry with public path eic
-  sed -e "s|\${CI_REGISTRY}|${GH_REGISTRY}|g" \
-      -e "s|\${CI_PROJECT_PATH}|${GH_REGISTRY_USER}|g" \
       -e "s|\${SPACKPACKAGES_VERSION}|${SPACKPACKAGES_VERSION}|g" \
       "${SCRIPT_DIR}/mirrors.yaml.in" > "${SCRIPT_DIR}/mirrors.yaml"
 else
@@ -144,12 +140,9 @@ ARCH=$(echo "${PLATFORM}" | sed 's|linux/||; s|/v[0-9]*$||')
 build_cmd=(docker buildx build)
 build_cmd+=(${BUILD_OPTIONS})
 
-## Determine image repository for CI (used for push-by-digest output and tagging)
-if [ "${CI_MODE}" = "gitlab" ]; then
-  IMAGE_REPO="${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}"
-elif [ "${CI_MODE}" = "github" ]; then
-  IMAGE_REPO="${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}"
-fi
+## Derive shared registry prefix (used for image push, caching, and DOCKER_REGISTRY build-arg)
+CI_REGISTRY_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
+IMAGE_REPO="${CI_REGISTRY_PREFIX}/${BUILD_IMAGE}${ENV}"
 
 ## Output mode: push-by-digest in all CI modes; load locally
 if [ "${CI_MODE}" != "local" ]; then
@@ -160,28 +153,19 @@ else
   build_cmd+=(--load)
 fi
 
-## Cache sources
+## Cache sources: CI registry (if in CI) plus public ghcr.io/eic (GitLab and local modes)
 CACHE_KEY="${BUILD_IMAGE}${ENV}-${BUILD_TYPE}"
-build_cmd+=(--cache-from "type=registry,ref=ghcr.io/eic/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
-build_cmd+=(--cache-from "type=registry,ref=ghcr.io/eic/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
-if [ "${CI_MODE}" = "gitlab" ]; then
-  build_cmd+=(--cache-from "type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG}-${ARCH}")
-fi
-if [ -n "${GH_REGISTRY}" ] && [ -n "${GH_REGISTRY_USER}" ]; then
-  build_cmd+=(--cache-from "type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
-fi
-if [ "${CI_MODE}" = "gitlab" ]; then
-  build_cmd+=(--cache-from "type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG}-${ARCH}")
-fi
-if [ -n "${GH_REGISTRY}" ] && [ -n "${GH_REGISTRY_USER}" ]; then
-  build_cmd+=(--cache-from "type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
-fi
+BUILDCACHE_REPOS=()
+[ "${CI_MODE}" != "local" ] && BUILDCACHE_REPOS+=("${CI_REGISTRY_PREFIX}")
+[ "${CI_MODE}" != "github" ] && BUILDCACHE_REPOS+=("ghcr.io/eic")
+for REPO in "${BUILDCACHE_REPOS[@]}"; do
+  build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
+  build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
+done
 
 ## Cache destination (CI only)
-if [ "${CI_MODE}" = "gitlab" ]; then
-  build_cmd+=(--cache-to "type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG}-${ARCH},mode=max")
-elif [ "${CI_MODE}" = "github" ]; then
-  build_cmd+=(--cache-to "type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG}-${ARCH},mode=max")
+if [ "${CI_MODE}" != "local" ]; then
+  build_cmd+=(--cache-to "type=registry,ref=${CI_REGISTRY_PREFIX}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH},mode=max")
 fi
 
 ## Image tag (local only; CI creates tags via imagetools create after build)
@@ -203,19 +187,20 @@ build_cmd+=(--build-arg "CAMPAIGNS_HEPMC3_SHA=${CAMPAIGNS_HEPMC3_SHA}")
 build_cmd+=(--build-arg "CAMPAIGNS_CONDOR_SHA=${CAMPAIGNS_CONDOR_SHA}")
 build_cmd+=(--build-arg "CAMPAIGNS_SLURM_SHA=${CAMPAIGNS_SLURM_SHA}")
 
-if [ "${CI_MODE}" = "gitlab" ]; then
-  build_cmd+=(--build-arg "DOCKER_REGISTRY=${CI_REGISTRY}/${CI_PROJECT_PATH}/")
+if [ "${CI_MODE}" != "local" ]; then
+  build_cmd+=(--build-arg "DOCKER_REGISTRY=${CI_REGISTRY_PREFIX}/")
   build_cmd+=(--build-arg "INTERNAL_TAG=${INTERNAL_TAG}")
   build_cmd+=(--build-arg "CI_COMMIT_SHA=${CI_COMMIT_SHA}")
-  build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)")
-elif [ "${CI_MODE}" = "github" ]; then
-  build_cmd+=(--build-arg "DOCKER_REGISTRY=${GH_REGISTRY}/${GH_REGISTRY_USER}/")
-  build_cmd+=(--build-arg "INTERNAL_TAG=${INTERNAL_TAG}")
-  build_cmd+=(--build-arg "CI_COMMIT_SHA=${CI_COMMIT_SHA}")
-  build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=github-${BUILD_TYPE}-${CI_COMMIT_SHA:-$(git rev-parse HEAD 2>/dev/null || echo unknown)}")
 else
   build_cmd+=(--build-arg "DOCKER_REGISTRY=ghcr.io/eic/")
   build_cmd+=(--build-arg "INTERNAL_TAG=${LOCAL_BASE_TAG}")
+fi
+## EIC_CONTAINER_VERSION format is intentionally different per CI system
+if [ "${CI_MODE}" = "gitlab" ]; then
+  build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)")
+elif [ "${CI_MODE}" = "github" ]; then
+  build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=github-${BUILD_TYPE}-${CI_COMMIT_SHA:-$(git rev-parse HEAD 2>/dev/null || echo unknown)}")
+else
   build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=local-${BUILD_TYPE}-$(git rev-parse HEAD 2>/dev/null || echo unknown)")
 fi
 
@@ -236,12 +221,7 @@ build_cmd+=(--build-context "spack-environment=spack-environment")
 
 ## Secrets
 build_cmd+=(--secret "id=mirrors,src=${SCRIPT_DIR}/mirrors.yaml")
-if [ "${CI_MODE}" = "gitlab" ]; then
-  build_cmd+=(--secret "type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER")
-  build_cmd+=(--secret "type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD")
-  build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER")
-  build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN")
-elif [ "${CI_MODE}" = "github" ]; then
+if [ "${CI_MODE}" != "local" ]; then
   build_cmd+=(--secret "type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER")
   build_cmd+=(--secret "type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD")
   build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER")
