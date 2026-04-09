@@ -15,9 +15,9 @@ flowchart TB
         SP[spack/spack-packages<br/>Extended community packages]
         S[spack/spack<br/>Core Spack packages]
     end
-    
+
     E --> K --> SP --> S
-    
+
     subgraph "Locations in Container"
         E -.- EL["/opt/spack-packages/repos/eic-spack"]
         K -.- KL["/opt/spack-packages/repos/key4hep-spack"]
@@ -57,7 +57,7 @@ packages:
     - any_of: [+ipo, '@:']           # Enable IPO if supported
     - any_of: [build_system=cmake, '@:']
     - any_of: [build_type=Release, '@:']
-  
+
   # Package-specific requirements
   root:
     require:
@@ -178,11 +178,11 @@ flowchart TB
         E[Environment spack.yaml<br/>Package specs]
         C[Concretizer<br/>Dependency resolution]
     end
-    
+
     P --> C
     E --> C
     C --> R[Resolved Package Set]
-    
+
     subgraph "Installation"
         R --> BC{In Buildcache?}
         BC -->|Yes| BI[Install from binary]

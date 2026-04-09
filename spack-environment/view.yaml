@@ -1,7 +1,7 @@
 view:
   default:
     root: /opt/local
-    exclude: 
+    exclude:
     - epic
     link_type: symlink
   detectors:

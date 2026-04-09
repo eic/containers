@@ -14,7 +14,7 @@ flowchart TB
         C --> D[builder_concretization_custom<br/>Concretize custom versions]
         D --> E[builder_installation_custom<br/>Build custom packages]
     end
-    
+
     subgraph "Runtime Track"
         F[runtime_image<br/>debian_stable_base] --> G[runtime_concretization_default<br/>Copy spack.lock from builder]
         G --> H[runtime_installation_default<br/>Install from buildcache]
@@ -22,7 +22,7 @@ flowchart TB
         I --> J[runtime_installation_custom<br/>Install custom from buildcache]
         J --> K[Final Image<br/>eic_ci / eic_xl]
     end
-    
+
     C -.->|spack.lock| G
     C -.->|buildcache| H
     E -.->|spack.lock| I
@@ -36,14 +36,14 @@ The infrastructure supports both `amd64` and `arm64` architectures through paral
 ```mermaid
 flowchart LR
     subgraph "Build Phase"
-        A1[Build amd64] 
+        A1[Build amd64]
         A2[Build arm64]
     end
-    
+
     subgraph "Manifest Phase"
         M[Create Multi-Arch Manifest]
     end
-    
+
     A1 --> D1[amd64 digest]
     A2 --> D2[arm64 digest]
     D1 --> M
@@ -96,9 +96,9 @@ flowchart TB
         K[key4hep/key4hep-spack<br/>Key4HEP packages]
         SP[spack/spack-packages<br/>Community packages]
     end
-    
+
     E --> K --> SP
-    
+
     P[Package Resolution] --> E
 ```
 
@@ -113,7 +113,7 @@ flowchart TB
         GC[GitHub Actions Cache<br/>ccache, apt, spack source]
         BC[Spack Buildcache<br/>Pre-built binaries on ghcr.io]
     end
-    
+
     subgraph "Cache Locations"
         RC --> R1[ghcr.io/eic/buildcache:*]
         GC --> G1[ccache]

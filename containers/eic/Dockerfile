@@ -21,7 +21,7 @@ ARG INTERNAL_TAG="master"
 ## builder track                         runtime track
 ## ----------------------------------------------------------------------
 ## builder_image                         runtime_image
-## builder_concretization_default   
+## builder_concretization_default
 ## builder_installation_default     ->   runtime_concretization_default  (copy spack.lock)
 ##                                 \->   runtime_installation_default    (from buildcache)
 ## builder_concretization_custom

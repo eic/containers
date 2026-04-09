@@ -2,7 +2,7 @@
 eic-shell
 local/
 
-# vim 
+# vim
 ~*
 *.swp
 *.swo

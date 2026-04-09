@@ -12,9 +12,9 @@ flowchart TB
         T3[Pull Request to master]
         T4[Manual Dispatch]
     end
-    
+
     T1 & T2 & T3 & T4 --> W[build-push workflow]
-    
+
     subgraph "Jobs"
         W --> B1[base amd64]
         W --> B2[base arm64]
@@ -39,7 +39,7 @@ sequenceDiagram
     participant GH as GitHub Actions
     participant R as Registry (ghcr.io)
     participant C as Cache
-    
+
     GH->>GH: Checkout repository
     GH->>GH: Load spack versions<br/>from *.sh files
     GH->>GH: Setup Docker Buildx
@@ -67,7 +67,7 @@ Creates a multi-architecture manifest from the per-architecture digests.
 sequenceDiagram
     participant GH as GitHub Actions
     participant R as Registry (ghcr.io)
-    
+
     GH->>GH: Download digest artifacts
     GH->>R: Login to registry
     GH->>GH: Compute metadata tags
@@ -88,7 +88,7 @@ sequenceDiagram
     participant GH as GitHub Actions
     participant R as Registry (ghcr.io)
     participant C as Cache
-    
+
     GH->>GH: Free disk space
     GH->>GH: Checkout repository
     GH->>GH: Resolve benchmark SHAs
