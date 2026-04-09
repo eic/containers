@@ -90,8 +90,9 @@ SPACKPACKAGES_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" "${SPACKPACKAGES_ORGR
 KEY4HEPSPACK_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" "${KEY4HEPSPACK_ORGREPO}" "${KEY4HEPSPACK_VERSION}")
 EICSPACK_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
 
-## Normalize arch string for cache tag names
-ARCH=$(echo "${PLATFORM}" | sed 's|linux/||; s|/v[0-9]*$||')
+## Normalize arch string for cache tag names while preserving platform variants
+## Examples: linux/amd64 -> amd64, linux/amd64/v3 -> amd64_v3, linux/arm/v7 -> arm_v7
+ARCH=$(echo "${PLATFORM}" | sed 's|^linux/||; s|/|_|g')
 
 ## Build the docker buildx command as an array for safe quoting
 build_cmd=(docker buildx build)

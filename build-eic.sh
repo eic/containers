@@ -133,8 +133,9 @@ case "${ENV}" in
     SPACK_DUPLICATE_ALLOWLIST="epic|llvm|py-setuptools|py-urllib3" ;;
 esac
 
-## Normalize arch string for cache tag names
-ARCH=$(echo "${PLATFORM}" | sed 's|linux/||; s|/v[0-9]*$||')
+## Normalize arch string for cache tag names while preserving platform variants
+## Examples: linux/amd64 -> amd64, linux/amd64/v3 -> amd64_v3, linux/arm/v7 -> arm_v7
+ARCH=$(echo "${PLATFORM}" | sed 's|linux/||; s|/|_|g')
 
 ## Build the docker buildx command as an array for safe quoting
 build_cmd=(docker buildx build)
