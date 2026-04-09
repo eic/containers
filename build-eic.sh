@@ -18,7 +18,7 @@
 #   --runtime-image IMG Runtime base image name (default: $RUNTIME_IMAGE or debian_stable_base)
 #   --target STAGE      Docker build target stage (default: $BUILD_TARGET or final)
 #   --platform PLATFORM Build platform, e.g. linux/amd64 (default: $PLATFORM or linux/amd64)
-#   --jobs N            Number of parallel Spack build jobs (default: $JOBS or 4)
+#   --jobs N            Number of parallel Spack build jobs (default: $JOBS or $(nproc))
 #   --base-tag TAG      Tag of the base image to use (default: local in local mode, $INTERNAL_TAG in CI)
 #   --tag TAG           Local tag for the output image (default: local; ignored in CI)
 #
