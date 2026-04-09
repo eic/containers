@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+# shellcheck disable=SC2034  # Variables are used by scripts that source this file
 ## EIC spack organization and repository, e.g. eic/eic-spack
 EICSPACK_ORGREPO="eic/eic-spack"
 

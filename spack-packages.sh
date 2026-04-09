@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+# shellcheck disable=SC2034  # Variables are used by scripts that source this file
 ## Spack organization and repository, e.g. spack/spack-packages
 SPACKPACKAGES_ORGREPO="spack/spack-packages"
 

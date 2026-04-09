@@ -1,0 +1,10 @@
+repos:
+- repo: local
+  hooks:
+  - id: shellcheck
+    name: shellcheck
+    entry: shellcheck
+    language: system
+    types: [shell]
+    args: [--severity=warning, -x]
+    files: ^[^/]+\.sh$
