@@ -68,7 +68,6 @@ elif [ "${GITHUB_ACTIONS}" = "true" ]; then
   CI_PROJECT_PATH="${GH_REGISTRY_USER}"
   CI_COMMIT_REF_SLUG="${GITHUB_REF_POINT_SLUG:-master}"
   CI_DEFAULT_BRANCH_SLUG="${GITHUB_BASE_REF_SLUG:-master}"
-  CI_COMMIT_SHA="${GITHUB_SHA:-}"
   INTERNAL_TAG="${INTERNAL_TAG:-pipeline-${GITHUB_RUN_ID}}"
 else
   CI_MODE="local"
@@ -96,7 +95,8 @@ ARCH=$(echo "${PLATFORM}" | sed 's|linux/||; s|/v[0-9]*$||')
 
 ## Build the docker buildx command as an array for safe quoting
 build_cmd=(docker buildx build)
-build_cmd+=(${BUILD_OPTIONS})  ## allow user to pass extra flags via BUILD_OPTIONS
+# shellcheck disable=SC2206  # word splitting is intentional: BUILD_OPTIONS is a space-separated list
+build_cmd+=(${BUILD_OPTIONS})
 
 ## Derive shared registry prefix (used for image push, caching, and DOCKER_REGISTRY build-arg)
 CI_REGISTRY_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
