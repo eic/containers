@@ -16,7 +16,7 @@
 #   --base-image IMAGE  Upstream base image (default: derived from --image)
 #   --platform PLATFORM Build platform, e.g. linux/amd64, linux/arm64
 #                       (default: $PLATFORM or linux/amd64)
-#   --jobs N            Number of parallel Spack build jobs (default: $JOBS or 4)
+#   --jobs N            Number of parallel Spack build jobs (default: $JOBS or $(nproc))
 #   --tag TAG           Local tag for the image (default: local; ignored in CI)
 #
 # GitHub Actions mode (GITHUB_ACTIONS=true):
