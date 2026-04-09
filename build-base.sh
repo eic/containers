@@ -64,6 +64,8 @@ elif [ "${GITHUB_ACTIONS}" = "true" ]; then
   ## GitHub Actions — map GitHub variables to the names used below
   ## GITHUB_REF_POINT_SLUG and GITHUB_BASE_REF_SLUG are set by rlespinasse/github-slug-action
   CI_MODE="github"
+  CI_REGISTRY="${GH_REGISTRY}"
+  CI_PROJECT_PATH="${GH_REGISTRY_USER}"
   CI_COMMIT_REF_SLUG="${GITHUB_REF_POINT_SLUG:-master}"
   CI_DEFAULT_BRANCH_SLUG="${GITHUB_BASE_REF_SLUG:-master}"
   CI_COMMIT_SHA="${GITHUB_SHA:-}"
@@ -96,12 +98,9 @@ ARCH=$(echo "${PLATFORM}" | sed 's|linux/||; s|/v[0-9]*$||')
 build_cmd=(docker buildx build)
 build_cmd+=(${BUILD_OPTIONS})  ## allow user to pass extra flags via BUILD_OPTIONS
 
-## Determine image repository for CI (used for push-by-digest output and tagging)
-if [ "${CI_MODE}" = "gitlab" ]; then
-  IMAGE_REPO="${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}"
-elif [ "${CI_MODE}" = "github" ]; then
-  IMAGE_REPO="${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}"
-fi
+## Derive shared registry prefix (used for image push, caching, and DOCKER_REGISTRY build-arg)
+CI_REGISTRY_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
+IMAGE_REPO="${CI_REGISTRY_PREFIX}/${BUILD_IMAGE}"
 
 ## Output mode: push-by-digest in all CI modes; load locally
 if [ "${CI_MODE}" != "local" ]; then
@@ -112,27 +111,18 @@ else
   build_cmd+=(--load)
 fi
 
-## Cache sources
-build_cmd+=(--cache-from "type=registry,ref=ghcr.io/eic/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
-build_cmd+=(--cache-from "type=registry,ref=ghcr.io/eic/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
-if [ "${CI_MODE}" = "gitlab" ]; then
-  build_cmd+=(--cache-from "type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-${ARCH}")
-fi
-if [ -n "${GH_REGISTRY}" ] && [ -n "${GH_REGISTRY_USER}" ]; then
-  build_cmd+=(--cache-from "type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
-fi
-if [ "${CI_MODE}" = "gitlab" ]; then
-  build_cmd+=(--cache-from "type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG}-${ARCH}")
-fi
-if [ -n "${GH_REGISTRY}" ] && [ -n "${GH_REGISTRY_USER}" ]; then
-  build_cmd+=(--cache-from "type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
-fi
+## Cache sources: CI registry (if in CI) plus public ghcr.io/eic (GitLab and local modes)
+BUILDCACHE_REPOS=()
+[ "${CI_MODE}" != "local" ] && BUILDCACHE_REPOS+=("${CI_REGISTRY_PREFIX}")
+[ "${CI_MODE}" != "github" ] && BUILDCACHE_REPOS+=("ghcr.io/eic")
+for REPO in "${BUILDCACHE_REPOS[@]}"; do
+  build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
+  build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${BUILD_IMAGE}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
+done
 
 ## Cache destination (CI only)
-if [ "${CI_MODE}" = "gitlab" ]; then
-  build_cmd+=(--cache-to "type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-${ARCH},mode=max")
-elif [ "${CI_MODE}" = "github" ]; then
-  build_cmd+=(--cache-to "type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG}-${ARCH},mode=max")
+if [ "${CI_MODE}" != "local" ]; then
+  build_cmd+=(--cache-to "type=registry,ref=${CI_REGISTRY_PREFIX}/buildcache:${BUILD_IMAGE}-${CI_COMMIT_REF_SLUG:-master}-${ARCH},mode=max")
 fi
 
 ## Image tag (local only; CI creates tags via imagetools create after build)
