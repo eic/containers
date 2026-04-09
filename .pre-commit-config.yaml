@@ -1,4 +1,28 @@
 repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+    exclude: ^\.gitlab-ci\.yml$
+  - id: check-merge-conflict
+  - id: check-added-large-files
+
+- repo: https://github.com/hadolint/hadolint
+  rev: v2.14.0
+  hooks:
+  - id: hadolint-docker
+    args:
+    # Pin apt package versions: intentional pattern in base images rebuilt regularly
+    - --ignore=DL3008
+    # Set pipefail: covered by SHELL ["bash", "-ex", "-c"] applied to all RUN blocks
+    - --ignore=DL4006
+    # Shebang absolute path: false positives from heredoc blocks interpreted by hadolint
+    - --ignore=SC2239
+    - --failure-threshold=warning
+    exclude: ^containers/eic/Dockerfile$
+
 - repo: local
   hooks:
   - id: shellcheck
@@ -7,4 +31,4 @@ repos:
     language: system
     types: [shell]
     args: [--severity=warning, -x]
-    files: ^[^/]+\.sh$
+    files: (^[^/]+\.sh$|^\.ci/resolve_git_ref$)
