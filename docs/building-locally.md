@@ -129,8 +129,10 @@ flowchart TB
 
 ## Build Script Reference
 
-Both scripts live in the repository root and accept command-line flags. All flags can also
-be set via environment variables of the same name (e.g. `JOBS=8 bash build-base.sh`).
+Both scripts live in the repository root and accept command-line flags. Many options can
+also be set via environment variables, but the variable names are script-specific and do
+not always exactly match the flag names (for example, `JOBS=8 bash build-base.sh`,
+`LOCAL_TAG=local bash build-eic.sh`, or `LOCAL_BASE_TAG=local bash build-eic.sh`).
 
 ### `build-base.sh`
 
