@@ -138,6 +138,7 @@ ARCH=$(echo "${PLATFORM}" | sed 's|linux/||; s|/v[0-9]*$||')
 
 ## Build the docker buildx command as an array for safe quoting
 build_cmd=(docker buildx build)
+# shellcheck disable=SC2206  # word splitting is intentional: BUILD_OPTIONS is a space-separated list
 build_cmd+=(${BUILD_OPTIONS})
 
 ## Derive shared registry prefix (used for image push, caching, and DOCKER_REGISTRY build-arg)
