@@ -5,7 +5,7 @@ on:
     - cron: "30 */6 * * *"
   push:
     branches:
-    - master  
+    - master
   pull_request:
     branches:
     - master
@@ -36,7 +36,7 @@ env:
   ## CUDA version and container operating system
   CUDA_VERSION: 12.5.1
   CUDA_OS: ubuntu24.04
-  
+
   ## Default versions are specified in packages.yaml but can be overridden
   ## note: nightly builds will always use the master/main branch
   EDM4EIC_VERSION: ${{ inputs.EDM4EIC_VERSION }}
@@ -111,7 +111,7 @@ jobs:
           arch: amd64
       fail-fast: false
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v6
       - name: Inject enhanced GitHub environment variables
         uses: rlespinasse/github-slug-action@v5

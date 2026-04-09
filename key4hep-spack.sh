@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+# shellcheck disable=SC2034  # Variables are used by scripts that source this file
 ## Key4HEP spack organization and repository, e.g. key4hep/key4hep-spack
 KEY4HEPSPACK_ORGREPO="key4hep/key4hep-spack"
 

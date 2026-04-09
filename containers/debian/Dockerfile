@@ -3,7 +3,7 @@
 ARG BASE_IMAGE="amd64/debian:stable-slim"
 ARG BUILD_IMAGE="debian_stable_base"
 
-# Minimal container based on Debian base systems for up-to-date packages. 
+# Minimal container based on Debian base systems for up-to-date packages.
 FROM ${BASE_IMAGE}
 ARG TARGETPLATFORM
 
@@ -269,7 +269,7 @@ spack config --scope user add "config:ccache:true"
 spack config blame config
 spack compiler find --scope spack
 # Ensure GCC externals have LTO‑safe binutils configured.
-# 
+#
 # 1. LTO issue being worked around:
 #    When GCC is built/used with LTO support, archive creation for objects
 #    that may contain LTO bytecode must use the plugin‑aware wrappers
