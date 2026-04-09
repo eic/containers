@@ -115,6 +115,18 @@ jobs:
         uses: actions/checkout@v6
       - name: Inject enhanced GitHub environment variables
         uses: rlespinasse/github-slug-action@v5
+      - name: Load NVIDIA visible devices and driver capabilities
+        id: nvidia
+        shell: bash
+        run: |
+          case "${{ matrix.BUILD_IMAGE }}" in
+            cuda*)
+              NVIDIA_VISIBLE_DEVICES=all
+              NVIDIA_DRIVER_CAPABILITIES=all
+              ;;
+          esac
+          echo "visible_devices=${NVIDIA_VISIBLE_DEVICES}" | tee -a $GITHUB_OUTPUT
+          echo "driver_capabilities=${NVIDIA_DRIVER_CAPABILITIES}" | tee -a $GITHUB_OUTPUT
       - name: Load spack version and cherry-picks
         id: spack
         shell: bash
@@ -209,6 +221,8 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
+            NVIDIA_VISIBLE_DEVICES=${{ steps.nvidia.outputs.visible_devices }}
+            NVIDIA_DRIVER_CAPABILITIES=${{ steps.nvidia.outputs.driver_capabilities }}
             SPACK_ORGREPO=${{ steps.spack.outputs.orgrepo }}
             SPACK_VERSION=${{ steps.spack.outputs.version }}
             SPACK_SHA=${{ steps.spack.outputs.sha }}

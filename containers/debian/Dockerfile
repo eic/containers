@@ -340,3 +340,9 @@ git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_
 git -C ${EICSPACK_ROOT} checkout ${EICSPACK_SHA:-${EICSPACK_VERSION}}
 spack repo add --scope spack "${EICSPACK_ROOT}/spack_repo/eic"
 EOF
+
+## Ensure NVIDIA driver exposes all capabilities
+## https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/docker-specialized.html
+ARG NVIDIA_VISIBLE_DEVICES
+ARG NVIDIA_DRIVER_CAPABILITIES
+ENV NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES} NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES}
