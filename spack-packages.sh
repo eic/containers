@@ -57,6 +57,7 @@ a896fdbe5d01981cbc6f9b5139a5d551ac2fe248
 6346a54e35ee6281b8e8c6a1bc9c102893593c8e
 346babf5aebcf03045fbe10e59750fac8c95947f
 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96
+107eb9966c8a9688e042c42e903274099688b590
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -112,3 +113,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 6346a54e35ee6281b8e8c6a1bc9c102893593c8e: g4adept: new package
 ## 346babf5aebcf03045fbe10e59750fac8c95947f: py-mplhep(-data): add new versions
 ## 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96: py-awkward, py-uproot, py-uhi ecosystem (HEP): add new versions
+## 107eb9966c8a9688e042c42e903274099688b590: dd4hep: add v1.36
