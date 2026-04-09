@@ -11,9 +11,10 @@
 #
 packages:
   all:
-    # note: in Spack v1.1+, 'require' for 'all' is NOT overwritten by package-specific
-    # entries; both constraints apply simultaneously. 'prefer' for 'all' retains a
-    # weaker preference that is superseded by package-specific requirements.
+    # note: for the Spack version pinned by this repository, package-specific
+    # 'require' entries are treated as overriding the defaults under 'all'.
+    # 'prefer' under 'all' remains a weaker default that can be superseded by
+    # package-specific requirements.
     prefer:
     - '%gcc'
     # FIXME any ipo preference breaks llvm external reuse
