@@ -119,7 +119,7 @@ packages:
     - '@1.16.2:'
   dd4hep:
     require:
-    - '@1.35'
+    - '@1.36'
     - +ddg4 +ddcad +edm4hep +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   doxygen:
