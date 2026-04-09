@@ -20,9 +20,9 @@
 #   --tag TAG           Local tag for the image (default: local; ignored in CI)
 #
 # GitHub Actions mode (GITHUB_ACTIONS=true):
-#   Set GH_REGISTRY, GH_REGISTRY_USER, JOBS.  The script reads GITHUB_REF_POINT_SLUG
-#   and GITHUB_BASE_REF_SLUG (from rlespinasse/github-slug-action) for cache keys, and
-#   writes the image digest to METADATA_FILE (default: /tmp/build-metadata.json).
+#   Set GH_REGISTRY, GH_REGISTRY_USER, JOBS.  The script derives cache-key slugs
+#   from GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target branch),
+#   and writes the image digest to METADATA_FILE (default: /tmp/build-metadata.json).
 
 set -e
 
@@ -56,20 +56,26 @@ source "${SCRIPT_DIR}/spack-packages.sh"
 source "${SCRIPT_DIR}/key4hep-spack.sh"
 source "${SCRIPT_DIR}/eic-spack.sh"
 
+## Convert an arbitrary git ref/branch name to a valid OCI tag component.
+## Mirrors GitLab's CI_COMMIT_REF_SLUG: lowercase, non-alnum runs → '-',
+## strip leading/trailing '-', truncate to 63 chars.
+slugify() {
+  echo "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]\+/-/g; s/^-//; s/-$//' | cut -c1-63
+}
+
 ## Detect CI mode and normalise environment variables
 if [ -n "${CI_REGISTRY}" ]; then
   ## GitLab CI — all CI_* variables are already set by the runner
   CI_MODE="gitlab"
 elif [ "${GITHUB_ACTIONS}" = "true" ]; then
-  ## GitHub Actions — map GitHub variables to the names used below
-  ## GITHUB_REF_POINT_SLUG and GITHUB_BASE_REF_SLUG are set by rlespinasse/github-slug-action
+  ## GitHub Actions — map GitHub variables to the names used below.
+  ## GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target, or
+  ## empty for push events) are standard runner variables; no extra action needed.
   CI_MODE="github"
   CI_REGISTRY="${GH_REGISTRY}"
   CI_PROJECT_PATH="${GH_REGISTRY_USER}"
-  CI_COMMIT_REF_SLUG="${GITHUB_REF_POINT_SLUG//$'\r'/}"
-  CI_COMMIT_REF_SLUG="${CI_COMMIT_REF_SLUG:-master}"
-  CI_DEFAULT_BRANCH_SLUG="${GITHUB_BASE_REF_SLUG//$'\r'/}"
-  CI_DEFAULT_BRANCH_SLUG="${CI_DEFAULT_BRANCH_SLUG:-master}"
+  CI_COMMIT_REF_SLUG="$(slugify "${GITHUB_REF_NAME:-master}")"
+  CI_DEFAULT_BRANCH_SLUG="$(slugify "${GITHUB_BASE_REF:-master}")"
   INTERNAL_TAG="${INTERNAL_TAG:-pipeline-${GITHUB_RUN_ID}}"
 else
   CI_MODE="local"

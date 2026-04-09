@@ -113,8 +113,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Inject enhanced GitHub environment variables
-        uses: rlespinasse/github-slug-action@v5
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
         with:
@@ -361,13 +359,7 @@ jobs:
           dotnet: true
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Inject enhanced GitHub environment variables
-        uses: rlespinasse/github-slug-action@v5
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-        with:
-          platforms: linux/amd64,linux/amd64/v3,linux/arm64
-      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
         id: buildx
       - name: Cache build mounts
