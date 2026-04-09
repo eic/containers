@@ -308,7 +308,7 @@ base:
   needs:
     - version
   script:
-    - source spack.sh ; 
+    - source spack.sh ;
       source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
@@ -418,13 +418,13 @@ eic:
     - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY= ; fi
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT= ; fi
     - apk add envsubst git
-    - source spack.sh ; 
+    - source spack.sh ;
       source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
       export SPACKPACKAGES_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
-    - set -o xtrace ; 
+    - set -o xtrace ;
       docker buildx build --push ${BUILD_OPTIONS}
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64
                    --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64
