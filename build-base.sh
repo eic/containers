@@ -16,7 +16,8 @@
 #   --base-image IMAGE  Upstream base image (default: derived from --image)
 #   --platform PLATFORM Build platform, e.g. linux/amd64, linux/arm64
 #                       (default: $PLATFORM or linux/amd64)
-#   --jobs N            Number of parallel Spack build jobs (default: $JOBS or $(nproc))
+#   --jobs N            Number of parallel Spack build jobs (default: $JOBS or $(nproc)
+#                       or $(getconf _NPROCESSORS_ONLN))
 #   --tag TAG           Local tag for the image (default: local; ignored in CI)
 #
 # GitHub Actions mode (GITHUB_ACTIONS=true):
@@ -32,7 +33,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_IMAGE="${BUILD_IMAGE:-debian_stable_base}"
 BASE_IMAGE="${BASE_IMAGE:-}"
 PLATFORM="${PLATFORM:-linux/amd64}"
-JOBS="${JOBS:-$(nproc)}"
+JOBS="${JOBS:-$(getconf _NPROCESSORS_ONLN)}"
 LOCAL_TAG="${LOCAL_TAG:-local}"
 METADATA_FILE="${METADATA_FILE:-/tmp/build-metadata.json}"
 ## CUDA defaults (used when building cuda_devel or cuda_runtime)
