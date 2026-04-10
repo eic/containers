@@ -1,0 +1,9 @@
+# Enforce LF line endings for all text files tracked in this repository.
+# This prevents Windows editors from introducing CRLF endings in shell scripts,
+# which causes bash to embed '\r' into variable values (e.g. ARCH=$(cmd)\r).
+* text=auto eol=lf
+
+# Explicitly mark binary files so they are never munged
+*.png binary
+*.jpg binary
+*.ico binary
