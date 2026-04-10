@@ -235,18 +235,14 @@ jobs:
             exit 1
           fi
           # Get the base image name from the first digest
-          REGISTRY_IMAGE_TAG=$(echo $FIRST_DIGEST | cut -d'@' -f1)
-          REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
+          REGISTRY_IMAGE=$(echo $FIRST_DIGEST | cut -d'@' -f1)
           REGISTRY=$(echo $REGISTRY_IMAGE | cut -d'/' -f1-2)
           IMAGE=$(echo $REGISTRY_IMAGE | cut -d'/' -f3)
-          TAG=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f2)
           echo "Registry Name: $REGISTRY"
           echo "Image Name: $IMAGE"
-          echo "Tag Name: $TAG"
           echo "All Digests: $ALL_DIGESTS"
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "all=$ALL_DIGESTS" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
         id: meta
@@ -488,18 +484,14 @@ jobs:
             exit 1
           fi
           # Get the base image name from the first digest
-          REGISTRY_IMAGE_TAG=$(echo $FIRST_DIGEST | cut -d'@' -f1)
-          REGISTRY_IMAGE=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f1)
+          REGISTRY_IMAGE=$(echo $FIRST_DIGEST | cut -d'@' -f1)
           REGISTRY=$(echo $REGISTRY_IMAGE | cut -d'/' -f1-2)
           IMAGE=$(echo $REGISTRY_IMAGE | cut -d'/' -f3)
-          TAG=$(echo $REGISTRY_IMAGE_TAG | cut -d':' -f2)
           echo "Registry Name: $REGISTRY"
           echo "Image Name: $IMAGE"
-          echo "Tag Name: $TAG"
           echo "All Digests: $ALL_DIGESTS"
           echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "all=$ALL_DIGESTS" >> $GITHUB_OUTPUT
       - name: Extract Docker metadata for final tags
         id: meta
