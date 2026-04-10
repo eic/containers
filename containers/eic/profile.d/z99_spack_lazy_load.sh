@@ -9,4 +9,4 @@ spack() {
     spack "$@"
 }
 ps
-echo Hello from spack_lazy_load
+echo Hello from spack_lazy_load $SHELL
