@@ -8,4 +8,5 @@ spack() {
     source "${SPACK_ROOT}/share/spack/setup-env.sh"
     spack "$@"
 }
+ps
 echo Hello from spack_lazy_load
