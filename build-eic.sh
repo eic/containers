@@ -18,7 +18,8 @@
 #   --runtime-image IMG Runtime base image name (default: $RUNTIME_IMAGE or debian_stable_base)
 #   --target STAGE      Docker build target stage (default: $BUILD_TARGET or final)
 #   --platform PLATFORM Build platform, e.g. linux/amd64 (default: $PLATFORM or linux/amd64)
-#   --jobs N            Number of parallel Spack build jobs (default: $JOBS or $(nproc))
+#   --jobs N            Number of parallel Spack build jobs (default: $JOBS or $(nproc)
+#                       or $(getconf _NPROCESSORS_ONLN))
 #   --base-tag TAG      Tag of the base image to use (default: local in local mode, $INTERNAL_TAG in CI)
 #   --tag TAG           Local tag for the output image (default: local; ignored in CI)
 #
@@ -39,7 +40,7 @@ BUILDER_IMAGE="${BUILDER_IMAGE:-debian_stable_base}"
 RUNTIME_IMAGE="${RUNTIME_IMAGE:-debian_stable_base}"
 BUILD_TARGET="${BUILD_TARGET:-final}"
 PLATFORM="${PLATFORM:-linux/amd64}"
-JOBS="${JOBS:-$(nproc)}"
+JOBS="${JOBS:-$(getconf _NPROCESSORS_ONLN)}"
 LOCAL_TAG="${LOCAL_TAG:-local}"
 LOCAL_BASE_TAG="${LOCAL_BASE_TAG:-local}"
 METADATA_FILE="${METADATA_FILE:-/tmp/build-metadata.json}"
