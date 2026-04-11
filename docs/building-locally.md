@@ -110,7 +110,7 @@ flowchart TB
         BC[ghcr.io Spack Buildcache<br/>Pre-built binaries]
         LC[Local Cache<br/>ccache, apt]
     end
-    
+
     subgraph "Build Process"
         D[Dockerfile]
         D --> L1[Restore cache layers]
@@ -120,7 +120,7 @@ flowchart TB
         L4 --> L5[Build remaining packages]
         L5 --> I[Final Image]
     end
-    
+
     RC --> L1
     BC --> L4
     LC --> L2

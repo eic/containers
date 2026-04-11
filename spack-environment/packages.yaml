@@ -5,7 +5,7 @@
 # - if reuse == true and build caches contain other versions/variants
 #   (this is disabled by concretize:reuse:false in concretizer.yaml)
 #
-# The variants in packages:all:variants are overridden by package-specific 
+# The variants in packages:all:variants are overridden by package-specific
 # variants. Therefore, we use the pattern require:any_of:[+variant,@:]
 # which sets the variant or doesn't do anything if not supported.
 #
@@ -68,7 +68,7 @@ packages:
     - '@1.86.0:'
     - +atomic +chrono +context +date_time +exception +fiber +filesystem +graph
     - +iostreams +locale +log +math +program_options +python +random +regex
-    - +serialization +system +test +thread +timer +wave 
+    - +serialization +system +test +thread +timer +wave
     - cxxstd=20
   cairo:
     require:
@@ -146,13 +146,13 @@ packages:
       prefix: /usr
   eic-opticks:
     require:
-    - '@0.1.0'
+    - '@0.3.0'
   eic-smear:
     require:
     - '@1.1.16'
   eicrecon:
     require:
-    - '@1.35.2' # EICRECON_VERSION
+    - '@1.36.1' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
@@ -201,7 +201,7 @@ packages:
     - '@11.3.2.east'
     - cxxstd=20 -vecgeom +threads -timemory -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
-  gettext: 
+  gettext:
     require:
     - +libxml2
   gfal2:
@@ -261,7 +261,6 @@ packages:
   juggler:
     require:
     - '@15.1.0' # JUGGLER_VERSION
-    - cxxstd=20
   julia:
     require:
     - '@1.11'
@@ -350,7 +349,7 @@ packages:
   pcre:
     require:
     - build_system=cmake
-    - cflags=-fPIC cxxflags=-fPIC 
+    - cflags=-fPIC cxxflags=-fPIC
   pcre2:
     require:
     # FIXME julia requires libpcre2-8.so, but shared lib is only built by autotools
@@ -513,7 +512,6 @@ packages:
     - '@0.13.2:'
   py-tensorflow:
     require:
-    - '%clang'
     - '@2.20'
   py-toml:
     require:

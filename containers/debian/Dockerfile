@@ -3,7 +3,7 @@
 ARG BASE_IMAGE="amd64/debian:stable-slim"
 ARG BUILD_IMAGE="debian_stable_base"
 
-# Minimal container based on Debian base systems for up-to-date packages. 
+# Minimal container based on Debian base systems for up-to-date packages.
 FROM ${BASE_IMAGE}
 ARG TARGETPLATFORM
 
@@ -84,6 +84,10 @@ EOF
 # Install updated compilers, with support for multiple base images
 ## Ubuntu: latest gcc from toolchain ppa, latest stable clang
 ## Debian: default gcc with distribution, latest stable clang
+## BUILDWEEK rotates weekly (format: YYYYwWW) to bust apt layer cache and
+## pick up compiler package updates that would otherwise be hidden by the
+## persistent registry layer cache.
+ARG BUILDWEEK=0
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 . /etc/os-release
@@ -265,7 +269,7 @@ spack config --scope user add "config:ccache:true"
 spack config blame config
 spack compiler find --scope spack
 # Ensure GCC externals have LTO‑safe binutils configured.
-# 
+#
 # 1. LTO issue being worked around:
 #    When GCC is built/used with LTO support, archive creation for objects
 #    that may contain LTO bytecode must use the plugin‑aware wrappers
@@ -336,3 +340,9 @@ git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_
 git -C ${EICSPACK_ROOT} checkout ${EICSPACK_SHA:-${EICSPACK_VERSION}}
 spack repo add --scope spack "${EICSPACK_ROOT}/spack_repo/eic"
 EOF
+
+## Ensure NVIDIA driver exposes all capabilities
+## https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/docker-specialized.html
+ARG NVIDIA_VISIBLE_DEVICES
+ARG NVIDIA_DRIVER_CAPABILITIES
+ENV NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES} NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES}

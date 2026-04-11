@@ -90,7 +90,7 @@ workflow:
 ##  - <nightly>   --> nightly (run as part of master)
 ##  - v4.0-stable --> 4.0-stable
 ##  - v4.0.0      --> 4.0-stable, 4.0.0
-##  - acadia     
+##  - acadia
 ##  - MR          --> 4.0-unstable (on all registries)
 ##                --> unstable-mr-XXX (on eicweb only, untag at end of pipeline)
 ##  - all other   --> do nothing
@@ -227,7 +227,7 @@ status:pending:
 
 ## base job settings for all docker build jobs
 .build:
-  extends: .docker 
+  extends: .docker
   rules:
     - when: on_success
   tags:
@@ -280,7 +280,7 @@ status:pending:
 ## oneapi_jug_dev + eic_xl --> oneapi_eic_xl
 
 ## TODO
-## oneapi_runtime + eic_xl --> oneapi_prod 
+## oneapi_runtime + eic_xl --> oneapi_prod
 
 base:
   parallel:
@@ -308,7 +308,7 @@ base:
   needs:
     - version
   script:
-    - source spack.sh ; 
+    - source spack.sh ;
       source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
@@ -328,6 +328,8 @@ base:
                    --platform ${PLATFORM}
                    --build-arg BASE_IMAGE=${BASE_IMAGE}
                    --build-arg BUILD_IMAGE=${BUILD_IMAGE}
+                   --build-arg NVIDIA_VISIBLE_DEVICES=$(case "${BUILD_IMAGE}" in cuda*) echo all ;; esac)
+                   --build-arg NVIDIA_DRIVER_CAPABILITIES=$(case "${BUILD_IMAGE}" in cuda*) echo all ;; esac)
                    --build-arg SPACK_ORGREPO=${SPACK_ORGREPO}
                    --build-arg SPACK_VERSION=${SPACK_VERSION}
                    --build-arg SPACK_SHA=$(sh .ci/resolve_git_ref "${SPACK_ORGREPO}" "${SPACK_VERSION}")
@@ -345,6 +347,7 @@ base:
                    --build-arg EICSPACK_VERSION=${EICSPACK_VERSION}
                    --build-arg EICSPACK_SHA=$(sh .ci/resolve_git_ref "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
                    --build-arg jobs=${JOBS}
+                   --build-arg BUILDWEEK=$(date +%Yw%V)
                    --provenance false
                    containers/debian
                    2>&1 | tee build.log
@@ -377,7 +380,7 @@ eic:
         RUNTIME_IMAGE: debian_stable_base
         PLATFORM: linux/amd64
 #      - BUILD_IMAGE: oneapi_
-#        ENV:       
+#        ENV:
 #        - prod
 #        BUILD_TYPE:
 #        - default
@@ -416,13 +419,13 @@ eic:
     - if [ "${BUILD_TYPE}" == "nightly" ] ; then IF_BUILD_NIGHTLY= ; fi
     - if [ "${BUILD_TYPE}" == "default" ] ; then IF_BUILD_DEFAULT= ; fi
     - apk add envsubst git
-    - source spack.sh ; 
+    - source spack.sh ;
       source spack-packages.sh ;
       source key4hep-spack.sh ;
       source eic-spack.sh ;
       export SPACKPACKAGES_VERSION ;
       cat mirrors.yaml.in | envsubst > mirrors.yaml
-    - set -o xtrace ; 
+    - set -o xtrace ;
       docker buildx build --push ${BUILD_OPTIONS}
                    --cache-from type=registry,ref=${CI_REGISTRY}/${CI_PROJECT_PATH}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64
                    --cache-from type=registry,ref=${GH_REGISTRY}/${GH_REGISTRY_USER}/buildcache:${BUILD_IMAGE}${ENV}-${BUILD_TYPE}-${CI_COMMIT_REF_SLUG}-amd64
@@ -516,13 +519,13 @@ user_spack_environment:
             BUILDER_IMAGE: debian_stable_base
             RUNTIME_IMAGE: debian_stable_base
             PLATFORM: linux/amd64
-  image: 
+  image:
     name: ${CI_REGISTRY_IMAGE}/eic_ci:${INTERNAL_TAG}-default
   script:
     - source /opt/spack/share/spack/setup-env.sh
     - spack env activate --create edm4eic
     - spack add edm4eic@git.main cxxstd=20
-    - spack concretize 
+    - spack concretize
     - spack install --only dependencies edm4eic
     - ls -al /opt/software/linux-*/compiler-wrapper-1.0-*/libexec/spack/gcc/g++
     - spack install --verbose
@@ -537,7 +540,7 @@ user_spack_environment:
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
       when: never
     - when: always
-  needs: 
+  needs:
     - job: version
     - job: eic
       parallel:
@@ -548,7 +551,7 @@ user_spack_environment:
             BUILDER_IMAGE: cuda_devel
             RUNTIME_IMAGE: cuda_devel
             PLATFORM: linux/amd64
-  image: 
+  image:
     name: ${CI_REGISTRY_IMAGE}/eic_dev_cuda:${INTERNAL_TAG}-default
 
 cuda:torch:
@@ -627,7 +630,7 @@ eic_xl:singularity:nightly:
   extends: .benchmarks
   variables:
     BUILD_TYPE: default
-  needs: 
+  needs:
     - job: version
     - job: eic
       parallel:
@@ -643,7 +646,7 @@ eic_xl:singularity:nightly:
   extends: .benchmarks
   variables:
     BUILD_TYPE: nightly
-  needs: 
+  needs:
     - job: version
     - job: eic
       parallel:
@@ -676,7 +679,7 @@ benchmarks:detector:default:
   trigger:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
-  
+
 benchmarks:detector:nightly:
   extends: .benchmarks:nightly
   rules:
@@ -740,7 +743,7 @@ df:
   stage: config
   tags:
     - docker-new
-  needs: 
+  needs:
     - version
   rules:
     - when: manual
@@ -765,7 +768,7 @@ df:
       - docker-system-df-verbose.txt
   allow_failure: true
 
-.prune: 
+.prune:
   extends: .build
   stage: config
   rules:
@@ -797,7 +800,7 @@ clean_internal_tag:
   script:
     - |
       for id in 66 68 69 80 83 91 92 97 ; do
-        for tag in ${INTERNAL_TAG} ${INTERNAL_TAG}-default ${INTERNAL_TAG}-nightly ; do 
+        for tag in ${INTERNAL_TAG} ${INTERNAL_TAG}-default ${INTERNAL_TAG}-nightly ; do
           curl --request DELETE --header "PRIVATE-TOKEN: ${REG_CLEANUP_TOKEN}" ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/registry/repositories/${id}/tags/${tag} ;
         done ;
       done
@@ -812,8 +815,8 @@ clean_internal_tag:
     - for registry in
         eicweb
         eicweb.phy.anl.gov:4567/containers/eic_container
-      ; do 
-        docker images 
+      ; do
+        docker images
           --filter=reference=${registry}/*:unstable-mr*
           --format "{{.ID}} {{.Repository}} {{.Tag}}" ;
       done
@@ -855,7 +858,7 @@ clean_unstable_mr:docker-new:
     - for registry in
         eicweb
         eicweb.phy.anl.gov:4567/containers/eic_container
-      ; do 
+      ; do
         docker images
           --filter=reference=${registry}/*:pipeline-*
           --format "{{.ID}} {{.Repository}} {{.Tag}} {{.CreatedSince}}" ;
@@ -865,8 +868,8 @@ clean_unstable_mr:docker-new:
       for registry in
         eicweb
         eicweb.phy.anl.gov:4567/containers/eic_container
-      ; do 
-        docker images 
+      ; do
+        docker images
           --filter=reference=${registry}/*:pipeline-*
           --format "{{.ID}} {{.Repository}} {{.Tag}} {{.CreatedSince}}" ;
       done
@@ -916,4 +919,3 @@ status:failure:
     STATE: "failure"
     DESCRIPTION: "Failed!"
   when: on_failure
-

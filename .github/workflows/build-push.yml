@@ -5,7 +5,7 @@ on:
     - cron: "30 */6 * * *"
   push:
     branches:
-    - master  
+    - master
   pull_request:
     branches:
     - master
@@ -36,7 +36,7 @@ env:
   ## CUDA version and container operating system
   CUDA_VERSION: 12.5.1
   CUDA_OS: ubuntu24.04
-  
+
   ## Default versions are specified in packages.yaml but can be overridden
   ## note: nightly builds will always use the master/main branch
   EDM4EIC_VERSION: ${{ inputs.EDM4EIC_VERSION }}
@@ -68,12 +68,14 @@ jobs:
     outputs:
       CUDA_VERSION: ${{ steps.env.outputs.CUDA_VERSION }}
       CUDA_OS: ${{ steps.env.outputs.CUDA_OS }}
+      BUILDWEEK: ${{ steps.env.outputs.BUILDWEEK }}
     steps:
       - name: Turn env into outputs
         id: env
         run: |
           echo "CUDA_VERSION=${{ env.CUDA_VERSION }}" >> $GITHUB_OUTPUT
           echo "CUDA_OS=${{ env.CUDA_OS }}" >> $GITHUB_OUTPUT
+          echo "BUILDWEEK=$(date +%Yw%V)" >> $GITHUB_OUTPUT
 
   base:
     name: Build ${{ matrix.BUILD_IMAGE }} on ${{ matrix.arch }}
@@ -109,10 +111,22 @@ jobs:
           arch: amd64
       fail-fast: false
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v6
       - name: Inject enhanced GitHub environment variables
         uses: rlespinasse/github-slug-action@v5
+      - name: Load NVIDIA visible devices and driver capabilities
+        id: nvidia
+        shell: bash
+        run: |
+          case "${{ matrix.BUILD_IMAGE }}" in
+            cuda*)
+              NVIDIA_VISIBLE_DEVICES=all
+              NVIDIA_DRIVER_CAPABILITIES=all
+              ;;
+          esac
+          echo "visible_devices=${NVIDIA_VISIBLE_DEVICES}" | tee -a $GITHUB_OUTPUT
+          echo "driver_capabilities=${NVIDIA_DRIVER_CAPABILITIES}" | tee -a $GITHUB_OUTPUT
       - name: Load spack version and cherry-picks
         id: spack
         shell: bash
@@ -163,8 +177,9 @@ jobs:
         id: cache-base-mounts
         with:
           path: cache-mount-base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}
-          key: ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-${{ github.ref_name }}
+          key: ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-${{ github.ref_name }}-${{ needs.env.outputs.BUILDWEEK }}
           restore-keys: |
+            ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-main-${{ needs.env.outputs.BUILDWEEK }}
             ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-main
             ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-
       - name: Inject cache mounts into builder
@@ -206,6 +221,8 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ matrix.BASE_IMAGE }}
             BUILD_IMAGE=${{ matrix.BUILD_IMAGE }}
+            NVIDIA_VISIBLE_DEVICES=${{ steps.nvidia.outputs.visible_devices }}
+            NVIDIA_DRIVER_CAPABILITIES=${{ steps.nvidia.outputs.driver_capabilities }}
             SPACK_ORGREPO=${{ steps.spack.outputs.orgrepo }}
             SPACK_VERSION=${{ steps.spack.outputs.version }}
             SPACK_SHA=${{ steps.spack.outputs.sha }}
@@ -223,6 +240,7 @@ jobs:
             EICSPACK_VERSION=${{ steps.eic-spack.outputs.version }}
             EICSPACK_SHA=${{ steps.eic-spack.outputs.sha }}
             jobs=${{ env.JOBS }}
+            BUILDWEEK=${{ needs.env.outputs.BUILDWEEK }}
           cache-from: |
             type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_REF_POINT_SLUG }}-${{ matrix.arch }}
             type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}-${{ env.GITHUB_BASE_REF_SLUG }}-${{ matrix.arch }}
@@ -417,13 +435,13 @@ jobs:
         - BUILD_IMAGE: eic_
           BUILD_TYPE: default
           BUILDER_IMAGE: cuda_devel
-          RUNTIME_IMAGE: cuda_devel
+          RUNTIME_IMAGE: cuda_runtime
           ENV: tf
           arch: amd64
           runner: ubuntu-latest
           PLATFORM: linux/amd64
           target: final
-          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3"
+          SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
       fail-fast: false
     steps:
       - name: Free Disk Space (Ubuntu)

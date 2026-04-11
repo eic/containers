@@ -1,10 +1,8 @@
 view:
   default:
     root: /opt/local
-    exclude: 
-    - epic
-    - py-pip@23.0
-    - py-urllib3@1
+    exclude:
+      - epic
     link_type: symlink
   detectors:
     root: /opt/detector

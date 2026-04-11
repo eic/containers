@@ -18,7 +18,9 @@ if test -z "$DETECTOR_PATH" -a -z "$DETECTOR_CONFIG" ; then
     fi
     thisepic=/opt/detector/epic-${version}/bin/thisepic.sh
     if test -f "$thisepic" ; then
-      . "$thisepic"
+      # Workaround for 26.04.0. After https://github.com/eic/epic/pull/1072 lands we can switch back to
+      # . "$thisepic"
+      eval "$(bash -c '. '"$thisepic"'; echo export DETECTOR=\"$DETECTOR\"; echo export DETECTOR_PATH=\"$DETECTOR_PATH\"; echo export DETECTOR_CONFIG=\"$DETECTOR_CONFIG\"; echo export DETECTOR_VERSION=\"$DETECTOR_VERSION\"')"
     fi
   fi
 fi
