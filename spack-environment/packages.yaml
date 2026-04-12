@@ -185,6 +185,7 @@ packages:
     - build_system=autotools
   g4adept:
     require:
+    - '@0.3.0'
     - +covfie
   gaudi:
     require:
