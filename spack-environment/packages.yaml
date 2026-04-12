@@ -183,6 +183,9 @@ packages:
   freetype:
     require:
     - build_system=autotools
+  g4adept:
+    require:
+    - +covfie
   gaudi:
     require:
     - '@39.4'
@@ -190,7 +193,7 @@ packages:
   gdb:
     require:
     - '@15.2:'
-    - +debuginfod
+    - +autotools
   g4ndl:
     buildable: False
     externals:
