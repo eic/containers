@@ -193,7 +193,7 @@ packages:
   gdb:
     require:
     - '@15.2:'
-    - +autotools
+    - +debuginfod
   g4ndl:
     buildable: False
     externals:
