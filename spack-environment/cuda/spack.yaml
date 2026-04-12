@@ -1,4 +1,4 @@
-spack:
+graphviz:
   include:
   - ../concretizer.yaml
   - ../packages.yaml
@@ -32,7 +32,8 @@ spack:
   - emacs
   - fastjet
   - fjcontrib
-  - fmt
+  - fm 
+  - g4adept +cuda cuda_arch=75
   - gaudi
   - gdb
   - geant4
