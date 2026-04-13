@@ -33,11 +33,16 @@ This produces a local image tagged `debian_stable_base:local`.
 ### Building the EIC Image
 
 ```bash
-# Build the full XL environment (uses debian_stable_base:local as base)
+# Build the full XL environment
 bash build-eic.sh --env xl --jobs 8
 ```
 
 This produces a local image tagged `eic_xl:local`.
+
+`build-eic.sh` automatically detects whether the required base image
+(e.g. `debian_stable_base:local`) is available in the local Docker daemon. If found, it is
+used directly with no registry prefix. If not, the script falls back to pulling the base
+image from `ghcr.io/eic/` with the `latest` tag.
 
 ### Other environments
 
@@ -161,7 +166,8 @@ bash build-eic.sh [options]
   --runtime-image IMG Runtime base image name (default: debian_stable_base)
   --platform PLATFORM linux/amd64 (default), linux/arm64
   --jobs N            Parallel Spack build jobs (default: 4)
-  --base-tag TAG      Tag of the base image to pull (default: local)
+  --base-tag TAG      Tag of the locally built base image to use (default: local); if not found
+                      locally, ghcr.io/eic/:latest is used as fallback
   --tag TAG           Output image tag (default: local)
 ```
 
@@ -185,10 +191,10 @@ bash build-eic.sh [options]
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `DOCKER_REGISTRY` | Registry prefix for base images | `ghcr.io/eic/` |
+| `DOCKER_REGISTRY` | Registry prefix for base images | empty (local) or `ghcr.io/eic/` (GHCR fallback) |
 | `BUILDER_IMAGE` | Builder base image name | `debian_stable_base` |
 | `RUNTIME_IMAGE` | Runtime base image name | `debian_stable_base` |
-| `INTERNAL_TAG` | Tag for base images | `local` |
+| `INTERNAL_TAG` | Tag for base images | value of `--base-tag` (local) or `latest` (GHCR fallback) |
 | `ENV` | Environment type | `xl` |
 | `SPACK_DUPLICATE_ALLOWLIST` | Pipe-separated allowed duplicates | (per ENV) |
 | `EDM4EIC_SHA` | Custom edm4eic commit | |
