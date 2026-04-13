@@ -30,7 +30,9 @@ Options:
   --platform PLATFORM Build platform, e.g. linux/amd64 (default: \$PLATFORM or linux/amd64)
   --jobs N            Number of parallel Spack build jobs (default: \$JOBS or \$(nproc)
                       or \$(getconf _NPROCESSORS_ONLN))
-  --base-tag TAG      Tag of the base image to use (default: local in local mode, \$INTERNAL_TAG in CI)
+  --base-tag TAG      Tag of the locally built base image to use (default: local); if the image
+                      is not found in the local Docker daemon, ghcr.io/eic/ is used with tag
+                      'latest' as fallback (ignored in CI)
   --tag TAG           Local tag for the output image (default: local; ignored in CI)
   -h, --help          Show this help and exit
 
@@ -213,8 +215,18 @@ if [ "${CI_MODE}" != "local" ]; then
   build_cmd+=(--build-arg "INTERNAL_TAG=${INTERNAL_TAG}")
   build_cmd+=(--build-arg "CI_COMMIT_SHA=${CI_COMMIT_SHA}")
 else
-  build_cmd+=(--build-arg "DOCKER_REGISTRY=ghcr.io/eic/")
-  build_cmd+=(--build-arg "INTERNAL_TAG=${LOCAL_BASE_TAG}")
+  ## Auto-detect: use locally built base images if available, otherwise pull from ghcr.io/eic/.
+  ## Both BUILDER_IMAGE and RUNTIME_IMAGE must exist locally to avoid a mixed local/remote build.
+  if docker image inspect "${BUILDER_IMAGE}:${LOCAL_BASE_TAG}" >/dev/null 2>&1 \
+     && docker image inspect "${RUNTIME_IMAGE}:${LOCAL_BASE_TAG}" >/dev/null 2>&1; then
+    echo "Using local base images: ${BUILDER_IMAGE}:${LOCAL_BASE_TAG}, ${RUNTIME_IMAGE}:${LOCAL_BASE_TAG}"
+    build_cmd+=(--build-arg "DOCKER_REGISTRY=")
+    build_cmd+=(--build-arg "INTERNAL_TAG=${LOCAL_BASE_TAG}")
+  else
+    echo "Local base images not found (${BUILDER_IMAGE}:${LOCAL_BASE_TAG}); pulling from ghcr.io/eic/:latest"
+    build_cmd+=(--build-arg "DOCKER_REGISTRY=ghcr.io/eic/")
+    build_cmd+=(--build-arg "INTERNAL_TAG=latest")
+  fi
 fi
 ## EIC_CONTAINER_VERSION format is intentionally different per CI system
 if [ "${CI_MODE}" = "gitlab" ]; then
