@@ -4,33 +4,42 @@
 # This script is used in GitLab CI, GitHub Actions, and for local builds.
 # CI mode is detected via CI_REGISTRY (GitLab) or GITHUB_ACTIONS=true (GitHub Actions).
 #
-# Usage (local):
-#   bash build-eic.sh [options]
-#
-# Usage (CI, called from .gitlab-ci.yml or build-push.yml with matrix variables in env):
-#   bash build-eic.sh
-#
-# Options:
-#   --env ENV           Environment: ci, xl, cuda, dbg, jl, prod, cvmfs, tf, ...
-#                       (default: $ENV or xl)
-#   --build-type TYPE   Build type: default or nightly (default: $BUILD_TYPE or default)
-#   --builder-image IMG Builder base image name (default: $BUILDER_IMAGE or debian_stable_base)
-#   --runtime-image IMG Runtime base image name (default: $RUNTIME_IMAGE or debian_stable_base)
-#   --target STAGE      Docker build target stage (default: $BUILD_TARGET or final)
-#   --platform PLATFORM Build platform, e.g. linux/amd64 (default: $PLATFORM or linux/amd64)
-#   --jobs N            Number of parallel Spack build jobs (default: $JOBS or $(nproc)
-#                       or $(getconf _NPROCESSORS_ONLN))
-#   --base-tag TAG      Tag of the base image to use (default: local in local mode, $INTERNAL_TAG in CI)
-#   --tag TAG           Local tag for the output image (default: local; ignored in CI)
-#
-# GitHub Actions mode (GITHUB_ACTIONS=true):
-#   Set GH_REGISTRY, GH_REGISTRY_USER, JOBS.  The script derives cache-key slugs
-#   from GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target branch),
-#   and writes the image digest to METADATA_FILE (default: /tmp/build-metadata.json).
+# Run `bash build-eic.sh --help` for usage, options, and CI-specific details.
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+print_help() {
+  cat <<EOF
+Build an EIC container image (eic_ci, eic_xl, eic_cuda, etc.).
+
+Usage (local):
+  bash build-eic.sh [options]
+
+Usage (CI, called from .gitlab-ci.yml or build-push.yml with matrix variables in env):
+  bash build-eic.sh
+
+Options:
+  --env ENV           Environment: ci, xl, cuda, dbg, jl, prod, cvmfs, tf, ...
+                      (default: \$ENV or xl)
+  --build-type TYPE   Build type: default or nightly (default: \$BUILD_TYPE or default)
+  --builder-image IMG Builder base image name (default: \$BUILDER_IMAGE or debian_stable_base)
+  --runtime-image IMG Runtime base image name (default: \$RUNTIME_IMAGE or debian_stable_base)
+  --target STAGE      Docker build target stage (default: \$BUILD_TARGET or final)
+  --platform PLATFORM Build platform, e.g. linux/amd64 (default: \$PLATFORM or linux/amd64)
+  --jobs N            Number of parallel Spack build jobs (default: \$JOBS or \$(nproc)
+                      or \$(getconf _NPROCESSORS_ONLN))
+  --base-tag TAG      Tag of the base image to use (default: local in local mode, \$INTERNAL_TAG in CI)
+  --tag TAG           Local tag for the output image (default: local; ignored in CI)
+  -h, --help          Show this help and exit
+
+GitHub Actions mode (GITHUB_ACTIONS=true):
+  Set GH_REGISTRY, GH_REGISTRY_USER, JOBS. The script derives cache-key slugs
+  from GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target branch),
+  and writes the image digest to METADATA_FILE (default: /tmp/build-metadata.json).
+EOF
+}
 
 ## Defaults (may be overridden by env vars set from CI matrix or command-line flags)
 BUILD_IMAGE="${BUILD_IMAGE:-eic_}"
@@ -47,6 +56,7 @@ METADATA_FILE="${METADATA_FILE:-/tmp/build-metadata.json}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    -h|--help)      print_help; exit 0 ;;
     --env)           ENV="$2";           shift 2 ;;
     --build-type)    BUILD_TYPE="$2";    shift 2 ;;
     --builder-image) BUILDER_IMAGE="$2"; shift 2 ;;
@@ -56,7 +66,7 @@ while [[ $# -gt 0 ]]; do
     --jobs)          JOBS="$2";         shift 2 ;;
     --base-tag)      LOCAL_BASE_TAG="$2"; shift 2 ;;
     --tag)           LOCAL_TAG="$2";    shift 2 ;;
-    *) echo "Unknown argument: $1" >&2; exit 1 ;;
+    *) echo "Unknown argument: $1" >&2; echo "Try 'bash build-eic.sh --help' for usage." >&2; exit 1 ;;
   esac
 done
 
