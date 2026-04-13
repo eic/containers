@@ -4,30 +4,39 @@
 # This script is used in GitLab CI, GitHub Actions, and for local builds.
 # CI mode is detected via CI_REGISTRY (GitLab) or GITHUB_ACTIONS=true (GitHub Actions).
 #
-# Usage (local):
-#   bash build-base.sh [options]
-#
-# Usage (CI, called from .gitlab-ci.yml or build-push.yml with matrix variables in env):
-#   bash build-base.sh
-#
-# Options:
-#   --image IMAGE       Image to build: debian_stable_base, cuda_devel, cuda_runtime
-#                       (default: $BUILD_IMAGE or debian_stable_base)
-#   --base-image IMAGE  Upstream base image (default: derived from --image)
-#   --platform PLATFORM Build platform, e.g. linux/amd64, linux/arm64
-#                       (default: $PLATFORM or linux/amd64)
-#   --jobs N            Number of parallel Spack build jobs (default: $JOBS or $(nproc)
-#                       or $(getconf _NPROCESSORS_ONLN))
-#   --tag TAG           Local tag for the image (default: local; ignored in CI)
-#
-# GitHub Actions mode (GITHUB_ACTIONS=true):
-#   Set GH_REGISTRY, GH_REGISTRY_USER, JOBS.  The script derives cache-key slugs
-#   from GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target branch),
-#   and writes the image digest to METADATA_FILE (default: /tmp/build-metadata.json).
+# Run `bash build-base.sh --help` for usage, options, and CI-specific details.
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+print_help() {
+  cat <<EOF
+Build the EIC base container image (debian_stable_base, cuda_devel, or cuda_runtime).
+
+Usage (local):
+  bash build-base.sh [options]
+
+Usage (CI, called from .gitlab-ci.yml or build-push.yml with matrix variables in env):
+  bash build-base.sh
+
+Options:
+  --image IMAGE       Image to build: debian_stable_base, cuda_devel, cuda_runtime
+                      (default: \$BUILD_IMAGE or debian_stable_base)
+  --base-image IMAGE  Upstream base image (default: derived from --image)
+  --platform PLATFORM Build platform, e.g. linux/amd64, linux/arm64
+                      (default: \$PLATFORM or linux/amd64)
+  --jobs N            Number of parallel Spack build jobs (default: \$JOBS or \$(nproc)
+                      or \$(getconf _NPROCESSORS_ONLN))
+  --tag TAG           Local tag for the image (default: local; ignored in CI)
+  -h, --help          Show this help and exit
+
+GitHub Actions mode (GITHUB_ACTIONS=true):
+  Set GH_REGISTRY, GH_REGISTRY_USER, JOBS. The script derives cache-key slugs
+  from GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target branch),
+  and writes the image digest to METADATA_FILE (default: /tmp/build-metadata.json).
+EOF
+}
 
 ## Defaults (may be overridden by env vars set from CI matrix or command-line flags)
 BUILD_IMAGE="${BUILD_IMAGE:-debian_stable_base}"
@@ -42,12 +51,13 @@ CUDA_OS="${CUDA_OS:-ubuntu24.04}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    -h|--help)    print_help; exit 0 ;;
     --image)     BUILD_IMAGE="$2";   shift 2 ;;
     --base-image) BASE_IMAGE="$2";   shift 2 ;;
     --platform)  PLATFORM="$2";     shift 2 ;;
     --jobs)      JOBS="$2";         shift 2 ;;
     --tag)       LOCAL_TAG="$2";    shift 2 ;;
-    *) echo "Unknown argument: $1" >&2; exit 1 ;;
+    *) echo "Unknown argument: $1" >&2; echo "Try 'bash build-base.sh --help' for usage." >&2; exit 1 ;;
   esac
 done
 
