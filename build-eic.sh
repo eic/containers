@@ -234,7 +234,7 @@ else
     build_cmd+=(--build-arg "DOCKER_REGISTRY=")
     build_cmd+=(--build-arg "INTERNAL_TAG=${LOCAL_BASE_TAG}")
   else
-    echo "Local base images not found (${BUILDER_IMAGE}:${LOCAL_BASE_TAG}); pulling from ghcr.io/eic/:latest"
+    echo "Local base images not found (${BUILDER_IMAGE}:${LOCAL_BASE_TAG} and/or ${RUNTIME_IMAGE}:${LOCAL_BASE_TAG}); pulling from ghcr.io/eic/:latest"
     build_cmd+=(--build-arg "DOCKER_REGISTRY=ghcr.io/eic/")
     build_cmd+=(--build-arg "INTERNAL_TAG=latest")
   fi
