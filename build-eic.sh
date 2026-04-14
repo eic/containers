@@ -84,6 +84,11 @@ slugify() {
   echo "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]\+/-/g; s/^-//; s/-$//' | cut -c1-63
 }
 
+## Escape a string for safe use as a sed replacement (handles \, &, and | delimiter).
+sed_escape() {
+  printf '%s' "$1" | sed 's/[\\&|]/\\&/g'
+}
+
 ## Detect CI mode and normalise environment variables
 if [ -n "${CI_REGISTRY}" ]; then
   ## GitLab CI — all CI_* variables are already set by the runner
@@ -105,17 +110,19 @@ else
   CI_MODE="local"
 fi
 
-## Generate mirrors.yaml from template or create a public-only version.
-## Uses sed rather than envsubst to avoid a runtime dependency on gettext.
+## Generate mirrors.yaml in a temp file; the trap ensures cleanup on exit.
+## sed replacement values are escaped to handle special chars (\, &, |).
+MIRRORS_YAML=$(mktemp "${TMPDIR:-/tmp}/mirrors-XXXXXX.yaml")
+trap 'rm -f "${MIRRORS_YAML}"' EXIT INT TERM
 if [ "${CI_MODE}" != "local" ]; then
   ## CI mode: expand CI_REGISTRY/CI_PROJECT_PATH variables in the template
-  sed -e "s|\${CI_REGISTRY}|${CI_REGISTRY}|g" \
-      -e "s|\${CI_PROJECT_PATH}|${CI_PROJECT_PATH}|g" \
-      -e "s|\${SPACKPACKAGES_VERSION}|${SPACKPACKAGES_VERSION}|g" \
-      "${SCRIPT_DIR}/mirrors.yaml.in" > "${SCRIPT_DIR}/mirrors.yaml"
+  sed -e "s|\${CI_REGISTRY}|$(sed_escape "${CI_REGISTRY}")|g" \
+      -e "s|\${CI_PROJECT_PATH}|$(sed_escape "${CI_PROJECT_PATH}")|g" \
+      -e "s|\${SPACKPACKAGES_VERSION}|$(sed_escape "${SPACKPACKAGES_VERSION}")|g" \
+      "${SCRIPT_DIR}/mirrors.yaml.in" > "${MIRRORS_YAML}"
 else
   ## Local mode: public-only mirrors (no credentials required)
-  cat > "${SCRIPT_DIR}/mirrors.yaml" <<EOF
+  cat > "${MIRRORS_YAML}" <<EOF
 mirrors:
   ghcr:
     url: oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
@@ -257,7 +264,7 @@ build_cmd+=(--build-arg "jobs=${JOBS}")
 build_cmd+=(--build-context "spack-environment=spack-environment")
 
 ## Secrets
-build_cmd+=(--secret "id=mirrors,src=${SCRIPT_DIR}/mirrors.yaml")
+build_cmd+=(--secret "id=mirrors,src=${MIRRORS_YAML}")
 if [ "${CI_MODE}" != "local" ]; then
   build_cmd+=(--secret "type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER")
   build_cmd+=(--secret "type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD")
