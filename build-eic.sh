@@ -271,24 +271,4 @@ build_cmd+=(containers/eic)
 set -o xtrace -o pipefail
 "${build_cmd[@]}" 2>&1 | tee build.log
 
-## Create image tags from digest (GitLab CI only; GitHub Actions manifest jobs handle tagging)
-if [ "${CI_MODE}" = "gitlab" ]; then
-  DIGEST=$(jq -r '."containerimage.digest"' "${METADATA_FILE}")
-  docker buildx imagetools create --tag "${IMAGE_REPO}:${INTERNAL_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
-  if [ -n "${EXPORT_TAG}" ]; then
-    if [ "${BUILD_TYPE}" = "default" ]; then
-      [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-      [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-      [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-    else
-      [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
-      [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
-      [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
-    fi
-  fi
-  if [ "${BUILD_TYPE}" = "nightly" ] && [ -n "${NIGHTLY}" ]; then
-    [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
-    [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
-    [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}${ENV}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
-  fi
-fi
+
