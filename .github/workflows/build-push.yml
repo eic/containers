@@ -159,6 +159,7 @@ jobs:
           BASE_IMAGE: ${{ matrix.BASE_IMAGE }}
           PLATFORM: ${{ matrix.PLATFORM }}
           BUILDWEEK: ${{ needs.env.outputs.BUILDWEEK }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           METADATA_FILE: /tmp/build-metadata.json
         run: bash build-base.sh
       - name: Export digest to file
@@ -414,6 +415,7 @@ jobs:
           CI_REGISTRY_PASSWORD: ${{ secrets.GHCR_REGISTRY_TOKEN }}
           GITHUB_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
           GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           METADATA_FILE: /tmp/build-metadata.json
         run: bash build-eic.sh
       - name: Export digest to file
