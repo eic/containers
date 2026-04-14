@@ -33,7 +33,7 @@ spack:
   - fastjet
   - fjcontrib
   - fmt
-  - g4adept +cuda cuda_arch=75
+  - g4adept +cuda
   - gaudi
   - gdb
   - geant4
