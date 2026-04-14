@@ -38,8 +38,10 @@ Options:
 
 GitHub Actions mode (GITHUB_ACTIONS=true):
   Set GH_REGISTRY, GH_REGISTRY_USER, JOBS. The script derives cache-key slugs
-  from GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target branch),
-  and writes the image digest to METADATA_FILE (default: /tmp/build-metadata.json).
+  from GITHUB_REF_NAME (current branch), GITHUB_BASE_REF (PR target branch, empty
+  on push events), and DEFAULT_BRANCH (repo default branch, used as fallback when
+  GITHUB_BASE_REF is empty). Writes the image digest to METADATA_FILE (default:
+  /tmp/build-metadata.json).
 EOF
 }
 
@@ -88,13 +90,15 @@ if [ -n "${CI_REGISTRY}" ]; then
   CI_MODE="gitlab"
 elif [ "${GITHUB_ACTIONS}" = "true" ]; then
   ## GitHub Actions — map GitHub variables to the names used below.
-  ## GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target, or
-  ## empty for push events) are standard runner variables; no extra action needed.
+  ## GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target branch,
+  ## empty on push events) are standard runner variables. DEFAULT_BRANCH should
+  ## be supplied by the workflow (github.event.repository.default_branch) so
+  ## that cache keys are correct even when GITHUB_BASE_REF is empty.
   CI_MODE="github"
   CI_REGISTRY="${GH_REGISTRY}"
   CI_PROJECT_PATH="${GH_REGISTRY_USER}"
   CI_COMMIT_REF_SLUG="$(slugify "${GITHUB_REF_NAME:-master}")"
-  CI_DEFAULT_BRANCH_SLUG="$(slugify "${GITHUB_BASE_REF:-master}")"
+  CI_DEFAULT_BRANCH_SLUG="$(slugify "${GITHUB_BASE_REF:-${DEFAULT_BRANCH:-master}}")"
   CI_COMMIT_SHA="${GITHUB_SHA:-}"
   INTERNAL_TAG="${INTERNAL_TAG:-pipeline-${GITHUB_RUN_ID}}"
 else
