@@ -192,13 +192,4 @@ build_cmd+=(containers/debian)
 set -o xtrace -o pipefail
 "${build_cmd[@]}" 2>&1 | tee build.log
 
-## Create image tags from digest (GitLab CI only; GitHub Actions manifest jobs handle tagging)
-if [ "${CI_MODE}" = "gitlab" ]; then
-  DIGEST=$(jq -r '."containerimage.digest"' "${METADATA_FILE}")
-  docker buildx imagetools create --tag "${IMAGE_REPO}:${INTERNAL_TAG}" "${IMAGE_REPO}@${DIGEST}"
-  if [ -n "${EXPORT_TAG}" ]; then
-    [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-    [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-    [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-  fi
-fi
+
