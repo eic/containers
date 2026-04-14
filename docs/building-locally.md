@@ -177,7 +177,7 @@ bash build-eic.sh [options]
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `BASE_IMAGE` | Base Debian image | `amd64/debian:stable-slim` |
+| `BASE_IMAGE` | Base Debian image | `debian:trixie-slim` (derived from `--image`) |
 | `SPACK_ORGREPO` | Spack GitHub org/repo | `spack/spack` |
 | `SPACK_VERSION` | Spack version/branch | (from `spack.sh`) |
 | `SPACK_SHA` | Specific commit SHA | (resolved from version) |
