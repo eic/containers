@@ -165,7 +165,7 @@ bash build-eic.sh [options]
   --builder-image IMG Builder base image name (default: debian_stable_base)
   --runtime-image IMG Runtime base image name (default: debian_stable_base)
   --platform PLATFORM linux/amd64 (default), linux/arm64
-  --jobs N            Parallel Spack build jobs (default: 4)
+  --jobs N            Parallel Spack build jobs (default: nproc)
   --base-tag TAG      Tag of the locally built base image to use (default: local); if not found
                       locally, ghcr.io/eic/:latest is used as fallback
   --tag TAG           Output image tag (default: local)
