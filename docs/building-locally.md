@@ -39,10 +39,12 @@ bash build-eic.sh --env xl --jobs 8
 
 This produces a local image tagged `eic_xl:local`.
 
-`build-eic.sh` automatically detects whether the required base image
-(e.g. `debian_stable_base:local`) is available in the local Docker daemon. If found, it is
-used directly with no registry prefix. If not, the script falls back to pulling the base
-image from `ghcr.io/eic/` with the `latest` tag.
+`build-eic.sh` automatically detects whether the required builder and runtime base images
+(for example, `debian_stable_base:local` for both, or `cuda_devel:local` and
+`cuda_runtime:local` for CUDA builds) are available in the local Docker daemon. The script
+only uses local base images when both images exist locally at the requested tag; if they do,
+both are used directly with no registry prefix. If either image is missing, the script falls
+back to pulling both base images from `ghcr.io/eic/` with the `latest` tag.
 
 ### Other environments
 
@@ -53,8 +55,9 @@ bash build-eic.sh --env ci
 # Debug build
 bash build-eic.sh --env dbg
 
-# CUDA environment (requires cuda_devel base image)
+# CUDA environment (requires local cuda_devel and cuda_runtime base images)
 bash build-base.sh --image cuda_devel
+bash build-base.sh --image cuda_runtime
 bash build-eic.sh --env cuda --builder-image cuda_devel --runtime-image cuda_runtime
 ```
 
