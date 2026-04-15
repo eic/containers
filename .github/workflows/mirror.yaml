@@ -56,7 +56,7 @@ jobs:
           GITHUB_SHA=${{ github.event.pull_request.head.sha || github.sha }}
           GITHUB_PR=${{ github.event.pull_request.number }}
           GITHUB_BASE_REF=${{ github.event.pull_request.base.ref || github.ref_name }}
-          GITHUB_BASE_SHA=${{ github.event.pull_request.base.sha }}
+          GITHUB_BASE_SHA=${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
           PIPELINE_NAME_CONTAINER=${{ github.repository }}: ${{ github.event.pull_request.title || github.ref_name }}
     - name: Set pending EICweb status
       if: ${{ github.event_name != 'delete' }}
