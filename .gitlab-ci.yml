@@ -405,7 +405,7 @@ eic:
     - version
     - base-manifest
   script:
-    - apk add git bash jq
+    - apk add git bash coreutils jq
     - bash build-eic.sh
 
 eic-manifest:
