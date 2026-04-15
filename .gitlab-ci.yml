@@ -624,6 +624,8 @@ eic_xl:singularity:nightly:
     GITHUB_REPOSITORY: "$GITHUB_REPOSITORY"
     GITHUB_SHA: "$GITHUB_SHA"
     GITHUB_PR: "$GITHUB_PR"
+    GITHUB_BASE_REF: "$GITHUB_BASE_REF"
+    GITHUB_BASE_SHA: "$GITHUB_BASE_SHA"
   allow_failure: false
 
 .benchmarks:default:
