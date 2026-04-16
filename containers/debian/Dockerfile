@@ -338,7 +338,9 @@ RUN <<EOF
 set -e
 git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
 git -C ${EICSPACK_ROOT} checkout ${EICSPACK_SHA:-${EICSPACK_VERSION}}
-sed -i -e 's/def setup_run_environment(self, env):/if False:/' spack_repo/eic/packages/epic/package.py
+package_file="${EICSPACK_ROOT}/spack_repo/eic/packages/epic/package.py"
+sed -i -e 's/def setup_run_environment(self, env):/if False:/' "${package_file}"
+grep -q 'if False:' "${package_file}"
 spack repo add --scope spack "${EICSPACK_ROOT}/spack_repo/eic"
 EOF
 
