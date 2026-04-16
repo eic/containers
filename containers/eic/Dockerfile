@@ -334,10 +334,6 @@ EOF
 RUN <<EOF
 set -e
 spack env activate --sh --dir ${SPACK_ENV} > /etc/profile.d/z10_spack_environment.sh
-# In container, the /etc/profile.d/z21_epic_main.sh is in charge of picking the
-# detector, unless specified externally by the user. As we install multiple detectors,
-# spack can not always pick the right one correctly.
-sed -i -e '/^export DETECTOR/d' /etc/profile.d/z10_spack_environment.sh
 EOF
 
 ## Fixup /opt/detector/epic-git.fcf90937193c983c0af2acf1251e01f2e2c3a259_main
