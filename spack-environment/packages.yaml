@@ -187,6 +187,10 @@ packages:
     require:
     - '@0.3.0'
     - +covfie
+  g4occt:
+    require:
+    - '@git.v0.2.0'
+    - +dd4hep
   gaudi:
     require:
     - '@39.4'

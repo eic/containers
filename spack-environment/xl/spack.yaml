@@ -36,6 +36,7 @@ spack:
   - fastjet
   - fjcontrib
   - fmt
+  - g4occt
   - gaudi
   - gdb
   - geant4 +opengl
