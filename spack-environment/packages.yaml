@@ -183,6 +183,10 @@ packages:
   freetype:
     require:
     - build_system=autotools
+  g4adept:
+    require:
+    - '@0.3.0'
+    - +covfie
   gaudi:
     require:
     - '@39.4'
@@ -256,7 +260,7 @@ packages:
     - '@0.23:'
   jana2:
     require:
-    - '@2.4.3'
+    - '@2026.02.00'
     - -ipo +podio +root +zmq
   juggler:
     require:
@@ -601,7 +605,7 @@ packages:
     - '@3.20.0:'
   vecgeom:
     require:
-    - '@1.2.11'
+    - '@2'
   xerces-c:
     require:
     - cxxstd=20
