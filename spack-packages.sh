@@ -63,7 +63,6 @@ a896fdbe5d01981cbc6f9b5139a5d551ac2fe248
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 --- || true
 [50433a4a02370e9035b85820cd438a64d5433749]=repos/spack_repo/builtin/packages/py_snakemake_interface_report_plugins/package.py
-[2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96]=repos/spack_repo/builtin/packages/py_uproot/package.py
 ---
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
@@ -110,4 +109,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 2163a6ae2cad38980f67e8d617743cabfc773304: vecgeom: add v2.0.0
 ## 0d4e42deee0f561013568d1e92205a084cf203bc: g4hepem: new package
 ## 6346a54e35ee6281b8e8c6a1bc9c102893593c8e: g4adept: new package
-## 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96: py-uproot: add v5.7.1
+## 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96: py-awkward, py-uproot, py-uhi ecosystem (HEP): add new versions
