@@ -524,6 +524,9 @@ packages:
   py-toml:
     require:
     - '@0.10.2:'
+  py-uproot:
+    require:
+    - '@5.7:'
   py-torch:
     require:
     - '@2.5.1'
