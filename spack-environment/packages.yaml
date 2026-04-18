@@ -526,7 +526,7 @@ packages:
     - '@0.10.2:'
   py-uproot:
     require:
-    - '@5.7:'
+    - '@5.7:5'
   py-torch:
     require:
     - '@2.5.1'
