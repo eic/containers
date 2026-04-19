@@ -131,5 +131,6 @@ spack:
   - stow
   - strace
   - valgrind
+  - vdt  # ensure headers in view for ROOT
   - xrootd
   - xeyes
