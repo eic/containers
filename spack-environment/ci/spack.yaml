@@ -74,4 +74,5 @@ spack:
   - root
   - snakemake
   - spdlog
+  - vdt  # ensure headers in view for ROOT
   - xrootd
