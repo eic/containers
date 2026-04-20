@@ -189,7 +189,7 @@ packages:
     - +covfie
   g4occt:
     require:
-    - '@git.v0.2.0'
+    - '@git.v0.2.1'
     - +dd4hep
   gaudi:
     require:
