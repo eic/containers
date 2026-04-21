@@ -909,6 +909,7 @@ spack-cache-cleanup:
   allow_failure: true
   script:
     - docker buildx build
+        --no-cache
         --target spack_cache_cleanup
         --file containers/eic/Dockerfile.spack-cache-cleanup
         .
