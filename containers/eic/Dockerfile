@@ -436,10 +436,10 @@ SHELL ["/opt/local/bin/eic-shell"]
 ## ========================================================================================
 FROM debian:trixie-slim AS spack_cache_cleanup
 
-ARG EVICT_ATIME=7
+ARG EVICT_MTIME=7
 RUN --mount=type=cache,target=/var/cache/spack,sharing=locked <<EOF
 mkdir -p /var/cache/spack/blobs/sha256
-find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +${EVICT_ATIME} -delete
+find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -mtime +${EVICT_MTIME} -delete
 EOF
 
 
