@@ -323,7 +323,15 @@ EOF
 
 ## Set CMAKE_FIND_PACKAGE_RESOLVE_SYMLINKS to resolve symlinks in find_package
 ## directories to real paths, not generic <view>/include
-ENV CMAKE_FIND_PACKAGE_RESOLVE_SYMLINKS=ON
+COPY <<EOF /opt/local/etc/cmake/find_package_resolve_symlinks.cmake
+# Applied to every cmake project via CMAKE_TOOLCHAIN_FILE env var (CMake ≥ 3.21)
+
+# Resolve symlinks when computing package prefixes so packages found through
+# a Spack view (/opt/local → /opt/software/…/<hash>) expose their real,
+# package-specific include paths, not the merged view path.
+set(CMAKE_FIND_PACKAGE_RESOLVE_SYMLINKS ON)
+EOF
+ENV CMAKE_TOOLCHAIN_FILE=/opt/local/etc/cmake/find_package_resolve_symlinks.cmake
 
 ## Place cvmfs catalogs
 RUN <<EOF
