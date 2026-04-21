@@ -475,6 +475,9 @@ packages:
   py-onnxruntime:
     require:
     - '@1.22.2:'
+  py-openpyxl:
+    require:
+    - '@3.1.2'
   py-pandas:
     require:
     - '@2.2.3:'
