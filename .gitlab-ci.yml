@@ -902,6 +902,18 @@ clean_pipeline:docker-new:
   tags:
     - docker-new
 
+spack-cache-cleanup:
+  extends: .build
+  stage: finalize
+  when: always
+  needs: []
+  allow_failure: true
+  script:
+    - docker buildx build
+        --target spack_cache_cleanup
+        --file containers/eic/Dockerfile
+        containers/eic
+
 status:success:
   stage: status-report
   dependencies: []

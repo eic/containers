@@ -102,8 +102,6 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-mkdir -p /var/cache/spack/blobs/sha256/
-find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 spack clean --downloads --stage
 ccache --show-stats
@@ -428,6 +426,20 @@ CMD ["bash", "--rcfile", "/etc/profile", "-l"]
 USER 0
 WORKDIR /
 SHELL ["/opt/local/bin/eic-shell"]
+
+## ========================================================================================
+## spack_cache_cleanup
+## - standalone target to evict stale blobs from the shared spack builder cache
+## - run this AFTER all build jobs complete (never during a build) to avoid the race
+##   condition where concurrent builds delete blobs each other still need
+## - sharing=locked serialises cleanup with any concurrent pipeline on the same daemon
+## ========================================================================================
+FROM debian:trixie-slim AS spack_cache_cleanup
+
+ARG EVICT_ATIME=7
+RUN --mount=type=cache,target=/var/cache/spack,sharing=locked \
+    find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +${EVICT_ATIME} -delete
+
 
 ## rucio config (unprivileged read-only account)
 COPY <<EOF /opt/rucio/etc/rucio.cfg
