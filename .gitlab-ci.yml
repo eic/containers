@@ -906,7 +906,6 @@ spack-cache-cleanup:
   extends: .build
   stage: finalize
   when: always
-  needs: []
   allow_failure: true
   script:
     - docker buildx build
