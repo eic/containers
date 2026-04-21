@@ -910,8 +910,8 @@ spack-cache-cleanup:
   script:
     - docker buildx build
         --target spack_cache_cleanup
-        --file containers/eic/Dockerfile
-        containers/eic
+        --file containers/eic/Dockerfile.spack-cache-cleanup
+        .
 
 status:success:
   stage: status-report
