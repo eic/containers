@@ -321,6 +321,10 @@ mv /opt/._detector/${DETECTOR_PREFIX_PATH} /opt/detector
 ln -s /opt/detector /opt/._detector/${DETECTOR_PREFIX_PATH}
 EOF
 
+## Set CMAKE_FIND_PACKAGE_RESOLVE_SYMLINKS to resolve symlinks in find_package
+## directories to real paths, not generic <view>/include
+ENV CMAKE_FIND_PACKAGE_RESOLVE_SYMLINKS=ON
+
 ## Place cvmfs catalogs
 RUN <<EOF
 set -e
