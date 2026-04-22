@@ -102,6 +102,7 @@ spack:
   - py-numpy
   - py-onnx
   - py-onnxruntime
+  - py-openpyxl
   - py-pandas
   - py-particle
   - py-pip
