@@ -694,6 +694,7 @@ jobs:
     - name: Produce simulation files
       shell: bash --login -eo pipefail {0}
       run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
         npsim \
           --compactFile ${DETECTOR_PATH}/${{ matrix.detector_config }}.xml \
           -G --random.seed 1 \
@@ -731,6 +732,7 @@ jobs:
     - name: Produce simulation files
       shell: bash --login -eo pipefail {0}
       run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
         url=root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/DIS/NC/${{ matrix.beam }}/minQ2=${{ matrix.minq2 }}/pythia8NCDIS_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_beamEffects_xAngle=-0.025_hiDiv_1.hepmc3.tree.root
         npsim \
           --compactFile ${DETECTOR_PATH}/${{ matrix.detector_config }}.xml \
@@ -764,6 +766,7 @@ jobs:
     - name: Run EICrecon
       shell: bash --login -eo pipefail {0}
       run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
         export DETECTOR_CONFIG=${{ matrix.detector_config }}
         eicrecon \
           -Ppodio:output_file=rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root \
@@ -799,6 +802,7 @@ jobs:
     - name: Run EICrecon
       shell: bash --login -eo pipefail {0}
       run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
         export DETECTOR_CONFIG=${{ matrix.detector_config }}
         eicrecon \
           -Ppodio:output_file=rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root \
