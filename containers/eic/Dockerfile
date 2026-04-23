@@ -102,8 +102,6 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-mkdir -p /var/cache/spack/blobs/sha256/
-find /var/cache/spack/blobs/sha256/ -ignore_readdir_race -atime +7 -delete
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 spack clean --downloads --stage
 ccache --show-stats
