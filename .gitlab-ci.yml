@@ -256,19 +256,34 @@ status:pending:
   artifacts:
     paths:
       - build.log
+      - build-*.log
       - build-metadata-*.json
     when: always
 
 ## rules for nightly jobs
 .nightly:
   rules:
-    # Don't build nightly in the following cases
+    # For nightly-only jobs (BUILD_TYPE="nightly" exactly), skip entirely on stable branches
     - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-(alpha|beta|stable)/'          ## main stable branch: vX.Y-stable
       when: never
     - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-(alpha|beta|stable)/'   ## special stable branch: vX.Y-acadia-stable (etc)
       when: never
     - if: '$BUILD_TYPE == "nightly" && $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'                         ## commit tags start with vX.Y.Z with optional suffix
       when: never
+    # For combined jobs (BUILD_TYPE != "nightly"), suppress nightly builds on stable branches
+    # by overriding BUILD_TYPE to "default" so the job still runs for the default image
+    - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-(alpha|beta|stable)/'
+      when: always
+      variables:
+        BUILD_TYPE: "default"
+    - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-(alpha|beta|stable)/'
+      when: always
+      variables:
+        BUILD_TYPE: "default"
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'
+      when: always
+      variables:
+        BUILD_TYPE: "default"
     # Skip containers other than eic_ci for epic or EICrecon trigger
     - if: '$ENV != "ci" && $CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
       when: never
@@ -342,36 +357,39 @@ base-manifest:
 eic:
   parallel:
     matrix:
+      ## Build both default and nightly sequentially in one job to reuse the shared
+      ## base Docker stages (default concretization+installation) from BuildKit's layer cache.
       - BUILD_IMAGE: eic_
         ENV:
         - ci
         - cvmfs
-        - dbg
-        - jl
-        - prod
         - xl
-        BUILD_TYPE:
-        - default
+        BUILD_TYPE: "default,nightly"
         BUILDER_IMAGE: debian_stable_base
         RUNTIME_IMAGE: debian_stable_base
         PLATFORM: linux/amd64
+      ## Default-only environments (no nightly variant needed)
       - BUILD_IMAGE: eic_
         ENV:
-        - ci
+        - dbg
+        - jl
+        - prod
+        BUILD_TYPE: "default"
+        BUILDER_IMAGE: debian_stable_base
+        RUNTIME_IMAGE: debian_stable_base
+        PLATFORM: linux/amd64
+      ## Nightly-only (no default variant; ci_without_acts is nightly-specific)
+      - BUILD_IMAGE: eic_
+        ENV:
         - ci_without_acts
-        - cvmfs
-        - xl
-        BUILD_TYPE:
-        - nightly
+        BUILD_TYPE: "nightly"
         BUILDER_IMAGE: debian_stable_base
         RUNTIME_IMAGE: debian_stable_base
         PLATFORM: linux/amd64
 #      - BUILD_IMAGE: oneapi_
 #        ENV:
 #        - prod
-#        BUILD_TYPE:
-#        - default
-#        - nightly
+#        BUILD_TYPE: "default,nightly"
 #        BUILDER_IMAGE: oneapi_base
 #        RUNTIME_IMAGE: oneapi_base
 #        PLATFORM: linux/amd64
@@ -379,18 +397,14 @@ eic:
         ENV:
         - cuda
         - tf
-        BUILD_TYPE:
-        - default
-        - nightly
+        BUILD_TYPE: "default,nightly"
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_runtime
         PLATFORM: linux/amd64
       - BUILD_IMAGE: eic_dev_
         ENV:
         - cuda
-        BUILD_TYPE:
-        - default
-        - nightly
+        BUILD_TYPE: "default,nightly"
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_devel
         PLATFORM: linux/amd64
@@ -400,7 +414,8 @@ eic:
   extends: .build
   stage: eic
   variables:
-    METADATA_FILE: "build-metadata-${BUILD_IMAGE}${ENV}-${BUILD_TYPE}.json"
+    ## build-eic.sh appends -<build_type>.json per loop iteration; drop ${BUILD_TYPE} from here
+    METADATA_FILE: "build-metadata-${BUILD_IMAGE}${ENV}.json"
   needs:
     - version
     - base-manifest
