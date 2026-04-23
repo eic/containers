@@ -24,7 +24,8 @@ Usage (CI, called from .gitlab-ci.yml or build-push.yml with matrix variables in
 Options:
   --env ENV           Environment: ci, xl, cuda, dbg, jl, prod, cvmfs, tf, ...
                       (default: \$ENV or xl)
-  --build-type TYPE   Build type: default or nightly (default: \$BUILD_TYPE or default)
+  --build-type TYPE   Comma-separated list of build types: default, nightly, or both
+                      (default: \$BUILD_TYPE or default,nightly)
   --builder-image IMG Builder base image name (default: \$BUILDER_IMAGE or debian_stable_base)
   --runtime-image IMG Runtime base image name (default: \$RUNTIME_IMAGE or debian_stable_base)
   --target STAGE      Docker build target stage (default: \$BUILD_TARGET or final)
@@ -37,19 +38,24 @@ Options:
   --tag TAG           Local tag for the output image (default: local; ignored in CI)
   -h, --help          Show this help and exit
 
+When multiple build types are given (e.g. "default,nightly"), both are built sequentially
+in the same Docker session so that the shared base stages (default environment
+concretization and installation) are only built once and reused from the local BuildKit
+layer cache.
+
 GitHub Actions mode (GITHUB_ACTIONS=true):
   Set GH_REGISTRY, GH_REGISTRY_USER, JOBS. The script derives cache-key slugs
   from GITHUB_REF_NAME (current branch), GITHUB_BASE_REF (PR target branch, empty
   on push events), and DEFAULT_BRANCH (repo default branch, used as fallback when
-  GITHUB_BASE_REF is empty). Writes the image digest to METADATA_FILE (default:
-  /tmp/build-metadata.json).
+  GITHUB_BASE_REF is empty). Writes each image digest to
+  \${METADATA_FILE%.json}-<build_type>.json (default base: /tmp/build-metadata.json).
 EOF
 }
 
 ## Defaults (may be overridden by env vars set from CI matrix or command-line flags)
 BUILD_IMAGE="${BUILD_IMAGE:-eic_}"
 ENV="${ENV:-xl}"
-BUILD_TYPE="${BUILD_TYPE:-default}"
+BUILD_TYPE="${BUILD_TYPE:-default,nightly}"
 BUILDER_IMAGE="${BUILDER_IMAGE:-debian_stable_base}"
 RUNTIME_IMAGE="${RUNTIME_IMAGE:-debian_stable_base}"
 BUILD_TARGET="${BUILD_TARGET:-final}"
@@ -144,21 +150,7 @@ CAMPAIGNS_HEPMC3_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/simulation_cam
 CAMPAIGNS_CONDOR_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/job_submission_condor main)
 CAMPAIGNS_SLURM_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/job_submission_slurm main)
 
-## Resolve optional version overrides (nightly always resolves; default only if version set)
-if [ "${BUILD_TYPE}" = "nightly" ]; then
-  EDM4EIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EDM4eic "${EDM4EIC_VERSION:-main}")
-  EICRECON_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EICrecon "${EICRECON_VERSION:-main}")
-  EPIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/epic "${EPIC_VERSION:-main}")
-  JUGGLER_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/juggler "${JUGGLER_VERSION:-main}")
-else
-  ## default build: only resolve if version is explicitly provided
-  [ -n "${EDM4EIC_VERSION}" ]  && EDM4EIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EDM4eic  "${EDM4EIC_VERSION}")
-  [ -n "${EICRECON_VERSION}" ] && EICRECON_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EICrecon "${EICRECON_VERSION}")
-  [ -n "${EPIC_VERSION}" ]     && EPIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref"     eic/epic     "${EPIC_VERSION}")
-  [ -n "${JUGGLER_VERSION}" ]  && JUGGLER_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref"  eic/juggler  "${JUGGLER_VERSION}")
-fi
-
-## Compute per-ENV duplicate allowlist
+## Compute per-ENV duplicate allowlist (independent of build type)
 case "${ENV}" in
   xl|tf)
     SPACK_DUPLICATE_ALLOWLIST="epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests" ;;
@@ -170,117 +162,150 @@ esac
 ## Examples: linux/amd64 -> amd64, linux/amd64/v3 -> amd64_v3, linux/arm/v7 -> arm_v7
 ARCH=$(echo "${PLATFORM}" | sed 's|linux/||; s|/|_|g')
 
-## Build the docker buildx command as an array for safe quoting
-build_cmd=(docker buildx build)
-# shellcheck disable=SC2206  # word splitting is intentional: BUILD_OPTIONS is a space-separated list
-build_cmd+=(${BUILD_OPTIONS})
-
 ## Derive shared registry prefix (used for image push, caching, and DOCKER_REGISTRY build-arg)
 CI_REGISTRY_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
 IMAGE_REPO="${CI_REGISTRY_PREFIX}/${BUILD_IMAGE}${ENV}"
 
-## Output mode: push-by-digest in all CI modes; load locally
-if [ "${CI_MODE}" != "local" ]; then
-  ## Push by digest; CI wrapper creates final tags via imagetools create
-  build_cmd+=(--output "type=image,name=${IMAGE_REPO},push-by-digest=true,name-canonical=true,push=true")
-  build_cmd+=(--metadata-file "${METADATA_FILE}")
-else
-  build_cmd+=(--load)
-fi
-
-## Cache sources: CI registry (if in CI) plus public ghcr.io/eic (GitLab and local modes)
-CACHE_KEY="${BUILD_IMAGE}${ENV}-${BUILD_TYPE}"
-BUILDCACHE_REPOS=()
-[ "${CI_MODE}" != "local" ] && BUILDCACHE_REPOS+=("${CI_REGISTRY_PREFIX}")
-[ "${CI_MODE}" != "github" ] && BUILDCACHE_REPOS+=("ghcr.io/eic")
-for REPO in "${BUILDCACHE_REPOS[@]}"; do
-  build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
-  build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
+## Validate and split the build-type list
+IFS=',' read -ra BUILD_TYPES <<< "${BUILD_TYPE}"
+for _bt in "${BUILD_TYPES[@]}"; do
+  _bt="${_bt#"${_bt%%[![:space:]]*}"}"; _bt="${_bt%"${_bt##*[![:space:]]}"}"  # trim whitespace
+  case "${_bt}" in
+    default|nightly) ;;
+    *) echo "Unknown build type '${_bt}'; must be 'default' or 'nightly'." >&2; exit 1 ;;
+  esac
 done
 
-## Cache destination (CI only)
-if [ "${CI_MODE}" != "local" ]; then
-  build_cmd+=(--cache-to "type=registry,ref=${CI_REGISTRY_PREFIX}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH},mode=max")
-fi
-
-## Image tag (local only; CI creates tags via imagetools create after build)
-if [ "${CI_MODE}" = "local" ]; then
-  build_cmd+=(--tag "${BUILD_IMAGE}${ENV}:${LOCAL_TAG}")
-fi
-
-## Dockerfile, target stage, and platform
-build_cmd+=(--file containers/eic/Dockerfile)
-[ -n "${BUILD_TARGET}" ] && build_cmd+=(--target "${BUILD_TARGET}")
-build_cmd+=(--platform "${PLATFORM}")
-
-## Build arguments
-build_cmd+=(--build-arg "BENCHMARK_COM_SHA=${BENCHMARK_COM_SHA}")
-build_cmd+=(--build-arg "BENCHMARK_DET_SHA=${BENCHMARK_DET_SHA}")
-build_cmd+=(--build-arg "BENCHMARK_REC_SHA=${BENCHMARK_REC_SHA}")
-build_cmd+=(--build-arg "BENCHMARK_PHY_SHA=${BENCHMARK_PHY_SHA}")
-build_cmd+=(--build-arg "CAMPAIGNS_HEPMC3_SHA=${CAMPAIGNS_HEPMC3_SHA}")
-build_cmd+=(--build-arg "CAMPAIGNS_CONDOR_SHA=${CAMPAIGNS_CONDOR_SHA}")
-build_cmd+=(--build-arg "CAMPAIGNS_SLURM_SHA=${CAMPAIGNS_SLURM_SHA}")
-
-if [ "${CI_MODE}" != "local" ]; then
-  build_cmd+=(--build-arg "DOCKER_REGISTRY=${CI_REGISTRY_PREFIX}/")
-  build_cmd+=(--build-arg "INTERNAL_TAG=${INTERNAL_TAG}")
-  build_cmd+=(--build-arg "CI_COMMIT_SHA=${CI_COMMIT_SHA}")
-else
-  ## Auto-detect: use locally built base images if available, otherwise pull from ghcr.io/eic/.
-  ## Both BUILDER_IMAGE and RUNTIME_IMAGE must exist locally to avoid a mixed local/remote build.
-  if docker image inspect "${BUILDER_IMAGE}:${LOCAL_BASE_TAG}" >/dev/null 2>&1 \
-     && docker image inspect "${RUNTIME_IMAGE}:${LOCAL_BASE_TAG}" >/dev/null 2>&1; then
-    echo "Using local base images: ${BUILDER_IMAGE}:${LOCAL_BASE_TAG}, ${RUNTIME_IMAGE}:${LOCAL_BASE_TAG}"
-    build_cmd+=(--build-arg "DOCKER_REGISTRY=")
-    build_cmd+=(--build-arg "INTERNAL_TAG=${LOCAL_BASE_TAG}")
-  else
-    echo "Local base images not found (${BUILDER_IMAGE}:${LOCAL_BASE_TAG} and/or ${RUNTIME_IMAGE}:${LOCAL_BASE_TAG}); pulling from ghcr.io/eic/:latest"
-    build_cmd+=(--build-arg "DOCKER_REGISTRY=ghcr.io/eic/")
-    build_cmd+=(--build-arg "INTERNAL_TAG=latest")
-  fi
-fi
-## EIC_CONTAINER_VERSION format is intentionally different per CI system
-if [ "${CI_MODE}" = "gitlab" ]; then
-  build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=${EXPORT_TAG}-${BUILD_TYPE}-$(git rev-parse HEAD)")
-elif [ "${CI_MODE}" = "github" ]; then
-  build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=github-${BUILD_TYPE}-${CI_COMMIT_SHA:-$(git rev-parse HEAD 2>/dev/null || echo unknown)}")
-else
-  build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=local-${BUILD_TYPE}-$(git rev-parse HEAD 2>/dev/null || echo unknown)")
-fi
-
-build_cmd+=(--build-arg "BUILDER_IMAGE=${BUILDER_IMAGE}")
-build_cmd+=(--build-arg "RUNTIME_IMAGE=${RUNTIME_IMAGE}")
-build_cmd+=(--build-arg "ENV=${ENV}")
-build_cmd+=(--build-arg "SPACK_DUPLICATE_ALLOWLIST=${SPACK_DUPLICATE_ALLOWLIST}")
-build_cmd+=(--build-arg "jobs=${JOBS}")
-
-## Optional version overrides
-[ -n "${EDM4EIC_SHA}" ]  && build_cmd+=(--build-arg "EDM4EIC_SHA=${EDM4EIC_SHA}")
-[ -n "${EICRECON_SHA}" ] && build_cmd+=(--build-arg "EICRECON_SHA=${EICRECON_SHA}")
-[ -n "${EPIC_SHA}" ]     && build_cmd+=(--build-arg "EPIC_SHA=${EPIC_SHA}")
-[ -n "${JUGGLER_SHA}" ]  && build_cmd+=(--build-arg "JUGGLER_SHA=${JUGGLER_SHA}")
-
-## Additional build contexts
-build_cmd+=(--build-context "spack-environment=spack-environment")
-
-## Secrets
-build_cmd+=(--secret "id=mirrors,src=${MIRRORS_YAML}")
-if [ "${CI_MODE}" != "local" ]; then
-  build_cmd+=(--secret "type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER")
-  build_cmd+=(--secret "type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD")
-  build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER")
-  build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN")
-fi
-
-## Suppress provenance attestation (matches CI behaviour)
-build_cmd+=(--provenance false)
-
-## Build context
-build_cmd+=(containers/eic)
-
-## Execute
+## Enable xtrace and pipefail for the build loop
 set -o xtrace -o pipefail
-"${build_cmd[@]}" 2>&1 | tee build.log
 
+## Build each type sequentially; the shared base Docker stages (default env concretization
+## and installation) are reused from BuildKit's layer cache after the first build.
+for build_type in "${BUILD_TYPES[@]}"; do
+  ## Trim whitespace from the build type
+  build_type="${build_type#"${build_type%%[![:space:]]*}"}"; build_type="${build_type%"${build_type##*[![:space:]]}"}"
 
+  ## Resolve optional version overrides (nightly always resolves; default only if version set)
+  unset EDM4EIC_SHA EICRECON_SHA EPIC_SHA JUGGLER_SHA
+  if [ "${build_type}" = "nightly" ]; then
+    EDM4EIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EDM4eic "${EDM4EIC_VERSION:-main}")
+    EICRECON_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EICrecon "${EICRECON_VERSION:-main}")
+    EPIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/epic "${EPIC_VERSION:-main}")
+    JUGGLER_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/juggler "${JUGGLER_VERSION:-main}")
+  else
+    ## default build: only resolve if version is explicitly provided
+    [ -n "${EDM4EIC_VERSION}" ]  && EDM4EIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EDM4eic  "${EDM4EIC_VERSION}")
+    [ -n "${EICRECON_VERSION}" ] && EICRECON_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EICrecon "${EICRECON_VERSION}")
+    [ -n "${EPIC_VERSION}" ]     && EPIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref"     eic/epic     "${EPIC_VERSION}")
+    [ -n "${JUGGLER_VERSION}" ]  && JUGGLER_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref"  eic/juggler  "${JUGGLER_VERSION}")
+  fi
+
+  ## Build the docker buildx command as an array for safe quoting
+  build_cmd=(docker buildx build)
+  # shellcheck disable=SC2206  # word splitting is intentional: BUILD_OPTIONS is a space-separated list
+  build_cmd+=(${BUILD_OPTIONS})
+
+  ## Output mode: push-by-digest in all CI modes; load locally
+  if [ "${CI_MODE}" != "local" ]; then
+    ## Push by digest; CI wrapper creates final tags via imagetools create.
+    ## Always write a per-build-type metadata file so manifest jobs can identify it.
+    build_cmd+=(--output "type=image,name=${IMAGE_REPO},push-by-digest=true,name-canonical=true,push=true")
+    build_cmd+=(--metadata-file "${METADATA_FILE%.json}-${build_type}.json")
+  else
+    build_cmd+=(--load)
+  fi
+
+  ## Cache sources: CI registry (if in CI) plus public ghcr.io/eic (GitLab and local modes)
+  CACHE_KEY="${BUILD_IMAGE}${ENV}-${build_type}"
+  BUILDCACHE_REPOS=()
+  [ "${CI_MODE}" != "local" ] && BUILDCACHE_REPOS+=("${CI_REGISTRY_PREFIX}")
+  [ "${CI_MODE}" != "github" ] && BUILDCACHE_REPOS+=("ghcr.io/eic")
+  for REPO in "${BUILDCACHE_REPOS[@]}"; do
+    build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
+    build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
+  done
+
+  ## Cache destination (CI only)
+  if [ "${CI_MODE}" != "local" ]; then
+    build_cmd+=(--cache-to "type=registry,ref=${CI_REGISTRY_PREFIX}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH},mode=max")
+  fi
+
+  ## Image tag (local only; CI creates tags via imagetools create after build)
+  if [ "${CI_MODE}" = "local" ]; then
+    build_cmd+=(--tag "${BUILD_IMAGE}${ENV}:${LOCAL_TAG}-${build_type}")
+  fi
+
+  ## Dockerfile, target stage, and platform
+  build_cmd+=(--file containers/eic/Dockerfile)
+  [ -n "${BUILD_TARGET}" ] && build_cmd+=(--target "${BUILD_TARGET}")
+  build_cmd+=(--platform "${PLATFORM}")
+
+  ## Build arguments
+  build_cmd+=(--build-arg "BENCHMARK_COM_SHA=${BENCHMARK_COM_SHA}")
+  build_cmd+=(--build-arg "BENCHMARK_DET_SHA=${BENCHMARK_DET_SHA}")
+  build_cmd+=(--build-arg "BENCHMARK_REC_SHA=${BENCHMARK_REC_SHA}")
+  build_cmd+=(--build-arg "BENCHMARK_PHY_SHA=${BENCHMARK_PHY_SHA}")
+  build_cmd+=(--build-arg "CAMPAIGNS_HEPMC3_SHA=${CAMPAIGNS_HEPMC3_SHA}")
+  build_cmd+=(--build-arg "CAMPAIGNS_CONDOR_SHA=${CAMPAIGNS_CONDOR_SHA}")
+  build_cmd+=(--build-arg "CAMPAIGNS_SLURM_SHA=${CAMPAIGNS_SLURM_SHA}")
+
+  if [ "${CI_MODE}" != "local" ]; then
+    build_cmd+=(--build-arg "DOCKER_REGISTRY=${CI_REGISTRY_PREFIX}/")
+    build_cmd+=(--build-arg "INTERNAL_TAG=${INTERNAL_TAG}")
+    build_cmd+=(--build-arg "CI_COMMIT_SHA=${CI_COMMIT_SHA}")
+  else
+    ## Auto-detect: use locally built base images if available, otherwise pull from ghcr.io/eic/.
+    ## Both BUILDER_IMAGE and RUNTIME_IMAGE must exist locally to avoid a mixed local/remote build.
+    if docker image inspect "${BUILDER_IMAGE}:${LOCAL_BASE_TAG}" >/dev/null 2>&1 \
+       && docker image inspect "${RUNTIME_IMAGE}:${LOCAL_BASE_TAG}" >/dev/null 2>&1; then
+      echo "Using local base images: ${BUILDER_IMAGE}:${LOCAL_BASE_TAG}, ${RUNTIME_IMAGE}:${LOCAL_BASE_TAG}"
+      build_cmd+=(--build-arg "DOCKER_REGISTRY=")
+      build_cmd+=(--build-arg "INTERNAL_TAG=${LOCAL_BASE_TAG}")
+    else
+      echo "Local base images not found (${BUILDER_IMAGE}:${LOCAL_BASE_TAG} and/or ${RUNTIME_IMAGE}:${LOCAL_BASE_TAG}); pulling from ghcr.io/eic/:latest"
+      build_cmd+=(--build-arg "DOCKER_REGISTRY=ghcr.io/eic/")
+      build_cmd+=(--build-arg "INTERNAL_TAG=latest")
+    fi
+  fi
+  ## EIC_CONTAINER_VERSION format is intentionally different per CI system
+  if [ "${CI_MODE}" = "gitlab" ]; then
+    build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=${EXPORT_TAG}-${build_type}-$(git rev-parse HEAD)")
+  elif [ "${CI_MODE}" = "github" ]; then
+    build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=github-${build_type}-${CI_COMMIT_SHA:-$(git rev-parse HEAD 2>/dev/null || echo unknown)}")
+  else
+    build_cmd+=(--build-arg "EIC_CONTAINER_VERSION=local-${build_type}-$(git rev-parse HEAD 2>/dev/null || echo unknown)")
+  fi
+
+  build_cmd+=(--build-arg "BUILDER_IMAGE=${BUILDER_IMAGE}")
+  build_cmd+=(--build-arg "RUNTIME_IMAGE=${RUNTIME_IMAGE}")
+  build_cmd+=(--build-arg "ENV=${ENV}")
+  build_cmd+=(--build-arg "SPACK_DUPLICATE_ALLOWLIST=${SPACK_DUPLICATE_ALLOWLIST}")
+  build_cmd+=(--build-arg "jobs=${JOBS}")
+
+  ## Optional version overrides
+  [ -n "${EDM4EIC_SHA}" ]  && build_cmd+=(--build-arg "EDM4EIC_SHA=${EDM4EIC_SHA}")
+  [ -n "${EICRECON_SHA}" ] && build_cmd+=(--build-arg "EICRECON_SHA=${EICRECON_SHA}")
+  [ -n "${EPIC_SHA}" ]     && build_cmd+=(--build-arg "EPIC_SHA=${EPIC_SHA}")
+  [ -n "${JUGGLER_SHA}" ]  && build_cmd+=(--build-arg "JUGGLER_SHA=${JUGGLER_SHA}")
+
+  ## Additional build contexts
+  build_cmd+=(--build-context "spack-environment=spack-environment")
+
+  ## Secrets
+  build_cmd+=(--secret "id=mirrors,src=${MIRRORS_YAML}")
+  if [ "${CI_MODE}" != "local" ]; then
+    build_cmd+=(--secret "type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER")
+    build_cmd+=(--secret "type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD")
+    build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER")
+    build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN")
+  fi
+
+  ## Suppress provenance attestation (matches CI behaviour)
+  build_cmd+=(--provenance false)
+
+  ## Build context
+  build_cmd+=(containers/eic)
+
+  ## Execute
+  "${build_cmd[@]}" 2>&1 | tee "build-${build_type}.log"
+done
