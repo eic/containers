@@ -755,7 +755,7 @@ df:
     - docker context ls
     - docker volume ls
     - docker volume ls --filter=name=buildx_buildkit_builder
-    - docker volume ls --quiet | while read vol; do size=$(docker run --rm -v "${vol}:/data" alpine du -sh /data 2>/dev/null | cut -f1); printf "%s\t%s\n" "${size:-?}" "$vol"; done | sort -h | tail
+    - docker volume ls --quiet | while read vol; do size=$(docker run --rm -v "${vol}:/data" alpine du -sh /data 2>/dev/null | cut -f1); printf "%s\t%s\n" "${size:-?}" "$vol"; done | sort -h
     - docker buildx ls
     - docker buildx inspect
     - docker buildx du
