@@ -7,8 +7,6 @@ on:
     branches:
     - master
   pull_request:
-    branches:
-    - master
   workflow_dispatch:
     inputs:
       EDM4EIC_VERSION:
@@ -675,3 +673,255 @@ jobs:
           docker buildx imagetools create \
             $TAG_ARGS \
             ${{ steps.digests.outputs.all }}
+
+  npsim-gun:
+    name: npsim (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }})
+    runs-on: ubuntu-latest
+    needs: eic-manifest
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        particle: [pi, e]
+        detector_config: [epic_craterlake]
+    steps:
+    - name: Produce simulation files
+      shell: bash --login -eo pipefail {0}
+      run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
+        npsim \
+          --compactFile ${DETECTOR_PATH}/${{ matrix.detector_config }}.xml \
+          -G --random.seed 1 \
+          --gun.particle "${{ matrix.particle }}-" \
+          --gun.momentumMin "1*GeV" --gun.momentumMax "20*GeV" \
+          --gun.distribution "uniform" \
+          -N 100 \
+          --outputFile sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root \
+          -v WARNING
+    - uses: actions/upload-artifact@v7
+      with:
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        path: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        if-no-files-found: error
+    - name: Download previous artifact
+      id: download_previous_artifact
+      uses: dawidd6/action-download-artifact@v20
+      with:
+        branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
+        path: ref/
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: ""
+        if_no_artifact_found: warn
+    - name: Compare to previous artifacts
+      shell: bash --login -eo pipefail {0}
+      run: |
+        mkdir capybara-reports
+        shopt -s nullglob
+        capybara bara ref/sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root* sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        mv capybara-reports sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+        touch .sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+    - uses: actions/upload-artifact@v7
+      with:
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.capy
+        path: |
+          .sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+          sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}/
+        if-no-files-found: error
+
+  npsim-dis:
+    name: npsim (DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }})
+    runs-on: ubuntu-latest
+    needs: eic-manifest
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        beam: [5x41, 10x100, 18x275]
+        minq2: [1, 1000]
+        detector_config: [epic_craterlake]
+        exclude:
+        - beam: 5x41
+          minq2: 1000
+    steps:
+    - name: Produce simulation files
+      shell: bash --login -eo pipefail {0}
+      run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
+        url=root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/DIS/NC/${{ matrix.beam }}/minQ2=${{ matrix.minq2 }}/pythia8NCDIS_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_beamEffects_xAngle=-0.025_hiDiv_1.hepmc3.tree.root
+        npsim \
+          --compactFile ${DETECTOR_PATH}/${{ matrix.detector_config }}.xml \
+          -N 100 --inputFiles ${url} --random.seed 1 \
+          --outputFile sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root \
+          -v WARNING
+    - uses: actions/upload-artifact@v7
+      with:
+        name: sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+        path: sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+        if-no-files-found: error
+    - name: Download previous artifact
+      id: download_previous_artifact
+      uses: dawidd6/action-download-artifact@v20
+      with:
+        branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
+        path: ref/
+        name: sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: ""
+        if_no_artifact_found: warn
+    - name: Compare to previous artifacts
+      shell: bash --login -eo pipefail {0}
+      run: |
+        mkdir capybara-reports
+        shopt -s nullglob
+        capybara bara ref/sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root* sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+        mv capybara-reports sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+        touch .sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+    - uses: actions/upload-artifact@v7
+      with:
+        name: sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.capy
+        path: |
+          .sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+          sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}/
+        if-no-files-found: error
+
+  eicrecon-gun:
+    name: eicrecon (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }})
+    runs-on: ubuntu-latest
+    needs: [eic-manifest, npsim-gun]
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        particle: [pi, e]
+        detector_config: [epic_craterlake]
+    steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+    - name: Run EICrecon
+      shell: bash --login -eo pipefail {0}
+      run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
+        export DETECTOR_CONFIG=${{ matrix.detector_config }}
+        eicrecon \
+          -Ppodio:output_file=rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root \
+          sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+    - uses: actions/upload-artifact@v7
+      with:
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        path: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        if-no-files-found: error
+    - name: Download previous artifact
+      id: download_previous_artifact
+      uses: dawidd6/action-download-artifact@v20
+      with:
+        branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
+        path: ref/
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: ""
+        if_no_artifact_found: warn
+    - name: Compare to previous artifacts
+      shell: bash --login -eo pipefail {0}
+      run: |
+        mkdir capybara-reports
+        mkdir new
+        ln -sf ../rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root new/
+        shopt -s nullglob
+        capybara bara ref/rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root* new/rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        mv capybara-reports rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+        touch .rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+    - uses: actions/upload-artifact@v7
+      with:
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.capy
+        path: |
+          .rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+          rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}/
+        if-no-files-found: error
+
+  eicrecon-dis:
+    name: eicrecon (DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }})
+    runs-on: ubuntu-latest
+    needs: [eic-manifest, npsim-dis]
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        beam: [5x41, 10x100, 18x275]
+        minq2: [1, 1000]
+        detector_config: [epic_craterlake]
+        exclude:
+        - beam: 5x41
+          minq2: 1000
+    steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+    - name: Run EICrecon
+      shell: bash --login -eo pipefail {0}
+      run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
+        export DETECTOR_CONFIG=${{ matrix.detector_config }}
+        eicrecon \
+          -Ppodio:output_file=rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root \
+          sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+    - uses: actions/upload-artifact@v7
+      with:
+        name: rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root
+        path: rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root
+        if-no-files-found: error
+    - name: Download previous artifact
+      id: download_previous_artifact
+      uses: dawidd6/action-download-artifact@v20
+      with:
+        branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
+        path: ref/
+        name: rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: ""
+        if_no_artifact_found: warn
+    - name: Compare to previous artifacts
+      shell: bash --login -eo pipefail {0}
+      run: |
+        mkdir capybara-reports
+        mkdir new
+        ln -sf ../rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root new/
+        shopt -s nullglob
+        capybara bara ref/rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root* new/rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root
+        mv capybara-reports rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+        touch .rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+    - uses: actions/upload-artifact@v7
+      with:
+        name: rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.capy
+        path: |
+          .rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+          rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}/
+        if-no-files-found: error
+
+  merge-capybara:
+    name: Merge capybara reports
+    runs-on: ubuntu-latest
+    needs: [npsim-gun, npsim-dis, eicrecon-gun, eicrecon-dis]
+    steps:
+    - uses: actions/upload-artifact/merge@v7
+      with:
+        name: capybara-report
+        pattern: "*.capy"
+        delete-merged: true
