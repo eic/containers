@@ -20,6 +20,8 @@ packages:
     #- +ipo
     - build_system=cmake
     - build_type=Release
+    - when: '+cuda'
+      spec: cuda_arch=75
     require:
     - '%gcc'
     # FIXME any ipo requirement breaks llvm external reuse
@@ -189,7 +191,7 @@ packages:
     - +covfie
   g4occt:
     require:
-    - '@git.v0.2.0'
+    - '@git.v0.2.1'
     - +dd4hep
   gaudi:
     require:
@@ -475,6 +477,9 @@ packages:
   py-onnxruntime:
     require:
     - '@1.22.2:'
+  py-openpyxl:
+    require:
+    - '@3.1.2'
   py-pandas:
     require:
     - '@2.2.3:'
@@ -528,6 +533,9 @@ packages:
     require:
     - '@2.5.1'
     - -mkldnn
+  py-uproot:
+    require:
+    - '@5.7:5'
   py-vector:
     require:
     - '@1.5.1:'

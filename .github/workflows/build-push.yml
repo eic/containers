@@ -7,8 +7,6 @@ on:
     branches:
     - master
   pull_request:
-    branches:
-    - master
   workflow_dispatch:
     inputs:
       EDM4EIC_VERSION:
@@ -675,3 +673,429 @@ jobs:
           docker buildx imagetools create \
             $TAG_ARGS \
             ${{ steps.digests.outputs.all }}
+
+  npsim-gun:
+    name: npsim (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }})
+    runs-on: ubuntu-latest
+    needs: eic-manifest
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        particle: [pi, e]
+        detector_config: [epic_craterlake]
+    steps:
+    - name: Produce simulation files
+      shell: bash --login -eo pipefail {0}
+      run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
+        npsim \
+          --compactFile ${DETECTOR_PATH}/${{ matrix.detector_config }}.xml \
+          -G --random.seed 1 \
+          --gun.particle "${{ matrix.particle }}-" \
+          --gun.momentumMin "1*GeV" --gun.momentumMax "20*GeV" \
+          --gun.distribution "uniform" \
+          -N 100 \
+          --outputFile sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root \
+          -v WARNING
+    - uses: actions/upload-artifact@v7
+      with:
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        path: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        if-no-files-found: error
+    - name: Download previous artifact
+      id: download_previous_artifact
+      uses: dawidd6/action-download-artifact@v20
+      with:
+        branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
+        path: ref/
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: ""
+        if_no_artifact_found: warn
+    - name: Compare to previous artifacts
+      shell: bash --login -eo pipefail {0}
+      run: |
+        mkdir capybara-reports
+        shopt -s nullglob
+        capybara bara ref/sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root* sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        mv capybara-reports sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+        touch .sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+    - uses: actions/upload-artifact@v7
+      with:
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.capy
+        path: |
+          .sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+          sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}/
+        if-no-files-found: error
+
+  npsim-dis:
+    name: npsim (DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }})
+    runs-on: ubuntu-latest
+    needs: eic-manifest
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        beam: [5x41, 10x100, 18x275]
+        minq2: [1, 1000]
+        detector_config: [epic_craterlake]
+        exclude:
+        - beam: 5x41
+          minq2: 1000
+    steps:
+    - name: Produce simulation files
+      shell: bash --login -eo pipefail {0}
+      run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
+        url=root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/DIS/NC/${{ matrix.beam }}/minQ2=${{ matrix.minq2 }}/pythia8NCDIS_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_beamEffects_xAngle=-0.025_hiDiv_1.hepmc3.tree.root
+        npsim \
+          --compactFile ${DETECTOR_PATH}/${{ matrix.detector_config }}.xml \
+          -N 100 --inputFiles ${url} --random.seed 1 \
+          --outputFile sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root \
+          -v WARNING
+    - uses: actions/upload-artifact@v7
+      with:
+        name: sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+        path: sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+        if-no-files-found: error
+    - name: Download previous artifact
+      id: download_previous_artifact
+      uses: dawidd6/action-download-artifact@v20
+      with:
+        branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
+        path: ref/
+        name: sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: ""
+        if_no_artifact_found: warn
+    - name: Compare to previous artifacts
+      shell: bash --login -eo pipefail {0}
+      run: |
+        mkdir capybara-reports
+        shopt -s nullglob
+        capybara bara ref/sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root* sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+        mv capybara-reports sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+        touch .sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+    - uses: actions/upload-artifact@v7
+      with:
+        name: sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.capy
+        path: |
+          .sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+          sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}/
+        if-no-files-found: error
+
+  eicrecon-gun:
+    name: eicrecon (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }})
+    runs-on: ubuntu-latest
+    needs: [eic-manifest, npsim-gun]
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        particle: [pi, e]
+        detector_config: [epic_craterlake]
+    steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+    - name: Run EICrecon
+      shell: bash --login -eo pipefail {0}
+      run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
+        export DETECTOR_CONFIG=${{ matrix.detector_config }}
+        eicrecon \
+          -Ppodio:output_file=rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root \
+          sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+    - uses: actions/upload-artifact@v7
+      with:
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        path: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        if-no-files-found: error
+    - name: Download previous artifact
+      id: download_previous_artifact
+      uses: dawidd6/action-download-artifact@v20
+      with:
+        branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
+        path: ref/
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: ""
+        if_no_artifact_found: warn
+    - name: Compare to previous artifacts
+      shell: bash --login -eo pipefail {0}
+      run: |
+        mkdir capybara-reports
+        mkdir new
+        ln -sf ../rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root new/
+        shopt -s nullglob
+        capybara bara ref/rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root* new/rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        mv capybara-reports rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+        touch .rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+    - uses: actions/upload-artifact@v7
+      with:
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.capy
+        path: |
+          .rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+          rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}/
+        if-no-files-found: error
+
+  eicrecon-dis:
+    name: eicrecon (DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }})
+    runs-on: ubuntu-latest
+    needs: [eic-manifest, npsim-dis]
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        beam: [5x41, 10x100, 18x275]
+        minq2: [1, 1000]
+        detector_config: [epic_craterlake]
+        exclude:
+        - beam: 5x41
+          minq2: 1000
+    steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+    - name: Run EICrecon
+      shell: bash --login -eo pipefail {0}
+      run: |
+        source /opt/detector/epic-main/bin/thisepic.sh
+        export DETECTOR_CONFIG=${{ matrix.detector_config }}
+        eicrecon \
+          -Ppodio:output_file=rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root \
+          sim_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4hep.root
+    - uses: actions/upload-artifact@v7
+      with:
+        name: rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root
+        path: rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root
+        if-no-files-found: error
+    - name: Download previous artifact
+      id: download_previous_artifact
+      uses: dawidd6/action-download-artifact@v20
+      with:
+        branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
+        path: ref/
+        name: rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: ""
+        if_no_artifact_found: warn
+    - name: Compare to previous artifacts
+      shell: bash --login -eo pipefail {0}
+      run: |
+        mkdir capybara-reports
+        mkdir new
+        ln -sf ../rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root new/
+        shopt -s nullglob
+        capybara bara ref/rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root* new/rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.edm4eic.root
+        mv capybara-reports rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+        touch .rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+    - uses: actions/upload-artifact@v7
+      with:
+        name: rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}.capy
+        path: |
+          .rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}
+          rec_dis_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_${{ matrix.detector_config }}/
+        if-no-files-found: error
+
+  merge-capybara:
+    name: Merge capybara reports
+    runs-on: ubuntu-latest
+    needs: [npsim-gun, npsim-dis, eicrecon-gun, eicrecon-dis]
+    steps:
+    - uses: actions/upload-artifact/merge@v7
+      with:
+        name: capybara-report
+        pattern: "*.capy"
+        delete-merged: true
+
+  list-open-prs:
+    uses: eic/actions/.github/workflows/list-open-prs.yml@main
+
+  get-docs-from-open-prs:
+    runs-on: ubuntu-latest
+    needs:
+    - list-open-prs
+    - merge-capybara
+    if: always() && !cancelled()
+    strategy:
+      matrix: ${{ fromJSON(needs.list-open-prs.outputs.json) }}
+      fail-fast: false
+      max-parallel: 4
+    steps:
+    - name: Download capybara artifact (other PRs)
+      id: download_capybara
+      uses: dawidd6/action-download-artifact@v20
+      if: github.event.pull_request.number != matrix.pr
+      with:
+        commit: ${{ matrix.head_sha }}
+        path: publishing_docs/pr/${{ matrix.pr }}/capybara/
+        name: capybara-report
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: "completed"
+        if_no_artifact_found: ignore
+    - name: Download capybara artifact (this PR)
+      uses: actions/download-artifact@v8
+      if: github.event.pull_request.number == matrix.pr
+      with:
+        name: capybara-report
+        path: publishing_docs/pr/${{ matrix.pr }}/capybara/
+    - uses: actions/upload-artifact@v7
+      with:
+        name: github-pages-staging-pr-${{ matrix.pr }}
+        path: publishing_docs/
+        if-no-files-found: ignore
+
+  get-docs-from-main:
+    runs-on: ubuntu-latest
+    needs:
+    - merge-capybara
+    if: always() && !cancelled()
+    steps:
+    - name: Download capybara artifact (in PR)
+      id: download_capybara
+      uses: dawidd6/action-download-artifact@v20
+      if: github.ref_name != 'master'
+      with:
+        branch: master
+        path: publishing_docs/capybara/
+        name: capybara-report
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: "completed"
+        if_no_artifact_found: ignore
+    - name: Download capybara artifact (on master)
+      uses: actions/download-artifact@v8
+      if: github.ref_name == 'master'
+      with:
+        name: capybara-report
+        path: publishing_docs/capybara/
+    - name: Populate capybara summary (on master)
+      if: github.ref_name == 'master' || steps.download_capybara.outputs.found_artifact == 'true'
+      run: |
+        echo "### Capybara summary for master" >> publishing_docs/capybara/index.md
+        find publishing_docs/capybara/ -mindepth 1 -maxdepth 1 -type d -printf \
+          "- [%f](https://eic.github.io/containers/capybara/%f/index.html)\n" | sort >> publishing_docs/capybara/index.md
+    - name: Create capybara step summary (on master)
+      if: github.ref_name == 'master'
+      run: |
+        cat publishing_docs/capybara/index.md >> $GITHUB_STEP_SUMMARY
+    - name: Ensure publishing_docs is non-empty
+      run: mkdir -p publishing_docs && touch publishing_docs/.keep
+    - uses: actions/upload-artifact@v7
+      with:
+        name: github-pages-staging-main
+        path: publishing_docs/
+        if-no-files-found: error
+        include-hidden-files: true
+
+  build-artifacts-page:
+    runs-on: ubuntu-latest
+    needs:
+    - get-docs-from-open-prs
+    - get-docs-from-main
+    if: always() && !cancelled() && !failure()
+    steps:
+    - uses: actions/checkout@v6
+    - name: Download artifacts for pages
+      uses: actions/download-artifact@v8
+      with:
+        path: artifacts/
+    - name: Assemble site
+      run: |
+        mkdir -p publishing_docs
+        cp -r docs/. publishing_docs/
+        for dir in artifacts/github-pages-staging-*/; do
+          [ -d "$dir" ] && cp -r "$dir"/. publishing_docs/ || true
+        done
+    - name: Make PR summary page
+      run: |
+        mkdir -p publishing_docs/pr
+        echo "### PRs" >> publishing_docs/pr/index.md
+        find publishing_docs/pr -mindepth 1 -maxdepth 1 -type d \
+          -printf "- [%f](%f/index.md)\n" | sort >> publishing_docs/pr/index.md
+    - name: List content to publish
+      run: find publishing_docs/
+    - uses: actions/upload-pages-artifact@v4
+      with:
+        path: publishing_docs/
+        retention-days: 7
+    - name: Populate capybara summary
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+        echo "### Capybara summary for PR ${{ github.event.pull_request.number }}" \
+          >> capybara_${{ github.event.pull_request.number }}.md
+        [ -d publishing_docs/pr/${{ github.event.pull_request.number }}/capybara/ ] && \
+          find publishing_docs/pr/${{ github.event.pull_request.number }}/capybara/ \
+            -mindepth 1 -maxdepth 1 -type d \
+            -printf "- [%f](https://eic.github.io/containers/pr/${{ github.event.pull_request.number }}/capybara/%f/index.html)\n" \
+            | sort >> capybara_${{ github.event.pull_request.number }}.md || true
+        echo "<sup><sub>Last updated $(TZ=America/New_York date -Iminutes) ${{ github.event.pull_request.head.sha }}</sub></sup>" \
+          >> capybara_${{ github.event.pull_request.number }}.md
+    - name: Create capybara step summary
+      if: ${{ github.event_name == 'pull_request' }}
+      run: cat capybara_${{ github.event.pull_request.number }}.md >> $GITHUB_STEP_SUMMARY
+    - name: Upload capybara summary
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: capybara_${{ github.event.pull_request.number }}.md
+        path: capybara_${{ github.event.pull_request.number }}.md
+
+  deploy-artifacts-page:
+    needs:
+    - build-artifacts-page
+    if: always() && !cancelled() && !failure()
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
+      pull-requests: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      continue-on-error: true
+      uses: actions/deploy-pages@v5
+    - name: Find capybara comment
+      if: ${{ github.event_name == 'pull_request' }}
+      id: find_comment
+      uses: peter-evans/find-comment@v3
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+        body-includes: Capybara summary
+    - name: Fetch capybara summary
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: actions/download-artifact@v8
+      with:
+        name: capybara_${{ github.event.pull_request.number }}.md
+    - name: Create or update capybara comment
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: peter-evans/create-or-update-comment@v4
+      with:
+        comment-id: ${{ steps.find_comment.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body-file: capybara_${{ github.event.pull_request.number }}.md
+        edit-mode: replace

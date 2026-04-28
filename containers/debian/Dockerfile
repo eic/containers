@@ -291,7 +291,7 @@ spack config blame packages
 EOF
 
 ## Bootstrap
-RUN <<EOF
+RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
 spack bootstrap root /opt/spack/bootstrap
 spack bootstrap now
