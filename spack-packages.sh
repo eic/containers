@@ -51,6 +51,10 @@ cfa8d650480c409de2d568cf1355bf7e509f4c1c
 b2f469de6a7c823bf93b9fa408b0ef4b67442f5f
 3368f8849e57da0ad1eaa0086b1855538e5db03e
 5ec7462a628681522f8cf6016a9aa72fbd40dd91
+bf324ce8df932ae55701fc7e7d46ae835583654f
+d9c75526e8e218806c331d19e5d0a3a5ddc37afb
+bacfc0e267518496447810d77ed2e477ee32f7d5
+b6ee05054605774270a66274b32e9e50075591c3
 a896fdbe5d01981cbc6f9b5139a5d551ac2fe248
 2163a6ae2cad38980f67e8d617743cabfc773304
 0d4e42deee0f561013568d1e92205a084cf203bc
@@ -106,6 +110,10 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## b2f469de6a7c823bf93b9fa408b0ef4b67442f5f: py-snakemake-storage-plugin-rucio: add v0.4.1
 ## 3368f8849e57da0ad1eaa0086b1855538e5db03e: just: add 1.46.0
 ## 5ec7462a628681522f8cf6016a9aa72fbd40dd91: arrow: add 20.0.0, 21.0.0, 22.0.0
+## bf324ce8df932ae55701fc7e7d46ae835583654f: clhep: use the blessed Gitlab instance instead of proj-clhep.web.cern.ch
+## d9c75526e8e218806c331d19e5d0a3a5ddc37afb: geant4: disable the timemory variant starting with 11.3.0
+## bacfc0e267518496447810d77ed2e477ee32f7d5: geant4: add v11.4.0 and versions of other packages needed
+## b6ee05054605774270a66274b32e9e50075591c3: geant4: add v11.4.1
 ## a896fdbe5d01981cbc6f9b5139a5d551ac2fe248: vecgeom: new release 2.0.0-rc.9
 ## 2163a6ae2cad38980f67e8d617743cabfc773304: vecgeom: add v2.0.0
 ## 0d4e42deee0f561013568d1e92205a084cf203bc: g4hepem: new package
