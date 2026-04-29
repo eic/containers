@@ -11,9 +11,10 @@
 #
 packages:
   all:
-    # duplication between the prefer and require sections is intentional
-    # since 'require' for 'all' is overwritten by package-specific entries,
-    # and 'prefer' at least retains some (less strict) preference in that case
+    # note: for the Spack version pinned by this repository, package-specific
+    # 'require' entries are treated as overriding the defaults under 'all'.
+    # 'prefer' under 'all' remains a weaker default that can be superseded by
+    # package-specific requirements.
     prefer:
     - '%gcc'
     # FIXME any ipo preference breaks llvm external reuse
@@ -209,7 +210,7 @@ packages:
   geant4:
     require:
     - '@11.3.2.east'
-    - cxxstd=20 -vecgeom +threads -timemory -vtk
+    - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   gettext:
     require:
@@ -379,7 +380,7 @@ packages:
     - +plot
   protobuf:
     require:
-    - '@3.28.2'
+    - '@28.2'
   pyrobird:
     require:
     - '@0.1.23:'
