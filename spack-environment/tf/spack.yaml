@@ -45,6 +45,7 @@ spack:
   - py-scipy
   - py-seaborn
   - py-tensorflow +cuda
+  - py-tf2onnx
   - py-toml
   - py-uproot
   - py-vector
