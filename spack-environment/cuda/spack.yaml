@@ -98,6 +98,6 @@ spack:
   - spdlog
   - stow
   - valgrind
-  - vecgeom +cuda cuda_arch=75
+  - vecgeom +cuda
   - xrootd
   - xeyes
