@@ -212,7 +212,7 @@ packages:
     - cxxstd=20 +threads -vtk
     - one_of: [+opengl +qt +x11, -opengl -qt -x11]
     - one_of: [-vecgeom, +vecgeom]
-  gettext: 
+  gettext:
     require:
     - +libxml2
   gfal2:
