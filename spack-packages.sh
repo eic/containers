@@ -18,6 +18,8 @@ a115a811bdfce4db5298a9ba9b7903ccfb0de101
 f5742718da7bd1d078ddc8423011a82ef2e3c759
 0d4e42deee0f561013568d1e92205a084cf203bc
 6346a54e35ee6281b8e8c6a1bc9c102893593c8e
+f0ff58aff997ab3c4c0598e0ccdfd662a06d1233
+bd32638d817fa66188880e557196acd2a5d6e7b6
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -33,3 +35,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
 ## 0d4e42deee0f561013568d1e92205a084cf203bc: g4hepem: new package
 ## 6346a54e35ee6281b8e8c6a1bc9c102893593c8e: g4adept: new package
+## f0ff58aff997ab3c4c0598e0ccdfd662a06d1233: py-tf2onnx: add v1.17.0 (new package)
+## bd32638d817fa66188880e557196acd2a5d6e7b6: py-tf2onnx: depends on py-tensorflow
