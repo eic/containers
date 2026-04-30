@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "eic-xrootd-mcp-server": {
+      "command": "/opt/local/bin/xrootd-mcp-server",
+      "env": {
+        "XROOTD_SERVER": "root://dtn-eic.jlab.org"
+      }
+    }
+  }
+}
