@@ -20,6 +20,7 @@ f5742718da7bd1d078ddc8423011a82ef2e3c759
 6346a54e35ee6281b8e8c6a1bc9c102893593c8e
 f0ff58aff997ab3c4c0598e0ccdfd662a06d1233
 bd32638d817fa66188880e557196acd2a5d6e7b6
+b17f3abec760256ad7faf1b1d102f2553d6a3622
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -37,3 +38,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 6346a54e35ee6281b8e8c6a1bc9c102893593c8e: g4adept: new package
 ## f0ff58aff997ab3c4c0598e0ccdfd662a06d1233: py-tf2onnx: add v1.17.0 (new package)
 ## bd32638d817fa66188880e557196acd2a5d6e7b6: py-tf2onnx: depends on py-tensorflow
+## b17f3abec760256ad7faf1b1d102f2553d6a3622: (py-)protobuf: add v(5.)28.3
