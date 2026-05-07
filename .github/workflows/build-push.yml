@@ -438,7 +438,7 @@ jobs:
           arch: amd64
           runner: ubuntu-latest
           PLATFORM: linux/amd64
-          target: final
+          target: builder_concretization_default
           SPACK_DUPLICATE_ALLOWLIST: "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests"
       fail-fast: false
     steps:
