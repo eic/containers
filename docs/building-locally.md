@@ -15,32 +15,50 @@ docker buildx version
 
 ## Quick Start
 
+The repository provides two build scripts — `build-base.sh` and `build-eic.sh` — that
+encapsulate the full build logic. These are the same scripts used by the CI pipelines, so
+local builds are guaranteed to be equivalent.
+
 ### Building the Base Image
 
 ```bash
 cd /path/to/containers
 
-# Build the base image
-docker buildx build \
-  -f containers/debian/Dockerfile \
-  -t debian_stable_base:local \
-  containers/debian
+# Build debian_stable_base with 8 parallel jobs
+bash build-base.sh --jobs 8
 ```
+
+This produces a local image tagged `debian_stable_base:local`.
 
 ### Building the EIC Image
 
 ```bash
 # Build the full XL environment
-docker buildx build \
-  -f containers/eic/Dockerfile \
-  --build-context spack-environment=spack-environment \
-  --build-arg DOCKER_REGISTRY=ghcr.io/eic/ \
-  --build-arg BUILDER_IMAGE=debian_stable_base \
-  --build-arg RUNTIME_IMAGE=debian_stable_base \
-  --build-arg INTERNAL_TAG=latest \
-  --build-arg ENV=xl \
-  -t eic_xl:local \
-  containers/eic
+bash build-eic.sh --env xl --jobs 8
+```
+
+This produces a local image tagged `eic_xl:local`.
+
+`build-eic.sh` automatically detects whether the required builder and runtime base images
+(for example, `debian_stable_base:local` for both, or `cuda_devel:local` and
+`cuda_runtime:local` for CUDA builds) are available in the local Docker daemon. The script
+only uses local base images when both images exist locally at the requested tag; if they do,
+both are used directly with no registry prefix. If either image is missing, the script falls
+back to pulling both base images from `ghcr.io/eic/` with the `latest` tag.
+
+### Other environments
+
+```bash
+# Minimal CI environment (faster to build)
+bash build-eic.sh --env ci
+
+# Debug build
+bash build-eic.sh --env dbg
+
+# CUDA environment (requires local cuda_devel and cuda_runtime base images)
+bash build-base.sh --image cuda_devel
+bash build-base.sh --image cuda_runtime
+bash build-eic.sh --env cuda --builder-image cuda_devel --runtime-image cuda_runtime
 ```
 
 ## Taking Advantage of Caching
@@ -87,19 +105,9 @@ No additional configuration is needed - the base image is pre-configured to use 
 
 ### 3. Local Build Caches
 
-For repeated local builds, set up persistent caches:
-
-```bash
-# Create cache directories
-mkdir -p ~/.cache/eic-containers/{apt,spack,ccache}
-
-# Build with local cache mounts
-docker buildx build \
-  -f containers/debian/Dockerfile \
-  --build-arg jobs=8 \
-  -t debian_stable_base:local \
-  containers/debian
-```
+The build scripts automatically pull Docker-layer caches from `ghcr.io/eic/buildcache`.
+Spack binary caches are fetched directly by Spack during the build from `ghcr.io/eic/spack-*`
+and `binaries.spack.io`. No extra configuration is needed.
 
 ## Build Architecture Diagram
 
@@ -127,64 +135,43 @@ flowchart TB
     LC --> L5
 ```
 
-## Full Build Script
+## Build Script Reference
 
-Here's a complete script for building locally with all optimizations:
+Both scripts live in the repository root and accept command-line flags. Many options can
+also be set via environment variables, but the variable names are script-specific and do
+not always exactly match the flag names (for example, `JOBS=8 bash build-base.sh`,
+`LOCAL_TAG=local bash build-eic.sh`, or `LOCAL_BASE_TAG=local bash build-eic.sh`).
 
-```bash
-#!/bin/bash
-set -e
+### `build-base.sh`
 
-REPO_DIR="$(pwd)"
-REGISTRY="ghcr.io/eic"
-ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')
+Builds the base image that all EIC images depend on.
 
-# Load version information
-source spack.sh
-source spack-packages.sh
-source key4hep-spack.sh
-source eic-spack.sh
+```
+bash build-base.sh [options]
 
-# Helper to resolve git refs
-resolve_ref() {
-  .ci/resolve_git_ref "$1" "$2"
-}
+  --image IMAGE       Image to build: debian_stable_base (default), cuda_devel, cuda_runtime
+  --base-image IMAGE  Upstream image (derived automatically from --image if omitted)
+  --platform PLATFORM linux/amd64 (default), linux/arm64
+  --jobs N            Parallel Spack build jobs (default: nproc)
+  --tag TAG           Output image tag (default: local)
+```
 
-# Build base image
-echo "=== Building debian_stable_base ==="
-docker buildx build \
-  -f containers/debian/Dockerfile \
-  --build-arg SPACK_ORGREPO=${SPACK_ORGREPO} \
-  --build-arg SPACK_VERSION=${SPACK_VERSION} \
-  --build-arg SPACKPACKAGES_ORGREPO=${SPACKPACKAGES_ORGREPO} \
-  --build-arg SPACKPACKAGES_VERSION=${SPACKPACKAGES_VERSION} \
-  --build-arg KEY4HEPSPACK_ORGREPO=${KEY4HEPSPACK_ORGREPO} \
-  --build-arg KEY4HEPSPACK_VERSION=${KEY4HEPSPACK_VERSION} \
-  --build-arg EICSPACK_ORGREPO=${EICSPACK_ORGREPO} \
-  --build-arg EICSPACK_VERSION=${EICSPACK_VERSION} \
-  --build-arg jobs=8 \
-  --cache-from type=registry,ref=${REGISTRY}/buildcache:debian_stable_base-master-${ARCH} \
-  -t debian_stable_base:local \
-  --load \
-  containers/debian
+### `build-eic.sh`
 
-# Build EIC image
-echo "=== Building eic_xl ==="
-docker buildx build \
-  -f containers/eic/Dockerfile \
-  --build-context spack-environment=spack-environment \
-  --build-arg DOCKER_REGISTRY="" \
-  --build-arg BUILDER_IMAGE=debian_stable_base:local \
-  --build-arg RUNTIME_IMAGE=debian_stable_base:local \
-  --build-arg INTERNAL_TAG="" \
-  --build-arg ENV=xl \
-  --cache-from type=registry,ref=${REGISTRY}/buildcache:eic_xl-default-master-${ARCH} \
-  -t eic_xl:local \
-  --load \
-  containers/eic
+Builds an EIC software environment image.
 
-echo "=== Build complete ==="
-echo "Run with: docker run -it eic_xl:local"
+```
+bash build-eic.sh [options]
+
+  --env ENV           Environment: ci, xl (default), cuda, dbg, jl, prod, cvmfs, tf, ...
+  --build-type TYPE   default (default) or nightly
+  --builder-image IMG Builder base image name (default: debian_stable_base)
+  --runtime-image IMG Runtime base image name (default: debian_stable_base)
+  --platform PLATFORM linux/amd64 (default), linux/arm64
+  --jobs N            Parallel Spack build jobs (default: nproc)
+  --base-tag TAG      Tag of the locally built base image to use (default: local); if not found
+                      locally, ghcr.io/eic/:latest is used as fallback
+  --tag TAG           Output image tag (default: local)
 ```
 
 ## Build Arguments Reference
@@ -193,25 +180,26 @@ echo "Run with: docker run -it eic_xl:local"
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `BASE_IMAGE` | Base Debian image | `debian:stable-slim` |
+| `BASE_IMAGE` | Base Debian image | `debian:trixie-slim` (derived from `--image`) |
 | `SPACK_ORGREPO` | Spack GitHub org/repo | `spack/spack` |
-| `SPACK_VERSION` | Spack version/branch | `develop` |
+| `SPACK_VERSION` | Spack version/branch | (from `spack.sh`) |
 | `SPACK_SHA` | Specific commit SHA | (resolved from version) |
-| `SPACK_CHERRYPICKS` | Space-separated cherry-pick SHAs | |
-| `SPACKPACKAGES_*` | Similar args for spack-packages | |
-| `KEY4HEPSPACK_*` | Similar args for key4hep-spack | |
-| `EICSPACK_*` | Similar args for eic-spack | |
+| `SPACK_CHERRYPICKS` | Newline-separated cherry-pick SHAs | (from `spack.sh`) |
+| `SPACKPACKAGES_*` | Similar args for spack-packages | (from `spack-packages.sh`) |
+| `KEY4HEPSPACK_*` | Similar args for key4hep-spack | (from `key4hep-spack.sh`) |
+| `EICSPACK_*` | Similar args for eic-spack | (from `eic-spack.sh`) |
 | `jobs` | Parallel build jobs | `1` |
 
 ### EIC Image (containers/eic/Dockerfile)
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `DOCKER_REGISTRY` | Registry prefix for base images | `eicweb/` |
+| `DOCKER_REGISTRY` | Registry prefix for base images | empty (local) or `ghcr.io/eic/` (GHCR fallback) |
 | `BUILDER_IMAGE` | Builder base image name | `debian_stable_base` |
 | `RUNTIME_IMAGE` | Runtime base image name | `debian_stable_base` |
-| `INTERNAL_TAG` | Tag for base images | `master` |
-| `ENV` | Environment type (`ci` or `xl`) | `xl` |
+| `INTERNAL_TAG` | Tag for base images | value of `--base-tag` (local) or `latest` (GHCR fallback) |
+| `ENV` | Environment type | `xl` |
+| `SPACK_DUPLICATE_ALLOWLIST` | Pipe-separated allowed duplicates | (per ENV) |
 | `EDM4EIC_SHA` | Custom edm4eic commit | |
 | `EICRECON_SHA` | Custom eicrecon commit | |
 | `EPIC_SHA` | Custom epic commit | |
@@ -224,14 +212,13 @@ echo "Run with: docker run -it eic_xl:local"
 Reduce the number of parallel jobs:
 
 ```bash
-docker buildx build --build-arg jobs=2 ...
+bash build-base.sh --jobs 2
 ```
 
 ### Build Takes Too Long
 
-1. Ensure you're using registry cache (`--cache-from`)
-2. Check that Spack buildcache is accessible
-3. Build the CI environment first (smaller): `--build-arg ENV=ci`
+1. Ensure you're on a fast network (registry cache is fetched from `ghcr.io`)
+2. Build the CI environment first (smaller): `bash build-eic.sh --env ci`
 
 ### Cannot Pull from ghcr.io
 
@@ -258,11 +245,7 @@ Using QEMU emulation (slower but works):
 docker run --privileged --rm tonistiigi/binfmt --install arm64
 
 # Build for ARM64
-docker buildx build \
-  --platform linux/arm64 \
-  -f containers/debian/Dockerfile \
-  -t debian_stable_base:local-arm64 \
-  containers/debian
+bash build-base.sh --platform linux/arm64 --tag local-arm64
 ```
 
 ## Next Steps
