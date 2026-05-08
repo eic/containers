@@ -165,6 +165,9 @@ packages:
   epic:
     require:
     - 'artifacts=epic_craterlake'
+  epic-generator:
+    require:
+    - '@1.1.8'
   estarlight:
     require:
     - '@1.2.0'
