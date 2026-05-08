@@ -403,18 +403,14 @@ EOF
 ## Install benchmarks into the container
 ARG BENCHMARK_COM_SHA=""
 ARG BENCHMARK_DET_SHA=""
-ARG BENCHMARK_REC_SHA=""
 ARG BENCHMARK_PHY_SHA=""
 RUN <<EOF
-git clone https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git /opt/benchmarks/common_bench
+git clone https://github.com/eic/common_bench.git /opt/benchmarks/common_bench
 git -C /opt/benchmarks/common_bench checkout ${BENCHMARK_COM_SHA:-master}
-git clone https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git /opt/benchmarks/detector_benchmarks
+git clone https://github.com/eic/detector_benchmarks.git /opt/benchmarks/detector_benchmarks
 git -C /opt/benchmarks/detector_benchmarks checkout ${BENCHMARK_DET_SHA:-master}
 ln -sf /opt/benchmarks/common_bench /opt/benchmarks/detector_benchmarks/.local
-git clone https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git /opt/benchmarks/reconstruction_benchmarks
-git -C /opt/benchmarks/reconstruction_benchmarks checkout ${BENCHMARK_REC_SHA:-master}
-ln -sf /opt/benchmarks/common_bench /opt/benchmarks/reconstruction_benchmarks/.local
-git clone https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git /opt/benchmarks/physics_benchmarks
+git clone https://github.com/eic/physics_benchmarks.git /opt/benchmarks/physics_benchmarks
 git -C /opt/benchmarks/physics_benchmarks checkout ${BENCHMARK_PHY_SHA:-master}
 ln -sf /opt/benchmarks/common_bench /opt/benchmarks/physics_benchmarks/.local
 EOF
