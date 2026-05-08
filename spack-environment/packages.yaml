@@ -51,7 +51,7 @@ packages:
     - '@1.0.1'
   afterburner:
     require:
-    - '@0.2.0'
+    - '@0.2.1'
     - +root +zlib
   algorithms:
     require:
@@ -155,7 +155,7 @@ packages:
     - '@1.1.16'
   eicrecon:
     require:
-    - '@1.36.1' # EICRECON_VERSION
+    - '@1.37.1' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
@@ -323,7 +323,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.4.6'
+    - '@1.4.7'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
@@ -532,7 +532,7 @@ packages:
     - '@0.10.2:'
   py-torch:
     require:
-    - '@2.5.1'
+    - '@2.10.0:2'
     - -mkldnn
   py-uproot:
     require:

@@ -453,10 +453,9 @@ jobs:
         id: benchmarks
         shell: bash
         run: |
-          echo "common_bench=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git master)" | tee -a $GITHUB_OUTPUT
-          echo "detector_benchmarks=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
-          echo "reconstruction_benchmarks=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
-          echo "physics_benchmarks=$(.ci/resolve_git_ref https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
+          echo "common_bench=$(.ci/resolve_git_ref https://github.com/eic/common_bench.git master)" | tee -a $GITHUB_OUTPUT
+          echo "detector_benchmarks=$(.ci/resolve_git_ref https://github.com/eic/detector_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
+          echo "physics_benchmarks=$(.ci/resolve_git_ref https://github.com/eic/physics_benchmarks.git master)" | tee -a $GITHUB_OUTPUT
       - name: Resolve campaign versions
         id: campaigns
         shell: bash
@@ -551,7 +550,6 @@ jobs:
           build-args: |
             BENCHMARK_COM_SHA=${{ steps.benchmarks.outputs.common_bench }}
             BENCHMARK_DET_SHA=${{ steps.benchmarks.outputs.detector_benchmarks }}
-            BENCHMARK_REC_SHA=${{ steps.benchmarks.outputs.reconstruction_benchmarks }}
             BENCHMARK_PHY_SHA=${{ steps.benchmarks.outputs.physics_benchmarks }}
             CAMPAIGNS_HEPMC3_SHA=${{ steps.campaigns.outputs.simulation_campaign_hepmc3 }}
             CAMPAIGNS_CONDOR_SHA=${{ steps.campaigns.outputs.job_submission_condor }}
