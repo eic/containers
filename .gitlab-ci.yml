@@ -476,25 +476,15 @@ eic:
                      ${EPIC_VERSION:+--build-arg EPIC_SHA=$(sh .ci/resolve_git_ref eic/epic ${EPIC_VERSION})}
                      ${JUGGLER_VERSION:+--build-arg JUGGLER_SHA=$(sh .ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION})}
                    }
-                   ${IF_BUILD_NIGHTLY+
-                     --build-arg EDM4EIC_SHA=$(sh .ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION:-main})
-                     --build-arg EICRECON_SHA=$(sh .ci/resolve_git_ref eic/EICrecon ${EICRECON_VERSION:-main})
-                     --build-arg EPIC_SHA=$(sh .ci/resolve_git_ref eic/epic ${EPIC_VERSION:-main})
-                     --build-arg JUGGLER_SHA=$(sh .ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION:-main})
-                   }
-                   --build-arg ENV=${ENV}
-                   --build-arg SPACK_DUPLICATE_ALLOWLIST=$(
-                     case "${ENV}" in
-                       ci|ci_without_acts|cuda|dbg|jl|prod)
-                         echo "epic|llvm|py-setuptools|py-urllib3" ;;
-                       xl|tf)
-                         echo "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests" ;;
-                       *)
-                         echo "epic|llvm|py-setuptools|py-urllib3" ;;
-                     esac
-                   )
-                   --build-arg jobs=${JOBS}
-                   --build-context spack-environment=spack-environment
+                    ${IF_BUILD_NIGHTLY+
+                      --build-arg EDM4EIC_SHA=$(sh .ci/resolve_git_ref eic/EDM4eic ${EDM4EIC_VERSION:-main})
+                      --build-arg EICRECON_SHA=$(sh .ci/resolve_git_ref eic/EICrecon ${EICRECON_VERSION:-main})
+                      --build-arg EPIC_SHA=$(sh .ci/resolve_git_ref eic/epic ${EPIC_VERSION:-main})
+                      --build-arg JUGGLER_SHA=$(sh .ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION:-main})
+                    }
+                    --build-arg ENV=${ENV}
+                    --build-arg jobs=${JOBS}
+                    --build-context spack-environment=spack-environment
                    --secret id=mirrors,src=mirrors.yaml
                    --secret type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER
                    --secret type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD

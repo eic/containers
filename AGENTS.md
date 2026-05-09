@@ -217,7 +217,7 @@ The GitLab CI configuration (`.gitlab-ci.yml`) runs similar build jobs but in th
 
 When modifying `spack-environment/packages.yaml`:
 1. Test concretization: Build `builder_concretization_default` stage
-2. Check for duplicate packages (intentionally allowed: `epic`, `llvm`, `py-setuptools`, `py-urllib3`)
+2. Check for duplicate packages against the environment's `concretizer.duplicates.max_dupes` settings in `spack-environment/*/spack.yaml`
 3. Verify no unexpected duplicates appear in concretization output
 
 ### Build Testing
