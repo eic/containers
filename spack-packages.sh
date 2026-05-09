@@ -22,6 +22,7 @@ f0ff58aff997ab3c4c0598e0ccdfd662a06d1233
 bd32638d817fa66188880e557196acd2a5d6e7b6
 b17f3abec760256ad7faf1b1d102f2553d6a3622
 45f50975f023b3a444217e3d474c2b2d264763b3
+6b86b44735775c97636861dd66ee14ce83906422
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -41,3 +42,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## bd32638d817fa66188880e557196acd2a5d6e7b6: py-tf2onnx: depends on py-tensorflow
 ## b17f3abec760256ad7faf1b1d102f2553d6a3622: (py-)protobuf: add v(5.)28.3
 ## 45f50975f023b3a444217e3d474c2b2d264763b3: py-torch: patch for GCC-14.2 ICE on aarch64
+## 6b86b44735775c97636861dd66ee14ce83906422: apfelxx, epic, partons*, sfml: new packages

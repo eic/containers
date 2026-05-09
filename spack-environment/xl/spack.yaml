@@ -31,6 +31,7 @@ spack:
   - eic-smear
   - eigen
   - emacs
+  - epic-generator
   - estarlight
   - fastjet
   - fjcontrib
