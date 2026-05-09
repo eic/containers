@@ -206,6 +206,17 @@ concretizer:
 - **`unify: true`**: Single version of each package in environment
 - **`reuse: false`**: Don't reuse packages from buildcache during concretization
 
+Environment-specific duplicate allowances are configured in each environment `spack.yaml`:
+
+```yaml
+spack:
+  concretizer:
+    duplicates:
+      max_dupes:
+        epic: 10
+        py-urllib3: 2
+```
+
 ## Key Packages
 
 ### Core Physics Packages

@@ -7,7 +7,12 @@ spack:
   - ../packages_root_without_opengl.yaml
   - ../view.yaml
   concretizer:
-    unify: when_possible
+    duplicates:
+      max_dupes:
+        epic: 10
+        llvm: 2
+        py-setuptools: 2
+        py-urllib3: 2
   specs:
   - acts
   - actsvg
