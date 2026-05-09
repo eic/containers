@@ -4,6 +4,7 @@
 # - We want unified environments that can be installed in a simple view,
 #   with package-specific duplicate allowances configured per environment
 #   through concretizer.duplicates.max_dupes in each spack.yaml.
+#   Some environments still override unify to when_possible where needed.
 #
 concretizer:
   reuse:
