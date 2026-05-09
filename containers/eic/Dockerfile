@@ -171,7 +171,7 @@ if [ -n "${EPIC_SHA}" ] ; then
 fi
 if [ -n "${JUGGLER_SHA}" ] ; then
   sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_SHA}=main/" /opt/spack-environment/packages.yaml
-spack deconcretize -y --all juggler
+  spack deconcretize -y --all juggler
 fi
 spack concretize --force
 EOF
