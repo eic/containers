@@ -59,8 +59,8 @@ stages:
   - benchmarks
   - test
   - finalize
-  - status-report
   - waterfall
+  - status-report
 
 ## only run CI for in the following cases:
 ## master, stable branch, release tag, MR event and nightly builds
@@ -928,4 +928,4 @@ waterfall:upload:
   variables:
     GITHUB_PAGES_TOKEN: ${EIC_PERFETTO_LAUNCHER_GITHUB_PAGES_TOKEN}
   when: always
-  allow_failure: true
+  allow_failure: false
