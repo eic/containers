@@ -909,7 +909,7 @@ waterfall:upload:
   before_script:
     - apk add --no-cache curl jq python3
     - |
-      curl -LfsS https://raw.githubusercontent.com/eic/snippets/dca7667889182917fbef9881a53cf49493c1b561/waterfall-eicweb.sh \
+      curl -LfsS https://raw.githubusercontent.com/eic/snippets/9a8861f888ff948c8bc277562d4d81f3b8f2acd0/waterfall-eicweb.sh \
            -o waterfall-eicweb.sh
       sh waterfall-eicweb.sh --pages ${CI_PROJECT_ID} ${CI_PIPELINE_ID}
 
