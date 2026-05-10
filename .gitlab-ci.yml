@@ -174,6 +174,8 @@ version:
   rules:
     - if: $GITHUB_SHA !~ /^$/ # when GITHUB_SHA non-empty
   before_script: []
+  variables:
+    STATUS_TARGET_URL: "https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"
   script:
     - |
       curl \
@@ -182,7 +184,7 @@ version:
         -H "Authorization: token ${GITHUB_REPO_STATUS_TOKEN}" \
         "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
         -d '{"state":"'"${STATE}"'",
-              "target_url":"'"https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"'",
+              "target_url":"'"${STATUS_TARGET_URL}"'",
               "description":"'"${DESCRIPTION} $(TZ=America/New_York date)"'",
               "context":"eicweb/eic_container"
             }' ;
@@ -193,6 +195,8 @@ status:pending:
   variables:
     STATE: "pending"
     DESCRIPTION: "Started..."
+    # Trace doesn't exist yet during pending status; link to pipeline instead
+    STATUS_TARGET_URL: "${CI_PIPELINE_URL}"
   when: always
 
 ## base job settings for all docker interactions
@@ -918,9 +922,10 @@ waterfall:upload:
     - apk add --no-cache curl jq
   script:
     - |
-      curl -LfsS https://raw.githubusercontent.com/eic/snippets/main/waterfall-eicweb.sh \
+      curl -LfsS https://raw.githubusercontent.com/eic/snippets/6afa43fc6642f8a89e960f8ff4ce40791b4713a1/waterfall-eicweb.sh \
            -o waterfall-eicweb.sh
       sh waterfall-eicweb.sh --pages ${CI_PROJECT_ID} ${CI_PIPELINE_ID}
   variables:
     GITHUB_PAGES_TOKEN: ${EIC_PERFETTO_LAUNCHER_GITHUB_PAGES_TOKEN}
   when: always
+  allow_failure: true
