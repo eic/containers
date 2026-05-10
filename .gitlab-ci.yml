@@ -920,7 +920,7 @@ waterfall:upload:
     - if: $GITHUB_SHA !~ /^$/ # when GITHUB_SHA non-empty
       when: always
   before_script:
-    - apk add --no-cache curl jq
+    - apk add --no-cache curl jq python3
   script:
     - |
       curl -LfsS https://raw.githubusercontent.com/eic/snippets/dca7667889182917fbef9881a53cf49493c1b561/waterfall-eicweb.sh \
