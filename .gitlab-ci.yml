@@ -175,7 +175,7 @@ version:
     - if: $GITHUB_SHA !~ /^$/ # when GITHUB_SHA non-empty
   before_script: []
   variables:
-    STATUS_TARGET_URL: "https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"
+    STATUS_TARGET_URL: "${CI_PIPELINE_URL}"
   script:
     - |
       curl \
@@ -195,8 +195,6 @@ status:pending:
   variables:
     STATE: "pending"
     DESCRIPTION: "Started..."
-    # Trace doesn't exist yet during pending status; link to pipeline instead
-    STATUS_TARGET_URL: "${CI_PIPELINE_URL}"
   when: always
 
 ## base job settings for all docker interactions
@@ -902,6 +900,7 @@ status:success:
   variables:
     STATE: "success"
     DESCRIPTION: "Succeeded!"
+    STATUS_TARGET_URL: "https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"
   when: on_success
 
 status:failure:
@@ -911,6 +910,7 @@ status:failure:
   variables:
     STATE: "failure"
     DESCRIPTION: "Failed!"
+    STATUS_TARGET_URL: "https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"
   when: on_failure
 
 waterfall:upload:
