@@ -50,17 +50,6 @@ variables:
   GITHUB_SHA: ""
   GITHUB_PR: ""
 
-stages:
-  - status-pending
-  - config
-  - base            ## base OS image
-  - eic             ## EIC container images
-  - deploy          ## build/deploy singularity images
-  - benchmarks
-  - test
-  - finalize
-  - status-report
-
 ## only run CI for in the following cases:
 ## master, stable branch, release tag, MR event and nightly builds
 ## nightly builds are now part of the regular master build in order to keep
@@ -100,6 +89,7 @@ workflow:
 
 nvidia-smi:
   stage: config
+  needs: []
   image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
   tags:
     - gpu
@@ -116,6 +106,7 @@ nvidia-smi:
 ## - export tag to public registries, optional secondary export tag
 version:
   stage: config
+  needs: []
   script:
     - |
       if [ -n "${VERSION}" ]; then
@@ -188,6 +179,7 @@ version:
 
 status:pending:
   stage: status-pending
+  needs: []
   extends: .status
   variables:
     STATE: "pending"
@@ -747,6 +739,7 @@ df:
 .prune:
   extends: .build
   stage: config
+  needs: []
   rules:
     - when: manual
   script:
@@ -771,6 +764,7 @@ prune:docker-new:
 clean_internal_tag:
   image: alpine/curl
   stage: finalize
+  needs: []
   rules:
     - when: manual
   script:
@@ -785,6 +779,7 @@ clean_internal_tag:
 .clean_unstable_mr:
   extends: .docker
   stage: finalize
+  needs: []
   when: always
   script:
     - apk add curl jq
@@ -881,6 +876,7 @@ clean_pipeline:docker-new:
 spack-cache-cleanup:
   extends: .build
   stage: finalize
+  needs: [version]
   when: always
   allow_failure: true
   script:
@@ -892,7 +888,7 @@ spack-cache-cleanup:
 
 status:success:
   stage: status-report
-  dependencies: []
+  needs: []
   extends: .status
   variables:
     STATE: "success"
@@ -901,7 +897,7 @@ status:success:
 
 status:failure:
   stage: status-report
-  dependencies: []
+  needs: []
   extends: .status
   variables:
     STATE: "failure"
