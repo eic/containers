@@ -6,7 +6,6 @@ spack:
   - ../../packages.yaml
   - ../../view.yaml
   concretizer:
-    unify: when_possible # multiple epic versions
     duplicates:
       max_dupes:
         epic: 10
