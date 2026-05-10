@@ -918,6 +918,7 @@ waterfall:upload:
   image: alpine:latest
   rules:
     - if: $GITHUB_SHA !~ /^$/ # when GITHUB_SHA non-empty
+      when: always
   before_script:
     - apk add --no-cache curl jq
   script:
@@ -927,5 +928,4 @@ waterfall:upload:
       sh waterfall-eicweb.sh --pages ${CI_PROJECT_ID} ${CI_PIPELINE_ID}
   variables:
     GITHUB_PAGES_TOKEN: ${EIC_PERFETTO_LAUNCHER_GITHUB_PAGES_TOKEN}
-  when: always
   allow_failure: false
