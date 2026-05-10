@@ -899,7 +899,7 @@ waterfall:upload:
   dependencies: []
   extends: .status
   variables:
-    STATUS: "success"
+    STATE: "success"
     STATUS_TARGET_URL: "https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"
     STATUS_CONTEXT: "eic/perfetto-launcher"
     DESCRIPTION: "Perfetto trace available"
