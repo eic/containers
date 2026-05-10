@@ -176,6 +176,7 @@ version:
   before_script: []
   variables:
     STATUS_TARGET_URL: "${CI_PIPELINE_URL}"
+    STATUS_CONTEXT: "eicweb/eic_container"
   script:
     - |
       curl \
@@ -186,7 +187,7 @@ version:
         -d '{"state":"'"${STATE}"'",
               "target_url":"'"${STATUS_TARGET_URL}"'",
               "description":"'"${DESCRIPTION} $(TZ=America/New_York date)"'",
-              "context":"eicweb/eic_container"
+              "context":"'"${STATUS_CONTEXT}"'"
             }' ;
 
 status:pending:
@@ -926,6 +927,16 @@ waterfall:upload:
       curl -LfsS https://raw.githubusercontent.com/eic/snippets/dca7667889182917fbef9881a53cf49493c1b561/waterfall-eicweb.sh \
            -o waterfall-eicweb.sh
       sh waterfall-eicweb.sh --pages ${CI_PROJECT_ID} ${CI_PIPELINE_ID}
+      curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: token ${GITHUB_REPO_STATUS_TOKEN}" \
+        "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+        -d '{"state":"success",
+              "target_url":"'"https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"'",
+              "description":"Perfetto trace available",
+              "context":"eic/perfetto-launcher"
+            }' ;
   variables:
     GITHUB_PAGES_TOKEN: ${EIC_PERFETTO_LAUNCHER_GITHUB_PAGES_TOKEN}
   allow_failure: false
