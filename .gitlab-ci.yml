@@ -894,6 +894,24 @@ spack-cache-cleanup:
         --file containers/eic/Dockerfile.spack-cache-cleanup
         .
 
+waterfall:upload:
+  stage: waterfall
+  dependencies: []
+  extends: .status
+  variables:
+    STATUS: "success"
+    STATUS_TARGET_URL: "https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"
+    STATUS_CONTEXT: "eic/perfetto-launcher"
+    DESCRIPTION: "Perfetto trace available"
+    GITHUB_PAGES_TOKEN: ${EIC_PERFETTO_LAUNCHER_GITHUB_PAGES_TOKEN}
+  when: always
+  before_script:
+    - apk add --no-cache curl jq python3
+    - |
+      curl -LfsS https://raw.githubusercontent.com/eic/snippets/dca7667889182917fbef9881a53cf49493c1b561/waterfall-eicweb.sh \
+           -o waterfall-eicweb.sh
+      sh waterfall-eicweb.sh --pages ${CI_PROJECT_ID} ${CI_PIPELINE_ID}
+
 status:success:
   stage: status-report
   dependencies: []
@@ -911,19 +929,3 @@ status:failure:
     STATE: "failure"
     DESCRIPTION: "Failed!"
   when: on_failure
-
-waterfall:upload:
-  stage: waterfall
-  image: alpine:latest
-  rules:
-    - if: $GITHUB_SHA !~ /^$/ # when GITHUB_SHA non-empty
-      when: always
-  before_script:
-    - apk add --no-cache curl jq python3
-    - |
-      curl -LfsS https://raw.githubusercontent.com/eic/snippets/dca7667889182917fbef9881a53cf49493c1b561/waterfall-eicweb.sh \
-           -o waterfall-eicweb.sh
-      sh waterfall-eicweb.sh --pages ${CI_PROJECT_ID} ${CI_PIPELINE_ID}
-  variables:
-    GITHUB_PAGES_TOKEN: ${EIC_PERFETTO_LAUNCHER_GITHUB_PAGES_TOKEN}
-  allow_failure: false
