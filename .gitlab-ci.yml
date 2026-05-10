@@ -900,21 +900,21 @@ spack-cache-cleanup:
 status:success:
   stage: status-report
   needs:
-    - nvidia-smi
-    - user_spack_environment
-    - cuda:torch
-    - eic_xl:singularity:default
-    - eic_xl:singularity:nightly
-    - benchmarks:geoviewer:default
-    - benchmarks:detector:default
-    - benchmarks:detector:nightly
-    - benchmarks:phyiscs:default
-    - benchmarks:physics:nightly
-    - clean_pipeline:gpu
-    - clean_pipeline:docker-new
-    - clean_unstable_mr:gpu
-    - clean_unstable_mr:docker-new
-    - spack-cache-cleanup
+    - { job: nvidia-smi, optional: true }
+    - { job: user_spack_environment, optional: true }
+    - { job: "cuda:torch", optional: true }
+    - { job: "eic_xl:singularity:default", optional: true }
+    - { job: "eic_xl:singularity:nightly", optional: true }
+    - { job: "benchmarks:geoviewer:default", optional: true }
+    - { job: "benchmarks:detector:default", optional: true }
+    - { job: "benchmarks:detector:nightly", optional: true }
+    - { job: "benchmarks:phyiscs:default", optional: true }
+    - { job: "benchmarks:physics:nightly", optional: true }
+    - { job: "clean_pipeline:gpu", optional: true }
+    - { job: "clean_pipeline:docker-new", optional: true }
+    - { job: "clean_unstable_mr:gpu", optional: true }
+    - { job: "clean_unstable_mr:docker-new", optional: true }
+    - { job: spack-cache-cleanup, optional: true }
   extends: .status
   variables:
     STATE: "success"
