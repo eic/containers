@@ -52,7 +52,6 @@ variables:
 
 stages:
   - status-pending
-  - waterfall
   - config
   - base            ## base OS image
   - eic             ## EIC container images
@@ -60,6 +59,7 @@ stages:
   - benchmarks
   - test
   - finalize
+  - waterfall
   - status-report
 
 ## only run CI for in the following cases:
