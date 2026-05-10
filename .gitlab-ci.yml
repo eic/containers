@@ -898,6 +898,7 @@ waterfall:upload:
   stage: waterfall
   dependencies: []
   extends: .status
+  image: alpine:latest
   variables:
     STATE: "success"
     STATUS_TARGET_URL: "https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"
