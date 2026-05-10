@@ -310,7 +310,7 @@ spack external find --scope spack --not-buildable --path /usr/local/cuda/bin cud
 # Clang 20+ is not in CUDA's supported compiler list; amend the external spec so that
 # the +allow-unsupported-compilers variant disables the build-system conflict check.
 # Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
-yq -iy '.packages.cuda.externals[].spec += " +allow-unsupported-compilers"' ${SPACK_ROOT}/etc/spack/packages.yaml
+yq -iy 'if .packages.cuda.externals then .packages.cuda.externals[].spec += " +allow-unsupported-compilers" else . end' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame packages
 EOF
 
