@@ -901,7 +901,6 @@ status:success:
   variables:
     STATE: "success"
     DESCRIPTION: "Succeeded!"
-    STATUS_TARGET_URL: "https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"
   when: on_success
 
 status:failure:
@@ -911,7 +910,6 @@ status:failure:
   variables:
     STATE: "failure"
     DESCRIPTION: "Failed!"
-    STATUS_TARGET_URL: "https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"
   when: on_failure
 
 waterfall:upload:
