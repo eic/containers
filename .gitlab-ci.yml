@@ -50,6 +50,17 @@ variables:
   GITHUB_SHA: ""
   GITHUB_PR: ""
 
+stages:
+  - status-pending
+  - config
+  - base            ## base OS image
+  - eic             ## EIC container images
+  - deploy          ## build/deploy singularity images
+  - benchmarks
+  - test
+  - finalize
+  - status-report
+
 ## only run CI for in the following cases:
 ## master, stable branch, release tag, MR event and nightly builds
 ## nightly builds are now part of the regular master build in order to keep
