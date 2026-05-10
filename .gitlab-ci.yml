@@ -790,7 +790,16 @@ clean_internal_tag:
 .clean_unstable_mr:
   extends: .docker
   stage: finalize
-  needs: []
+  needs:
+    - { job: user_spack_environment, optional: true }
+    - { job: "cuda:torch", optional: true }
+    - { job: "eic_xl:singularity:default", optional: true }
+    - { job: "eic_xl:singularity:nightly", optional: true }
+    - { job: "benchmarks:geoviewer:default", optional: true }
+    - { job: "benchmarks:detector:default", optional: true }
+    - { job: "benchmarks:detector:nightly", optional: true }
+    - { job: "benchmarks:phyiscs:default", optional: true }
+    - { job: "benchmarks:physics:nightly", optional: true }
   when: always
   script:
     - apk add curl jq
@@ -834,6 +843,15 @@ clean_unstable_mr:docker-new:
   needs:
     - version
     - clean_internal_tag
+    - { job: user_spack_environment, optional: true }
+    - { job: "cuda:torch", optional: true }
+    - { job: "eic_xl:singularity:default", optional: true }
+    - { job: "eic_xl:singularity:nightly", optional: true }
+    - { job: "benchmarks:geoviewer:default", optional: true }
+    - { job: "benchmarks:detector:default", optional: true }
+    - { job: "benchmarks:detector:nightly", optional: true }
+    - { job: "benchmarks:phyiscs:default", optional: true }
+    - { job: "benchmarks:physics:nightly", optional: true }
   when: always
   script:
     - apk add curl jq
