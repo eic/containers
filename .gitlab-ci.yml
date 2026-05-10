@@ -922,7 +922,7 @@ waterfall:upload:
     - apk add --no-cache curl jq
   script:
     - |
-      curl -LfsS https://raw.githubusercontent.com/eic/snippets/9c480aa2bb603f0b34e44a3591006406aaa84af7/waterfall-eicweb.sh \
+      curl -LfsS https://raw.githubusercontent.com/eic/snippets/49120c9e467fee1d04da5c320a32d6b1f3e7e324/waterfall-eicweb.sh \
            -o waterfall-eicweb.sh
       sh waterfall-eicweb.sh --pages ${CI_PROJECT_ID} ${CI_PIPELINE_ID}
   variables:
