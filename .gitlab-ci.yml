@@ -899,7 +899,22 @@ spack-cache-cleanup:
 
 status:success:
   stage: status-report
-  needs: []
+  needs:
+    - nvidia-smi
+    - user_spack_environment
+    - cuda:torch
+    - eic_xl:singularity:default
+    - eic_xl:singularity:nightly
+    - benchmarks:geoviewer:default
+    - benchmarks:detector:default
+    - benchmarks:detector:nightly
+    - benchmarks:phyiscs:default
+    - benchmarks:physics:nightly
+    - clean_pipeline:gpu
+    - clean_pipeline:docker-new
+    - clean_unstable_mr:gpu
+    - clean_unstable_mr:docker-new
+    - spack-cache-cleanup
   extends: .status
   variables:
     STATE: "success"
