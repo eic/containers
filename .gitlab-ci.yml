@@ -920,21 +920,10 @@ waterfall:upload:
       when: always
   before_script:
     - apk add --no-cache curl jq python3
-  script:
     - |
       curl -LfsS https://raw.githubusercontent.com/eic/snippets/dca7667889182917fbef9881a53cf49493c1b561/waterfall-eicweb.sh \
            -o waterfall-eicweb.sh
       sh waterfall-eicweb.sh --pages ${CI_PROJECT_ID} ${CI_PIPELINE_ID}
-      curl \
-        -X POST \
-        -H "Accept: application/vnd.github+json" \
-        -H "Authorization: token ${GITHUB_REPO_STATUS_TOKEN}" \
-        "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
-        -d '{"state":"success",
-              "target_url":"'"https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"'",
-              "description":"Perfetto trace available",
-              "context":"eic/perfetto-launcher"
-            }' ;
   variables:
     GITHUB_PAGES_TOKEN: ${EIC_PERFETTO_LAUNCHER_GITHUB_PAGES_TOKEN}
   allow_failure: false
