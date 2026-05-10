@@ -922,5 +922,5 @@ waterfall:upload:
            -o waterfall-eicweb.sh
       sh waterfall-eicweb.sh --pages ${CI_PROJECT_ID} ${CI_PIPELINE_ID}
   variables:
-    GITHUB_PAGES_TOKEN: ${GITHUB_PAGES_TOKEN}
+    GITHUB_PAGES_TOKEN: ${EIC_PERFETTO_LAUNCHER_GITHUB_PAGES_TOKEN}
   when: always
