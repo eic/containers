@@ -59,6 +59,7 @@ stages:
   - benchmarks
   - test
   - finalize
+  - waterfall
   - status-report
 
 ## only run CI for in the following cases:
@@ -173,6 +174,9 @@ version:
   rules:
     - if: $GITHUB_SHA !~ /^$/ # when GITHUB_SHA non-empty
   before_script: []
+  variables:
+    STATUS_TARGET_URL: "${CI_PIPELINE_URL}"
+    STATUS_CONTEXT: "eicweb/eic_container"
   script:
     - |
       curl \
@@ -181,9 +185,9 @@ version:
         -H "Authorization: token ${GITHUB_REPO_STATUS_TOKEN}" \
         "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
         -d '{"state":"'"${STATE}"'",
-              "target_url":"'"${CI_PIPELINE_URL}"'",
+              "target_url":"'"${STATUS_TARGET_URL}"'",
               "description":"'"${DESCRIPTION} $(TZ=America/New_York date)"'",
-              "context":"eicweb/eic_container"
+              "context":"'"${STATUS_CONTEXT}"'"
             }' ;
 
 status:pending:
@@ -889,6 +893,25 @@ spack-cache-cleanup:
         --target spack_cache_cleanup
         --file containers/eic/Dockerfile.spack-cache-cleanup
         .
+
+waterfall:upload:
+  stage: waterfall
+  dependencies: []
+  extends: .status
+  image: alpine:latest
+  variables:
+    STATE: "success"
+    STATUS_TARGET_URL: "https://eic.github.io/perfetto-launcher/?trace=traces/trace-${CI_PIPELINE_ID}.json"
+    STATUS_CONTEXT: "eic/perfetto-launcher"
+    DESCRIPTION: "Perfetto trace available"
+    GITHUB_PAGES_TOKEN: ${EIC_PERFETTO_LAUNCHER_GITHUB_PAGES_TOKEN}
+  when: always
+  before_script:
+    - apk add --no-cache curl jq python3
+    - |
+      curl -LfsS https://raw.githubusercontent.com/eic/snippets/fb700e3eabbfee52561de4aae5062f11d8343b27/waterfall-eicweb.sh \
+           -o waterfall-eicweb.sh
+      sh waterfall-eicweb.sh --pages ${CI_PROJECT_ID} ${CI_PIPELINE_ID}
 
 status:success:
   stage: status-report
