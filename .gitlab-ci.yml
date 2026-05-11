@@ -348,6 +348,7 @@ base:
                    --build-arg EICSPACK_SHA=$(sh .ci/resolve_git_ref "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
                    --build-arg jobs=${JOBS}
                    --build-arg BUILDWEEK=$(date +%Yw%V)
+                   --secret id=ssl_certs,src=/etc/ssl/certs/ca-certificates.crt
                    --provenance false
                    containers/debian
                    2>&1 | tee build.log

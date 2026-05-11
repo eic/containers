@@ -74,6 +74,14 @@ apt-get -yqq autoremove
 localedef -i en_US -f UTF-8 en_US.UTF-8
 EOF
 
+## Install additional CA certificates from host if provided
+RUN --mount=type=secret,id=ssl_certs,target=/tmp/local-ca.crt,required=false <<EOF
+if [ -s /tmp/local-ca.crt ]; then
+  cp /tmp/local-ca.crt /usr/local/share/ca-certificates/local-ca.crt
+  update-ca-certificates
+fi
+EOF
+
 # Override SHA-1 second pre-image resistance deadline
 ## FIXME Remove when LLVM has fixed their signature
 COPY <<EOF /etc/crypto-policies/back-ends/sequoia.config
