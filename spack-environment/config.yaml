@@ -1,3 +1,2 @@
 config:
-  # FIXME After upgrading individual packages, we want to move this back to false
-  deprecated: true
+  deprecated: false
