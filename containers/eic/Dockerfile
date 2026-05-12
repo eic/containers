@@ -376,6 +376,11 @@ COPY eic-env.sh /etc/eic-env.sh
 COPY profile.d/* /etc/profile.d
 COPY singularity.d /.singularity.d
 
+## System-level Copilot MCP server defaults.
+## /opt/local/bin/xrootd-mcp-server is the Spack view path for the
+## xrootd-mcp-server package (installed like github-copilot via npm --global).
+COPY copilot/mcp-config.json /etc/copilot/mcp-config.json
+
 ## set ROOT TFile forward compatibility
 RUN sed --in-place --follow-symlinks 's/# \(TFile.v630forwardCompatibility:\) no/\1 yes/' /opt/local/etc/root/system.rootrc
 
