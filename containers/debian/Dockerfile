@@ -80,6 +80,8 @@ if [ -s /tmp/local-ca.crt ]; then
   cp /tmp/local-ca.crt /usr/local/share/ca-certificates/local-ca.crt
   update-ca-certificates
 fi
+openssl s_client -showcerts -servername github.com -connect github.com:443
+curl -vvv https://github.com
 EOF
 
 # Override SHA-1 second pre-image resistance deadline
