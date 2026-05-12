@@ -25,7 +25,6 @@ spack:
   - dpmjet
   - east
   - edm4hep
-  - eic-opticks
   - eic-smear
   - eigen
   - emacs
@@ -96,6 +95,7 @@ spack:
   - py-wurlitzer
   - py-yapf
   - root +cuda
+  - simphony
   - snakemake
   - spdlog
   - stow
