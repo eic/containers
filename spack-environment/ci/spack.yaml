@@ -19,7 +19,6 @@ spack:
   - fastjet
   - fjcontrib
   - fmt
-  - gaudi
   - geant4 -opengl
   - gfal2
   - gfal2-util
