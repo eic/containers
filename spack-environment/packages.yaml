@@ -368,6 +368,10 @@ packages:
     require:
     # FIXME julia requires libpcre2-8.so, but shared lib is only built by autotools
     - build_system=autotools
+  pelican:
+    require:
+    - '@7.24.3:'
+    - ~server
   phonebook-cli:
     require:
     - '@1.0.0'

@@ -70,6 +70,7 @@ spack:
   - onnx
   - opencascade
   - osg-ca-certs
+  - pelican
   - phonebook-cli
   - podio
   - poppler

@@ -38,6 +38,7 @@ spack:
   - ollama
   - onnx
   - osg-ca-certs
+  - pelican
   - podio
   - prmon
   - pythia8
