@@ -20,7 +20,7 @@ packages:
     # FIXME any ipo preference breaks llvm external reuse
     #- +ipo
     - build_system=cmake
-    - build_type=Releasejuggler: add v15.2.0 (
+    - build_type=Release
     - when: '+cuda'
       spec: cuda_arch=75
     require:
