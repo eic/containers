@@ -21,6 +21,27 @@ LIMIT_GIB="${2:?Usage: $0 IMAGE_REFERENCE LIMIT_GIB}"
 echo "Checking compressed image size for ${IMAGE_REF} (limit: ${LIMIT_GIB} GiB) ..."
 
 MANIFEST=$(docker buildx imagetools inspect --raw "${IMAGE_REF}")
+
+# docker/build-push-action (v4+) wraps even single-platform pushes in an OCI
+# Image Index when provenance attestations are enabled (the default).  Detect
+# that case and resolve to the real per-platform Image Manifest before summing
+# layer sizes.
+MEDIA_TYPE=$(printf '%s' "${MANIFEST}" | jq -r '.mediaType // ""')
+case "${MEDIA_TYPE}" in
+  *index* | *manifest.list*)
+    DIGEST=$(printf '%s' "${MANIFEST}" | jq -r '
+      .manifests[]
+      | select(.artifactType == null and .platform != null)
+      | .digest' | head -1)
+    if [ -z "${DIGEST}" ]; then
+      echo "ERROR: OCI Image Index contains no platform manifest."
+      exit 1
+    fi
+    IMAGE_BASE="${IMAGE_REF%@*}"
+    MANIFEST=$(docker buildx imagetools inspect --raw "${IMAGE_BASE}@${DIGEST}")
+    ;;
+esac
+
 SIZE_BYTES=$(printf '%s' "${MANIFEST}" | jq '[.layers[].size] | add // 0')
 
 if [ -z "${SIZE_BYTES}" ] || [ "${SIZE_BYTES}" = "null" ] || [ "${SIZE_BYTES}" -eq 0 ]; then
