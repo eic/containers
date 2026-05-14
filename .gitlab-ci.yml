@@ -364,9 +364,15 @@ base:
                    --provenance false
                    containers/debian
                    2>&1 | tee build.log
-    - .ci/check_image_size
-        "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}"
-        "${SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB}"
+    - LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${BUILD_IMAGE}" | tr '[:lower:]' '[:upper:]')_GIB" ;
+      LIMIT="${!LIMIT_VAR}" ;
+      if [ -n "${LIMIT}" ]; then
+        .ci/check_image_size
+          "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}"
+          "${LIMIT}" ;
+      else
+        echo "No size limit configured for ${BUILD_IMAGE}, skipping check." ;
+      fi
 
 eic:
   parallel:
@@ -515,18 +521,16 @@ eic:
                    --provenance false
                    containers/eic
                    2>&1 | tee build.log
-    - # Check compressed image size; skip for concretization-only targets (cuda, tf)
-      case "${ENV}" in
-        cuda|tf) echo "Skipping size check for concretization-only env ${ENV}." ;;
-        xl)
-          .ci/check_image_size
-            "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}"
-            "${SIZE_LIMIT_EIC_XL_GIB}" ;;
-        *)
-          .ci/check_image_size
-            "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}"
-            "${SIZE_LIMIT_EIC_CI_GIB}" ;;
-      esac
+    - FULLNAME="${BUILD_IMAGE}${ENV}" ;
+      LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB" ;
+      LIMIT="${!LIMIT_VAR}" ;
+      if [ -n "${LIMIT}" ]; then
+        .ci/check_image_size
+          "${CI_REGISTRY}/${CI_PROJECT_PATH}/${FULLNAME}:${INTERNAL_TAG}-${BUILD_TYPE}"
+          "${LIMIT}" ;
+      else
+        echo "No size limit configured for ${FULLNAME}, skipping check." ;
+      fi
 
 user_spack_environment:
   stage: benchmarks
