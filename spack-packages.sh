@@ -38,6 +38,10 @@ a77a7ed0d2630466cac71165026387b1381b058a
 88800eeac4ee97b7689b0a84d066e4f634f32b46
 d8271eec35998674d3c67c7613b010fa98519df3
 86e2acd247221d45f9944ac2f69518b8766baec3
+30e69adca31b9ba98e61c42b4126188911e3537c
+93acd58e1399d787dac69d61ecbbd1695c8a2bac
+056c2efcd8f3cceb629f9b78acbdf4533e008206
+ad4b252d254d49db587abd6fd06c375c71d27a01
 8cd9959e3fd4e54d79bbf75210e335ab842e1af0
 ---
 ## Optional hash table with comma-separated file list
@@ -74,4 +78,8 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 88800eeac4ee97b7689b0a84d066e4f634f32b46: py-boto3: add v1.42.85 and py-botocore: add v1.42.85
 ## d8271eec35998674d3c67c7613b010fa98519df3: py-setuptools-scm: Earlier versions require setuptools-scm too
 ## 86e2acd247221d45f9944ac2f69518b8766baec3: py-boto3: add v1.43.17, updated dependencies
+## 30e69adca31b9ba98e61c42b4126188911e3537c: root: cleanup recipe since the minimum version is 6.28.00
+## 93acd58e1399d787dac69d61ecbbd1695c8a2bac: Miscellaneous package fixes
+## 056c2efcd8f3cceb629f9b78acbdf4533e008206: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
+## ad4b252d254d49db587abd6fd06c375c71d27a01: root: add v6.36.12
 ## 8cd9959e3fd4e54d79bbf75210e335ab842e1af0: root: add builtin_llvm variant to allow external LLVM
