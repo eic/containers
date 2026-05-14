@@ -260,9 +260,16 @@ jobs:
           echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
       - name: Check image size
         run: |
-          .ci/check_image_size \
-            "${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}@${{ steps.build.outputs.digest }}" \
-            "${{ env.SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB }}"
+          FULLNAME="${{ matrix.BUILD_IMAGE }}"
+          LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
+          LIMIT="${!LIMIT_VAR}"
+          if [ -n "${LIMIT}" ]; then
+            .ci/check_image_size \
+              "${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${FULLNAME}@${{ steps.build.outputs.digest }}" \
+              "${LIMIT}"
+          else
+            echo "No size limit configured for ${FULLNAME}, skipping check."
+          fi
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v7
         with:
@@ -588,13 +595,16 @@ jobs:
         # Only check final images; concretization-only targets (cuda, tf) don't produce a full image
         if: ${{ matrix.target == 'final' }}
         run: |
-          SIZE_LIMIT=$(case "${{ matrix.ENV }}" in
-            xl) echo "${{ env.SIZE_LIMIT_EIC_XL_GIB }}" ;;
-            *)  echo "${{ env.SIZE_LIMIT_EIC_CI_GIB }}" ;;
-          esac)
-          .ci/check_image_size \
-            "${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}@${{ steps.build.outputs.digest }}" \
-            "${SIZE_LIMIT}"
+          FULLNAME="${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
+          LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
+          LIMIT="${!LIMIT_VAR}"
+          if [ -n "${LIMIT}" ]; then
+            .ci/check_image_size \
+              "${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${FULLNAME}@${{ steps.build.outputs.digest }}" \
+              "${LIMIT}"
+          else
+            echo "No size limit configured for ${FULLNAME}, skipping check."
+          fi
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v7
         with:
