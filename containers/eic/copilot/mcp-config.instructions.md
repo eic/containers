@@ -36,6 +36,7 @@ If the file does not exist, create it. Add or merge the following:
     }
   }
 }
+```
 
 After saving the file, run /mcp show to confirm the servers are active. The configuration persists across
 sessions in the user's home directory.
