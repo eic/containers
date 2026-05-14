@@ -28,6 +28,10 @@ b17f3abec760256ad7faf1b1d102f2553d6a3622
 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96
 107eb9966c8a9688e042c42e903274099688b590
 045873c8cbce3eef07ed068a998467e01bd91129
+30e69adca31b9ba98e61c42b4126188911e3537c
+93acd58e1399d787dac69d61ecbbd1695c8a2bac
+056c2efcd8f3cceb629f9b78acbdf4533e008206
+ad4b252d254d49db587abd6fd06c375c71d27a01
 8cd9959e3fd4e54d79bbf75210e335ab842e1af0
 ---
 ## Optional hash table with comma-separated file list
@@ -54,4 +58,8 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96: py-awkward, py-uproot, py-uhi ecosystem (HEP): add new versions
 ## 107eb9966c8a9688e042c42e903274099688b590: dd4hep: add v1.36
 ## 045873c8cbce3eef07ed068a998467e01bd91129: py-snakemake-storage-plugin-pelican: new package v0.1.1 + deps
+## 30e69adca31b9ba98e61c42b4126188911e3537c: root: cleanup recipe since the minimum version is 6.28.00
+## 93acd58e1399d787dac69d61ecbbd1695c8a2bac: Miscellaneous package fixes
+## 056c2efcd8f3cceb629f9b78acbdf4533e008206: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
+## ad4b252d254d49db587abd6fd06c375c71d27a01: root: add v6.36.12
 ## 8cd9959e3fd4e54d79bbf75210e335ab842e1af0: root: add builtin_llvm variant to allow external LLVM
