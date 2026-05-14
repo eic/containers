@@ -29,6 +29,15 @@ variables:
   ## Number of jobs to start during container builds
   JOBS: 32
 
+  ## Compressed image size caps (GiB).  Fail the build if a final image exceeds
+  ## these limits to catch regressions early (e.g. accidental Spack-built LLVM).
+  ## To update: run .ci/query_image_sizes against the master tag, add ~15%
+  ## headroom, round up, and update here and in .github/workflows/build-push.yml env.
+  ## Last calibrated: 2025-05 (debian_stable_base=0.76, eic_ci=6.93, eic_xl=8.68 GiB)
+  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: "1"
+  SIZE_LIMIT_EIC_CI_GIB: "8"
+  SIZE_LIMIT_EIC_XL_GIB: "10"
+
   ## is this nightly or not?
   NIGHTLY: ""
   ## Add to tag
@@ -355,6 +364,9 @@ base:
                    --provenance false
                    containers/debian
                    2>&1 | tee build.log
+    - .ci/check_image_size
+        "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}"
+        "${SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB}"
 
 eic:
   parallel:
@@ -503,6 +515,18 @@ eic:
                    --provenance false
                    containers/eic
                    2>&1 | tee build.log
+    - # Check compressed image size; skip for concretization-only targets (cuda, tf)
+      case "${ENV}" in
+        cuda|tf) echo "Skipping size check for concretization-only env ${ENV}." ;;
+        xl)
+          .ci/check_image_size
+            "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}"
+            "${SIZE_LIMIT_EIC_XL_GIB}" ;;
+        *)
+          .ci/check_image_size
+            "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}${ENV}:${INTERNAL_TAG}-${BUILD_TYPE}"
+            "${SIZE_LIMIT_EIC_CI_GIB}" ;;
+      esac
 
 user_spack_environment:
   stage: benchmarks
