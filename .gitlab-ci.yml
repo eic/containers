@@ -365,7 +365,7 @@ base:
                    containers/debian
                    2>&1 | tee build.log
     - LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${BUILD_IMAGE}" | tr '[:lower:]' '[:upper:]')_GIB" ;
-      LIMIT="${!LIMIT_VAR}" ;
+      eval "LIMIT=\${${LIMIT_VAR}:-}" ;
       if [ -n "${LIMIT}" ]; then
         .ci/check_image_size
           "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}"
@@ -523,7 +523,7 @@ eic:
                    2>&1 | tee build.log
     - FULLNAME="${BUILD_IMAGE}${ENV}" ;
       LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB" ;
-      LIMIT="${!LIMIT_VAR}" ;
+      eval "LIMIT=\${${LIMIT_VAR}:-}" ;
       if [ -n "${LIMIT}" ]; then
         .ci/check_image_size
           "${CI_REGISTRY}/${CI_PROJECT_PATH}/${FULLNAME}:${INTERNAL_TAG}-${BUILD_TYPE}"
