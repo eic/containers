@@ -32,7 +32,6 @@ b11529d6bbd8abc9f7bde6faf290b1c22385a022
 9d1b52d36a4c89d9c3964f599cd00232b901e9ac
 30e69adca31b9ba98e61c42b4126188911e3537c
 93acd58e1399d787dac69d61ecbbd1695c8a2bac
-056c2efcd8f3cceb629f9b78acbdf4533e008206
 ad4b252d254d49db587abd6fd06c375c71d27a01
 8cd9959e3fd4e54d79bbf75210e335ab842e1af0
 ---
@@ -64,6 +63,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 9d1b52d36a4c89d9c3964f599cd00232b901e9ac: julia: avoid cascading mbedtls in v1.12+
 ## 30e69adca31b9ba98e61c42b4126188911e3537c: root: cleanup recipe since the minimum version is 6.28.00
 ## 93acd58e1399d787dac69d61ecbbd1695c8a2bac: Miscellaneous package fixes
-## 056c2efcd8f3cceb629f9b78acbdf4533e008206: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
 ## ad4b252d254d49db587abd6fd06c375c71d27a01: root: add v6.36.12
 ## 8cd9959e3fd4e54d79bbf75210e335ab842e1af0: root: add builtin_llvm variant to allow external LLVM
