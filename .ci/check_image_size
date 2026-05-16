@@ -1,7 +1,8 @@
 #!/bin/sh
 # check_image_size IMAGE_REFERENCE LIMIT_GIB
 #
-# Inspects a single-arch OCI/Docker image manifest that has already been pushed
+# Inspects a single-arch OCI/Docker image manifest (or the first image
+# manifest in a multi-arch OCI/Docker image) that has already been pushed
 # to a registry and fails with a clear message if the total compressed layer
 # size exceeds LIMIT_GIB gibibytes.
 #
