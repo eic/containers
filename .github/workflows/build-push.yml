@@ -61,7 +61,7 @@ env:
   ## To update: measure the compressed sizes of the published master images,
   ## add ~15% headroom, round up, and update here and in .gitlab-ci.yml
   ## variables.
-  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: 0.9
+  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: 0.8
   SIZE_LIMIT_EIC_CI_GIB: 3
   SIZE_LIMIT_EIC_XL_GIB: 4.5
 
