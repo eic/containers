@@ -32,7 +32,14 @@ case "${MEDIA_TYPE}" in
   *index* | *manifest.list*)
     DIGEST=$(printf '%s' "${MANIFEST}" | jq -r '
       .manifests[]
-      | select(.artifactType == null and .platform != null)
+      | select(
+          .artifactType == null
+          and .platform != null
+          and (.platform.os // "") != ""
+          and (.platform.architecture // "") != ""
+          and (.platform.os // "") != "unknown"
+          and (.platform.architecture // "") != "unknown"
+        )
       | .digest' | head -1)
     if [ -z "${DIGEST}" ]; then
       echo "ERROR: OCI Image Index contains no platform manifest."
