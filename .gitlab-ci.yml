@@ -248,6 +248,7 @@ status:pending:
     - docker-new
   before_script:
     - !reference [.docker, before_script]
+    - apk add bc git jq
     - if [ "$SKIP_BINFMT" != "true" ]; then
         mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
         for arch in aarch64 ; do
