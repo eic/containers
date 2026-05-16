@@ -58,8 +58,9 @@ env:
 
   ## Compressed image size caps (GiB).  Fail the build if a final image exceeds
   ## these limits to catch regressions early (e.g. accidental Spack-built LLVM).
-  ## To update: run .ci/query_image_sizes against the master tag, add ~15%
-  ## headroom, round up, and update here and in .gitlab-ci.yml variables.
+  ## To update: measure the compressed sizes of the published master images,
+  ## add ~15% headroom, round up, and update here and in .gitlab-ci.yml
+  ## variables.
   ## Last calibrated: 2025-05 (debian_stable_base=0.76, eic_ci=6.93, eic_xl=8.68 GiB)
   SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: 1
   SIZE_LIMIT_EIC_CI_GIB: 8
