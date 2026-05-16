@@ -24,6 +24,9 @@ b17f3abec760256ad7faf1b1d102f2553d6a3622
 45f50975f023b3a444217e3d474c2b2d264763b3
 6b86b44735775c97636861dd66ee14ce83906422
 7f9f7ff5c232068aec8ff30b147a098dd25d9ef9
+346babf5aebcf03045fbe10e59750fac8c95947f
+2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96
+107eb9966c8a9688e042c42e903274099688b590
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -45,3 +48,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 45f50975f023b3a444217e3d474c2b2d264763b3: py-torch: patch for GCC-14.2 ICE on aarch64
 ## 6b86b44735775c97636861dd66ee14ce83906422: apfelxx, epic, partons*, sfml: new packages
 ## 7f9f7ff5c232068aec8ff30b147a098dd25d9ef9: pelican: new package, v7.24.3
+## 346babf5aebcf03045fbe10e59750fac8c95947f: py-mplhep(-data): add new versions
+## 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96: py-awkward, py-uproot, py-uhi ecosystem (HEP): add new versions
+## 107eb9966c8a9688e042c42e903274099688b590: dd4hep: add v1.36
