@@ -152,7 +152,7 @@ packages:
     - '@0.3.0'
   eic-smear:
     require:
-    - '@1.1.16'
+    - '@1.1.17'
   eicrecon:
     require:
     - '@1.37.1' # EICRECON_VERSION
