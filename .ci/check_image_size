@@ -50,7 +50,8 @@ if [ -z "${SIZE_BYTES}" ] || [ "${SIZE_BYTES}" = "null" ] || [ "${SIZE_BYTES}" -
   exit 1
 fi
 
-SIZE_GIB=$(echo "scale=2; ${SIZE_BYTES} / 1073741824" | bc)
+SIZE_CENTI_GIB=$(echo "(${SIZE_BYTES} * 100 + 1073741824 - 1) / 1073741824" | bc)
+SIZE_GIB="$(echo "${SIZE_CENTI_GIB} / 100" | bc).$(printf '%02d' "$(echo "${SIZE_CENTI_GIB} % 100" | bc)")"
 LIMIT_BYTES=$(echo "${LIMIT_GIB} * 1073741824 / 1" | bc)
 
 echo "  Compressed size : ${SIZE_GIB} GiB (${SIZE_BYTES} bytes)"
