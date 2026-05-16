@@ -38,6 +38,7 @@ a77a7ed0d2630466cac71165026387b1381b058a
 88800eeac4ee97b7689b0a84d066e4f634f32b46
 d8271eec35998674d3c67c7613b010fa98519df3
 86e2acd247221d45f9944ac2f69518b8766baec3
+acac89d6bb7079412e711a50a3f06681132a2723
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -73,3 +74,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 88800eeac4ee97b7689b0a84d066e4f634f32b46: py-boto3: add v1.42.85 and py-botocore: add v1.42.85
 ## d8271eec35998674d3c67c7613b010fa98519df3: py-setuptools-scm: Earlier versions require setuptools-scm too
 ## 86e2acd247221d45f9944ac2f69518b8766baec3: py-boto3: add v1.43.17, updated dependencies
+## acac89d6bb7079412e711a50a3f06681132a2723: cuda: append --allow-unsupported-compiler to CUDAFLAGS for dependent_spec
