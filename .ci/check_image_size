@@ -34,6 +34,8 @@ case "${MEDIA_TYPE}" in
       .manifests[]
       | select(
           .artifactType == null
+          and ((.annotations["vnd.docker.reference.type"] // "") != "attestation-manifest")
+          and ((.annotations["vnd.docker.reference.digest"] // "") == "")
           and .platform != null
           and (.platform.os // "") != ""
           and (.platform.architecture // "") != ""
