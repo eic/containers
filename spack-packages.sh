@@ -28,7 +28,7 @@ b17f3abec760256ad7faf1b1d102f2553d6a3622
 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96
 107eb9966c8a9688e042c42e903274099688b590
 045873c8cbce3eef07ed068a998467e01bd91129
-11ad01e7b796d34571a2c9e0a72b483cc007cd3a
+acac89d6bb7079412e711a50a3f06681132a2723
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -54,4 +54,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96: py-awkward, py-uproot, py-uhi ecosystem (HEP): add new versions
 ## 107eb9966c8a9688e042c42e903274099688b590: dd4hep: add v1.36
 ## 045873c8cbce3eef07ed068a998467e01bd91129: py-snakemake-storage-plugin-pelican: new package v0.1.1 + deps
-## 11ad01e7b796d34571a2c9e0a72b483cc007cd3a: CudaPackage: append --allow-unsupported-compilers to CUDAFLAGS
+## acac89d6bb7079412e711a50a3f06681132a2723: cuda: append --allow-unsupported-compiler to CUDAFLAGS for dependent_spec
