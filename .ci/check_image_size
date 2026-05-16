@@ -64,8 +64,8 @@ if [ "${SIZE_BYTES}" -gt "${LIMIT_BYTES}" ]; then
   echo "       ${SIZE_GIB} GiB > ${LIMIT_GIB} GiB"
   echo ""
   echo "To update the high-water mark after an intentional size increase:"
-  echo "  1. Inspect the published image size with:"
-  echo "     docker buildx imagetools inspect --raw \"${IMAGE_REF}\" | jq '[.layers[].size] | add // 0'"
+  echo "  1. Re-run this script to inspect the published image size:"
+  echo "     .ci/check_image_size \"${IMAGE_REF}\" \"${LIMIT_GIB}\""
   echo "  2. Add ~15% buffer, round up to the next whole GiB"
   echo "  3. Update SIZE_LIMIT_*_GIB in .github/workflows/build-push.yml and .gitlab-ci.yml"
   exit 1
