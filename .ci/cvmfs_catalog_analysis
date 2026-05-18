@@ -32,7 +32,6 @@ Output columns:
 import argparse
 import os
 import sys
-from collections import defaultdict
 
 
 def parse_args():
@@ -50,16 +49,16 @@ def parse_args():
 
 
 def walk_tree(prefix, max_depth):
-    """Yield (abs_path, rel_path, depth, has_catalog, child_count, total_count).
+    """Return (results, catalog_roots) for the directory tree under prefix.
 
-    child_count  = direct children of this directory
-    total_count  = all entries in subtree (recursive)
+    results is a list of (abs_path, rel_path, depth, has_catalog, owned, total)
+    where owned = entries owned by the catalog at abs_path (None if not a catalog)
+    and total = all entries in the subtree (recursive).
     """
     prefix = os.path.realpath(prefix)
 
     # First pass: collect totals with os.walk (don't follow symlinks so we
     # don't escape the sandbox).
-    dir_children = {}   # abs_path -> count of direct children
     dir_total = {}      # abs_path -> total entries in subtree
 
     for root, dirs, files in os.walk(prefix, followlinks=False, onerror=lambda e: None):
@@ -71,7 +70,6 @@ def walk_tree(prefix, max_depth):
             continue
 
         entries = dirs + files
-        dir_children[root] = len(entries)
 
         # Accumulate totals: add our direct entries to all ancestors
         path = root
