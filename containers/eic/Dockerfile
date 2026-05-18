@@ -343,11 +343,6 @@ find /opt/local -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
 # Detector: each version is an independent Spack install sub-tree
 touch /opt/detector/.cvmfscatalog
 find /opt/detector -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
-# Benchmark and campaign git repos each change independently
-touch /opt/benchmarks/.cvmfscatalog
-find /opt/benchmarks -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
-touch /opt/campaigns/.cvmfscatalog
-find /opt/campaigns -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
 # Spack environment configs
 touch /opt/spack-environment/.cvmfscatalog
 EOF
@@ -443,6 +438,16 @@ git clone https://github.com/eic/job_submission_condor.git /opt/campaigns/condor
 git -C /opt/campaigns/condor checkout ${CAMPAIGNS_CONDOR_SHA:-main}
 git clone https://github.com/eic/job_submission_slurm.git /opt/campaigns/slurm
 git -C /opt/campaigns/slurm checkout ${CAMPAIGNS_SLURM_SHA:-main}
+EOF
+
+## Place cvmfs catalogs
+RUN <<EOF
+set -e
+# Benchmark and campaign git repos each change independently
+touch /opt/benchmarks/.cvmfscatalog
+find /opt/benchmarks -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+touch /opt/campaigns/.cvmfscatalog
+find /opt/campaigns -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
 EOF
 
 ## make sure we have the entrypoints setup correctly
