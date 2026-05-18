@@ -218,7 +218,7 @@ def main():
         for p in warned:
             print(f"  {p}")
     if suggested:
-        print(f"\nSUGGESTION: {len(suggested)} director(ies) may benefit from a catalog (> {args.min_entries} owned entries):")
+        print(f"\nSUGGESTION: {len(suggested)} directories may benefit from a catalog (> {args.min_entries} owned entries):")
         for p, n in sorted(suggested, key=lambda x: -x[1]):
             print(f"  {n:>8}  {p}")
 

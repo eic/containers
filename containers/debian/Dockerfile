@@ -344,9 +344,10 @@ spack repo add --scope spack "${EICSPACK_ROOT}/spack_repo/eic"
 EOF
 
 ## Place cvmfs catalogs for system directories
-## /etc and /usr subtrees are static (installed once at base-image build time)
+## /etc and /usr are core system-directory subtrees created in the base image,
 ## and are large enough to warrant their own catalog boundaries so that CVMFS
-## clients do not have to load the entire root catalog to traverse them.
+## clients do not have to load the entire root catalog to traverse them, even
+## if later stages or downstream images add files under those paths.
 RUN <<EOF
 set -e
 touch /etc/.cvmfscatalog
