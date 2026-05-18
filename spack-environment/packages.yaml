@@ -111,10 +111,10 @@ packages:
     - '@10bbcdbf2be3ad3aa56febcf4c7662d771460a99'
   dawn:
     require:
-    - '@3_91a'
+    - '@main'
   dawncut:
     require:
-    - '@1_54a'
+    - '@main'
   dbus:
     require:
     # Until 1.15.12, https://gitlab.freedesktop.org/dbus/dbus/-/commit/b104667bd7ec55dda057ff4ffdde848336f253f4,
