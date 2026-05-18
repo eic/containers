@@ -541,7 +541,7 @@ jobs:
             "CI_REGISTRY_PASSWORD=${{ secrets.GHCR_REGISTRY_TOKEN }}"
             "GITHUB_REGISTRY_USER=${{ secrets.GHCR_REGISTRY_USER }}"
             "GITHUB_REGISTRY_TOKEN=${{ secrets.GHCR_REGISTRY_TOKEN }}"
-            "SPACK_GITHUB_TOKEN=${{ secrets.SPACK_GITHUB_TOKEN }}"
+            "GITHUB_SPACK_TOKEN=${{ secrets.SPACK_GITHUB_TOKEN }}"
           secret-files: |
             mirrors=mirrors.yaml
           platforms: ${{ matrix.PLATFORM }}
