@@ -500,6 +500,7 @@ eic:
                    --secret type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD
                    --secret type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER
                    --secret type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN
+                   --secret type=env,id=GITHUB_SPACK_TOKEN,env=GITHUB_SPACK_TOKEN
                    --provenance false
                    containers/eic
                    2>&1 | tee build.log

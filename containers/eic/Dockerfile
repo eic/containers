@@ -99,11 +99,18 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    --mount=type=secret,id=GITHUB_SPACK_TOKEN                           \
     <<EOF
 set -e
+if [ -s /run/secrets/GITHUB_SPACK_TOKEN ]; then
+  printf 'machine github.com login x-access-token password %s\n' \
+    "$(cat /run/secrets/GITHUB_SPACK_TOKEN)" > ~/.netrc
+  chmod 600 ~/.netrc
+fi
 export CCACHE_DIR=/ccache
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 spack clean --downloads --stage
+rm -f ~/.netrc
 ccache --show-stats
 ccache --zero-stats
 EOF
@@ -242,12 +249,19 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    --mount=type=secret,id=GITHUB_SPACK_TOKEN                           \
     <<EOF
 set -e
+if [ -s /run/secrets/GITHUB_SPACK_TOKEN ]; then
+  printf 'machine github.com login x-access-token password %s\n' \
+    "$(cat /run/secrets/GITHUB_SPACK_TOKEN)" > ~/.netrc
+  chmod 600 ~/.netrc
+fi
 export CCACHE_DIR=/ccache
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
 spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
+rm -f ~/.netrc
 ccache --show-stats
 ccache --zero-stats
 EOF
