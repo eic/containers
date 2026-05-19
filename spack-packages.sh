@@ -29,6 +29,7 @@ b17f3abec760256ad7faf1b1d102f2553d6a3622
 107eb9966c8a9688e042c42e903274099688b590
 045873c8cbce3eef07ed068a998467e01bd91129
 b11529d6bbd8abc9f7bde6faf290b1c22385a022
+9d1b52d36a4c89d9c3964f599cd00232b901e9ac
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -55,3 +56,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 107eb9966c8a9688e042c42e903274099688b590: dd4hep: add v1.36
 ## 045873c8cbce3eef07ed068a998467e01bd91129: py-snakemake-storage-plugin-pelican: new package v0.1.1 + deps
 ## b11529d6bbd8abc9f7bde6faf290b1c22385a022: py-onnxruntime: only run tests when self.run_tests
+## 9d1b52d36a4c89d9c3964f599cd00232b901e9ac: julia: avoid cascading mbedtls in v1.12+

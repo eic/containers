@@ -280,7 +280,7 @@ packages:
     - '@15.1.0' # JUGGLER_VERSION
   julia:
     require:
-    - '@1.11'
+    - '@1.12'
   just:
     require:
     - '@1.46.0'
