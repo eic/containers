@@ -14,6 +14,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS <<- \
 --- || true
 a115a811bdfce4db5298a9ba9b7903ccfb0de101
 20444b8e9382e659360a1446688d10a8c2d2ad31
+93acd58e1399d787dac69d61ecbbd1695c8a2bac
 056c2efcd8f3cceb629f9b78acbdf4533e008206
 f5742718da7bd1d078ddc8423011a82ef2e3c759
 0d4e42deee0f561013568d1e92205a084cf203bc
@@ -44,6 +45,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## [hash]: [description]
 ## a115a811bdfce4db5298a9ba9b7903ccfb0de101: github-copilot: new package
 ## 20444b8e9382e659360a1446688d10a8c2d2ad31: github-copilot: add v1.0.8
+## 93acd58e1399d787dac69d61ecbbd1695c8a2bac: Miscellaneous package fixes
 ## 056c2efcd8f3cceb629f9b78acbdf4533e008206: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
 ## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
 ## 0d4e42deee0f561013568d1e92205a084cf203bc: g4hepem: new package
