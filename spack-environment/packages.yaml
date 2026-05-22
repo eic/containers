@@ -109,6 +109,9 @@ packages:
   cppcoro:
     require:
     - '@10bbcdbf2be3ad3aa56febcf4c7662d771460a99'
+  curl:
+    require:
+    - tls=openssl
   dawn:
     require:
     - '@3_91a'
@@ -277,7 +280,7 @@ packages:
     - '@15.1.0' # JUGGLER_VERSION
   julia:
     require:
-    - '@1.11'
+    - '@1.12'
   just:
     require:
     - '@1.46.0'
