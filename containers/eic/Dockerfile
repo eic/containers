@@ -334,10 +334,25 @@ ENV CMAKE_TOOLCHAIN_FILE=/opt/local/etc/cmake/find_package_resolve_symlinks.cmak
 ## Place cvmfs catalogs
 RUN <<EOF
 set -e
+# Spack installation trees
 touch ${SPACK_ROOT}/.cvmfscatalog
+touch /opt/spack-packages/.cvmfscatalog
+# Install tree: root catalog, one catalog per arch dir, one per package.
+# Stopping at depth 2 (package level) avoids creating wasteful per-subdir
+# catalogs (lib/, bin/, share/, etc.) that change atomically with the package.
 touch /opt/software/.cvmfscatalog
-find /opt/software -mindepth 2 -maxdepth 3 -type d -exec touch {}/.cvmfscatalog \;
+find /opt/software -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+find /opt/software -mindepth 2 -maxdepth 2 -type d -exec touch {}/.cvmfscatalog \;
+# Spack view: catalog per top-level subdir so that updating a package only
+# invalidates the view subdirs it contributes to (lib/, bin/, etc.),
+# not the entire merged view.
 touch /opt/local/.cvmfscatalog
+find /opt/local -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+# Detector: each version is an independent Spack install sub-tree
+touch /opt/detector/.cvmfscatalog
+find /opt/detector -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+# Spack environment configs
+touch /opt/spack-environment/.cvmfscatalog
 EOF
 
 ## Store environment
@@ -431,6 +446,16 @@ git clone https://github.com/eic/job_submission_condor.git /opt/campaigns/condor
 git -C /opt/campaigns/condor checkout ${CAMPAIGNS_CONDOR_SHA:-main}
 git clone https://github.com/eic/job_submission_slurm.git /opt/campaigns/slurm
 git -C /opt/campaigns/slurm checkout ${CAMPAIGNS_SLURM_SHA:-main}
+EOF
+
+## Place cvmfs catalogs
+RUN <<EOF
+set -e
+# Benchmark and campaign git repos each change independently
+touch /opt/benchmarks/.cvmfscatalog
+find /opt/benchmarks -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+touch /opt/campaigns/.cvmfscatalog
+find /opt/campaigns -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
 EOF
 
 ## make sure we have the entrypoints setup correctly
