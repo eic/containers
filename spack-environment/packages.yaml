@@ -42,6 +42,8 @@ packages:
       when: '^dd4hep %gcc'
     - spec: '%clang'
       when: '^dd4hep %clang'
+    package_attributes:
+      install_source: true
   actsvg:
     require:
     - '@0.4.56'
@@ -128,6 +130,8 @@ packages:
     - '@1.36'
     - +ddg4 +ddcad +edm4hep +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
+    package_attributes:
+      install_source: true
   doxygen:
     require:
     - +graphviz
@@ -159,6 +163,8 @@ packages:
   eicrecon:
     require:
     - '@1.37.1' # EICRECON_VERSION
+    package_attributes:
+      install_source: true
   eigen:
     require:
     - '@3.4.0'
@@ -168,6 +174,8 @@ packages:
   epic:
     require:
     - 'artifacts=epic_craterlake'
+    package_attributes:
+      install_source: true
   epic-generator:
     require:
     - '@1.1.8'
@@ -265,9 +273,13 @@ packages:
   irt:
     require:
     - '@1.0.10'
+    package_attributes:
+      install_source: true
   irt2:
     require:
     - '@2.1.3'
+    package_attributes:
+      install_source: true
   iwyu:
     require:
     - '@0.23:'
@@ -275,6 +287,8 @@ packages:
     require:
     - '@2026.02.00'
     - -ipo +podio +root +zmq
+    package_attributes:
+      install_source: true
   juggler:
     require:
     - '@15.2.0' # JUGGLER_VERSION
@@ -384,6 +398,7 @@ packages:
     - cxxstd=20
     - +datasource +rntuple
     package_attributes:
+      install_source: true
       run_tests: true
   prmon:
     require:
