@@ -834,8 +834,8 @@ jobs:
         if-no-files-found: error
 
   eicrecon-gun:
-    name: eicrecon (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }})
-    runs-on: ubuntu-latest
+    name: eicrecon (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, ${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
     needs: [eic-manifest, npsim-gun]
     container:
       image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
@@ -847,10 +847,16 @@ jobs:
       matrix:
         particle: [pi, e]
         detector_config: [epic_craterlake]
+        arch: [amd64, arm64]
+        include:
+        - arch: amd64
+          runner: ubuntu-latest
+        - arch: arm64
+          runner: ubuntu-24.04-arm
     steps:
     - uses: actions/download-artifact@v8
       with:
-        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}.edm4hep.root
     - name: Run EICrecon
       shell: bash --login -eo pipefail {0}
       run: |
@@ -862,7 +868,7 @@ jobs:
     - id: upload_new_artifact
       uses: actions/upload-artifact@v7
       with:
-        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}.edm4eic.root
         path: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
         if-no-files-found: error
     - name: Download previous artifact
@@ -871,7 +877,7 @@ jobs:
       with:
         branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
         path: ref/
-        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}.edm4eic.root
         workflow: ".github/workflows/build-push.yml"
         workflow_conclusion: "success"
         if_no_artifact_found: warn
@@ -883,8 +889,8 @@ jobs:
         ln -sf ../rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root new/
         shopt -s nullglob
         capybara bara ref/rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root* new/rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
-        mv capybara-reports rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
-        touch .rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+        mv capybara-reports rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}
+        touch .rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}
     - name: Write artifact metadata
       env:
         NEW_URL: ${{ steps.upload_new_artifact.outputs.artifact-url }}
@@ -901,13 +907,13 @@ jobs:
           fi
         fi
         jq -nc --arg new "$NEW_URL" --arg ref "$REF_URL" '{new: $new, ref: $ref}' \
-          > rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}/meta.json
+          > rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}/meta.json
     - uses: actions/upload-artifact@v7
       with:
-        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.capy
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}.capy
         path: |
-          .rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
-          rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}/
+          .rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}
+          rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}/
         if-no-files-found: error
 
   eicrecon-dis:
