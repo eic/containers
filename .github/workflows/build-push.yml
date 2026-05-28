@@ -673,8 +673,8 @@ jobs:
             ${{ steps.digests.outputs.all }}
 
   npsim-gun:
-    name: npsim (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }})
-    runs-on: ubuntu-latest
+    name: npsim (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, ${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
     needs: eic-manifest
     container:
       image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
@@ -686,6 +686,12 @@ jobs:
       matrix:
         particle: [pi, e]
         detector_config: [epic_craterlake]
+        arch: [amd64, arm64]
+        include:
+        - arch: amd64
+          runner: ubuntu-latest
+        - arch: arm64
+          runner: ubuntu-24.04-arm
     steps:
     - name: Produce simulation files
       shell: bash --login -eo pipefail {0}
@@ -703,7 +709,7 @@ jobs:
     - id: upload_new_artifact
       uses: actions/upload-artifact@v7
       with:
-        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}.edm4hep.root
         path: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
         if-no-files-found: error
     - name: Download previous artifact
@@ -712,7 +718,7 @@ jobs:
       with:
         branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
         path: ref/
-        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}.edm4hep.root
         workflow: ".github/workflows/build-push.yml"
         workflow_conclusion: "success"
         if_no_artifact_found: warn
@@ -722,8 +728,8 @@ jobs:
         mkdir capybara-reports
         shopt -s nullglob
         capybara bara ref/sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root* sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
-        mv capybara-reports sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
-        touch .sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
+        mv capybara-reports sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}
+        touch .sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}
     - name: Write artifact metadata
       env:
         NEW_URL: ${{ steps.upload_new_artifact.outputs.artifact-url }}
@@ -740,13 +746,13 @@ jobs:
           fi
         fi
         jq -nc --arg new "$NEW_URL" --arg ref "$REF_URL" '{new: $new, ref: $ref}' \
-          > sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}/meta.json
+          > sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}/meta.json
     - uses: actions/upload-artifact@v7
       with:
-        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.capy
+        name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}.capy
         path: |
-          .sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}
-          sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}/
+          .sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}
+          sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_${{ matrix.arch }}/
         if-no-files-found: error
 
   npsim-dis:
