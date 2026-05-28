@@ -1029,14 +1029,6 @@ jobs:
         capybara bara amd64/sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root arm64/sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4hep.root
         mv capybara-reports sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64_vs_arm64
         touch .sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64_vs_arm64
-    - name: Write artifact metadata
-      env:
-        AMD64_ARTIFACT: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64.edm4hep.root
-        ARM64_ARTIFACT: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_arm64.edm4hep.root
-      run: |
-        jq -nc --arg amd64 "$AMD64_ARTIFACT" --arg arm64 "$ARM64_ARTIFACT" \
-          '{note: "cross-arch comparison", amd64_artifact: $amd64, arm64_artifact: $arm64}' \
-          > sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64_vs_arm64/meta.json
     - uses: actions/upload-artifact@v7
       with:
         name: sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64_vs_arm64.capy
