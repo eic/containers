@@ -47,7 +47,15 @@ case "${MEDIA_TYPE}" in
       echo "ERROR: OCI Image Index contains no platform manifest."
       exit 1
     fi
-    IMAGE_BASE="${IMAGE_REF%@*}"
+    IMAGE_BASE="${IMAGE_REF%%@*}"
+    # Strip :tag from the last path segment only (preserves registry host:port)
+    _dir="${IMAGE_BASE%/*}"
+    _name="${IMAGE_BASE##*/}"
+    if [ "${_dir}" != "${IMAGE_BASE}" ]; then
+      IMAGE_BASE="${_dir}/${_name%%:*}"
+    else
+      IMAGE_BASE="${_name%%:*}"
+    fi
     MANIFEST=$(docker buildx imagetools inspect --raw "${IMAGE_BASE}@${DIGEST}")
     ;;
 esac
