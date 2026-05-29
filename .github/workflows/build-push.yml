@@ -700,6 +700,7 @@ jobs:
         npsim \
           --compactFile ${DETECTOR_PATH}/${{ matrix.detector_config }}.xml \
           -G --random.seed 1 \
+          --random.enableEventSeed \
           --gun.particle "${{ matrix.particle }}-" \
           --gun.momentumMin "1*GeV" --gun.momentumMax "20*GeV" \
           --gun.distribution "uniform" \
