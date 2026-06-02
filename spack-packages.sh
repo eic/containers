@@ -14,7 +14,9 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS <<- \
 --- || true
 a115a811bdfce4db5298a9ba9b7903ccfb0de101
 20444b8e9382e659360a1446688d10a8c2d2ad31
-5c37f836753e8f9683fdc547f3661c5045abcbd1
+30e69adca31b9ba98e61c42b4126188911e3537c
+93acd58e1399d787dac69d61ecbbd1695c8a2bac
+056c2efcd8f3cceb629f9b78acbdf4533e008206
 f5742718da7bd1d078ddc8423011a82ef2e3c759
 0d4e42deee0f561013568d1e92205a084cf203bc
 6346a54e35ee6281b8e8c6a1bc9c102893593c8e
@@ -30,6 +32,11 @@ b17f3abec760256ad7faf1b1d102f2553d6a3622
 045873c8cbce3eef07ed068a998467e01bd91129
 b11529d6bbd8abc9f7bde6faf290b1c22385a022
 9d1b52d36a4c89d9c3964f599cd00232b901e9ac
+ad4b252d254d49db587abd6fd06c375c71d27a01
+8cd9959e3fd4e54d79bbf75210e335ab842e1af0
+7f5e38344f648a4a5ad5c2bb7c1f8c5b1c439248
+5fc67dc0124554aa9793e6e67c9d2bcb31ef6f76
+be44f22800980a10f783f9f42bf837a15f98bf38
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -41,7 +48,9 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## [hash]: [description]
 ## a115a811bdfce4db5298a9ba9b7903ccfb0de101: github-copilot: new package
 ## 20444b8e9382e659360a1446688d10a8c2d2ad31: github-copilot: add v1.0.8
-## 5c37f836753e8f9683fdc547f3661c5045abcbd1: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
+## 30e69adca31b9ba98e61c42b4126188911e3537c: root: cleanup recipe since the minimum version is 6.28.00
+## 93acd58e1399d787dac69d61ecbbd1695c8a2bac: Miscellaneous package fixes [includes minor change to root]
+## 056c2efcd8f3cceb629f9b78acbdf4533e008206: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
 ## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
 ## 0d4e42deee0f561013568d1e92205a084cf203bc: g4hepem: new package
 ## 6346a54e35ee6281b8e8c6a1bc9c102893593c8e: g4adept: new package
@@ -57,3 +66,8 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 045873c8cbce3eef07ed068a998467e01bd91129: py-snakemake-storage-plugin-pelican: new package v0.1.1 + deps
 ## b11529d6bbd8abc9f7bde6faf290b1c22385a022: py-onnxruntime: only run tests when self.run_tests
 ## 9d1b52d36a4c89d9c3964f599cd00232b901e9ac: julia: avoid cascading mbedtls in v1.12+
+## ad4b252d254d49db587abd6fd06c375c71d27a01: root: add v6.36.12
+## 8cd9959e3fd4e54d79bbf75210e335ab842e1af0: root: add builtin_llvm variant to allow external LLVM
+## 7f5e38344f648a4a5ad5c2bb7c1f8c5b1c439248: root: add v6.40.00
+## 5fc67dc0124554aa9793e6e67c9d2bcb31ef6f76: root: fix style
+## be44f22800980a10f783f9f42bf837a15f98bf38: root: tmva-sofie now depends on numpy
