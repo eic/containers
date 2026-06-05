@@ -329,7 +329,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@git.2d1dc451a5b9017cc865b8e402f474c8f731ac05'
+    - '@git.2b6ba2b579550c769aaf729424c1f11364e572e4'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
