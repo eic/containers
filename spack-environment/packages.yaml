@@ -126,7 +126,7 @@ packages:
   dd4hep:
     require:
     - '@1.36'
-    - +ddg4 +ddcad +edm4hep +hepmc3 +xercesc
+    - +ddg4 +ddcad +edm4hep +g4hepem +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   doxygen:
     require:
@@ -329,7 +329,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.6.0'
+    - '@git.g4hepem'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
