@@ -7,7 +7,12 @@ spack:
   include_concrete:
   - /opt/spack-environment/xl
   concretizer:
-    unify: when_possible # multiple epic versions
+    duplicates:
+      max_dupes:
+        epic: 10
+        llvm: 2
+        py-setuptools: 2
+        py-urllib3: 2
   packages:
     geant4:
       require:
