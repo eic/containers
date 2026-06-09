@@ -36,7 +36,7 @@ packages:
   acts:
     require:
     - '@45.3.0'
-    - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
+    - cxxstd=20 +dd4hep +edm4hep +examples +fatras +g4hepem +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
       when: '^dd4hep %gcc'
@@ -329,7 +329,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.6.0'
+    - '@git.g4hepem'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
