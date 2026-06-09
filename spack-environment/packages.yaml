@@ -35,7 +35,7 @@ packages:
     - cxxstd=17
   acts:
     require:
-    - '@45.1.1'
+    - '@45.3.0'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
@@ -158,7 +158,7 @@ packages:
     - '@1.1.17'
   eicrecon:
     require:
-    - '@1.37.1' # EICRECON_VERSION
+    - '@1.38.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
@@ -329,7 +329,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.4.7'
+    - '@1.6.0'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
