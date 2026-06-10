@@ -56,6 +56,15 @@ env:
   ## Internal tag used for the CI
   INTERNAL_TAG: pipeline-${{ github.run_id }}
 
+  ## Compressed image size caps (GiB).  Fail the build if a final image exceeds
+  ## these limits to catch regressions early (e.g. accidental Spack-built LLVM).
+  ## To update: measure the compressed sizes of the published master images,
+  ## add ~15% headroom, round up, and update here and in .gitlab-ci.yml
+  ## variables.
+  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: 0.8
+  SIZE_LIMIT_EIC_CI_GIB: 3
+  SIZE_LIMIT_EIC_XL_GIB: 4.5
+
 jobs:
   env:
     ## The env context is not available in matrix, only in steps,
@@ -249,6 +258,18 @@ jobs:
         run: |
           mkdir -p /tmp/digests
           echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
+      - name: Check image size
+        run: |
+          FULLNAME="${{ matrix.BUILD_IMAGE }}"
+          LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
+          LIMIT="${!LIMIT_VAR}"
+          if [ -n "${LIMIT}" ]; then
+            .ci/check_image_size \
+              "${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${FULLNAME}@${{ steps.build.outputs.digest }}" \
+              "${LIMIT}"
+          else
+            echo "No size limit configured for ${FULLNAME}, skipping check."
+          fi
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v7
         with:
@@ -570,6 +591,20 @@ jobs:
         run: |
           mkdir -p /tmp/digests
           echo "${{ steps.meta.outputs.tags }}@${{ steps.build.outputs.digest }}" > /tmp/digests/${{ matrix.arch }}.digest
+      - name: Check image size
+        # Only check final images; concretization-only targets (cuda, tf) don't produce a full image
+        if: ${{ matrix.target == 'final' }}
+        run: |
+          FULLNAME="${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
+          LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
+          LIMIT="${!LIMIT_VAR}"
+          if [ -n "${LIMIT}" ]; then
+            .ci/check_image_size \
+              "${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${FULLNAME}@${{ steps.build.outputs.digest }}" \
+              "${LIMIT}"
+          else
+            echo "No size limit configured for ${FULLNAME}, skipping check."
+          fi
       - name: Upload digest as artifact
         uses: actions/upload-artifact@v7
         with:
