@@ -181,7 +181,7 @@ packages:
     - plugins=cxx
   fjcontrib:
     require:
-    - '@1.051'
+    - '@1.101'
   flame:
     require:
     - libflame
