@@ -376,7 +376,7 @@ COPY eic-env.sh /etc/eic-env.sh
 COPY profile.d/* /etc/profile.d
 COPY singularity.d /.singularity.d
 
-## System-level Copilot server defaults.
+## System-level Copilot instructions (including MCP setup guidance).
 COPY copilot/ /etc/copilot/
 
 ## set ROOT TFile forward compatibility
