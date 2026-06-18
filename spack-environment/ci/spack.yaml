@@ -19,7 +19,6 @@ spack:
   - fastjet
   - fjcontrib
   - fmt
-  - gaudi
   - geant4 -opengl
   - gfal2
   - gfal2-util
@@ -70,6 +69,9 @@ spack:
   - py-rucio-clients
   - py-scipy
   - py-seaborn
+  - py-snakemake-storage-plugin-fs
+  - py-snakemake-storage-plugin-pelican
+  - py-snakemake-storage-plugin-rucio
   - py-toml
   - py-uproot
   - py-vector

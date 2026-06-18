@@ -15,4 +15,3 @@ spack:
   - edm4eic
   - eicrecon
   - epic@main # EPIC_VERSION
-  - juggler

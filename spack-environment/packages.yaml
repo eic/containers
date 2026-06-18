@@ -35,7 +35,7 @@ packages:
     - cxxstd=17
   acts:
     require:
-    - '@45.1.1'
+    - '@45.3.0'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
@@ -55,7 +55,7 @@ packages:
     - +root +zlib
   algorithms:
     require:
-    - '@1.2.0'
+    - '@1.3.0'
   arrow:
     require:
     - '@22:'
@@ -109,6 +109,9 @@ packages:
   cppcoro:
     require:
     - '@10bbcdbf2be3ad3aa56febcf4c7662d771460a99'
+  curl:
+    require:
+    - tls=openssl
   dawn:
     require:
     - '@3_91a'
@@ -140,7 +143,7 @@ packages:
     - cxxstd=20
   edm4hep:
     require:
-    - '@0.99.4'
+    - '@1.0'
     - cxxstd=20
   egl:
     buildable: False
@@ -152,10 +155,10 @@ packages:
     - '@0.3.0'
   eic-smear:
     require:
-    - '@1.1.16'
+    - '@1.1.17'
   eicrecon:
     require:
-    - '@1.37.1' # EICRECON_VERSION
+    - '@1.38.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
@@ -178,7 +181,7 @@ packages:
     - plugins=cxx
   fjcontrib:
     require:
-    - '@1.051'
+    - '@1.101'
   flame:
     require:
     - libflame
@@ -274,10 +277,10 @@ packages:
     - -ipo +podio +root +zmq
   juggler:
     require:
-    - '@15.1.0' # JUGGLER_VERSION
+    - '@15.2.0' # JUGGLER_VERSION
   julia:
     require:
-    - '@1.11'
+    - '@1.12'
   just:
     require:
     - '@1.46.0'
@@ -286,7 +289,7 @@ packages:
     - '@0.1'
   k4fwcore:
     require:
-    - '@1.3'
+    - '@1.5'
   lapack:
     require:
     - openblas
@@ -326,7 +329,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.4.7'
+    - '@1.6.1'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
@@ -377,7 +380,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@1.6'
+    - '@1.7'
     - cxxstd=20
     - +datasource +rntuple
     package_attributes:
@@ -570,7 +573,7 @@ packages:
     - hepmc=3 plugin-match=HERA,LEP,MC
   root:
     require:
-    - '@6.38.00'
+    - '@6.38.04'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
@@ -579,7 +582,7 @@ packages:
     - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root ~internal_pdfs +ipo +lhapdf +lhole +mpi +openloops +pythia +python ~recola +rivet +root ~ufo
   simphony:
     require:
-    - '@0.3.0'
+    - '@0.6.0'
   simsipm:
     require:
     - '@2.1.0'
@@ -595,6 +598,9 @@ packages:
   py-snakemake-storage-plugin-http:
     require:
     - '@0.2.3:'
+  py-snakemake-storage-plugin-pelican:
+    require:
+    - '@0.1.1:'
   py-snakemake-storage-plugin-rucio:
     require:
     - '@0.4.1:'
