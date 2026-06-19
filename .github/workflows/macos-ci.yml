@@ -1,0 +1,111 @@
+name: macOS CI Build
+
+on:
+  push:
+    branches:
+      - master
+      - macos-ci-workflow
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Extract Spack configuration
+        id: spack-config
+        run: |
+          # Source spack.sh to get SPACK_VERSION and SPACK_CHERRYPICKS
+          source spack.sh
+          echo "spack-version=${SPACK_VERSION}" >> $GITHUB_OUTPUT
+          echo "spack-cherrypicks<<EOF" >> $GITHUB_OUTPUT
+          echo "${SPACK_CHERRYPICKS}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Source spack-packages.sh to get SPACKPACKAGES_VERSION and SPACKPACKAGES_CHERRYPICKS
+          source spack-packages.sh
+          echo "spackpackages-version=${SPACKPACKAGES_VERSION}" >> $GITHUB_OUTPUT
+          echo "spackpackages-cherrypicks<<EOF" >> $GITHUB_OUTPUT
+          echo "${SPACKPACKAGES_CHERRYPICKS}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Extract buildcache URL from mirrors.yaml.in (simplified - get the version)
+          echo "buildcache-version=${SPACKPACKAGES_VERSION}" >> $GITHUB_OUTPUT
+      
+      - name: Setup Spack
+        uses: spack/setup-spack@v2.1.1
+        with:
+          ref: ${{ steps.spack-config.outputs.spack-version }}
+          color: true
+          path: ${{ github.workspace }}/spack
+      
+      - name: Apply Spack cherry-picks
+        run: |
+          cd ${{ github.workspace }}/spack
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          # Apply cherry-picks from spack.sh (match only valid git commit hashes)
+          echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' | while read -r commit; do
+            echo "Cherry-picking ${commit}"
+            git cherry-pick "${commit}"
+          done
+      
+      - name: Checkout and configure spack-packages
+        run: |
+          cd ${{ github.workspace }}/spack
+          git clone https://github.com/spack/spack-packages.git var/spack/repos/spack-packages
+          cd var/spack/repos/spack-packages
+          git checkout ${{ steps.spack-config.outputs.spackpackages-version }}
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          # Apply cherry-picks from spack-packages.sh (match only valid git commit hashes)
+          echo "${{ steps.spack-config.outputs.spackpackages-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' | while read -r commit; do
+            echo "Cherry-picking ${commit}"
+            git cherry-pick "${commit}"
+          done
+          
+          cd ${{ github.workspace }}/spack
+          spack repo add var/spack/repos/spack-packages
+      
+      - name: Add Spack environment
+        run: |
+          spack env create ci spack-environment/ci
+          spack env activate ci
+          spack -e ci compiler find
+          spack -e ci external find llvm
+          spack -e ci external find --not-buildable cmake
+      
+      - name: Concretize
+        run: |
+          spack -e ci concretize -f
+      
+      - name: Configure buildcache
+        run: |
+          spack -e ci mirror add eic oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
+          spack -e ci buildcache keys --install --trust
+      
+      - name: Install
+        run: |
+          spack -e ci install --no-check-signature --show-log-on-error
