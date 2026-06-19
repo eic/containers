@@ -33,6 +33,7 @@ b11529d6bbd8abc9f7bde6faf290b1c22385a022
 deb4f17d93dbe012403614245334f7c73fcc086f
 0d64b2bab72a99441f042b663e4bc993ec0db45d
 a77a7ed0d2630466cac71165026387b1381b058a
+403e4e0b2189600a736106bcfee568e31b5bcb22
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -63,3 +64,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## deb4f17d93dbe012403614245334f7c73fcc086f: fix: add latest osg-ca-cert
 ## 0d64b2bab72a99441f042b663e4bc993ec0db45d: osg-ca-certs: depends on gmake and perl, type build
 ## a77a7ed0d2630466cac71165026387b1381b058a: py-pynacl: depends on gmake, type build
+## 403e4e0b2189600a736106bcfee568e31b5bcb22: py-rucio-clients: add 40.2.0

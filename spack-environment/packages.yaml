@@ -534,7 +534,7 @@ packages:
     - '@13:'
   py-rucio-clients:
     require:
-    - '@37.3.0:'
+    - '@40.2.0:'
     - +argcomplete
   py-scipy:
     require:
