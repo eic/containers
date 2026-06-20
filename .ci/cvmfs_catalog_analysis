@@ -112,7 +112,6 @@ def walk_tree(prefix, max_depth):
                 entries = os.scandir(d)
             except OSError:
                 continue
-            children_dirs = []
             for entry in entries:
                 if entry.name == ".cvmfscatalog":
                     continue
