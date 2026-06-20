@@ -181,7 +181,7 @@ packages:
     - plugins=cxx
   fjcontrib:
     require:
-    - '@1.051'
+    - '@1.101'
   flame:
     require:
     - libflame
@@ -573,7 +573,7 @@ packages:
     - hepmc=3 plugin-match=HERA,LEP,MC
   root:
     require:
-    - '@6.38.00'
+    - '@6.38.04'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
@@ -582,7 +582,7 @@ packages:
     - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root ~internal_pdfs +ipo +lhapdf +lhole +mpi +openloops +pythia +python ~recola +rivet +root ~ufo
   simphony:
     require:
-    - '@0.3.0'
+    - '@0.6.0'
   simsipm:
     require:
     - '@2.1.0'
