@@ -362,7 +362,7 @@ packages:
     - processes=ppvj,ppjj
   osg-ca-certs:
     require:
-    - '@1.119.igtf.1.128'
+    - '@1.141.igtf.1.141'
   pcre:
     require:
     - build_system=cmake
