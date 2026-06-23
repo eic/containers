@@ -16,7 +16,6 @@ packages:
     # 'prefer' under 'all' remains a weaker default that can be superseded by
     # package-specific requirements.
     prefer:
-    - '%gcc'
     # FIXME any ipo preference breaks llvm external reuse
     #- +ipo
     - build_system=cmake
@@ -24,7 +23,6 @@ packages:
     - when: '+cuda'
       spec: cuda_arch=75
     require:
-    - '%gcc'
     # FIXME any ipo requirement breaks llvm external reuse
     #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
@@ -73,6 +71,16 @@ packages:
     - +iostreams +locale +log +math +program_options +python +random +regex
     - +serialization +system +test +thread +timer +wave
     - cxxstd=20
+  c:
+    prefer:
+    - gcc
+    require:
+    - gcc
+  cxx:
+    prefer:
+    - gcc
+    require:
+    - gcc
   cairo:
     require:
     - '@1.18.2:'
@@ -189,6 +197,11 @@ packages:
     require:
     - '@11.2.0:11'
     - +shared cxxstd=20
+  fortran:
+    prefer:
+    - gcc
+    require:
+    - gcc
   freetype:
     require:
     - build_system=autotools
