@@ -1,11 +1,10 @@
 spack:
   include:
+  - ../spack.lock
   - ../../concretizer.yaml
   - ../../config.yaml
   - ../../packages.yaml
   - ../../view.yaml
-  include_concrete:
-  - /opt/spack-environment/cuda
   concretizer:
     unify: when_possible # multiple epic versions
   specs:
