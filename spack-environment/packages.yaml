@@ -84,7 +84,7 @@ packages:
   cairo:
     require:
     - '@1.18.2:'
-    - +fc+ft+X+pdf+gobject
+    - +fc+ft+X+pdf+gobject build_system=meson
   catch2:
     require:
     - '@3.4.0:'
