@@ -84,7 +84,7 @@ packages:
   cairo:
     require:
     - '@1.18.2:'
-    - +fc+ft+X+pdf+gobject build_system=autotools
+    - +fc+ft+X+pdf+gobject build_system=meson
   catch2:
     require:
     - '@3.4.0:'
@@ -252,9 +252,7 @@ packages:
     - +expat ~ghostscript +pangocairo
   harfbuzz:
     require:
-    # harfbuzz fails to find cairo.h in the gir parts of cmake builds when cairo is meson-built
-    - spec: build_system=meson
-      when: +gobject ^cairo build_system=meson
+    - build_system=meson
   hdf5:
     require:
     - ~cxx ~fortran +hl +ipo ~java ~map +mpi +shared ~subfiling ~szip ~threadsafe +tools
