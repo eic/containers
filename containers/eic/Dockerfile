@@ -290,6 +290,10 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation
 # Installation (default environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
+    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
+    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
+    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
