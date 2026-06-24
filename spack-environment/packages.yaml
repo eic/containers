@@ -393,7 +393,7 @@ packages:
     - '@28.3'
   pyrobird:
     require:
-    - '@0.1.23:'
+    - '@0.2.6'
     - +xrootd
     - spec: ~batch
       when: '@:0.2.6'
