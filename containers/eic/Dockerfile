@@ -287,7 +287,7 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
 
-# Installation (default environment, from buildcache)
+# Installation (custom environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
