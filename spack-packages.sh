@@ -35,6 +35,7 @@ b11529d6bbd8abc9f7bde6faf290b1c22385a022
 ad4b252d254d49db587abd6fd06c375c71d27a01
 8cd9959e3fd4e54d79bbf75210e335ab842e1af0
 4dc856a13e9066ca3249a593d351af8cda521fa3
+deb4f17d93dbe012403614245334f7c73fcc086f
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -67,3 +68,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## ad4b252d254d49db587abd6fd06c375c71d27a01: root: add v6.36.12
 ## 8cd9959e3fd4e54d79bbf75210e335ab842e1af0: root: add builtin_llvm variant to allow external LLVM
 ## 4dc856a13e9066ca3249a593d351af8cda521fa3: root: add v6.40.00, v6.40.02
+## deb4f17d93dbe012403614245334f7c73fcc086f: fix: add latest osg-ca-cert

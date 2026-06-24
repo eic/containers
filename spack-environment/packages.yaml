@@ -158,7 +158,7 @@ packages:
     - '@1.1.17'
   eicrecon:
     require:
-    - '@1.37.1' # EICRECON_VERSION
+    - '@1.38.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
@@ -181,7 +181,7 @@ packages:
     - plugins=cxx
   fjcontrib:
     require:
-    - '@1.051'
+    - '@1.101'
   flame:
     require:
     - libflame
@@ -329,7 +329,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.4.7'
+    - '@1.6.1'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
@@ -362,7 +362,7 @@ packages:
     - processes=ppvj,ppjj
   osg-ca-certs:
     require:
-    - '@1.119.igtf.1.128'
+    - '@1.141.igtf.1.141'
   pcre:
     require:
     - build_system=cmake
@@ -582,7 +582,7 @@ packages:
     - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root ~internal_pdfs +ipo +lhapdf +lhole +mpi +openloops +pythia +python ~recola +rivet +root ~ufo
   simphony:
     require:
-    - '@0.3.0'
+    - '@0.6.0'
   simsipm:
     require:
     - '@2.1.0'
