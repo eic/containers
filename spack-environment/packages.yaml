@@ -604,6 +604,9 @@ packages:
     require:
     - '@6.7.2:'
     - +opengl
+  rdma-core:
+    require:
+    - ~pyverbs  # avoid constraint in https://github.com/spack/spack-packages/pull/2791
   rivet:
     require:
     - '@4.1.0:'
