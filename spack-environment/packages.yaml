@@ -393,7 +393,7 @@ packages:
     - '@28.3'
   pyrobird:
     require:
-    - '@git.0130fece0e93ab56e3be4b57cb110f0a96e41109'
+    - '@git.25b6556e473b99dbbb3b4663d34d683e28acfd5e'
     - +xrootd
     - spec: ~batch
       when: '@:0.2.6'
