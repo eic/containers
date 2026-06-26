@@ -94,6 +94,8 @@ packages:
     require:
     - '@2.4.7.1'
     - cxxstd=20
+    - spec: hwcaps=x86_64_v3
+      when: target=x86_64_v2
   cli11:
     require:
     - '@2.4.2:'
@@ -179,6 +181,8 @@ packages:
     require:
     - '@3.5.0'
     - plugins=cxx
+    - spec: hwcaps=x86_64_v3
+      when: target=x86_64_v2
   fjcontrib:
     require:
     - '@1.101'
@@ -303,6 +307,8 @@ packages:
     require:
     - '@6.5.5'
     - +python
+    - spec: hwcaps=x86_64_v3
+      when: target=x86_64_v2
   #llvm:
     #require:
     #- any_of: [~gold, '@:']
@@ -635,6 +641,8 @@ packages:
   vecgeom:
     require:
     - '@2'
+    - spec: hwcaps=x86_64_v3
+      when: target=x86_64_v2
   xerces-c:
     require:
     - cxxstd=20
