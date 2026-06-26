@@ -35,7 +35,7 @@ packages:
     - cxxstd=17
   acts:
     require:
-    - '@45.1.1'
+    - '@45.3.0'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
@@ -160,7 +160,7 @@ packages:
     - '@1.1.17'
   eicrecon:
     require:
-    - '@1.37.1' # EICRECON_VERSION
+    - '@1.38.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
@@ -185,7 +185,7 @@ packages:
       when: target=x86_64_v2
   fjcontrib:
     require:
-    - '@1.051'
+    - '@1.101'
   flame:
     require:
     - libflame
@@ -335,7 +335,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.4.7'
+    - '@1.6.1'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
@@ -368,7 +368,7 @@ packages:
     - processes=ppvj,ppjj
   osg-ca-certs:
     require:
-    - '@1.119.igtf.1.128'
+    - '@1.141.igtf.1.141'
   pcre:
     require:
     - build_system=cmake
@@ -496,7 +496,7 @@ packages:
     - '@1.22.2:'
   py-openpyxl:
     require:
-    - '@3.1.2'
+    - '@3.1.5:'
   py-pandas:
     require:
     - '@2.2.3:'
@@ -579,7 +579,7 @@ packages:
     - hepmc=3 plugin-match=HERA,LEP,MC
   root:
     require:
-    - '@6.38.00'
+    - '@6.38.04'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
@@ -588,7 +588,7 @@ packages:
     - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root ~internal_pdfs +ipo +lhapdf +lhole +mpi +openloops +pythia +python ~recola +rivet +root ~ufo
   simphony:
     require:
-    - '@0.3.0'
+    - '@0.6.0'
   simsipm:
     require:
     - '@2.1.0'

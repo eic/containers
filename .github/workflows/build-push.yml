@@ -110,7 +110,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Inject enhanced GitHub environment variables
         uses: rlespinasse/github-slug-action@v5
       - name: Load NVIDIA visible devices and driver capabilities
@@ -448,7 +448,7 @@ jobs:
           android: true
           dotnet: true
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Resolve benchmarks versions
         id: benchmarks
         shell: bash
@@ -1092,7 +1092,7 @@ jobs:
     - get-docs-from-main
     if: always() && !cancelled() && !failure()
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Download artifacts for pages
       uses: actions/download-artifact@v8
       with:
