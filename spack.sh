@@ -12,6 +12,7 @@ read -r -d '' SPACK_CHERRYPICKS <<- \
 --- || true
 292b0dcaba3b2a5e3f9668d205d39fee2c715721
 678e506a95b319c573ba7e84703b06d7275ab80e
+68e3807eab8e1499306e43119aa3d4bc4a0e90ec
 e3947b8556adc9ed0ff42785ac920a38d2435dd9
 44fa40a0367ab59f756fc24791395e1ec56d2712
 ---
@@ -23,5 +24,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## [hash]: [description]
 ## 292b0dcaba3b2a5e3f9668d205d39fee2c715721: fix: write created time field with OCI buildcache config
 ## 678e506a95b319c573ba7e84703b06d7275ab80e: fix: don't map prefix to view root for pkgs excluded from view
-## e3947b8556adc9ed0ff42785ac920a38d2435dd9: fix: install missing upstream packages in local store
+## 68e3807eab8e1499306e43119aa3d4bc4a0e90ec: fix: install missing upstream packages in local store
+## e3947b8556adc9ed0ff42785ac920a38d2435dd9: fix: install missing upstream packages in local store (new installer)
 ## 44fa40a0367ab59f756fc24791395e1ec56d2712: view: fix rename on overlayfs issue
