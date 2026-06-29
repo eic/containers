@@ -1112,7 +1112,7 @@ jobs:
           -printf "- [%f](%f/index.md)\n" | sort >> publishing_docs/pr/index.md
     - name: List content to publish
       run: find publishing_docs/
-    - uses: actions/upload-pages-artifact@v4
+    - uses: actions/upload-pages-artifact@v5
       with:
         path: publishing_docs/
         retention-days: 7
