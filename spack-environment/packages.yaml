@@ -126,7 +126,7 @@ packages:
   dd4hep:
     require:
     - '@1.37'
-    - +ddg4 +ddcad +edm4hep +hepmc3 +xercesc
+    - +ddg4 +ddcad +edm4hep +g4hepem +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   doxygen:
     require:
@@ -362,7 +362,7 @@ packages:
     - processes=ppvj,ppjj
   osg-ca-certs:
     require:
-    - '@1.119.igtf.1.128'
+    - '@1.141.igtf.1.141'
   pcre:
     require:
     - build_system=cmake
@@ -393,7 +393,7 @@ packages:
     - '@28.3'
   pyrobird:
     require:
-    - '@0.1.23:'
+    - '@git.25b6556e473b99dbbb3b4663d34d683e28acfd5e'
     - +xrootd
     - spec: ~batch
       when: '@:0.2.6'
@@ -490,7 +490,7 @@ packages:
     - '@1.22.2:'
   py-openpyxl:
     require:
-    - '@3.1.2'
+    - '@3.1.5:'
   py-pandas:
     require:
     - '@2.2.3:'
