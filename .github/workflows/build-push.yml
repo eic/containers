@@ -1038,10 +1038,50 @@ jobs:
           sim_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64_vs_arm64/
         if-no-files-found: error
 
+  eicrecon-gun-cross-arch:
+    name: capybara (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, amd64 vs arm64)
+    runs-on: ubuntu-latest
+    needs: [eic-manifest, eicrecon-gun]
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        particle: [pi, e]
+        detector_config: [epic_craterlake]
+    steps:
+    - name: Download amd64 artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64.edm4eic.root
+        path: amd64/
+    - name: Download arm64 artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_arm64.edm4eic.root
+        path: arm64/
+    - name: Compare amd64 vs arm64 artifacts
+      shell: bash --login -eo pipefail {0}
+      run: |
+        mkdir capybara-reports
+        capybara bara amd64/rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root arm64/rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root
+        mv capybara-reports rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64_vs_arm64
+        touch .rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64_vs_arm64
+    - uses: actions/upload-artifact@v7
+      with:
+        name: rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64_vs_arm64.capy
+        path: |
+          .rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64_vs_arm64
+          rec_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}_amd64_vs_arm64/
+        if-no-files-found: error
+
   merge-capybara:
     name: Merge capybara reports
     runs-on: ubuntu-latest
-    needs: [npsim-gun, npsim-gun-cross-arch, npsim-dis, eicrecon-gun, eicrecon-dis]
+    needs: [npsim-gun, npsim-gun-cross-arch, npsim-dis, eicrecon-gun, eicrecon-gun-cross-arch, eicrecon-dis]
     steps:
     - uses: actions/upload-artifact/merge@v7
       with:
