@@ -428,13 +428,9 @@ packages:
   py-boost-histogram:
     require:
     - '@1.5:'
-  py-cachetools:
-    require:
-    - '@5.5.2:5'  # pin to avoid snakemake/rucio divergence
   py-dask:
     require:
     - '@2024.12.1'  # pinned within py-hist's supported range 2023:2024
-    - +dataframe  # pin to avoid divergence in dependent dask packages
   py-dask-histogram:
     require:
     - '@2025.2.0:'
@@ -444,9 +440,6 @@ packages:
   py-flatbuffers:
     require:
     - '@25.9.23:'
-  py-hatch-vcs:
-    require:
-    - '@0.5.0:'  # pin to avoid snakemake/jupyter/rucio divergence
   py-hatchling:
     require:
     - '@1.27:'
@@ -474,7 +467,6 @@ packages:
     - '@0.8.2:'
   py-jsonschema:
     require:
-    - '@4.25.1:' # pin to avoid snakemake/jupyter/rucio divergence
     - +format-nongpl # non-default required for jupyter stack
   py-jupyterlab:
     require:
@@ -516,9 +508,6 @@ packages:
   py-particle:
     require:
     - '@0.24.0:'
-  py-python-dateutil:
-    require:
-      - '@2.9.0:'  # pin to avoid snakemake/jupyter/rucio divergence
   py-pip:
     require:
     - '@23.1.2:'
@@ -534,10 +523,6 @@ packages:
   py-pycairo:
     require:
     - '@1.24.0:'
-  py-pyjwt:
-    require:
-    - '@2.4.0:'
-    - +crypto  # pin to avoid snakemake/rucio divergence
   py-pyyaml:
     require:
     - '@6.0.2:'
@@ -573,9 +558,6 @@ packages:
   py-uproot:
     require:
     - '@5.7:5'
-  py-urllib3:
-    require:
-    - '@2.6.3:'  # pin to avoid snakemake/jupyter/rucio divergence
   py-vector:
     require:
     - '@1.5.1:'
