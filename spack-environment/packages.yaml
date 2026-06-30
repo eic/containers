@@ -571,6 +571,9 @@ packages:
   py-seaborn:
     require:
     - '@0.13.2:'
+  py-setuptools:
+    require:
+    - '@81:'
   py-tensorflow:
     require:
     - '@2.20'
