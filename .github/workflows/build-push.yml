@@ -168,7 +168,7 @@ jobs:
           BUILDWEEK: ${{ needs.env.outputs.BUILDWEEK }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           METADATA_FILE: /tmp/build-metadata.json
-        run: bash build-base.sh
+        run: bash scripts/build-base.sh
       - name: Export digest to file
         run: |
           DIGEST=$(jq -r '."containerimage.digest"' /tmp/build-metadata.json)
@@ -181,7 +181,7 @@ jobs:
           LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
           LIMIT="${!LIMIT_VAR}"
           if [ -n "${LIMIT}" ]; then
-            .ci/check_image_size \
+            scripts/check_image_size \
               "${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${FULLNAME}@$(jq -r '."containerimage.digest"' /tmp/build-metadata.json)" \
               "${LIMIT}"
           else
@@ -436,7 +436,7 @@ jobs:
           GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           METADATA_FILE: /tmp/build-metadata.json
-        run: bash build-eic.sh
+        run: bash scripts/build-eic.sh
       - name: Export digests to files
         run: |
           IMAGE="${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
@@ -457,7 +457,7 @@ jobs:
           if [ -n "${LIMIT}" ]; then
             metadata_file=/tmp/build-metadata-default.json
             [ -f "${metadata_file}" ] || metadata_file=$(ls /tmp/build-metadata-*.json | head -1)
-            .ci/check_image_size \
+            scripts/check_image_size \
               "${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${FULLNAME}@$(jq -r '."containerimage.digest"' "${metadata_file}")" \
               "${LIMIT}"
           else

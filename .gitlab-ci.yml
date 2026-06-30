@@ -344,7 +344,7 @@ base:
   script:
     - export BUILDWEEK=$(date +%Yw%V)
     - apk add git bash jq
-    - bash build-base.sh
+    - bash scripts/build-base.sh
 
 base-manifest:
   extends: .docker
@@ -428,14 +428,14 @@ eic:
   extends: .build
   stage: eic
   variables:
-    ## build-eic.sh appends -<build_type>.json per loop iteration; drop ${BUILD_TYPE} from here
+    ## scripts/build-eic.sh appends -<build_type>.json per loop iteration; drop ${BUILD_TYPE} from here
     METADATA_FILE: "build-metadata-${BUILD_IMAGE}${ENV}.json"
   needs:
     - version
     - base-manifest
   script:
     - apk add git bash coreutils jq
-    - bash build-eic.sh
+    - bash scripts/build-eic.sh
 
 eic-manifest:
   extends: .docker

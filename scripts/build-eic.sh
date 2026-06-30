@@ -4,22 +4,23 @@
 # This script is used in GitLab CI, GitHub Actions, and for local builds.
 # CI mode is detected via CI_REGISTRY (GitLab) or GITHUB_ACTIONS=true (GitHub Actions).
 #
-# Run `bash build-eic.sh --help` for usage, options, and CI-specific details.
+# Run `bash scripts/build-eic.sh --help` for usage, options, and CI-specific details.
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "${SCRIPT_DIR}"
+REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+cd "${REPO_DIR}"
 
 print_help() {
   cat <<EOF
 Build an EIC container image (eic_ci, eic_xl, eic_cuda, etc.).
 
 Usage (local):
-  bash build-eic.sh [options]
+  bash scripts/build-eic.sh [options]
 
 Usage (CI, called from .gitlab-ci.yml or build-push.yml with matrix variables in env):
-  bash build-eic.sh
+  bash scripts/build-eic.sh
 
 Options:
   --env ENV           Environment: ci, xl, cuda, dbg, jl, prod, cvmfs, tf, ...
@@ -77,12 +78,12 @@ while [[ $# -gt 0 ]]; do
     --jobs)          JOBS="$2";         shift 2 ;;
     --base-tag)      LOCAL_BASE_TAG="$2"; shift 2 ;;
     --tag)           LOCAL_TAG="$2";    shift 2 ;;
-    *) echo "Unknown argument: $1" >&2; echo "Try 'bash build-eic.sh --help' for usage." >&2; exit 1 ;;
+    *) echo "Unknown argument: $1" >&2; echo "Try 'bash scripts/build-eic.sh --help' for usage." >&2; exit 1 ;;
   esac
 done
 
 ## Source version files (only spack-packages version is needed for mirrors.yaml)
-source "${SCRIPT_DIR}/spack-packages.sh"
+source "${REPO_DIR}/spack-packages.sh"
 
 ## Convert an arbitrary git ref/branch name to a valid OCI tag component.
 ## Mirrors GitLab's CI_COMMIT_REF_SLUG: lowercase, non-alnum runs → '-',
@@ -126,7 +127,7 @@ if [ "${CI_MODE}" != "local" ]; then
   sed -e "s|\${CI_REGISTRY}|$(sed_escape "${CI_REGISTRY}")|g" \
       -e "s|\${CI_PROJECT_PATH}|$(sed_escape "${CI_PROJECT_PATH}")|g" \
       -e "s|\${SPACKPACKAGES_VERSION}|$(sed_escape "${SPACKPACKAGES_VERSION}")|g" \
-      "${SCRIPT_DIR}/mirrors.yaml.in" > "${MIRRORS_YAML}"
+      "${REPO_DIR}/mirrors.yaml.in" > "${MIRRORS_YAML}"
 else
   ## Local mode: public-only mirrors (no credentials required)
   cat > "${MIRRORS_YAML}" <<EOF
@@ -142,13 +143,13 @@ fi
 
 ## Resolve SHAs (network calls — skipped if version is already a SHA)
 echo "Resolving git SHAs..."
-BENCHMARK_COM_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git master)
-BENCHMARK_DET_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git master)
-BENCHMARK_REC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git master)
-BENCHMARK_PHY_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git master)
-CAMPAIGNS_HEPMC3_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/simulation_campaign_hepmc3 main)
-CAMPAIGNS_CONDOR_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/job_submission_condor main)
-CAMPAIGNS_SLURM_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/job_submission_slurm main)
+BENCHMARK_COM_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git master)
+BENCHMARK_DET_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git master)
+BENCHMARK_REC_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git master)
+BENCHMARK_PHY_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git master)
+CAMPAIGNS_HEPMC3_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/simulation_campaign_hepmc3 main)
+CAMPAIGNS_CONDOR_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/job_submission_condor main)
+CAMPAIGNS_SLURM_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/job_submission_slurm main)
 
 ## Compute per-ENV duplicate allowlist (independent of build type)
 case "${ENV}" in
@@ -188,16 +189,16 @@ for build_type in "${BUILD_TYPES[@]}"; do
   ## Resolve optional version overrides (nightly always resolves; default only if version set)
   unset EDM4EIC_SHA EICRECON_SHA EPIC_SHA JUGGLER_SHA
   if [ "${build_type}" = "nightly" ]; then
-    EDM4EIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EDM4eic "${EDM4EIC_VERSION:-main}")
-    EICRECON_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EICrecon "${EICRECON_VERSION:-main}")
-    EPIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/epic "${EPIC_VERSION:-main}")
-    JUGGLER_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/juggler "${JUGGLER_VERSION:-main}")
+    EDM4EIC_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/EDM4eic "${EDM4EIC_VERSION:-main}")
+    EICRECON_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/EICrecon "${EICRECON_VERSION:-main}")
+    EPIC_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/epic "${EPIC_VERSION:-main}")
+    JUGGLER_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/juggler "${JUGGLER_VERSION:-main}")
   else
     ## default build: only resolve if version is explicitly provided
-    [ -n "${EDM4EIC_VERSION}" ]  && EDM4EIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EDM4eic  "${EDM4EIC_VERSION}")
-    [ -n "${EICRECON_VERSION}" ] && EICRECON_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" eic/EICrecon "${EICRECON_VERSION}")
-    [ -n "${EPIC_VERSION}" ]     && EPIC_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref"     eic/epic     "${EPIC_VERSION}")
-    [ -n "${JUGGLER_VERSION}" ]  && JUGGLER_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref"  eic/juggler  "${JUGGLER_VERSION}")
+    [ -n "${EDM4EIC_VERSION}" ]  && EDM4EIC_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/EDM4eic  "${EDM4EIC_VERSION}")
+    [ -n "${EICRECON_VERSION}" ] && EICRECON_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/EICrecon "${EICRECON_VERSION}")
+    [ -n "${EPIC_VERSION}" ]     && EPIC_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref"     eic/epic     "${EPIC_VERSION}")
+    [ -n "${JUGGLER_VERSION}" ]  && JUGGLER_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref"  eic/juggler  "${JUGGLER_VERSION}")
   fi
 
   ## Build the docker buildx command as an array for safe quoting
