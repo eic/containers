@@ -76,7 +76,7 @@ def walk_tree(prefix, max_depth):
         while True:
             dir_total[path] = dir_total.get(path, 0) + len(entries)
             parent = os.path.dirname(path)
-            if parent == path or not path.startswith(prefix):
+            if parent == path or not parent.startswith(prefix):
                 break
             path = parent
 
