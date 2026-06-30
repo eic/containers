@@ -593,7 +593,7 @@ packages:
     - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root ~internal_pdfs +ipo +lhapdf +lhole +mpi +openloops +pythia +python ~recola +rivet +root ~ufo
   simphony:
     require:
-    - '@0.6.0'
+    - '@0.7.0'
   simsipm:
     require:
     - '@2.1.0'
