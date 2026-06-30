@@ -159,7 +159,7 @@ jobs:
           BUILDWEEK: ${{ needs.env.outputs.BUILDWEEK }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           METADATA_FILE: /tmp/build-metadata.json
-        run: bash build-base.sh
+        run: bash scripts/build-base.sh
       - name: Export digest to file
         run: |
           DIGEST=$(jq -r '."containerimage.digest"' /tmp/build-metadata.json)
@@ -416,7 +416,7 @@ jobs:
           GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           METADATA_FILE: /tmp/build-metadata.json
-        run: bash build-eic.sh
+        run: bash scripts/build-eic.sh
       - name: Export digests to files
         run: |
           IMAGE="${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"

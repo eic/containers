@@ -15,8 +15,8 @@ docker buildx version
 
 ## Quick Start
 
-The repository provides two build scripts — `build-base.sh` and `build-eic.sh` — that
-encapsulate the full build logic. These are the same scripts used by the CI pipelines, so
+The repository provides two build scripts in `./scripts` — `build-base.sh` and `build-eic.sh` —
+that encapsulate the full build logic. These are the same scripts used by the CI pipelines, so
 local builds are guaranteed to be equivalent.
 
 ### Building the Base Image
@@ -25,7 +25,7 @@ local builds are guaranteed to be equivalent.
 cd /path/to/containers
 
 # Build debian_stable_base with 8 parallel jobs
-bash build-base.sh --jobs 8
+bash scripts/build-base.sh --jobs 8
 ```
 
 This produces a local image tagged `debian_stable_base:local`.
@@ -34,13 +34,13 @@ This produces a local image tagged `debian_stable_base:local`.
 
 ```bash
 # Build the full XL environment
-bash build-eic.sh --env xl --jobs 8
+bash scripts/build-eic.sh --env xl --jobs 8
 ```
 
 This produces a local image tagged `eic_xl:local`.
 
-`build-eic.sh` automatically detects whether the required builder and runtime base images
-(for example, `debian_stable_base:local` for both, or `cuda_devel:local` and
+`scripts/build-eic.sh` automatically detects whether the required builder and runtime base
+images (for example, `debian_stable_base:local` for both, or `cuda_devel:local` and
 `cuda_runtime:local` for CUDA builds) are available in the local Docker daemon. The script
 only uses local base images when both images exist locally at the requested tag; if they do,
 both are used directly with no registry prefix. If either image is missing, the script falls
@@ -50,15 +50,15 @@ back to pulling both base images from `ghcr.io/eic/` with the `latest` tag.
 
 ```bash
 # Minimal CI environment (faster to build)
-bash build-eic.sh --env ci
+bash scripts/build-eic.sh --env ci
 
 # Debug build
-bash build-eic.sh --env dbg
+bash scripts/build-eic.sh --env dbg
 
 # CUDA environment (requires local cuda_devel and cuda_runtime base images)
-bash build-base.sh --image cuda_devel
-bash build-base.sh --image cuda_runtime
-bash build-eic.sh --env cuda --builder-image cuda_devel --runtime-image cuda_runtime
+bash scripts/build-base.sh --image cuda_devel
+bash scripts/build-base.sh --image cuda_runtime
+bash scripts/build-eic.sh --env cuda --builder-image cuda_devel --runtime-image cuda_runtime
 ```
 
 ## Taking Advantage of Caching
@@ -139,15 +139,15 @@ flowchart TB
 
 Both scripts live in the repository root and accept command-line flags. Many options can
 also be set via environment variables, but the variable names are script-specific and do
-not always exactly match the flag names (for example, `JOBS=8 bash build-base.sh`,
-`LOCAL_TAG=local bash build-eic.sh`, or `LOCAL_BASE_TAG=local bash build-eic.sh`).
+not always exactly match the flag names (for example, `JOBS=8 bash scripts/build-base.sh`,
+`LOCAL_TAG=local bash scripts/build-eic.sh`, or `LOCAL_BASE_TAG=local bash scripts/build-eic.sh`).
 
-### `build-base.sh`
+### `scripts/build-base.sh`
 
 Builds the base image that all EIC images depend on.
 
 ```
-bash build-base.sh [options]
+bash scripts/build-base.sh [options]
 
   --image IMAGE       Image to build: debian_stable_base (default), cuda_devel, cuda_runtime
   --base-image IMAGE  Upstream image (derived automatically from --image if omitted)
@@ -156,12 +156,12 @@ bash build-base.sh [options]
   --tag TAG           Output image tag (default: local)
 ```
 
-### `build-eic.sh`
+### `scripts/build-eic.sh`
 
 Builds an EIC software environment image.
 
 ```
-bash build-eic.sh [options]
+bash scripts/build-eic.sh [options]
 
   --env ENV           Environment: ci, xl (default), cuda, dbg, jl, prod, cvmfs, tf, ...
   --build-type TYPE   default (default) or nightly
@@ -212,13 +212,13 @@ bash build-eic.sh [options]
 Reduce the number of parallel jobs:
 
 ```bash
-bash build-base.sh --jobs 2
+bash scripts/build-base.sh --jobs 2
 ```
 
 ### Build Takes Too Long
 
 1. Ensure you're on a fast network (registry cache is fetched from `ghcr.io`)
-2. Build the CI environment first (smaller): `bash build-eic.sh --env ci`
+2. Build the CI environment first (smaller): `bash scripts/build-eic.sh --env ci`
 
 ### Cannot Pull from ghcr.io
 
@@ -245,7 +245,7 @@ Using QEMU emulation (slower but works):
 docker run --privileged --rm tonistiigi/binfmt --install arm64
 
 # Build for ARM64
-bash build-base.sh --platform linux/arm64 --tag local-arm64
+bash scripts/build-base.sh --platform linux/arm64 --tag local-arm64
 ```
 
 ## Next Steps
