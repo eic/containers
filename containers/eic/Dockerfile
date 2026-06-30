@@ -358,8 +358,8 @@ set -e
 spack --color=never debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" | tee -a /etc/eic_info /etc/jug_info
 spack --color=never find --no-groups --long --variants | sed "s/^/ - /" | tee -a /etc/eic_info /etc/jug_info
 spack --color=never graph --dot > /opt/spack-environment/env.dot
-if command -v tred && command -v dot ; then
-  export PATH="/opt/local/bin:${PATH}"
+export PATH="/opt/local/bin:${PATH}"
+if command -v tred >/dev/null 2>&1 && command -v dot >/dev/null 2>&1 ; then
   tred /opt/spack-environment/env.dot > /opt/spack-environment/env_tred.dot
   dot -Tsvg /opt/spack-environment/env_tred.dot > /opt/spack-environment/env.svg
   dot -Tpng /opt/spack-environment/env_tred.dot > /opt/spack-environment/env.png
