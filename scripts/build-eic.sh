@@ -31,8 +31,8 @@ Options:
   --runtime-image IMG Runtime base image name (default: \$RUNTIME_IMAGE or debian_stable_base)
   --target STAGE      Docker build target stage (default: \$BUILD_TARGET or final)
   --platform PLATFORM Build platform, e.g. linux/amd64 (default: \$PLATFORM or linux/amd64)
-  --jobs N            Number of parallel Spack build jobs (default: \$JOBS or \$(nproc)
-                      or \$(getconf _NPROCESSORS_ONLN))
+  --jobs N            Number of parallel Spack build jobs
+                      (default: \$JOBS or \$(getconf _NPROCESSORS_ONLN))
   --base-tag TAG      Tag of the locally built base image to use (default: local); if the image
                       is not found in the local Docker daemon, ghcr.io/eic/ is used with tag
                       'latest' as fallback (ignored in CI)
@@ -46,9 +46,9 @@ layer cache.
 
 GitHub Actions mode (GITHUB_ACTIONS=true):
   Set GH_REGISTRY, GH_REGISTRY_USER, JOBS. The script derives cache-key slugs
-  from GITHUB_REF_NAME (current branch), GITHUB_BASE_REF (PR target branch, empty
-  on push events), and DEFAULT_BRANCH (repo default branch, used as fallback when
-  GITHUB_BASE_REF is empty). Writes each image digest to
+  from GITHUB_HEAD_REF (PR source branch, when set) or GITHUB_REF_NAME
+  (push/schedule branch), and from GITHUB_BASE_REF (PR target branch, empty on
+  push events) or DEFAULT_BRANCH (repo default branch fallback). Writes each image digest to
   \${METADATA_FILE%.json}-<build_type>.json (default base: /tmp/build-metadata.json).
 EOF
 }
@@ -89,7 +89,7 @@ source "${REPO_DIR}/spack-packages.sh"
 ## Mirrors GitLab's CI_COMMIT_REF_SLUG: lowercase, non-alnum runs → '-',
 ## strip leading/trailing '-', truncate to 63 chars.
 slugify() {
-  echo "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]\+/-/g; s/^-//; s/-$//' | cut -c1-63
+  echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-63
 }
 
 ## Escape a string for safe use as a sed replacement (handles \, &, and | delimiter).
@@ -103,14 +103,15 @@ if [ -n "${CI_REGISTRY}" ]; then
   CI_MODE="gitlab"
 elif [ "${GITHUB_ACTIONS}" = "true" ]; then
   ## GitHub Actions — map GitHub variables to the names used below.
-  ## GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target branch,
-  ## empty on push events) are standard runner variables. DEFAULT_BRANCH should
-  ## be supplied by the workflow (github.event.repository.default_branch) so
-  ## that cache keys are correct even when GITHUB_BASE_REF is empty.
+  ## Use GITHUB_HEAD_REF for PR source branches (better cache reuse across PR
+  ## updates), then fall back to GITHUB_REF_NAME for push/schedule events.
+  ## GITHUB_BASE_REF is the PR target branch (empty on push events). DEFAULT_BRANCH
+  ## should be supplied by the workflow so cache keys remain stable when
+  ## GITHUB_BASE_REF is empty.
   CI_MODE="github"
   CI_REGISTRY="${GH_REGISTRY}"
   CI_PROJECT_PATH="${GH_REGISTRY_USER}"
-  CI_COMMIT_REF_SLUG="$(slugify "${GITHUB_REF_NAME:-master}")"
+  CI_COMMIT_REF_SLUG="$(slugify "${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-master}}")"
   CI_DEFAULT_BRANCH_SLUG="$(slugify "${GITHUB_BASE_REF:-${DEFAULT_BRANCH:-master}}")"
   CI_COMMIT_SHA="${GITHUB_SHA:-}"
   INTERNAL_TAG="${INTERNAL_TAG:-pipeline-${GITHUB_RUN_ID}}"
