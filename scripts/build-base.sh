@@ -4,22 +4,23 @@
 # This script is used in GitLab CI, GitHub Actions, and for local builds.
 # CI mode is detected via CI_REGISTRY (GitLab) or GITHUB_ACTIONS=true (GitHub Actions).
 #
-# Run `bash build-base.sh --help` for usage, options, and CI-specific details.
+# Run `bash scripts/build-base.sh --help` for usage, options, and CI-specific details.
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "${SCRIPT_DIR}"
+REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+cd "${REPO_DIR}"
 
 print_help() {
   cat <<EOF
 Build the EIC base container image (debian_stable_base, cuda_devel, or cuda_runtime).
 
 Usage (local):
-  bash build-base.sh [options]
+  bash scripts/build-base.sh [options]
 
 Usage (CI, called from .gitlab-ci.yml or build-push.yml with matrix variables in env):
-  bash build-base.sh
+  bash scripts/build-base.sh
 
 Options:
   --image IMAGE       Image to build: debian_stable_base, cuda_devel, cuda_runtime
@@ -60,15 +61,15 @@ while [[ $# -gt 0 ]]; do
     --platform)  PLATFORM="$2";     shift 2 ;;
     --jobs)      JOBS="$2";         shift 2 ;;
     --tag)       LOCAL_TAG="$2";    shift 2 ;;
-    *) echo "Unknown argument: $1" >&2; echo "Try 'bash build-base.sh --help' for usage." >&2; exit 1 ;;
+    *) echo "Unknown argument: $1" >&2; echo "Try 'bash scripts/build-base.sh --help' for usage." >&2; exit 1 ;;
   esac
 done
 
 ## Source version files
-source "${SCRIPT_DIR}/spack.sh"
-source "${SCRIPT_DIR}/spack-packages.sh"
-source "${SCRIPT_DIR}/key4hep-spack.sh"
-source "${SCRIPT_DIR}/eic-spack.sh"
+source "${REPO_DIR}/spack.sh"
+source "${REPO_DIR}/spack-packages.sh"
+source "${REPO_DIR}/key4hep-spack.sh"
+source "${REPO_DIR}/eic-spack.sh"
 
 ## Convert an arbitrary git ref/branch name to a valid OCI tag component.
 ## Mirrors GitLab's CI_COMMIT_REF_SLUG: lowercase, non-alnum runs → '-',
@@ -109,10 +110,10 @@ fi
 
 ## Resolve SHAs (network calls — skipped if version is already a SHA)
 echo "Resolving git SHAs..."
-SPACK_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" "${SPACK_ORGREPO}" "${SPACK_VERSION}")
-SPACKPACKAGES_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" "${SPACKPACKAGES_ORGREPO}" "${SPACKPACKAGES_VERSION}")
-KEY4HEPSPACK_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" "${KEY4HEPSPACK_ORGREPO}" "${KEY4HEPSPACK_VERSION}")
-EICSPACK_SHA=$(sh "${SCRIPT_DIR}/.ci/resolve_git_ref" "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
+SPACK_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" "${SPACK_ORGREPO}" "${SPACK_VERSION}")
+SPACKPACKAGES_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" "${SPACKPACKAGES_ORGREPO}" "${SPACKPACKAGES_VERSION}")
+KEY4HEPSPACK_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" "${KEY4HEPSPACK_ORGREPO}" "${KEY4HEPSPACK_VERSION}")
+EICSPACK_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" "${EICSPACK_ORGREPO}" "${EICSPACK_VERSION}")
 
 ## Normalize arch string for cache tag names while preserving platform variants
 ## Examples: linux/amd64 -> amd64, linux/amd64/v3 -> amd64_v3, linux/arm/v7 -> arm_v7
@@ -196,5 +197,3 @@ build_cmd+=(containers/debian)
 ## Execute
 set -o xtrace -o pipefail
 "${build_cmd[@]}" 2>&1 | tee build.log
-
-
