@@ -28,17 +28,17 @@ Options:
   --base-image IMAGE  Upstream base image (default: derived from --image)
   --platform PLATFORM Build platform, e.g. linux/amd64, linux/arm64
                       (default: \$PLATFORM or linux/amd64)
-  --jobs N            Number of parallel Spack build jobs (default: \$JOBS or \$(nproc)
-                      or \$(getconf _NPROCESSORS_ONLN))
+  --jobs N            Number of parallel Spack build jobs
+                      (default: \$JOBS or \$(getconf _NPROCESSORS_ONLN))
   --tag TAG           Local tag for the image (default: local; ignored in CI)
   -h, --help          Show this help and exit
 
 GitHub Actions mode (GITHUB_ACTIONS=true):
   Set GH_REGISTRY, GH_REGISTRY_USER, JOBS. The script derives cache-key slugs
-  from GITHUB_REF_NAME (current branch), GITHUB_BASE_REF (PR target branch, empty
-  on push events), and DEFAULT_BRANCH (repo default branch, used as fallback when
-  GITHUB_BASE_REF is empty). Writes the image digest to METADATA_FILE (default:
-  /tmp/build-metadata.json).
+  from GITHUB_HEAD_REF (PR source branch, when set) or GITHUB_REF_NAME
+  (push/schedule branch), and from GITHUB_BASE_REF (PR target branch, empty on
+  push events) or DEFAULT_BRANCH (repo default branch fallback). Writes the
+  image digest to METADATA_FILE (default: /tmp/build-metadata.json).
 EOF
 }
 
@@ -75,7 +75,7 @@ source "${REPO_DIR}/eic-spack.sh"
 ## Mirrors GitLab's CI_COMMIT_REF_SLUG: lowercase, non-alnum runs → '-',
 ## strip leading/trailing '-', truncate to 63 chars.
 slugify() {
-  echo "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]\+/-/g; s/^-//; s/-$//' | cut -c1-63
+  echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-63
 }
 
 ## Detect CI mode and normalise environment variables
@@ -84,14 +84,15 @@ if [ -n "${CI_REGISTRY}" ]; then
   CI_MODE="gitlab"
 elif [ "${GITHUB_ACTIONS}" = "true" ]; then
   ## GitHub Actions — map GitHub variables to the names used below.
-  ## GITHUB_REF_NAME (current branch) and GITHUB_BASE_REF (PR target branch,
-  ## empty on push events) are standard runner variables. DEFAULT_BRANCH should
-  ## be supplied by the workflow (github.event.repository.default_branch) so
-  ## that cache keys are correct even when GITHUB_BASE_REF is empty.
+  ## Use GITHUB_HEAD_REF for PR source branches (better cache reuse across PR
+  ## updates), then fall back to GITHUB_REF_NAME for push/schedule events.
+  ## GITHUB_BASE_REF is the PR target branch (empty on push events). DEFAULT_BRANCH
+  ## should be supplied by the workflow so cache keys remain stable when
+  ## GITHUB_BASE_REF is empty.
   CI_MODE="github"
   CI_REGISTRY="${GH_REGISTRY}"
   CI_PROJECT_PATH="${GH_REGISTRY_USER}"
-  CI_COMMIT_REF_SLUG="$(slugify "${GITHUB_REF_NAME:-master}")"
+  CI_COMMIT_REF_SLUG="$(slugify "${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-master}}")"
   CI_DEFAULT_BRANCH_SLUG="$(slugify "${GITHUB_BASE_REF:-${DEFAULT_BRANCH:-master}}")"
   INTERNAL_TAG="${INTERNAL_TAG:-pipeline-${GITHUB_RUN_ID}}"
 else
