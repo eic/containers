@@ -109,22 +109,22 @@ def walk_tree(prefix, max_depth):
         while stack:
             d = stack.pop()
             try:
-                entries = os.scandir(d)
+                with os.scandir(d) as entries:
+                    for entry in entries:
+                        if entry.name == ".cvmfscatalog":
+                            continue
+                        count += 1
+                        if entry.is_dir(follow_symlinks=False):
+                            child_path = entry.path
+                            # Stop at nested catalog boundaries (other than start itself)
+                            if child_path != start and child_path in catalog_roots:
+                                pass  # don't descend — owned by nested catalog
+                            else:
+                                rel_depth = child_path[len(prefix):].count(os.sep)
+                                if rel_depth <= max_depth:
+                                    stack.append(child_path)
             except OSError:
                 continue
-            for entry in entries:
-                if entry.name == ".cvmfscatalog":
-                    continue
-                count += 1
-                if entry.is_dir(follow_symlinks=False):
-                    child_path = entry.path
-                    # Stop at nested catalog boundaries (other than start itself)
-                    if child_path != start and child_path in catalog_roots:
-                        pass  # don't descend — owned by nested catalog
-                    else:
-                        rel_depth = child_path[len(prefix):].count(os.sep)
-                        if rel_depth <= max_depth:
-                            stack.append(child_path)
         return count
 
     # Collect results for output
@@ -165,21 +165,21 @@ def main():
         while stack:
             d = stack.pop()
             try:
-                entries = os.scandir(d)
+                with os.scandir(d) as entries:
+                    for entry in entries:
+                        if entry.name == ".cvmfscatalog":
+                            continue
+                        count += 1
+                        if entry.is_dir(follow_symlinks=False):
+                            child_path = entry.path
+                            if child_path in catalog_roots:
+                                pass
+                            else:
+                                rel_depth = child_path[len(prefix):].count(os.sep)
+                                if rel_depth <= args.depth:
+                                    stack.append(child_path)
             except OSError:
                 continue
-            for entry in entries:
-                if entry.name == ".cvmfscatalog":
-                    continue
-                count += 1
-                if entry.is_dir(follow_symlinks=False):
-                    child_path = entry.path
-                    if child_path in catalog_roots:
-                        pass
-                    else:
-                        rel_depth = child_path[len(prefix):].count(os.sep)
-                        if rel_depth <= args.depth:
-                            stack.append(child_path)
         return count
 
     print(f"{'STATUS':<20}  {'OWNED':>8}  {'TOTAL':>8}  PATH")
