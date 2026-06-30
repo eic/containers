@@ -27,6 +27,7 @@ b17f3abec760256ad7faf1b1d102f2553d6a3622
 346babf5aebcf03045fbe10e59750fac8c95947f
 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96
 107eb9966c8a9688e042c42e903274099688b590
+cfdc775b857dbecc1b7ba62b5ec00d4f8b0f3e6b
 045873c8cbce3eef07ed068a998467e01bd91129
 b11529d6bbd8abc9f7bde6faf290b1c22385a022
 9d1b52d36a4c89d9c3964f599cd00232b901e9ac
@@ -57,6 +58,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 346babf5aebcf03045fbe10e59750fac8c95947f: py-mplhep(-data): add new versions
 ## 2c49a2c6a2f8a95c25e0add0e8fc67d1a5351f96: py-awkward, py-uproot, py-uhi ecosystem (HEP): add new versions
 ## 107eb9966c8a9688e042c42e903274099688b590: dd4hep: add v1.36
+## cfdc775b857dbecc1b7ba62b5ec00d4f8b0f3e6b: dd4hep: add v1.37
 ## 045873c8cbce3eef07ed068a998467e01bd91129: py-snakemake-storage-plugin-pelican: new package v0.1.1 + deps
 ## b11529d6bbd8abc9f7bde6faf290b1c22385a022: py-onnxruntime: only run tests when self.run_tests
 ## 9d1b52d36a4c89d9c3964f599cd00232b901e9ac: julia: avoid cascading mbedtls in v1.12+
