@@ -69,7 +69,8 @@ def walk_tree(prefix, max_depth):
             dirs.clear()
             continue
 
-        entries = dirs + files
+        # Exclude catalog marker files from totals so TOTAL aligns with OWNED.
+        entries = dirs + [f for f in files if f != ".cvmfscatalog"]
 
         # Accumulate totals: add our direct entries to all ancestors
         path = root
