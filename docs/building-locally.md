@@ -137,7 +137,7 @@ flowchart TB
 
 ## Build Script Reference
 
-Both scripts live in the repository root and accept command-line flags. Many options can
+Both scripts live in `scripts/` and accept command-line flags. Many options can
 also be set via environment variables, but the variable names are script-specific and do
 not always exactly match the flag names (for example, `JOBS=8 bash scripts/build-base.sh`,
 `LOCAL_TAG=local bash scripts/build-eic.sh`, or `LOCAL_BASE_TAG=local bash scripts/build-eic.sh`).
@@ -176,11 +176,14 @@ bash scripts/build-eic.sh [options]
 
 ## Build Arguments Reference
 
-### Base Image (containers/debian/Dockerfile)
+### Base image build arguments used by `scripts/build-base.sh` (`containers/debian/Dockerfile`)
+
+This table documents values passed by `scripts/build-base.sh`. If you invoke `docker buildx build`
+directly, Dockerfile `ARG` defaults apply instead.
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `BASE_IMAGE` | Base Debian image | `debian:trixie-slim` (derived from `--image`) |
+| `BASE_IMAGE` | Base Debian image passed by script | `debian:trixie-slim` for `debian_stable_base` (derived from `--image`) |
 | `SPACK_ORGREPO` | Spack GitHub org/repo | `spack/spack` |
 | `SPACK_VERSION` | Spack version/branch | (from `spack.sh`) |
 | `SPACK_SHA` | Specific commit SHA | (resolved from version) |
