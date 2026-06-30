@@ -311,18 +311,6 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
 
-## Ensure views directories, not symlinks
-RUN <<EOF
-set -e
-rm -rf /opt/local /opt/detector
-LOCAL_PREFIX_PATH=$(realpath $(ls /opt/._local/ | tail -n1))
-mv /opt/._local/${LOCAL_PREFIX_PATH} /opt/local
-ln -s /opt/local /opt/._local/${LOCAL_PREFIX_PATH}
-DETECTOR_PREFIX_PATH=$(realpath $(ls /opt/._detector/ | tail -n1))
-mv /opt/._detector/${DETECTOR_PREFIX_PATH} /opt/detector
-ln -s /opt/detector /opt/._detector/${DETECTOR_PREFIX_PATH}
-EOF
-
 ## Set CMAKE_FIND_PACKAGE_RESOLVE_SYMLINKS to resolve symlinks in find_package
 ## directories to real paths, not generic <view>/include
 COPY <<EOF /opt/local/etc/cmake/find_package_resolve_symlinks.cmake

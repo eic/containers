@@ -16,7 +16,6 @@ packages:
     # 'prefer' under 'all' remains a weaker default that can be superseded by
     # package-specific requirements.
     prefer:
-    - '%gcc'
     # FIXME any ipo preference breaks llvm external reuse
     #- +ipo
     - build_system=cmake
@@ -24,7 +23,6 @@ packages:
     - when: '+cuda'
       spec: cuda_arch=75
     require:
-    - '%gcc'
     # FIXME any ipo requirement breaks llvm external reuse
     #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
@@ -73,10 +71,20 @@ packages:
     - +iostreams +locale +log +math +program_options +python +random +regex
     - +serialization +system +test +thread +timer +wave
     - cxxstd=20
+  c:
+    prefer:
+    - gcc
+    require:
+    - gcc
+  cxx:
+    prefer:
+    - gcc
+    require:
+    - gcc
   cairo:
     require:
     - '@1.18.2:'
-    - +fc+ft+X+pdf+gobject
+    - +fc+ft+X+pdf+gobject build_system=meson
   catch2:
     require:
     - '@3.4.0:'
@@ -189,6 +197,11 @@ packages:
     require:
     - '@11.2.0:11'
     - +shared cxxstd=20
+  fortran:
+    prefer:
+    - gcc
+    require:
+    - gcc
   freetype:
     require:
     - build_system=autotools
@@ -239,9 +252,7 @@ packages:
     - +expat ~ghostscript +pangocairo
   harfbuzz:
     require:
-    # harfbuzz fails to find cairo.h in the gir parts of cmake builds when cairo is meson-built
-    - spec: build_system=meson
-      when: +gobject ^cairo build_system=meson
+    - build_system=meson
   hdf5:
     require:
     - ~cxx ~fortran +hl +ipo ~java ~map +mpi +shared ~subfiling ~szip ~threadsafe +tools

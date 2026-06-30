@@ -31,6 +31,8 @@ b17f3abec760256ad7faf1b1d102f2553d6a3622
 b11529d6bbd8abc9f7bde6faf290b1c22385a022
 9d1b52d36a4c89d9c3964f599cd00232b901e9ac
 deb4f17d93dbe012403614245334f7c73fcc086f
+0d64b2bab72a99441f042b663e4bc993ec0db45d
+a77a7ed0d2630466cac71165026387b1381b058a
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -59,3 +61,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## b11529d6bbd8abc9f7bde6faf290b1c22385a022: py-onnxruntime: only run tests when self.run_tests
 ## 9d1b52d36a4c89d9c3964f599cd00232b901e9ac: julia: avoid cascading mbedtls in v1.12+
 ## deb4f17d93dbe012403614245334f7c73fcc086f: fix: add latest osg-ca-cert
+## 0d64b2bab72a99441f042b663e4bc993ec0db45d: osg-ca-certs: depends on gmake and perl, type build
+## a77a7ed0d2630466cac71165026387b1381b058a: py-pynacl: depends on gmake, type build

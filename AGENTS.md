@@ -106,11 +106,14 @@ The `packages.yaml` uses a **dual pattern** for preferences:
 packages:
   all:
     prefer:
-    - '%gcc'
     - +ipo
     require:
-    - '%gcc'
     - any_of: [+ipo, '@:']
+  cxx:
+    prefer:
+    - gcc
+    require:
+    - gcc
 ```
 
 This is intentional because:
