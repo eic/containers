@@ -7,7 +7,7 @@ to a deeper nested catalog.  Also flags large directories that have no catalog
 boundary and might benefit from one.
 
 Usage:
-    .ci/cvmfs_catalog_analysis [OPTIONS] PREFIX
+    scripts/cvmfs_catalog_analysis [OPTIONS] PREFIX
 
     PREFIX              Root of the sandbox to analyze, e.g.:
                         /cvmfs/singularity.opensciencegrid.org/eicweb/eic_xl:nightly
