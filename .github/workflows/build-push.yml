@@ -1035,7 +1035,7 @@ jobs:
         if-no-files-found: error
 
   npsim-dis-cross-arch:
-    name: capybara (DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }}, amd64 vs arm64)
+    name: capybara (npsim DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }}, amd64 vs arm64)
     runs-on: ubuntu-latest
     needs: [eic-manifest, npsim-dis]
     container:
@@ -1076,7 +1076,7 @@ jobs:
         if-no-files-found: error
 
   eicrecon-dis-cross-arch:
-    name: capybara (DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }}, amd64 vs arm64)
+    name: capybara (eicrecon DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }}, amd64 vs arm64)
     runs-on: ubuntu-latest
     needs: [eic-manifest, eicrecon-dis]
     container:
@@ -1117,7 +1117,7 @@ jobs:
         if-no-files-found: error
 
   npsim-gun-cross-arch:
-    name: capybara (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, amd64 vs arm64)
+    name: capybara (npsim gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, amd64 vs arm64)
     runs-on: ubuntu-latest
     needs: [eic-manifest, npsim-gun]
     container:
@@ -1157,7 +1157,7 @@ jobs:
         if-no-files-found: error
 
   eicrecon-gun-cross-arch:
-    name: capybara (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, amd64 vs arm64)
+    name: capybara (eicrecon gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, amd64 vs arm64)
     runs-on: ubuntu-latest
     needs: [eic-manifest, eicrecon-gun]
     container:
