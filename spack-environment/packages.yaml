@@ -226,11 +226,29 @@ packages:
     externals:
     - spec: g4ndl@4.7.1
       prefix: /opt/software/externals/g4ndl
+  g4nudexlib:
+    buildable: False
+    externals:
+    - spec: g4nudexlib@1.0
+      prefix: /opt/software/externals/g4nudexlib
+  g4tendl:
+    buildable: False
+    externals:
+    - spec: g4tendl@1.4
+      prefix: /opt/software/externals/g4tendl
+  g4urrpt:
+    buildable: False
+    externals:
+    - spec: g4urrpt@1.1
+      prefix: /opt/software/externals/g4urrpt
   geant4:
     require:
     - '@11.3.2.east'
     - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
+  geant4-data:
+    require:
+    - +nudexlib +tendl +urrpt
   gettext:
     require:
     - +libxml2
