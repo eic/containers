@@ -343,6 +343,19 @@ git -C ${EICSPACK_ROOT} checkout ${EICSPACK_SHA:-${EICSPACK_VERSION}}
 spack repo add --scope spack "${EICSPACK_ROOT}/spack_repo/eic"
 EOF
 
+## Place cvmfs catalogs for system directories
+## /etc and /usr are core system-directory subtrees created in the base image,
+## and are large enough to warrant their own catalog boundaries so that CVMFS
+## clients do not have to load the entire root catalog to traverse them, even
+## if later stages or downstream images add files under those paths.
+RUN <<EOF
+set -e
+touch /etc/.cvmfscatalog
+touch /usr/.cvmfscatalog
+find /usr -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+find /usr -mindepth 2 -maxdepth 2 -type d -exec touch {}/.cvmfscatalog \;
+EOF
+
 ## Ensure NVIDIA driver exposes all capabilities
 ## https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/docker-specialized.html
 ARG NVIDIA_VISIBLE_DEVICES
