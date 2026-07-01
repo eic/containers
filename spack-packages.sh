@@ -20,6 +20,7 @@ deb4f17d93dbe012403614245334f7c73fcc086f
 a77a7ed0d2630466cac71165026387b1381b058a
 bb6cd78da2a0c213508820fd27e322f5582e1e68
 bafae38c2e3ac848a48f89a12a065a501d2a0511
+a7c32f24cd5b69b237dc974804a71326306f4e58
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -37,3 +38,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## a77a7ed0d2630466cac71165026387b1381b058a: py-pynacl: depends on gmake, type build
 ## bb6cd78da2a0c213508820fd27e322f5582e1e68: py-throttler: add v1.2.3
 ## bafae38c2e3ac848a48f89a12a065a501d2a0511: py-throttler: fix typo
+## a7c32f24cd5b69b237dc974804a71326306f4e58: py-tensorboard: add v2.21.0
