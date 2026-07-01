@@ -576,7 +576,7 @@ packages:
     - '@81:'
   py-tensorflow:
     require:
-    - '@2.20'
+    - '@2.21'
   py-toml:
     require:
     - '@0.10.2:'
