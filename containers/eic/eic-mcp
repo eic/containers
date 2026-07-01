@@ -1,0 +1,251 @@
+#!/usr/bin/env bash
+#
+# eic-mcp — run EIC MCP servers as local SSE services for an LLM client
+#           (opencode, Claude Code, …). Registry-driven: it knows the EIC
+#           servers out of the box, and you add more with one drop-in file.
+#
+# Run it INSIDE eic-shell (Python 3.13, Node, xrdfs, rucio already present),
+# or from the host pointed at the eic_xl .sif (EIC_MCP_SIF).
+#
+#   eic-mcp list              # show the server registry
+#   eic-mcp setup             # one-time: clone + build the enabled servers
+#   eic-mcp up                # start them (SSE on 127.0.0.1:910x)
+#   eic-mcp status            # which are listening
+#   eic-mcp logs NAME         # tail a server log
+#   eic-mcp down | restart
+#
+# Pick which servers to run (default: uproot xrootd rucio):
+#   EIC_MCP_SERVERS="uproot xrootd rucio zenodo" eic-mcp up
+#
+# Add your own / future EIC servers WITHOUT editing this file — drop a file in
+#   ~/.config/eic-mcp/servers.d/<name>.conf
+# that calls `register …` (see the built-ins below for the signature).
+#
+set -euo pipefail
+
+# ---- config -----------------------------------------------------------------
+EIC_MCP_DIR="${EIC_MCP_DIR:-$HOME/eic-mcp/servers}"
+EIC_MCP_STATE="${EIC_MCP_STATE:-$HOME/.eic-mcp}"
+RUN_DIR="$EIC_MCP_STATE/run"; LOG_DIR="$EIC_MCP_STATE/logs"
+BIND_HOST="${EIC_MCP_HOST:-127.0.0.1}"
+EIC_MCP_SIF="${EIC_MCP_SIF:-}"
+RUCIO_CFG="${RUCIO_CFG:-/opt/rucio/etc/rucio.cfg}"
+CONF_DIR="${EIC_MCP_CONF_DIR:-$HOME/.config/eic-mcp/servers.d}"
+
+# ---- server registry --------------------------------------------------------
+# register NAME PORT REPO_URL BRANCH KIND ENTRY [ENV_HOOK]
+#   KIND = pyvenv-sse | pyvenv-stdio | node-sse | node-stdio
+#     *-sse   : the server speaks SSE itself  → run with its sse flag
+#     *-stdio : stdio-only server             → exposed over SSE with a bridge
+#               (supergateway, fetched on demand via npx)
+#   ENV_HOOK = a function name that echoes `export …` lines (auth/config)
+declare -A SRV_PORT SRV_REPO SRV_BRANCH SRV_KIND SRV_ENTRY SRV_ENV
+SRV_ORDER=()
+register() {
+  local n=$1
+  SRV_PORT[$n]=$2; SRV_REPO[$n]=$3; SRV_BRANCH[$n]=$4
+  SRV_KIND[$n]=$5; SRV_ENTRY[$n]=$6; SRV_ENV[$n]=${7:-}
+  case " ${SRV_ORDER[*]:-} " in *" $n "*) :;; *) SRV_ORDER+=("$n");; esac
+}
+
+# --- per-server env hooks (echo shell `export` lines) ---
+# Rucio: reuse the same shared read-only eicread account the CLI uses, straight
+# from the container rucio.cfg. No user secrets.
+rucio_env() {
+  cat <<PY
+eval "\$(python3 - <<'EOF'
+import configparser, shlex
+c = configparser.ConfigParser(); c.read("$RUCIO_CFG")
+g = lambda k, d="": c.get("client", k, fallback=d)
+print("export RUCIO_URL="       + shlex.quote(g("rucio_host", "https://rucio-server.jlab.org:443")))
+print("export RUCIO_AUTH_TYPE=userpass")
+print("export RUCIO_USERNAME="  + shlex.quote(g("username", "eicread")))
+print("export RUCIO_PASSWORD="  + shlex.quote(g("password", "eicread")))
+print("export RUCIO_ACCOUNT="   + shlex.quote(g("account",  g("username", "eicread"))))
+print("export RUCIO_VO=")
+EOF
+)"
+PY
+}
+xrootd_env() { echo "export XROOTD_SERVER='${XROOTD_SERVER:-root://dtn-eic.jlab.org}' XROOTD_BASE_DIR='${XROOTD_BASE_DIR:-/volatile/eic/EPIC}'"; }
+zenodo_env() { [ -n "${ZENODO_API_KEY:-}" ] && echo "export ZENODO_API_KEY='$ZENODO_API_KEY'" || echo ":"; }
+
+# --- built-in EIC servers ---
+register uproot 9101 https://github.com/eic/uproot-mcp-server    feat/sse-transport pyvenv-sse  uproot-mcp-server
+register xrootd 9102 https://github.com/eic/xrootd-mcp-server    feat/sse-transport node-sse    build/src/index.js  xrootd_env
+register rucio  9103 https://github.com/eic/rucio-eic-mcp-server feat/sse-transport pyvenv-sse  rucio-eic-mcp       rucio_env
+register zenodo 9104 https://github.com/eic/zenodo-mcp-server    ""                 node-stdio  build/src/index.js  zenodo_env
+# future: register indico 9105 https://github.com/cohm/indico-mcp "" node-stdio build/src/index.js indico_env
+
+# --- load user / collaboration extensions ---
+if [ -d "$CONF_DIR" ]; then for f in "$CONF_DIR"/*.conf; do [ -e "$f" ] && source "$f"; done; fi
+
+enabled_servers() { echo "${EIC_MCP_SERVERS:-uproot xrootd rucio}"; }
+srv_dir() { echo "$EIC_MCP_DIR/$(basename "${SRV_REPO[$1]}" .git)"; }
+
+# ---- run inside the EIC software stack --------------------------------------
+in_container() { [ -n "${APPTAINER_CONTAINER:-}" ] || [ -n "${SINGULARITY_CONTAINER:-}" ] || [ -e /.singularity.d ] || [ -e /singularity ]; }
+find_sif() {
+  [ -n "$EIC_MCP_SIF" ] && { echo "$EIC_MCP_SIF"; return; }
+  for p in "$HOME/dev/eic/local/lib/eic_xl-nightly.sif" "$HOME/eic/local/lib/eic_xl-nightly.sif" "$PWD/local/lib/eic_xl-nightly.sif"; do
+    [ -e "$p" ] && { echo "$p"; return; }
+  done; echo ""
+}
+run_in_env() {
+  if in_container; then bash -lc "$1"; else
+    local sif; sif="$(find_sif)"
+    [ -z "$sif" ] && { echo "ERROR: not inside eic-shell and no eic_xl .sif found (set EIC_MCP_SIF)." >&2; exit 1; }
+    apptainer exec "$sif" bash -lc "$1"
+  fi
+}
+run_in_env_bg() {  # cmd pidfile logfile  — setsid → own process group for reliable stop
+  local cmd="$1" pidfile="$2" logfile="$3" sif
+  if in_container; then
+    setsid bash -lc "$cmd" >"$logfile" 2>&1 </dev/null & echo $! >"$pidfile"
+  else
+    sif="$(find_sif)"; [ -z "$sif" ] && { echo "ERROR: no eic_xl .sif found (set EIC_MCP_SIF)." >&2; return 1; }
+    setsid apptainer exec "$sif" bash -lc "$cmd" >"$logfile" 2>&1 </dev/null & echo $! >"$pidfile"
+  fi
+}
+# TCP connect test (SSE streams never close, so a curl GET would hang — not a failure).
+port_open() { timeout 2 bash -c "exec 3<>/dev/tcp/$BIND_HOST/$1" 2>/dev/null; }
+wait_ready() {  # name port timeout
+  local name="$1" port="$2" timeout="${3:-45}" i pid
+  pid="$(cat "$RUN_DIR/$name.pid" 2>/dev/null || true)"
+  for ((i = 1; i <= timeout; i++)); do
+    port_open "$port" && { echo "  ✓ $name ready on http://$BIND_HOST:$port/sse"; return 0; }
+    # fail fast if the process we launched already died (e.g. bind failed)
+    if [[ "$pid" =~ ^[0-9]+$ ]] && ! kill -0 "$pid" 2>/dev/null; then
+      echo "  ✗ $name exited before binding $port (see: eic-mcp logs $name)" >&2; return 1
+    fi
+    sleep 1
+  done
+  echo "  ✗ $name did NOT come up on port $port within ${timeout}s (eic-mcp logs $name)" >&2; return 1
+}
+# enabled servers that are actually in the registry (warn + skip unknown names)
+resolved_servers() {
+  local n
+  for n in $(enabled_servers); do
+    if [ -n "${SRV_PORT[$n]:-}" ]; then echo "$n"
+    else echo "eic-mcp: unknown server '$n' (not in registry) — skipping" >&2; fi
+  done
+}
+
+# ---- build + run recipes (dispatch on KIND) ---------------------------------
+build_server() {
+  local n=$1 dir; dir="$(srv_dir "$n")"
+  case "${SRV_KIND[$n]}" in
+    pyvenv-*) run_in_env "cd '$dir' && { [ -d .venv-eic ] || python3 -m venv --system-site-packages .venv-eic; } && ./.venv-eic/bin/pip -q install ." ;;
+    node-*)   run_in_env "cd '$dir' && export npm_config_cache=\"\$HOME/.cache/eic-mcp/npm\" && { [ -d node_modules ] || npm install; } && npm run build" ;;
+  esac
+}
+run_cmd() {  # echo the shell command that runs server $1 as an SSE service
+  local n=$1 dir port kind entry envfn env=""
+  dir="$(srv_dir "$n")"; port=${SRV_PORT[$n]}; kind=${SRV_KIND[$n]}; entry=${SRV_ENTRY[$n]}; envfn=${SRV_ENV[$n]}
+  [ -n "$envfn" ] && env="$($envfn) && "
+  case "$kind" in
+    pyvenv-sse)   echo "cd '$dir' && ${env}exec ./.venv-eic/bin/$entry --transport sse --host $BIND_HOST --port $port" ;;
+    pyvenv-stdio) echo "cd '$dir' && export npm_config_cache=\"\$HOME/.cache/eic-mcp/npm\" && ${env}exec npx -y supergateway --stdio './.venv-eic/bin/$entry' --port $port" ;;
+    node-sse)     echo "cd '$dir' && export MCP_TRANSPORT=sse MCP_HOST=$BIND_HOST MCP_PORT=$port && ${env}exec node $entry" ;;
+    node-stdio)   echo "cd '$dir' && export npm_config_cache=\"\$HOME/.cache/eic-mcp/npm\" && ${env}exec npx -y supergateway --stdio 'node $entry' --port $port" ;;
+    *) echo "echo 'unknown kind $kind' >&2; exit 1" ;;
+  esac
+}
+
+# ---- commands ---------------------------------------------------------------
+cmd_list() {
+  printf "%-8s %-6s %-14s %-22s %s\n" NAME PORT KIND ENABLED REPO
+  local en; en=" $(enabled_servers) "
+  for n in "${SRV_ORDER[@]}"; do
+    case "$en" in *" $n "*) e=yes;; *) e=no;; esac
+    printf "%-8s %-6s %-14s %-22s %s\n" "$n" "${SRV_PORT[$n]}" "${SRV_KIND[$n]}" "$e" "${SRV_REPO[$n]}"
+  done
+}
+needs_bridge() { local n; for n in $(enabled_servers); do case "${SRV_KIND[$n]:-}" in *-stdio) return 0;; esac; done; return 1; }
+
+# `setup` clones + builds the enabled MCP servers (and the stdio→SSE bridge if
+# needed). It does NOT install the LLM client — that's the user's choice.
+cmd_setup() {
+  mkdir -p "$EIC_MCP_DIR" "$RUN_DIR" "$LOG_DIR"
+  local n dir
+  for n in $(resolved_servers); do
+    dir="$(srv_dir "$n")"
+    if [ -d "$dir/.git" ]; then echo "==> $n: present (using local checkout)"
+    elif [ -n "${SRV_BRANCH[$n]}" ]; then
+      echo "==> cloning $n (${SRV_BRANCH[$n]})"
+      git clone --branch "${SRV_BRANCH[$n]}" "${SRV_REPO[$n]}" "$dir" 2>/dev/null || git clone "${SRV_REPO[$n]}" "$dir"
+    else echo "==> cloning $n"; git clone "${SRV_REPO[$n]}" "$dir"; fi
+    echo "==> building $n (${SRV_KIND[$n]})"; build_server "$n"
+  done
+
+  if needs_bridge; then
+    echo "==> pre-fetching supergateway (stdio→SSE bridge)"
+    run_in_env "export npm_config_cache=\"\$HOME/.cache/eic-mcp/npm\" && npx -y supergateway --version >/dev/null 2>&1 || true"
+  fi
+
+  echo; echo "Setup complete. Start with: eic-mcp up"
+}
+cmd_up() {
+  mkdir -p "$RUN_DIR" "$LOG_DIR"
+  echo "Starting EIC MCP servers (SSE) ..."
+  local n rc=0 opid; local -a launched=()
+  for n in $(resolved_servers); do
+    # already running under our control? (live pidfile PID + port up) → skip
+    opid="$(cat "$RUN_DIR/$n.pid" 2>/dev/null || true)"
+    if [[ "$opid" =~ ^[0-9]+$ ]] && kill -0 "$opid" 2>/dev/null && port_open "${SRV_PORT[$n]}"; then
+      echo "  • $n already running (pid $opid) — skipping"; continue
+    fi
+    # port held by an unrelated process → don't clobber it, report failure
+    if port_open "${SRV_PORT[$n]}"; then
+      echo "  ⚠ $n: port ${SRV_PORT[$n]} already in use by another process — not starting" >&2; rc=1; continue
+    fi
+    run_in_env_bg "$(run_cmd "$n")" "$RUN_DIR/$n.pid" "$LOG_DIR/$n.log"; launched+=("$n")
+  done
+  [ ${#launched[@]} -gt 0 ] && echo "Waiting for servers (first start builds may fetch deps) ..."
+  for n in ${launched[@]+"${launched[@]}"}; do wait_ready "$n" "${SRV_PORT[$n]}" 60 || rc=1; done
+  echo
+  [ "$rc" -eq 0 ] && echo "All servers up. Point your LLM client at the /sse URLs above." \
+                  || echo "Some servers failed — check 'eic-mcp logs <name>'." >&2
+  return $rc
+}
+pid_on_port() { command -v ss >/dev/null 2>&1 || return 0; ss -ltnpH "sport = :$1" 2>/dev/null | grep -oP 'pid=\K[0-9]+' | head -1; }
+stop_one() {
+  local name="$1" pidfile="$RUN_DIR/$1.pid" port="${SRV_PORT[$1]:-}" pid i
+  [ -z "$port" ] && { echo "  (unknown server $name)"; return; }
+  if [ -f "$pidfile" ]; then
+    pid="$(cat "$pidfile" 2>/dev/null)"
+    if [[ "$pid" =~ ^[0-9]+$ ]]; then
+      kill -TERM -"$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null || true
+      for ((i = 0; i < 6; i++)); do port_open "$port" || break; sleep 1; done
+      if port_open "$port"; then kill -KILL -"$pid" 2>/dev/null || kill -KILL "$pid" 2>/dev/null || true; fi
+    fi
+    rm -f "$pidfile"
+  fi
+  if port_open "$port"; then pid="$(pid_on_port "$port")"; [[ "$pid" =~ ^[0-9]+$ ]] && kill -9 "$pid" 2>/dev/null || true; fi
+  if port_open "$port"; then
+    echo "  ✗ $name: still listening on $port — could not stop (check 'eic-mcp logs $name' or kill it manually)" >&2
+  else
+    echo "  stopped $name"
+  fi
+}
+cmd_down()   { echo "Stopping EIC MCP servers ..."; local n; for n in $(resolved_servers); do stop_one "$n"; done; }
+cmd_status() {
+  printf "%-8s %-30s %s\n" SERVER URL STATE
+  local n; for n in $(resolved_servers); do
+    port_open "${SRV_PORT[$n]}" && st=UP || st=down
+    printf "%-8s %-30s %s\n" "$n" "http://$BIND_HOST:${SRV_PORT[$n]}/sse" "$st"
+  done
+}
+cmd_logs() { local n="${1:-}"; [ -z "$n" ] && { echo "usage: eic-mcp logs <name>" >&2; exit 2; }; exec tail -n 100 -f "$LOG_DIR/$n.log"; }
+
+case "${1:-}" in
+  list)    cmd_list ;;
+  setup)   cmd_setup ;;
+  up)      cmd_up ;;
+  down)    cmd_down ;;
+  restart) cmd_down; sleep 1; cmd_up ;;
+  status)  cmd_status ;;
+  logs)    shift; cmd_logs "${1:-}" ;;
+  ""|-h|--help|help) sed -n '2,33p' "$0" | sed 's/^# \{0,1\}//' ;;
+  *) echo "Unknown command: $1" >&2; echo "Try: eic-mcp help" >&2; exit 2 ;;
+esac
