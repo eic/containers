@@ -369,6 +369,7 @@ EOF
 ## Copy custom content
 COPY eic-shell /opt/local/bin/eic-shell
 COPY eic-info /opt/local/bin/eic-info
+COPY --chmod=0755 eic-mcp /opt/local/bin/eic-mcp
 COPY entrypoint.sh /opt/local/sbin/entrypoint.sh
 COPY eic-env.sh /etc/eic-env.sh
 COPY profile.d/* /etc/profile.d
