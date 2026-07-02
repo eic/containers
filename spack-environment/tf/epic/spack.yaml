@@ -6,6 +6,15 @@ spack:
   - ../../packages.yaml
   - ../../view.yaml
   concretizer:
-    unify: when_possible  # included environment: py-numba needs a different llvm than the one provided as external
+    duplicates:
+      max_dupes:
+        llvm: 2
+        py-setuptools: 2
+        py-urllib3: 2
+        py-dask: 2
+        py-dask-awkward: 2
+        py-dask-histogram: 2
+        py-distributed: 2
+        py-requests: 2
   specs:
   - edm4eic

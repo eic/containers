@@ -6,7 +6,11 @@ spack:
   - ../packages_root_without_opengl.yaml
   - ../view.yaml
   concretizer:
-    unify: when_possible
+    duplicates:
+      max_dupes:
+        llvm: 2
+        py-setuptools: 2
+        py-urllib3: 2
   specs:
   - actsvg
   - afterburner

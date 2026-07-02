@@ -46,7 +46,6 @@ ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
 ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
-ARG SPACK_DUPLICATE_ALLOWLIST=""
 ENV SPACK_COLOR="always"
 ENV GIT_TERMINAL_PROMPT=0
 
@@ -55,29 +54,6 @@ RUN <<EOF
 set -e
 spack env activate --without-view --dir ${SPACK_ENV}
 spack concretize --force
-spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 \
-| tee /tmp/duplicates_all.txt
-if [ -n "${SPACK_DUPLICATE_ALLOWLIST}" ] ; then
-  grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" /tmp/duplicates_all.txt \
-  | tee /tmp/duplicates_disallowed.txt
-else
-  cat /tmp/duplicates_all.txt \
-  | tee /tmp/duplicates_disallowed.txt
-fi
-if [ -s /tmp/duplicates_disallowed.txt ] ; then
-  echo "Duplicate packages found:"
-  cat /tmp/duplicates_disallowed.txt
-  cat /tmp/duplicates_disallowed.txt | while read status hash spec ; do
-    spack --backtrace spec --long /${hash}
-    if [ "$prevspec" = "$spec" ] ; then
-      spack diff /${hash} /${prevhash}
-    fi
-    prevhash=${hash}
-    prevspec=${spec}
-  done
-  exit 1
-fi
 EOF
 
 
@@ -198,29 +174,6 @@ if [ -n "${JUGGLER_SHA}" ] ; then
   spack deconcretize -y --all juggler
 fi
 spack concretize --force
-spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 \
-| tee /tmp/duplicates_all.txt
-if [ -n "${SPACK_DUPLICATE_ALLOWLIST}" ] ; then
-  grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" /tmp/duplicates_all.txt \
-  | tee /tmp/duplicates_disallowed.txt
-else
-  cat /tmp/duplicates_all.txt \
-  | tee /tmp/duplicates_disallowed.txt
-fi
-if [ -s /tmp/duplicates_disallowed.txt ] ; then
-  echo "Duplicate packages found:"
-  cat /tmp/duplicates_disallowed.txt
-  cat /tmp/duplicates_disallowed.txt | while read status hash spec ; do
-    spack --backtrace spec --long /${hash}
-    if [ "$prevspec" = "$spec" ] ; then
-      spack diff /${hash} /${prevhash}
-    fi
-    prevhash=${hash}
-    prevspec=${spec}
-  done
-  exit 1
-fi
 EOF
 
 

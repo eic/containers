@@ -2,9 +2,8 @@
 # - We disable reuse of build cache products during concretization
 #   (but build cache products will get used if available during install).
 # - We want unified environments that can be installed in a simple view,
-#   but unfortunately that prevents multiple geometry versions. We use
-#   when_possible in those containers where multiple geometry versions are
-#   installed, and consider other duplicate packages an error.
+#   with package-specific duplicate allowances configured per environment
+#   through concretizer.duplicates.max_dupes in each spack.yaml.
 #
 concretizer:
   reuse:

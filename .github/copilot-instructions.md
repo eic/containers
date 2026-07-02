@@ -63,7 +63,7 @@ When updating package versions:
 
 Before submitting:
 1. Test concretization with builder stage builds
-2. Verify no unexpected duplicate packages
+2. Verify no unexpected duplicate packages beyond each environment's `concretizer.duplicates.max_dupes` settings
 3. **Check BOTH CI workflows pass** (GitHub Actions AND GitLab/EICweb)
 4. Update documentation if architecture changes
 
