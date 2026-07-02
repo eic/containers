@@ -1,18 +1,16 @@
 #!/bin/sh
 
-## Set COPILOT_HOME to /etc/copilot so github-copilot reads MCP server
-## configuration directly from the system-level config, rather than from
-## ~/.copilot. This works for Singularity/Apptainer users whose home
-## directory is bind-mounted from the host at runtime.
+## Set COPILOT_CUSTOM_INSTRUCTIONS_DIRS to /etc/copilot so github-copilot
+## reads custom instructions with a pointer to MCP server configuration.
 ##
 ## To revert to ~/.copilot (or any other directory), add the following
 ## to your ~/.bashrc:
-##   unset COPILOT_HOME
+##   unset COPILOT_CUSTOM_INSTRUCTIONS_DIRS
 
-if [ -z "${COPILOT_HOME:-}" ]; then
-  export COPILOT_HOME=/etc/copilot
+if [ -z "${COPILOT_CUSTOM_INSTRUCTIONS_DIRS:-}" ]; then
+  export COPILOT_CUSTOM_INSTRUCTIONS_DIRS=/etc/copilot
 else
   case "$-" in
-    *i*) printf '%s\n' "Note: COPILOT_HOME is already set to '${COPILOT_HOME}'; not overriding with /etc/copilot." >&2 ;;
+    *i*) printf '%s\n' "Note: COPILOT_CUSTOM_INSTRUCTIONS_DIRS is already set to '${COPILOT_CUSTOM_INSTRUCTIONS_DIRS}'; not overriding with /etc/copilot." >&2 ;;
   esac
 fi
