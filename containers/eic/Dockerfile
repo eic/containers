@@ -371,6 +371,9 @@ spack config --scope spack add "upstreams:eic-shell:install_tree:/opt/software"
 spack config blame upstreams
 EOF
 
+## Workaround for Spack creating config files with limited permissions (see https://github.com/spack/spack/issues/52651)
+RUN chmod 644 ${SPACK_ROOT}/etc/spack/*.yaml ${HOME}/.spack/*.yaml
+
 ## Install benchmarks into the container
 ARG BENCHMARK_COM_SHA=""
 ARG BENCHMARK_DET_SHA=""

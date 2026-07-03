@@ -343,6 +343,9 @@ git -C ${EICSPACK_ROOT} checkout ${EICSPACK_SHA:-${EICSPACK_VERSION}}
 spack repo add --scope spack "${EICSPACK_ROOT}/spack_repo/eic"
 EOF
 
+## Workaround for Spack creating config files with limited permissions (see https://github.com/spack/spack/issues/52651)
+RUN chmod 644 ${SPACK_ROOT}/etc/spack/*.yaml ${HOME}/.spack/*.yaml
+
 ## Place cvmfs catalogs for system directories
 ## /etc and /usr are core system-directory subtrees created in the base image,
 ## and are large enough to warrant their own catalog boundaries so that CVMFS
