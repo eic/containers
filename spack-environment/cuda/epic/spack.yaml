@@ -10,9 +10,6 @@ spack:
     duplicates:
       max_dupes:
         epic: 10
-        llvm: 2
-        py-setuptools: 2
-        py-urllib3: 2
   packages:
     geant4:
       prefer:
