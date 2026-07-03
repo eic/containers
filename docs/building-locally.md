@@ -37,7 +37,7 @@ This produces a local image tagged `debian_stable_base:local`.
 bash scripts/build-eic.sh --env xl --jobs 8
 ```
 
-This produces a local image tagged `eic_xl:local`.
+This produces local images tagged `eic_xl:local-default` and `eic_xl:local-nightly` (set `--build-type default` to build only the default image).
 
 `scripts/build-eic.sh` automatically detects whether the required builder and runtime base
 images (for example, `debian_stable_base:local` for both, or `cuda_devel:local` and
@@ -164,7 +164,7 @@ Builds an EIC software environment image.
 bash scripts/build-eic.sh [options]
 
   --env ENV           Environment: ci, xl (default), cuda, dbg, jl, prod, cvmfs, tf, ...
-  --build-type TYPE   default (default) or nightly
+  --build-type TYPE   Comma-separated list: default, nightly, or default,nightly (default: default,nightly)
   --builder-image IMG Builder base image name (default: debian_stable_base)
   --runtime-image IMG Runtime base image name (default: debian_stable_base)
   --platform PLATFORM linux/amd64 (default), linux/arm64
