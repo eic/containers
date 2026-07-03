@@ -345,6 +345,17 @@ base:
     - export BUILDWEEK=$(date +%Yw%V)
     - apk add git bash jq
     - bash scripts/build-base.sh
+    - |
+      LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${BUILD_IMAGE}" | tr '[:lower:]' '[:upper:]')_GIB"
+      LIMIT=$(printenv "${LIMIT_VAR}" || true)
+      if [ -n "${LIMIT}" ]; then
+        DIGEST=$(jq -r '."containerimage.digest"' "${METADATA_FILE}")
+        scripts/check_image_size \
+          "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}@${DIGEST}" \
+          "${LIMIT}"
+      else
+        echo "No size limit configured for ${BUILD_IMAGE}, skipping check."
+      fi
 
 base-manifest:
   extends: .docker
@@ -436,6 +447,27 @@ eic:
   script:
     - apk add git bash coreutils jq
     - bash scripts/build-eic.sh
+    - |
+      FULLNAME="${BUILD_IMAGE}${ENV}"
+      LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
+      LIMIT=$(printenv "${LIMIT_VAR}" || true)
+      if [ -n "${LIMIT}" ]; then
+        found=0
+        for metadata_file in "${METADATA_FILE%.json}"-*.json; do
+          [ -f "${metadata_file}" ] || continue
+          found=1
+          DIGEST=$(jq -r '."containerimage.digest"' "${metadata_file}")
+          scripts/check_image_size \
+            "${CI_REGISTRY}/${CI_PROJECT_PATH}/${FULLNAME}@${DIGEST}" \
+            "${LIMIT}"
+        done
+        if [ "${found}" -eq 0 ]; then
+          echo "ERROR: No metadata files found for ${FULLNAME} (expected ${METADATA_FILE%.json}-*.json)."
+          exit 1
+        fi
+      else
+        echo "No size limit configured for ${FULLNAME}, skipping check."
+      fi
 
 eic-manifest:
   extends: .docker
