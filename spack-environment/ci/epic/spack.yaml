@@ -3,6 +3,7 @@ spack:
   - ../spack.lock
   - ../../concretizer.yaml
   - ../../config.yaml
+  - ../../env_vars.yaml
   - ../../packages.yaml
   - ../../view.yaml
   packages:
