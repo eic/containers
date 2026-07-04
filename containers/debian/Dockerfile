@@ -120,7 +120,7 @@ fi
 apt-get -yqq update
 apt-get -yqq install cpp${GCC} gcc${GCC} g++${GCC} gfortran${GCC}
 apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev
-[ ${CLANG} -ge 20 ] && apt-get -yqq install flang${CLANG}
+if [ "${CLANG#-}" -ge 20 ]; then apt-get -yqq install flang${CLANG}; fi
 apt-get -yqq autoremove
 # Remove symlinks loop in nvidia/cuda:12.5.1-devel-ubuntu24.04
 rm -f /usr/bin/cpp /etc/alternatives/cpp
@@ -137,7 +137,7 @@ update-alternatives --install /usr/bin/clang-format-diff clang-format-diff /usr/
 update-alternatives --install /usr/bin/clang-tidy-diff clang-tidy-diff /usr/bin/clang-tidy-diff${CLANG}.py 100
 update-alternatives --install /usr/bin/run-clang-tidy run-clang-tidy /usr/bin/run-clang-tidy${CLANG}.py 100
 update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config${CLANG} 100
-[ ${CLANG} -ge 20 ] && update-alternatives --install /usr/bin/flang flang /usr/bin/flang${CLANG} flang
+if [ "${CLANG#-}" -ge 20 ]; then update-alternatives --install /usr/bin/flang flang /usr/bin/flang${CLANG} 100; fi
 # Default to gcc
 update-alternatives --install /usr/bin/cc  cc  /usr/bin/gcc 100
 update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 100
