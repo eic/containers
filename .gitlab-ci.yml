@@ -34,9 +34,9 @@ variables:
   ## To update: measure the current master-tag compressed image sizes using
   ## registry or CI tooling, add ~15% headroom, round up, and update here and
   ## in .github/workflows/build-push.yml env.
-  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: "0.8"
-  SIZE_LIMIT_EIC_CI_GIB: "3"
-  SIZE_LIMIT_EIC_XL_GIB: "4.5"
+  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: "0.9"
+  SIZE_LIMIT_EIC_CI_GIB: "3.1"
+  SIZE_LIMIT_EIC_XL_GIB: "4.6"
 
   ## is this nightly or not?
   NIGHTLY: ""
