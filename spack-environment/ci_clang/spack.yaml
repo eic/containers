@@ -69,6 +69,7 @@ spack:
   - py-particle
   - py-pip
   - py-rucio-clients
+  - py-scipy
   - py-seaborn
   - py-toml
   - py-uproot
