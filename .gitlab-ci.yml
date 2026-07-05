@@ -37,6 +37,8 @@ variables:
   SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: "0.8"
   SIZE_LIMIT_EIC_CI_GIB: "3"
   SIZE_LIMIT_EIC_XL_GIB: "4.5"
+  SIZE_LIMIT_EIC_CUDA_GIB: "10.1"
+  SIZE_LIMIT_EIC_DEV_CUDA_GIB: "12.1"
 
   ## is this nightly or not?
   NIGHTLY: ""
