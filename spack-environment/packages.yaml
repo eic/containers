@@ -573,7 +573,7 @@ packages:
     - '@0.13.2:'
   py-setuptools:
     require:
-    - '@81:'
+    - '@80:'
   py-tensorflow:
     require:
     - '@2.21'
