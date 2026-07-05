@@ -6,6 +6,8 @@
 #   through concretizer.duplicates.max_dupes in each spack.yaml.
 #
 concretizer:
+  concretization_cache:
+    enable: true
   reuse:
     roots: true
     from:

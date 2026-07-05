@@ -50,7 +50,8 @@ ENV SPACK_COLOR="always"
 ENV GIT_TERMINAL_PROMPT=0
 
 # Concretization (default environment)
-RUN <<EOF
+RUN --mount=type=cache,target=/root/.spack/cache/concretization
+    <<EOF
 set -e
 spack env activate --without-view --dir ${SPACK_ENV}
 spack concretize --force
@@ -153,7 +154,8 @@ ARG EPIC_SHA=""
 ARG JUGGLER_SHA=""
 
 # Concretization (custom environment)
-RUN <<EOF
+RUN --mount=type=cache,target=/root/.spack/cache/concretization
+    <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
 if [ -n "${EDM4EIC_SHA}" ] ; then
