@@ -50,7 +50,7 @@ ENV SPACK_COLOR="always"
 ENV GIT_TERMINAL_PROMPT=0
 
 # Concretization (default environment)
-RUN --mount=type=cache,target=/root/.spack/cache/concretization
+RUN --mount=type=cache,target=/root/.spack/cache/concretization,id=spack-concretization-${TARGETPLATFORM} \
     <<EOF
 set -e
 spack env activate --without-view --dir ${SPACK_ENV}
@@ -154,7 +154,7 @@ ARG EPIC_SHA=""
 ARG JUGGLER_SHA=""
 
 # Concretization (custom environment)
-RUN --mount=type=cache,target=/root/.spack/cache/concretization
+RUN --mount=type=cache,target=/root/.spack/cache/concretization,id=spack-concretization-${TARGETPLATFORM} \
     <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
