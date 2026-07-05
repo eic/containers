@@ -585,7 +585,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     needs: eic-manifest
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -669,7 +669,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     needs: eic-manifest
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -765,7 +765,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     needs: [eic-manifest, npsim-gun]
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -848,7 +848,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     needs: [eic-manifest, npsim-dis]
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -947,7 +947,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [eic-manifest, npsim-dis]
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -988,7 +988,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [eic-manifest, eicrecon-dis]
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -1029,7 +1029,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [eic-manifest, npsim-gun]
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -1069,7 +1069,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [eic-manifest, eicrecon-gun]
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
