@@ -16,6 +16,7 @@ read -r -d '' SPACK_CHERRYPICKS <<- \
 2ec34f3a913fe32017682ccbc9518b7111255f6b
 69329c85739c6030d6f60c00aa03ebcaf4e22037
 44fa40a0367ab59f756fc24791395e1ec56d2712
+b5b06bc036896af346e9ca16ac1183af4333eed7
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -29,3 +30,4 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## 2ec34f3a913fe32017682ccbc9518b7111255f6b: fix: install missing upstream packages in local store (new installer)
 ## 69329c85739c6030d6f60c00aa03ebcaf4e22037: fix: also avoid raise InstallError later in new_installer; add unit-test
 ## 44fa40a0367ab59f756fc24791395e1ec56d2712: view: fix rename on overlayfs issue
+## b5b06bc036896af346e9ca16ac1183af4333eed7: solver: improve decisions on build_set_id
