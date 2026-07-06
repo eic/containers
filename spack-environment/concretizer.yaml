@@ -8,6 +8,7 @@
 concretizer:
   concretization_cache:
     enable: true
+    url: ~/.spack/cache/concretization
   reuse:
     roots: true
     from:
