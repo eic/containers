@@ -22,7 +22,7 @@ deb4f17d93dbe012403614245334f7c73fcc086f
 a7c32f24cd5b69b237dc974804a71326306f4e58
 de97f131df3dbc940151f406afd5c2c1158a660c
 caf013be0ee1594fdbba8feb07ffecc88474a2b0
-bcd5833436b71a6c2b41195149b94d59cf5b63fa
+75395349957ad785cca50002dffb18bbcb48af27
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -42,4 +42,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## a7c32f24cd5b69b237dc974804a71326306f4e58: py-tensorboard: add v2.21.0
 ## de97f131df3dbc940151f406afd5c2c1158a660c: TensorFlow: add v2.21.0
 ## caf013be0ee1594fdbba8feb07ffecc88474a2b0: Add missing xxd dep
-## bcd5833436b71a6c2b41195149b94d59cf5b63fa: py-torch: ensure setuptools is not unnecessarily constrained for 2.10:
+## 75395349957ad785cca50002dffb18bbcb48af27: py-torch: ensure setuptools is not unnecessarily constrained for 2.10:
