@@ -306,7 +306,7 @@ packages:
   jana2:
     require:
     - '@2026.03.00'
-    - -ipo +perfetto +podio +root +zmq
+    - -ipo ~perfetto +podio +root +zmq
   juggler:
     require:
     - '@15.2.0' # JUGGLER_VERSION
