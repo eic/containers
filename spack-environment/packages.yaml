@@ -507,6 +507,9 @@ packages:
   py-lmfit:
     require:
     - '@1.0.2:'
+  py-matplotlib:
+    require:
+    - '@3.10'  # avoid FT_Render_Glyph errors possibly due to https://github.com/matplotlib/matplotlib/pull/30059
   py-mplhep:
     require:
     - '@0.4.0:'
