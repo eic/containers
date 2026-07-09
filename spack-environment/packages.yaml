@@ -166,7 +166,7 @@ packages:
     - '@1.2.2'
   eicrecon:
     require:
-    - '@1.38.0' # EICRECON_VERSION
+    - '@1.39.0' # EICRECON_VERSION
   eigen:
     require:
     - '@3.4.0'
