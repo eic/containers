@@ -110,6 +110,7 @@ workflow:
 
 nvidia-smi:
   stage: config
+  needs: []
   image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
   tags:
     - gpu
@@ -126,6 +127,7 @@ nvidia-smi:
 ## - export tag to public registries, optional secondary export tag
 version:
   stage: config
+  needs: []
   script:
     - |
       if [ -n "${VERSION}" ]; then
@@ -201,6 +203,7 @@ version:
 
 status:pending:
   stage: status-pending
+  needs: []
   extends: .status
   variables:
     STATE: "pending"
@@ -771,6 +774,7 @@ df:
 .prune:
   extends: .build
   stage: config
+  needs: []
   rules:
     - when: manual
   script:
@@ -795,6 +799,7 @@ prune:docker-new:
 clean_internal_tag:
   image: alpine/curl
   stage: finalize
+  needs: []
   rules:
     - when: manual
   script:
@@ -809,6 +814,16 @@ clean_internal_tag:
 .clean_unstable_mr:
   extends: .docker
   stage: finalize
+  needs:
+    - { job: user_spack_environment, optional: true }
+    - { job: "cuda:torch", optional: true }
+    - { job: "eic_xl:singularity:default", optional: true }
+    - { job: "eic_xl:singularity:nightly", optional: true }
+    - { job: "benchmarks:geoviewer:default", optional: true }
+    - { job: "benchmarks:detector:default", optional: true }
+    - { job: "benchmarks:detector:nightly", optional: true }
+    - { job: "benchmarks:phyiscs:default", optional: true }
+    - { job: "benchmarks:physics:nightly", optional: true }
   when: always
   script:
     - apk add curl jq
@@ -852,6 +867,15 @@ clean_unstable_mr:docker-new:
   needs:
     - version
     - clean_internal_tag
+    - { job: user_spack_environment, optional: true }
+    - { job: "cuda:torch", optional: true }
+    - { job: "eic_xl:singularity:default", optional: true }
+    - { job: "eic_xl:singularity:nightly", optional: true }
+    - { job: "benchmarks:geoviewer:default", optional: true }
+    - { job: "benchmarks:detector:default", optional: true }
+    - { job: "benchmarks:detector:nightly", optional: true }
+    - { job: "benchmarks:phyiscs:default", optional: true }
+    - { job: "benchmarks:physics:nightly", optional: true }
   when: always
   script:
     - apk add curl jq
@@ -905,6 +929,7 @@ clean_pipeline:docker-new:
 spack-cache-cleanup:
   extends: .build
   stage: finalize
+  needs: [version]
   when: always
   allow_failure: true
   script:
@@ -935,7 +960,22 @@ waterfall:upload:
 
 status:success:
   stage: status-report
-  dependencies: []
+  needs:
+    - { job: nvidia-smi, optional: true }
+    - { job: user_spack_environment, optional: true }
+    - { job: "cuda:torch", optional: true }
+    - { job: "eic_xl:singularity:default", optional: true }
+    - { job: "eic_xl:singularity:nightly", optional: true }
+    - { job: "benchmarks:geoviewer:default", optional: true }
+    - { job: "benchmarks:detector:default", optional: true }
+    - { job: "benchmarks:detector:nightly", optional: true }
+    - { job: "benchmarks:phyiscs:default", optional: true }
+    - { job: "benchmarks:physics:nightly", optional: true }
+    - { job: "clean_pipeline:gpu", optional: true }
+    - { job: "clean_pipeline:docker-new", optional: true }
+    - { job: "clean_unstable_mr:gpu", optional: true }
+    - { job: "clean_unstable_mr:docker-new", optional: true }
+    - { job: spack-cache-cleanup, optional: true }
   extends: .status
   variables:
     STATE: "success"
@@ -944,7 +984,7 @@ status:success:
 
 status:failure:
   stage: status-report
-  dependencies: []
+  needs: []
   extends: .status
   variables:
     STATE: "failure"
