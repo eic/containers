@@ -550,7 +550,7 @@ user_spack_environment:
     - spack concretize
     - spack install --only dependencies edm4eic
     - spack install --verbose
-    - ls -al $HOME/spack/linux-*/compiler-wrapper-1.0-*/libexec/spack/gcc/g++
+    - ls -al $HOME/spack/linux-*/compiler-wrapper-*/libexec/spack/gcc/g++
     - ls -al $HOME/spack/linux-*/edm4eic-*/include/edm4eic/EDM4eicVersion.h
     - ls $HOME/spack/
 
