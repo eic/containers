@@ -14,7 +14,9 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS <<- \
 --- || true
 a115a811bdfce4db5298a9ba9b7903ccfb0de101
 20444b8e9382e659360a1446688d10a8c2d2ad31
-5c37f836753e8f9683fdc547f3661c5045abcbd1
+30e69adca31b9ba98e61c42b4126188911e3537c
+93acd58e1399d787dac69d61ecbbd1695c8a2bac
+056c2efcd8f3cceb629f9b78acbdf4533e008206
 f5742718da7bd1d078ddc8423011a82ef2e3c759
 0d4e42deee0f561013568d1e92205a084cf203bc
 6346a54e35ee6281b8e8c6a1bc9c102893593c8e
@@ -31,6 +33,9 @@ cfdc775b857dbecc1b7ba62b5ec00d4f8b0f3e6b
 045873c8cbce3eef07ed068a998467e01bd91129
 b11529d6bbd8abc9f7bde6faf290b1c22385a022
 9d1b52d36a4c89d9c3964f599cd00232b901e9ac
+ad4b252d254d49db587abd6fd06c375c71d27a01
+8cd9959e3fd4e54d79bbf75210e335ab842e1af0
+4dc856a13e9066ca3249a593d351af8cda521fa3
 deb4f17d93dbe012403614245334f7c73fcc086f
 0d64b2bab72a99441f042b663e4bc993ec0db45d
 a77a7ed0d2630466cac71165026387b1381b058a
@@ -49,7 +54,9 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## [hash]: [description]
 ## a115a811bdfce4db5298a9ba9b7903ccfb0de101: github-copilot: new package
 ## 20444b8e9382e659360a1446688d10a8c2d2ad31: github-copilot: add v1.0.8
-## 5c37f836753e8f9683fdc547f3661c5045abcbd1: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
+## 30e69adca31b9ba98e61c42b4126188911e3537c: root: cleanup recipe since the minimum version is 6.28.00
+## 93acd58e1399d787dac69d61ecbbd1695c8a2bac: Miscellaneous package fixes [includes minor change to root]
+## 056c2efcd8f3cceb629f9b78acbdf4533e008206: root: require openblas ~ilp64 symbol_suffix=none when ^openblas
 ## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
 ## 0d4e42deee0f561013568d1e92205a084cf203bc: g4hepem: new package
 ## 6346a54e35ee6281b8e8c6a1bc9c102893593c8e: g4adept: new package
@@ -66,6 +73,9 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 045873c8cbce3eef07ed068a998467e01bd91129: py-snakemake-storage-plugin-pelican: new package v0.1.1 + deps
 ## b11529d6bbd8abc9f7bde6faf290b1c22385a022: py-onnxruntime: only run tests when self.run_tests
 ## 9d1b52d36a4c89d9c3964f599cd00232b901e9ac: julia: avoid cascading mbedtls in v1.12+
+## ad4b252d254d49db587abd6fd06c375c71d27a01: root: add v6.36.12
+## 8cd9959e3fd4e54d79bbf75210e335ab842e1af0: root: add builtin_llvm variant to allow external LLVM
+## 4dc856a13e9066ca3249a593d351af8cda521fa3: root: add v6.40.00, v6.40.02
 ## deb4f17d93dbe012403614245334f7c73fcc086f: fix: add latest osg-ca-cert
 ## 0d64b2bab72a99441f042b663e4bc993ec0db45d: osg-ca-certs: depends on gmake and perl, type build
 ## a77a7ed0d2630466cac71165026387b1381b058a: py-pynacl: depends on gmake, type build
