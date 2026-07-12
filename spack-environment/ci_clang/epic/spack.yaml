@@ -1,0 +1,16 @@
+spack:
+  include:
+  - ../spack.lock
+  - ../../concretizer.yaml
+  - ../../config.yaml
+  - ../../packages.yaml
+  - ../../view.yaml
+  packages:
+    geant4:
+      require:
+      - ~opengl
+  specs:
+  - algorithms
+  - edm4eic
+  - eicrecon
+  - epic@main # EPIC_VERSION
