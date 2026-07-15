@@ -3,8 +3,8 @@ on:
   pull_request_target:
     types: [closed]
 permissions:
-  contents: write # so it can comment
-  pull-requests: write # so it can create pull requests
+  contents: write # so it can push backport branches/commits
+  pull-requests: write # so it can create and comment on pull requests
 jobs:
   backport:
     name: Backport pull request
