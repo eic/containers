@@ -75,6 +75,7 @@ spack:
   - podio
   - poppler
   - prmon
+  - professor
   - pyrobird
   - pythia8
   - py-awkward

@@ -428,6 +428,9 @@ packages:
   prmon:
     require:
     - +plot
+  professor:
+    require:
+    - '@2.3.3:'
   protobuf:
     require:
     - '@32.1'
