@@ -287,6 +287,10 @@ packages:
   heppdt:
     require:
     - '@2.06.01'
+  herwig3:
+    require:
+    - '@7.3.0'
+    - ~madgraph5amc ~njet ~vbfnlo
   highfive:
     require:
     - +mpi
