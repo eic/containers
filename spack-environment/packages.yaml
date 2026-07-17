@@ -290,7 +290,7 @@ packages:
   herwig3:
     require:
     - '@7.3.0'
-    - ~madgraph5amc ~njet ~vbfnlo
+    - ~njet ~vbfnlo
   highfive:
     require:
     - +mpi
