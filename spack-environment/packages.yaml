@@ -383,6 +383,9 @@ packages:
     require:
     - '@7.8.1:'
     - +application_framework -vtk
+  opencode:
+    require:
+    - '@1.18.3:'
   opengl:
     buildable: False
     externals:
