@@ -28,6 +28,7 @@ spack:
   - doxygen
   - east
   - edm4hep
+  - eic-mcp
   - eic-smear
   - eigen
   - emacs
@@ -69,6 +70,7 @@ spack:
   - ollama
   - onnx
   - opencascade
+  - opencode
   - osg-ca-certs
   - pelican
   - phonebook-cli
@@ -126,6 +128,7 @@ spack:
   - py-yapf
   - rivet
   - root
+  - rucio-eic-mcp-server
   - sherpa
   - simsipm
   - slurm sysconfdir=/etc/slurm
@@ -133,6 +136,8 @@ spack:
   - spdlog
   - stow
   - strace
+  - supergateway
+  - uproot-mcp-server
   - valgrind
   - xeyes
   - xrootd
