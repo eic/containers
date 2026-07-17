@@ -519,7 +519,8 @@ packages:
   py-mcp:
     require:
     - '@1.28:'
-    - +cli  # rucio-eic-mcp-server needs mcp[cli]
+    # no +cli: the typer-based mcp CLI pins py-click@:8.1.8, which cannot
+    # unify with the environment's click 8.3+ (flask); servers need mcp core
   py-mplhep:
     require:
     - '@0.4.0:'
