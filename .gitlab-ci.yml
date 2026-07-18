@@ -593,11 +593,24 @@ cuda:torch:
   stage: deploy
   interruptible: true
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE != "trigger"'
+    # Skip for external repository triggers (e.g. EICrecon-triggered pipelines)
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-(alpha|beta|stable)/'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-(alpha|beta|stable)/'
+      when: on_success
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: on_success
     - when: never
   artifacts:
-      expire_in: 1 days
+      # Short retention for disk space efficiency; .sif files are several GB each.
+      # MR and default runs only need the artifact for immediate verification.
+      expire_in: 2 hours
       paths:
         - build/${BUILD_IMAGE}.sif
   script:
@@ -627,6 +640,11 @@ eic_xl:singularity:nightly:
   variables:
     BUILD_TYPE: nightly
     BUILD_IMAGE: eic_xl
+  artifacts:
+    # Override retention: eic-shell/install.py downloads this artifact after pipeline completion.
+    expire_in: 1 days
+    paths:
+      - build/${BUILD_IMAGE}.sif
   needs:
     - job: version
     - job: eic
