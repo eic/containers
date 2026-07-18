@@ -287,6 +287,11 @@ packages:
   heppdt:
     require:
     - '@2.06.01'
+  herwig3:
+    require:
+    - '@7.3.0'
+    - ~njet ~vbfnlo
+    - fflags=-fno-range-check
   highfive:
     require:
     - +mpi

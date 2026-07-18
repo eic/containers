@@ -47,6 +47,7 @@ spack:
   - hepmc3
   - hepmcmerger
   - heppdt
+  - herwig3
   - imagemagick
   - irt
   - irt2
