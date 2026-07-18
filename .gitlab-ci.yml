@@ -523,17 +523,23 @@ eic:
         echo "No size limit configured for ${FULLNAME}, skipping check." ;
       fi
 
+.user_spack_environment_commands:
+  variables:
+    USER_SPACK_ENVIRONMENT_COMMANDS: >-
+      source /opt/spack/share/spack/setup-env.sh &&
+      spack env activate --create edm4eic &&
+      spack add edm4eic@git.main cxxstd=20 &&
+      spack concretize &&
+      spack install --only dependencies edm4eic &&
+      spack install --verbose &&
+      ls -al $HOME/spack/linux-*/compiler-wrapper-*/libexec/spack/gcc/g++ &&
+      ls -al $HOME/spack/linux-*/edm4eic-*/include/edm4eic/EDM4eicVersion.h &&
+      ls $HOME/spack/
+
 .user_spack_environment:
+  extends: .user_spack_environment_commands
   script:
-    - source /opt/spack/share/spack/setup-env.sh
-    - spack env activate --create edm4eic
-    - spack add edm4eic@git.main cxxstd=20
-    - spack concretize
-    - spack install --only dependencies edm4eic
-    - spack install --verbose
-    - ls -al $HOME/spack/linux-*/compiler-wrapper-*/libexec/spack/gcc/g++
-    - ls -al $HOME/spack/linux-*/edm4eic-*/include/edm4eic/EDM4eicVersion.h
-    - ls $HOME/spack/
+    - /bin/bash -lc "${USER_SPACK_ENVIRONMENT_COMMANDS}"
 
 user_spack_environment:
   extends: .user_spack_environment
@@ -556,6 +562,33 @@ user_spack_environment:
             PLATFORM: linux/amd64
   image:
     name: ${CI_REGISTRY_IMAGE}/eic_ci:${INTERNAL_TAG}-default
+
+user_spack_environment:singularity:
+  extends: .user_spack_environment_commands
+  stage: benchmarks
+  rules:
+    # Skip for epic or EICrecon trigger
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - when: always
+  needs:
+    - job: version
+    - job: eic
+      parallel:
+        matrix:
+          - BUILD_IMAGE: eic_
+            ENV: ci
+            BUILD_TYPE: default
+            BUILDER_IMAGE: debian_stable_base
+            RUNTIME_IMAGE: debian_stable_base
+            PLATFORM: linux/amd64
+  image:
+    name: ${SINGULARITY_IMAGE}
+    entrypoint: [""]
+  script:
+    - mkdir build
+    - singularity pull build/eic_ci.sif docker://${CI_REGISTRY_IMAGE}/eic_ci:${INTERNAL_TAG}-default
+    - singularity exec build/eic_ci.sif /bin/bash -lc "${USER_SPACK_ENVIRONMENT_COMMANDS}"
 
 .cuda:
   stage: benchmarks
