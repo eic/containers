@@ -291,9 +291,7 @@ packages:
     require:
     - '@7.3.0'
     - ~njet ~vbfnlo
-    compiler_flags:
-      fflags: -fno-range-check
-      fcflags: -fno-range-check
+    - fflags=-fno-range-check
   highfive:
     require:
     - +mpi
