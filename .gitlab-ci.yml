@@ -523,7 +523,20 @@ eic:
         echo "No size limit configured for ${FULLNAME}, skipping check." ;
       fi
 
+.user_spack_environment:
+  script:
+    - source /opt/spack/share/spack/setup-env.sh
+    - spack env activate --create edm4eic
+    - spack add edm4eic@git.main cxxstd=20
+    - spack concretize
+    - spack install --only dependencies edm4eic
+    - spack install --verbose
+    - ls -al $HOME/spack/linux-*/compiler-wrapper-*/libexec/spack/gcc/g++
+    - ls -al $HOME/spack/linux-*/edm4eic-*/include/edm4eic/EDM4eicVersion.h
+    - ls $HOME/spack/
+
 user_spack_environment:
+  extends: .user_spack_environment
   stage: benchmarks
   rules:
     # Skip for epic or EICrecon trigger
@@ -543,16 +556,6 @@ user_spack_environment:
             PLATFORM: linux/amd64
   image:
     name: ${CI_REGISTRY_IMAGE}/eic_ci:${INTERNAL_TAG}-default
-  script:
-    - source /opt/spack/share/spack/setup-env.sh
-    - spack env activate --create edm4eic
-    - spack add edm4eic@git.main cxxstd=20
-    - spack concretize
-    - spack install --only dependencies edm4eic
-    - spack install --verbose
-    - ls -al $HOME/spack/linux-*/compiler-wrapper-*/libexec/spack/gcc/g++
-    - ls -al $HOME/spack/linux-*/edm4eic-*/include/edm4eic/EDM4eicVersion.h
-    - ls $HOME/spack/
 
 .cuda:
   stage: benchmarks
