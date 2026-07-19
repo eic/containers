@@ -532,16 +532,16 @@ eic:
       spack concretize &&
       spack install --only dependencies edm4eic &&
       spack install --verbose &&
-      ls -al $HOME/spack/linux-*/compiler-wrapper-*/libexec/spack/gcc/g++ &&
-      ls -al $HOME/spack/linux-*/edm4eic-*/include/edm4eic/EDM4eicVersion.h &&
-      ls $HOME/spack/
+      ls -al \$HOME/spack/linux-*/compiler-wrapper-*/libexec/spack/gcc/g++ &&
+      ls -al \$HOME/spack/linux-*/edm4eic-*/include/edm4eic/EDM4eicVersion.h &&
+      ls \$HOME/spack/
 
 .user_spack_environment:
   extends: .user_spack_environment_commands
   script:
     - /bin/bash -lc "${USER_SPACK_ENVIRONMENT_COMMANDS}"
 
-user_spack_environment:
+user_spack_environment:docker:
   extends: .user_spack_environment
   stage: benchmarks
   rules:
