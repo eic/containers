@@ -23,7 +23,7 @@ a7c32f24cd5b69b237dc974804a71326306f4e58
 de97f131df3dbc940151f406afd5c2c1158a660c
 caf013be0ee1594fdbba8feb07ffecc88474a2b0
 75395349957ad785cca50002dffb18bbcb48af27
-d8ed806a90f06527e5d1b231b45fc6f60b576317
+dcf9162c02da6fbde05bdbc595561b7956f5381b
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -44,4 +44,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## de97f131df3dbc940151f406afd5c2c1158a660c: TensorFlow: add v2.21.0
 ## caf013be0ee1594fdbba8feb07ffecc88474a2b0: Add missing xxd dep
 ## 75395349957ad785cca50002dffb18bbcb48af27: py-torch: ensure setuptools is not unnecessarily constrained for 2.10:
-## d8ed806a90f06527e5d1b231b45fc6f60b576317: cargo-c: depends_on pkgconfig
+## dcf9162c02da6fbde05bdbc595561b7956f5381b: cargo-c: depends_on pkgconfig
