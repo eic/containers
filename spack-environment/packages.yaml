@@ -340,6 +340,17 @@ packages:
     require:
     - '@6.5.5'
     - +python
+  lhapdfsets:
+    buildable: False
+    externals:
+    - spec: lhapdfsets@6.5.5 sets=MMHT2014lo68cl,MMHT2014nlo68cl,CT14lo,CT14nlo
+      # Technically not a prefix as spack installs under share/lhapdfsets,
+      # but the only role of this package is to provide LHAPDF_DATA_PATH.
+      prefix: /cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current
+      extra_attributes:
+        environment:
+          set:
+          - LHAPDF_DATA_PATH: /cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current
   #llvm:
     #require:
     #- any_of: [~gold, '@:']
