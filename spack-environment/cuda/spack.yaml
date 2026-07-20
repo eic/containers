@@ -46,6 +46,7 @@ spack:
   - k4fwcore
   - lcov
   - lhapdf
+  - lhapdfsets
   - madx
   - nano
   - nopayloadclient
