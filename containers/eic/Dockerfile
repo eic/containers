@@ -68,7 +68,8 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (default configuration, $TARGETPLATFORM)"
 
 # Installation (default environment)
-RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
+RUN --mount=type=bind,target=/cvmfs,source=/cvmfs,from=host \
+    --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM} \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
@@ -119,7 +120,9 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (default configuration, $TARGETPLATFORM)"
 
 # Installation (default environment, from buildcache)
-RUN --mount=type=cache,target=/var/cache/spack                          \
+RUN --mount=type=bind,target=/cvmfs,source=/cvmfs,from=host \
+    --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM} \
+    --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \

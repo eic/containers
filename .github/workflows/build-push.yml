@@ -548,6 +548,7 @@ jobs:
           file: containers/eic/Dockerfile
           context: containers/eic
           build-contexts: |
+            host=/
             spack-environment=spack-environment
           secrets: |
             "CI_REGISTRY_USER=${{ secrets.GHCR_REGISTRY_USER }}"
