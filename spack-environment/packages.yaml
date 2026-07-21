@@ -350,7 +350,7 @@ packages:
       extra_attributes:
         environment:
           set:
-          - LHAPDF_DATA_PATH: /cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current
+            LHAPDF_DATA_PATH: /cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current
   #llvm:
     #require:
     #- any_of: [~gold, '@:']
