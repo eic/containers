@@ -167,6 +167,9 @@ packages:
   eicrecon:
     require:
     - '@1.39.2' # EICRECON_VERSION
+  eicsimubeameffects:
+    require:
+    - '@1.1'
   eigen:
     require:
     - '@3.4.0'
