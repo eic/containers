@@ -470,7 +470,7 @@ packages:
     - '@2025.2.0:'
   py-epic-capybara:
     require:
-    - '@git.901344f63fa0dfa2f9d2f92f25587fc08fea165a'
+    - '@git.30735bc79b3d78afae1744775f863bb194527fe2'
   py-flatbuffers:
     require:
     - '@25.9.23:'
