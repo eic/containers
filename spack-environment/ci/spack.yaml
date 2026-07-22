@@ -76,4 +76,5 @@ spack:
   - root
   - snakemake
   - spdlog
+  - timeframebuilder
   - xrootd

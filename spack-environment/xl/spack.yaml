@@ -127,6 +127,7 @@ spack:
   - py-yapf
   - rivet
   - root
+  - timeframebuilder
   - sherpa
   - simsipm
   - slurm sysconfdir=/etc/slurm
