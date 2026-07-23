@@ -58,6 +58,7 @@ spack:
   - k4fwcore
   - lcov
   - lhapdf
+  - lhapdfsets
   - libtool
   - lzo
   - madx
