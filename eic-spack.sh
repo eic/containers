@@ -5,4 +5,4 @@ EICSPACK_ORGREPO="eic/eic-spack"
 
 ## EIC spack commit hash or github version, e.g. v0.19.7
 ## note: nightly builds could use a branch e.g. releases/v0.19
-EICSPACK_VERSION="e89194cdf2956f94fe8b4cc2fd00f6c80f996e2a"
+EICSPACK_VERSION="bbdf7caa3b8ed5ad4a28ed651182be5cc5fe317c"
