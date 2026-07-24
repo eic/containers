@@ -32,4 +32,4 @@ repos:
     - id: shellcheck
       types: [shell]
       args: [--severity=warning, -x]
-      files: (^[^/]+\.sh$|^\.ci/resolve_git_ref$|^\.ci/check_image_size$)
+      files: (^[^/]+\.sh$|^scripts/[^/]+\.sh$|^scripts/resolve_git_ref$|^scripts/check_image_size$)
