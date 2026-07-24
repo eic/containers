@@ -29,6 +29,7 @@ spack:
   - east
   - edm4hep
   - eic-smear
+  - eicsimubeameffects
   - eigen
   - emacs
   - epic-generator
