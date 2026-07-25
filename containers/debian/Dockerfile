@@ -104,7 +104,7 @@ case ${ID} in
     apt-get -yqq install software-properties-common
     add-apt-repository ppa:ubuntu-toolchain-r/ppa
     case ${VERSION_CODENAME} in
-      noble) GCC="-13" ; CLANG="-17" ;;
+      noble) GCC="-14" ; CLANG="-20" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   *) echo "Unsupported ID=${ID}" ; exit 1 ;;
@@ -122,7 +122,7 @@ apt-get -yqq install cpp${GCC} gcc${GCC} g++${GCC} gfortran${GCC}
 apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev
 if [ "${CLANG#-}" -ge 20 ]; then apt-get -yqq install flang${CLANG}; fi
 apt-get -yqq autoremove
-# Remove symlinks loop in nvidia/cuda:12.5.1-devel-ubuntu24.04
+# Remove symlinks loop observed in nvidia/cuda devel images
 rm -f /usr/bin/cpp /etc/alternatives/cpp
 # Ensure alternatives without version tags
 update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp${GCC} 100
@@ -308,6 +308,10 @@ set -e
 spack external find --scope spack llvm
 spack external find --scope spack --not-buildable gcc
 spack external find --scope spack --not-buildable --path /usr/local/cuda/bin cuda
+# Clang 20+ is not in CUDA's supported compiler list; amend the external spec so that
+# the +allow-unsupported-compilers variant disables the build-system conflict check.
+# Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
+yq -iy 'if .packages.cuda.externals then .packages.cuda.externals[].spec += " +allow-unsupported-compilers" else . end' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame packages
 EOF
 
