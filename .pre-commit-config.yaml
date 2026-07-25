@@ -27,9 +27,9 @@ repos:
       exclude: ^containers/eic/Dockerfile$
 
 - repo: https://github.com/shellcheck-py/shellcheck-py
-  rev: v0.10.0.1
+  rev: v0.11.0.1
   hooks:
     - id: shellcheck
       types: [shell]
       args: [--severity=warning, -x]
-      files: (^[^/]+\.sh$|^\.ci/resolve_git_ref$)
+      files: (^[^/]+\.sh$|^\.ci/resolve_git_ref$|^\.ci/check_image_size$)

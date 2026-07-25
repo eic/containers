@@ -1,0 +1,225 @@
+#!/usr/bin/env python3
+"""Analyze .cvmfscatalog placement under a container sandbox prefix.
+
+For each catalog boundary, reports how many filesystem entries (files +
+directories) it "owns" — i.e., entries in its subtree that are NOT delegated
+to a deeper nested catalog.  Also flags large directories that have no catalog
+boundary and might benefit from one.
+
+Usage:
+    scripts/cvmfs_catalog_analysis [OPTIONS] PREFIX
+
+    PREFIX              Root of the sandbox to analyze, e.g.:
+                        /cvmfs/singularity.opensciencegrid.org/eicweb/eic_xl:nightly
+
+Options:
+    --min-entries N     Suggest adding a catalog when a non-catalog directory's
+                        owned-entry count exceeds N (default: 500)
+    --max-entries N     Warn when a catalog's owned-entry count exceeds N
+                        (default: 200000)
+    --depth N           Maximum directory depth to walk below PREFIX (default: 8)
+    --help              Show this help and exit
+
+Output columns:
+    STATUS      CATALOG      - directory has a .cvmfscatalog marker
+                SUGGEST(n)   - directory has no catalog but > --min-entries owned
+                WARN(n)      - catalog has > --max-entries owned entries
+    OWNED       Entries owned by this catalog (not delegated to children)
+    TOTAL       Total entries in the subtree (including delegated children)
+    PATH        Path relative to PREFIX
+"""
+
+import argparse
+import os
+import sys
+
+
+def parse_args():
+    p = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        add_help=False,
+    )
+    p.add_argument("prefix", metavar="PREFIX")
+    p.add_argument("--min-entries", type=int, default=500)
+    p.add_argument("--max-entries", type=int, default=200000)
+    p.add_argument("--depth", type=int, default=8)
+    p.add_argument("--help", action="help")
+    return p.parse_args()
+
+
+def walk_tree(prefix, max_depth):
+    """Return (results, catalog_roots) for the directory tree under prefix.
+
+    results is a list of (abs_path, rel_path, depth, has_catalog, owned, total)
+    where owned = entries owned by the catalog at abs_path (None if not a catalog)
+    and total = all entries in the subtree (recursive).
+    """
+    prefix = os.path.realpath(prefix)
+
+    # First pass: collect totals with os.walk (don't follow symlinks so we
+    # don't escape the sandbox).
+    dir_total = {}      # abs_path -> total entries in subtree
+
+    for root, dirs, files in os.walk(prefix, followlinks=False, onerror=lambda e: None):
+        rel = os.path.relpath(root, prefix)
+        depth = 0 if rel == "." else rel.count(os.sep) + 1
+
+        if depth > max_depth:
+            dirs.clear()
+            continue
+
+        # Exclude catalog marker files from totals so TOTAL aligns with OWNED.
+        entries = dirs + [f for f in files if f != ".cvmfscatalog"]
+
+        # Accumulate totals: add our direct entries to all ancestors
+        path = root
+        while True:
+            dir_total[path] = dir_total.get(path, 0) + len(entries)
+            parent = os.path.dirname(path)
+            if parent == path or not parent.startswith(prefix):
+                break
+            path = parent
+
+    # Second pass: for each directory, compute "owned" count.
+    # owned = total - sum(total of direct children that are catalog roots)
+    # We need the set of catalog roots first.
+    catalog_roots = set()
+    for root, dirs, files in os.walk(prefix, followlinks=False, onerror=lambda e: None):
+        rel = os.path.relpath(root, prefix)
+        depth = 0 if rel == "." else rel.count(os.sep) + 1
+        if depth > max_depth:
+            dirs.clear()
+            continue
+        if ".cvmfscatalog" in files:
+            catalog_roots.add(root)
+
+    # For each catalog root, owned = total_in_subtree - sum(total of nested catalogs)
+    # total_in_subtree[d] = all entries below d at any depth
+    # For a catalog root R, subtract all nested catalog subtree totals
+    # (but only direct nested — because indirect ones are already subtracted at
+    # the intermediate level).
+    #
+    # Simpler algorithm: for each directory d, owned(d) = entries directly in d's
+    # catalog = walk subtree of d, stop descending at any nested catalog boundary.
+
+    def owned_count(start):
+        """Count entries in start's subtree that belong to start's catalog."""
+        count = 0
+        stack = [start]
+        while stack:
+            d = stack.pop()
+            try:
+                with os.scandir(d) as entries:
+                    for entry in entries:
+                        if entry.name == ".cvmfscatalog":
+                            continue
+                        count += 1
+                        if entry.is_dir(follow_symlinks=False):
+                            child_path = entry.path
+                            # Stop at nested catalog boundaries (other than start itself)
+                            if child_path != start and child_path in catalog_roots:
+                                pass  # don't descend — owned by nested catalog
+                            else:
+                                rel_depth = child_path[len(prefix):].count(os.sep)
+                                if rel_depth <= max_depth:
+                                    stack.append(child_path)
+            except OSError:
+                continue
+        return count
+
+    # Collect results for output
+    results = []
+    for root, dirs, files in os.walk(prefix, followlinks=False, onerror=lambda e: None):
+        rel = os.path.relpath(root, prefix)
+        depth = 0 if rel == "." else rel.count(os.sep) + 1
+        if depth > max_depth:
+            dirs.clear()
+            continue
+
+        has_catalog = ".cvmfscatalog" in files
+        total = dir_total.get(root, 0)
+        owned = owned_count(root) if has_catalog else None
+        results.append((root, rel, depth, has_catalog, owned, total))
+
+    return results, catalog_roots
+
+
+def main():
+    args = parse_args()
+    prefix = os.path.realpath(args.prefix)
+
+    if not os.path.isdir(prefix):
+        print(f"error: prefix not found: {prefix}", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Analyzing {prefix}", file=sys.stderr)
+    results, catalog_roots = walk_tree(prefix, args.depth)
+
+    # Determine which non-catalog directories are "large" (i.e., owned count >
+    # --min-entries when treating the directory as if it had its own catalog).
+    # We compute owned for non-catalog dirs too, lazily.
+    def owned_count_nc(start):
+        """Owned count treating start as a catalog boundary (for suggestion check)."""
+        count = 0
+        stack = [start]
+        while stack:
+            d = stack.pop()
+            try:
+                with os.scandir(d) as entries:
+                    for entry in entries:
+                        if entry.name == ".cvmfscatalog":
+                            continue
+                        count += 1
+                        if entry.is_dir(follow_symlinks=False):
+                            child_path = entry.path
+                            if child_path in catalog_roots:
+                                pass
+                            else:
+                                rel_depth = child_path[len(prefix):].count(os.sep)
+                                if rel_depth <= args.depth:
+                                    stack.append(child_path)
+            except OSError:
+                continue
+        return count
+
+    print(f"{'STATUS':<20}  {'OWNED':>8}  {'TOTAL':>8}  PATH")
+    print("-" * 80)
+
+    warned = []
+    suggested = []
+
+    for root, rel, depth, has_catalog, owned, total in sorted(results, key=lambda r: r[1]):
+        display_path = "/" + rel if rel != "." else "/"
+
+        if has_catalog:
+            if owned > args.max_entries:
+                status = f"WARN({owned})"
+                warned.append(display_path)
+            else:
+                status = "CATALOG"
+            print(f"{status:<20}  {owned:>8}  {total:>8}  {display_path}")
+        else:
+            # Only report non-catalog dirs that are interesting (could benefit from catalog)
+            # Heuristic: check if the directory's contribution to its parent catalog
+            # is large — approximate via total minus delegated children.
+            nc_owned = owned_count_nc(root)
+            if nc_owned > args.min_entries:
+                status = f"SUGGEST({nc_owned})"
+                suggested.append((display_path, nc_owned))
+                print(f"{status:<20}  {nc_owned:>8}  {total:>8}  {display_path}")
+
+    print()
+    print(f"Catalog roots found: {len(catalog_roots)}")
+    if warned:
+        print(f"\nWARNING: {len(warned)} catalog(s) exceed {args.max_entries} entries:")
+        for p in warned:
+            print(f"  {p}")
+    if suggested:
+        print(f"\nSUGGESTION: {len(suggested)} directories may benefit from a catalog (> {args.min_entries} owned entries):")
+        for p, n in sorted(suggested, key=lambda x: -x[1]):
+            print(f"  {n:>8}  {p}")
+
+
+if __name__ == "__main__":
+    main()

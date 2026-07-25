@@ -104,7 +104,7 @@ case ${ID} in
     apt-get -yqq install software-properties-common
     add-apt-repository ppa:ubuntu-toolchain-r/ppa
     case ${VERSION_CODENAME} in
-      noble) GCC="-13" ; CLANG="-17" ;;
+      noble) GCC="-14" ; CLANG="-20" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   *) echo "Unsupported ID=${ID}" ; exit 1 ;;
@@ -120,8 +120,9 @@ fi
 apt-get -yqq update
 apt-get -yqq install cpp${GCC} gcc${GCC} g++${GCC} gfortran${GCC}
 apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev
+if [ "${CLANG#-}" -ge 20 ]; then apt-get -yqq install flang${CLANG}; fi
 apt-get -yqq autoremove
-# Remove existing cpp alternative symlinks to avoid symlink loops in CUDA base images
+# Remove symlinks loop observed in nvidia/cuda devel images
 rm -f /usr/bin/cpp /etc/alternatives/cpp
 # Ensure alternatives without version tags
 update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp${GCC} 100
@@ -136,6 +137,7 @@ update-alternatives --install /usr/bin/clang-format-diff clang-format-diff /usr/
 update-alternatives --install /usr/bin/clang-tidy-diff clang-tidy-diff /usr/bin/clang-tidy-diff${CLANG}.py 100
 update-alternatives --install /usr/bin/run-clang-tidy run-clang-tidy /usr/bin/run-clang-tidy${CLANG}.py 100
 update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config${CLANG} 100
+if [ "${CLANG#-}" -ge 20 ]; then update-alternatives --install /usr/bin/flang flang /usr/bin/flang${CLANG} 100; fi
 # Default to gcc
 update-alternatives --install /usr/bin/cc  cc  /usr/bin/gcc 100
 update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 100
@@ -306,6 +308,10 @@ set -e
 spack external find --scope spack llvm
 spack external find --scope spack --not-buildable gcc
 spack external find --scope spack --not-buildable --path /usr/local/cuda/bin cuda
+# Clang 20+ is not in CUDA's supported compiler list; amend the external spec so that
+# the +allow-unsupported-compilers variant disables the build-system conflict check.
+# Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
+yq -iy 'if .packages.cuda.externals then .packages.cuda.externals[].spec += " +allow-unsupported-compilers" else . end' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame packages
 EOF
 
@@ -341,6 +347,22 @@ set -e
 git clone --filter=tree:0 https://github.com/${EICSPACK_ORGREPO}.git ${EICSPACK_ROOT}
 git -C ${EICSPACK_ROOT} checkout ${EICSPACK_SHA:-${EICSPACK_VERSION}}
 spack repo add --scope spack "${EICSPACK_ROOT}/spack_repo/eic"
+EOF
+
+## Workaround for Spack creating config files with limited permissions (see https://github.com/spack/spack/issues/52651)
+RUN chmod 644 ${SPACK_ROOT}/etc/spack/*.yaml ${HOME}/.spack/*.yaml
+
+## Place cvmfs catalogs for system directories
+## /etc and /usr are core system-directory subtrees created in the base image,
+## and are large enough to warrant their own catalog boundaries so that CVMFS
+## clients do not have to load the entire root catalog to traverse them, even
+## if later stages or downstream images add files under those paths.
+RUN <<EOF
+set -e
+touch /etc/.cvmfscatalog
+touch /usr/.cvmfscatalog
+find /usr -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+find /usr -mindepth 2 -maxdepth 2 -type d -exec touch {}/.cvmfscatalog \;
 EOF
 
 ## Ensure NVIDIA driver exposes all capabilities

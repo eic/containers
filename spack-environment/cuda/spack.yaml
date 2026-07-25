@@ -13,7 +13,6 @@ spack:
   - cairo
   - catch2
   - celeritas +cuda
-  - cernlib
   - cli11
   - cmake
   - cnpy

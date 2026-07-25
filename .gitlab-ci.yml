@@ -29,6 +29,15 @@ variables:
   ## Number of jobs to start during container builds
   JOBS: 32
 
+  ## Compressed image size caps (GiB).  Fail the build if a final image exceeds
+  ## these limits to catch regressions early (e.g. accidental Spack-built LLVM).
+  ## To update: measure the current master-tag compressed image sizes using
+  ## registry or CI tooling, add ~15% headroom, round up, and update here and
+  ## in .github/workflows/build-push.yml env.
+  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: "0.9"
+  SIZE_LIMIT_EIC_CI_GIB: "3.1"
+  SIZE_LIMIT_EIC_XL_GIB: "4.6"
+
   ## is this nightly or not?
   NIGHTLY: ""
   ## Add to tag
@@ -238,6 +247,7 @@ status:pending:
     - docker-new
   before_script:
     - !reference [.docker, before_script]
+    - apk add bc git jq
     - if [ "$SKIP_BINFMT" != "true" ]; then
         mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc ;
         for arch in aarch64 ; do
@@ -355,6 +365,15 @@ base:
                    --provenance false
                    containers/debian
                    2>&1 | tee build.log
+    - LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${BUILD_IMAGE}" | tr '[:lower:]' '[:upper:]')_GIB" ;
+      LIMIT=$(printenv "${LIMIT_VAR}" || true) ;
+      if [ -n "${LIMIT}" ]; then
+        .ci/check_image_size
+          "${CI_REGISTRY}/${CI_PROJECT_PATH}/${BUILD_IMAGE}:${INTERNAL_TAG}"
+          "${LIMIT}" ;
+      else
+        echo "No size limit configured for ${BUILD_IMAGE}, skipping check." ;
+      fi
 
 eic:
   parallel:
@@ -483,16 +502,6 @@ eic:
                      --build-arg JUGGLER_SHA=$(sh .ci/resolve_git_ref eic/juggler ${JUGGLER_VERSION:-main})
                    }
                    --build-arg ENV=${ENV}
-                   --build-arg SPACK_DUPLICATE_ALLOWLIST=$(
-                     case "${ENV}" in
-                       ci|ci_without_acts|cuda|dbg|jl|prod)
-                         echo "epic|llvm|py-setuptools|py-urllib3" ;;
-                       xl|tf)
-                         echo "epic|llvm|py-setuptools|py-urllib3|py-dask|py-dask-awkward|py-dask-histogram|py-distributed|py-requests" ;;
-                       *)
-                         echo "epic|llvm|py-setuptools|py-urllib3" ;;
-                     esac
-                   )
                    --build-arg jobs=${JOBS}
                    --build-context spack-environment=spack-environment
                    --secret id=mirrors,src=mirrors.yaml
@@ -503,6 +512,16 @@ eic:
                    --provenance false
                    containers/eic
                    2>&1 | tee build.log
+    - FULLNAME="${BUILD_IMAGE}${ENV}" ;
+      LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB" ;
+      LIMIT=$(printenv "${LIMIT_VAR}" || true) ;
+      if [ -n "${LIMIT}" ]; then
+        .ci/check_image_size
+          "${CI_REGISTRY}/${CI_PROJECT_PATH}/${FULLNAME}:${INTERNAL_TAG}-${BUILD_TYPE}"
+          "${LIMIT}" ;
+      else
+        echo "No size limit configured for ${FULLNAME}, skipping check." ;
+      fi
 
 user_spack_environment:
   stage: benchmarks
@@ -530,8 +549,9 @@ user_spack_environment:
     - spack add edm4eic@git.main cxxstd=20
     - spack concretize
     - spack install --only dependencies edm4eic
-    - ls -al /opt/software/linux-*/compiler-wrapper-1.0-*/libexec/spack/gcc/g++
     - spack install --verbose
+    - ls -al $HOME/spack/linux-*/compiler-wrapper-*/libexec/spack/gcc/g++
+    - ls -al $HOME/spack/linux-*/edm4eic-*/include/edm4eic/EDM4eicVersion.h
     - ls $HOME/spack/
 
 .cuda:

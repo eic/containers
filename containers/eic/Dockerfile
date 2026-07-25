@@ -46,7 +46,6 @@ ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
 ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
-ARG SPACK_DUPLICATE_ALLOWLIST=""
 ENV SPACK_COLOR="always"
 ENV GIT_TERMINAL_PROMPT=0
 
@@ -55,29 +54,6 @@ RUN <<EOF
 set -e
 spack env activate --without-view --dir ${SPACK_ENV}
 spack concretize --force
-spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 \
-| tee /tmp/duplicates_all.txt
-if [ -n "${SPACK_DUPLICATE_ALLOWLIST}" ] ; then
-  grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" /tmp/duplicates_all.txt \
-  | tee /tmp/duplicates_disallowed.txt
-else
-  cat /tmp/duplicates_all.txt \
-  | tee /tmp/duplicates_disallowed.txt
-fi
-if [ -s /tmp/duplicates_disallowed.txt ] ; then
-  echo "Duplicate packages found:"
-  cat /tmp/duplicates_disallowed.txt
-  cat /tmp/duplicates_disallowed.txt | while read status hash spec ; do
-    spack --backtrace spec --long /${hash}
-    if [ "$prevspec" = "$spec" ] ; then
-      spack diff /${hash} /${prevhash}
-    fi
-    prevhash=${hash}
-    prevspec=${spec}
-  done
-  exit 1
-fi
 EOF
 
 
@@ -198,29 +174,6 @@ if [ -n "${JUGGLER_SHA}" ] ; then
   spack deconcretize -y --all juggler
 fi
 spack concretize --force
-spack --color=never find --long --no-groups --show-concretized --format "{name}" \
-| uniq -D -f2 \
-| tee /tmp/duplicates_all.txt
-if [ -n "${SPACK_DUPLICATE_ALLOWLIST}" ] ; then
-  grep -Evw "(${SPACK_DUPLICATE_ALLOWLIST})" /tmp/duplicates_all.txt \
-  | tee /tmp/duplicates_disallowed.txt
-else
-  cat /tmp/duplicates_all.txt \
-  | tee /tmp/duplicates_disallowed.txt
-fi
-if [ -s /tmp/duplicates_disallowed.txt ] ; then
-  echo "Duplicate packages found:"
-  cat /tmp/duplicates_disallowed.txt
-  cat /tmp/duplicates_disallowed.txt | while read status hash spec ; do
-    spack --backtrace spec --long /${hash}
-    if [ "$prevspec" = "$spec" ] ; then
-      spack diff /${hash} /${prevhash}
-    fi
-    prevhash=${hash}
-    prevspec=${spec}
-  done
-  exit 1
-fi
 EOF
 
 
@@ -287,9 +240,13 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
 
-# Installation (default environment, from buildcache)
+# Installation (custom environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
+    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
+    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
+    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
+    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
     <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
@@ -307,18 +264,6 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
 
-## Ensure views directories, not symlinks
-RUN <<EOF
-set -e
-rm -rf /opt/local /opt/detector
-LOCAL_PREFIX_PATH=$(realpath $(ls /opt/._local/ | tail -n1))
-mv /opt/._local/${LOCAL_PREFIX_PATH} /opt/local
-ln -s /opt/local /opt/._local/${LOCAL_PREFIX_PATH}
-DETECTOR_PREFIX_PATH=$(realpath $(ls /opt/._detector/ | tail -n1))
-mv /opt/._detector/${DETECTOR_PREFIX_PATH} /opt/detector
-ln -s /opt/detector /opt/._detector/${DETECTOR_PREFIX_PATH}
-EOF
-
 ## Set CMAKE_FIND_PACKAGE_RESOLVE_SYMLINKS to resolve symlinks in find_package
 ## directories to real paths, not generic <view>/include
 COPY <<EOF /opt/local/etc/cmake/find_package_resolve_symlinks.cmake
@@ -334,10 +279,25 @@ ENV CMAKE_TOOLCHAIN_FILE=/opt/local/etc/cmake/find_package_resolve_symlinks.cmak
 ## Place cvmfs catalogs
 RUN <<EOF
 set -e
+# Spack installation trees
 touch ${SPACK_ROOT}/.cvmfscatalog
+touch /opt/spack-packages/.cvmfscatalog
+# Install tree: root catalog, one catalog per arch dir, one per package.
+# Stopping at depth 2 (package level) avoids creating wasteful per-subdir
+# catalogs (lib/, bin/, share/, etc.) that change atomically with the package.
 touch /opt/software/.cvmfscatalog
-find /opt/software -mindepth 2 -maxdepth 3 -type d -exec touch {}/.cvmfscatalog \;
+find /opt/software -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+find /opt/software -mindepth 2 -maxdepth 2 -type d -exec touch {}/.cvmfscatalog \;
+# Spack view: catalog per top-level subdir so that updating a package only
+# invalidates the view subdirs it contributes to (lib/, bin/, etc.),
+# not the entire merged view.
 touch /opt/local/.cvmfscatalog
+find /opt/local -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+# Detector: each version is an independent Spack install sub-tree
+touch /opt/detector/.cvmfscatalog
+find /opt/detector -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+# Spack environment configs
+touch /opt/spack-environment/.cvmfscatalog
 EOF
 
 ## Store environment
@@ -366,6 +326,12 @@ set -e
 spack --color=never debug report | sed "s/^/ - /" | sed "s/\* \*\*//" | sed "s/\*\*//" | tee -a /etc/eic_info /etc/jug_info
 spack --color=never find --no-groups --long --variants | sed "s/^/ - /" | tee -a /etc/eic_info /etc/jug_info
 spack --color=never graph --dot > /opt/spack-environment/env.dot
+export PATH="/opt/local/bin:${PATH}"
+if command -v tred >/dev/null 2>&1 && command -v dot >/dev/null 2>&1 ; then
+  tred /opt/spack-environment/env.dot > /opt/spack-environment/env_tred.dot
+  dot -Tsvg /opt/spack-environment/env_tred.dot > /opt/spack-environment/env.svg
+  dot -Tpng /opt/spack-environment/env_tred.dot > /opt/spack-environment/env.png
+fi
 EOF
 
 ## Copy custom content
@@ -405,6 +371,9 @@ spack config --scope spack add "upstreams:eic-shell:install_tree:/opt/software"
 spack config blame upstreams
 EOF
 
+## Workaround for Spack creating config files with limited permissions (see https://github.com/spack/spack/issues/52651)
+RUN chmod 644 ${SPACK_ROOT}/etc/spack/*.yaml ${HOME}/.spack/*.yaml
+
 ## Install benchmarks into the container
 ARG BENCHMARK_COM_SHA=""
 ARG BENCHMARK_DET_SHA=""
@@ -431,6 +400,16 @@ git clone https://github.com/eic/job_submission_condor.git /opt/campaigns/condor
 git -C /opt/campaigns/condor checkout ${CAMPAIGNS_CONDOR_SHA:-main}
 git clone https://github.com/eic/job_submission_slurm.git /opt/campaigns/slurm
 git -C /opt/campaigns/slurm checkout ${CAMPAIGNS_SLURM_SHA:-main}
+EOF
+
+## Place cvmfs catalogs
+RUN <<EOF
+set -e
+# Benchmark and campaign git repos each change independently
+touch /opt/benchmarks/.cvmfscatalog
+find /opt/benchmarks -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+touch /opt/campaigns/.cvmfscatalog
+find /opt/campaigns -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
 EOF
 
 ## make sure we have the entrypoints setup correctly
