@@ -24,6 +24,7 @@ de97f131df3dbc940151f406afd5c2c1158a660c
 caf013be0ee1594fdbba8feb07ffecc88474a2b0
 75395349957ad785cca50002dffb18bbcb48af27
 acac89d6bb7079412e711a50a3f06681132a2723
+438abd1e09f0cea9cb0ccc7e0326adcd0408196b
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -45,3 +46,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## caf013be0ee1594fdbba8feb07ffecc88474a2b0: Add missing xxd dep
 ## 75395349957ad785cca50002dffb18bbcb48af27: py-torch: ensure setuptools is not unnecessarily constrained for 2.10:
 ## acac89d6bb7079412e711a50a3f06681132a2723: cuda: append --allow-unsupported-compiler to CUDAFLAGS for dependent_spec
+## 438abd1e09f0cea9cb0ccc7e0326adcd0408196b: herwig3: add CT14(?n)lo pdfsets as build-time resources
