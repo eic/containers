@@ -58,6 +58,7 @@ apt-get -yqq install --no-install-recommends                            \
         libglew-dev                                                     \
         libglx-dev                                                      \
         libopengl-dev                                                   \
+        libzstd-dev                                                     \
         locales                                                         \
         make                                                            \
         moreutils                                                       \
