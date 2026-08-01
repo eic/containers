@@ -261,7 +261,6 @@ declare -A target=(
 target=${target[${TARGETPLATFORM}]}
 spack config --scope spack add "packages:all:require:[target=${target}]"
 spack config --scope spack add "packages:all:target:[${target}]"
-spack config blame packages
 mkdir -p $HOME/.spack/  # workaround for Spack not creating config directory automatically in some versions (see https://github.com/spack/spack/issues/51564)
 spack config --scope user add "config:suppress_gpg_warnings:true"
 spack config --scope user add "config:build_jobs:${jobs}"
@@ -270,29 +269,6 @@ spack config --scope user add "config:source_cache:/var/cache/spack"
 spack config --scope user add "config:install_tree:root:/opt/software"
 spack config --scope user add "config:ccache:true"
 spack config blame config
-spack compiler find --scope spack
-# Ensure GCC externals have LTO‑safe binutils configured.
-#
-# 1. LTO issue being worked around:
-#    When GCC is built/used with LTO support, archive creation for objects
-#    that may contain LTO bytecode must use the plugin‑aware wrappers
-#    (gcc-ar/gcc-ranlib) instead of the system "ar"/"ranlib".  If plain "ar"
-#    is used, link steps can fail with LTO plugin errors or produce archives
-#    that cannot be linked correctly.
-#
-# 2. Why GCC_AR must be set in Spack's external configuration:
-#    Spack discovers the system GCC as an "external" compiler and records it
-#    in packages.yaml/compilers.yaml.  However, Spack does not automatically
-#    export GCC_AR to all build environments for that external GCC.  By
-#    adding extra_attributes.environment.set.GCC_AR here, we force Spack to
-#    set GCC_AR=gcc-ar whenever it uses this external GCC, so that LTO builds
-#    consistently invoke the correct archive tool.
-# Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
-yq -iy '.packages.gcc.externals[].extra_attributes += {"environment": {"set": {"GCC_AR": "gcc-ar"}}}' ${SPACK_ROOT}/etc/spack/packages.yaml
-# Ensure LLVM externals satisfy iwyu variant requirements (targets=all)
-yq -iy '.packages.llvm.externals[].spec += " targets=all"' ${SPACK_ROOT}/etc/spack/packages.yaml
-spack config blame compilers
-spack config blame packages
 EOF
 
 ## Bootstrap
@@ -306,6 +282,7 @@ EOF
 ## - allow llvm to be buildable for py-numba > py-llvmlite
 RUN <<EOF
 set -e
+spack compiler find --scope spack
 spack external find --scope spack llvm
 spack external find --scope spack --not-buildable gcc
 spack external find --scope spack --not-buildable --path /usr/local/cuda/bin cuda
@@ -313,6 +290,50 @@ spack external find --scope spack --not-buildable --path /usr/local/cuda/bin cud
 # the +allow-unsupported-compilers variant disables the build-system conflict check.
 # Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
 yq -iy 'if .packages.cuda.externals then .packages.cuda.externals[].spec += " +allow-unsupported-compilers" else . end' ${SPACK_ROOT}/etc/spack/packages.yaml
+# Ensure discovered GCC externals have LTO-safe binutils configured.
+#
+# 1. LTO issue being worked around:
+#    When GCC is built/used with LTO support, archive creation for objects
+#    that may contain LTO bytecode must use the plugin-aware wrappers
+#    (gcc-ar/gcc-ranlib) instead of the system "ar"/"ranlib". If plain "ar"
+#    is used, link steps can fail with LTO plugin errors or produce archives
+#    that cannot be linked correctly.
+#
+# 2. Why GCC_AR must be set in Spack's external configuration:
+#    Spack records the system GCC as an external in packages.yaml, but does not
+#    automatically export GCC_AR for builds that use it. Adding
+#    extra_attributes.environment.set.GCC_AR here ensures LTO-enabled builds
+#    consistently invoke the correct archive tool.
+# Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
+yq -iy '.packages.gcc.externals[] |= (
+  .extra_attributes += {
+    "environment": {
+      "set": {
+        "GCC_AR": "gcc-ar"
+      }
+    }
+  }
+)' ${SPACK_ROOT}/etc/spack/packages.yaml
+# Ensure discovered LLVM externals satisfy iwyu requirements and export the
+# CMake hints ROOT/cling expects when using the system LLVM.
+export LLVM_PREFIX=$(llvm-config --prefix)
+export LLVM_BIN=$(llvm-config --bindir)
+yq -iy '.packages.llvm.externals[] |= (
+  .spec += " targets=all" |
+  .extra_attributes += {
+    "environment": {
+      "set": {
+        "LLVM_DIR": "\(env.LLVM_PREFIX)/lib/cmake/llvm",
+        "LLVM_TOOLS_BINARY_DIR": env.LLVM_BIN,
+        "LLVM_TABLEGEN": "\(env.LLVM_BIN)/llvm-tblgen",
+        "LLVM_TABLEGEN_EXE": "\(env.LLVM_BIN)/llvm-tblgen"
+      },
+      "prepend_path": {
+        "CMAKE_PREFIX_PATH": env.LLVM_PREFIX
+      }
+    }
+  }
+)' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame packages
 EOF
 
