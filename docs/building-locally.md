@@ -202,7 +202,6 @@ directly, Dockerfile `ARG` defaults apply instead.
 | `RUNTIME_IMAGE` | Runtime base image name | `debian_stable_base` |
 | `INTERNAL_TAG` | Tag for base images | value of `--base-tag` (local) or `latest` (GHCR fallback) |
 | `ENV` | Environment type | `xl` |
-| `SPACK_DUPLICATE_ALLOWLIST` | Pipe-separated allowed duplicates | (per ENV) |
 | `EDM4EIC_SHA` | Custom edm4eic commit | |
 | `EICRECON_SHA` | Custom eicrecon commit | |
 | `EPIC_SHA` | Custom epic commit | |
