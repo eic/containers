@@ -14,3 +14,6 @@ concretizer:
     from:
     - type: local
   unify: true
+  duplicates:
+    max_dupes:
+      llvm: 1
