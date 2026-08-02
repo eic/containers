@@ -144,10 +144,9 @@ fi
 
 ## Resolve SHAs (network calls — skipped if version is already a SHA)
 echo "Resolving git SHAs..."
-BENCHMARK_COM_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git master)
-BENCHMARK_DET_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git master)
-BENCHMARK_REC_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks.git master)
-BENCHMARK_PHY_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git master)
+BENCHMARK_COM_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/common_bench master)
+BENCHMARK_DET_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/detector_benchmarks master)
+BENCHMARK_PHY_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/physics_benchmarks master)
 CAMPAIGNS_HEPMC3_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/simulation_campaign_hepmc3 main)
 CAMPAIGNS_CONDOR_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/job_submission_condor main)
 CAMPAIGNS_SLURM_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/job_submission_slurm main)
