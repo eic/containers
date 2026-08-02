@@ -295,10 +295,14 @@ for build_type in "${BUILD_TYPES[@]}"; do
   ## Secrets
   build_cmd+=(--secret "id=mirrors,src=${MIRRORS_YAML}")
   if [ "${CI_MODE}" != "local" ]; then
-    build_cmd+=(--secret "type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER")
-    build_cmd+=(--secret "type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD")
-    build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER")
-    build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN")
+    if [ -n "${CI_REGISTRY_USER}" ] && [ -n "${CI_REGISTRY_PASSWORD}" ]; then
+      build_cmd+=(--secret "type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER")
+      build_cmd+=(--secret "type=env,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD")
+    fi
+    if [ -n "${GITHUB_REGISTRY_USER}" ] && [ -n "${GITHUB_REGISTRY_TOKEN}" ]; then
+      build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER")
+      build_cmd+=(--secret "type=env,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN")
+    fi
   fi
 
   ## Suppress provenance attestation (matches CI behaviour)
