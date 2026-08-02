@@ -305,7 +305,7 @@ EOF
 ## Find external packages (if not already found as compilers)
 RUN <<EOF
 set -e
-spack external find --scope spack --not-buildable llvm
+spack external find --scope spack llvm
 spack external find --scope spack --not-buildable gcc
 spack external find --scope spack --not-buildable --path /usr/local/cuda/bin cuda
 # Clang 20+ is not in CUDA's supported compiler list; amend the external spec so that
