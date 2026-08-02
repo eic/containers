@@ -5,9 +5,5 @@ spack:
   - ../../config.yaml
   - ../../packages.yaml
   - ../../view.yaml
-  concretizer:
-    duplicates:
-      max_dupes:
-        llvm: 2
   specs:
   - edm4eic
