@@ -244,7 +244,6 @@ for build_type in "${BUILD_TYPES[@]}"; do
   ## Build arguments
   build_cmd+=(--build-arg "BENCHMARK_COM_SHA=${BENCHMARK_COM_SHA}")
   build_cmd+=(--build-arg "BENCHMARK_DET_SHA=${BENCHMARK_DET_SHA}")
-  build_cmd+=(--build-arg "BENCHMARK_REC_SHA=${BENCHMARK_REC_SHA}")
   build_cmd+=(--build-arg "BENCHMARK_PHY_SHA=${BENCHMARK_PHY_SHA}")
   build_cmd+=(--build-arg "CAMPAIGNS_HEPMC3_SHA=${CAMPAIGNS_HEPMC3_SHA}")
   build_cmd+=(--build-arg "CAMPAIGNS_CONDOR_SHA=${CAMPAIGNS_CONDOR_SHA}")
