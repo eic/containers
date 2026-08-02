@@ -1,4 +1,4 @@
-external:
+spack:
   include:
   - ../concretizer.yaml
   - ../config.yaml
