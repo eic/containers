@@ -151,7 +151,6 @@ ENV SPACK_ENV=/opt/spack-environment/${ENV}/epic
 ARG EDM4EIC_SHA=""
 ARG EICRECON_SHA=""
 ARG EPIC_SHA=""
-ARG JUGGLER_SHA=""
 
 # Concretization (custom environment)
 RUN --mount=type=cache,target=/root/.spack/cache/concretization,id=spack-concretization-${TARGETPLATFORM} \
@@ -170,10 +169,6 @@ if [ -n "${EPIC_SHA}" ] ; then
   sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_SHA}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
   sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_SHA}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
   spack deconcretize -y --all epic
-fi
-if [ -n "${JUGGLER_SHA}" ] ; then
-  sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_SHA}=main/" /opt/spack-environment/packages.yaml
-  spack deconcretize -y --all juggler
 fi
 spack concretize --force
 EOF
