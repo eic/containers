@@ -386,15 +386,9 @@ eic:
     matrix:
       ## Build both default and nightly sequentially in one job to reuse the shared
       ## base Docker stages (default concretization+installation) from BuildKit's layer cache.
-      - &eic_ci_matrix_entry
-        BUILD_IMAGE: eic_
-        ENV: ci
-        BUILD_TYPE: "default,nightly"
-        BUILDER_IMAGE: debian_stable_base
-        RUNTIME_IMAGE: debian_stable_base
-        PLATFORM: linux/amd64
       - BUILD_IMAGE: eic_
         ENV:
+        - ci
         - cvmfs
         - xl
         BUILD_TYPE: "default,nightly"
@@ -480,19 +474,10 @@ eic:
 eic-manifest:
   extends: .docker
   stage: eic-manifest
-  rules:
-    # External trigger pipelines (e.g. EICrecon) only build eic_ci; narrow needs to that matrix child.
-    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
-      needs:
-        - job: version
-        - job: eic
-          parallel:
-            matrix:
-              - *eic_ci_matrix_entry
-    - when: always
   needs:
     - version
     - job: eic
+      optional: true
   script:
     - apk add bash jq
     - |
