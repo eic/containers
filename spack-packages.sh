@@ -25,6 +25,7 @@ caf013be0ee1594fdbba8feb07ffecc88474a2b0
 75395349957ad785cca50002dffb18bbcb48af27
 acac89d6bb7079412e711a50a3f06681132a2723
 438abd1e09f0cea9cb0ccc7e0326adcd0408196b
+d4fb37cedfb7552a753bdc9c0c4792082f4b46e8
 4dc856a13e9066ca3249a593d351af8cda521fa3
 ---
 ## Optional hash table with comma-separated file list
@@ -48,4 +49,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 75395349957ad785cca50002dffb18bbcb48af27: py-torch: ensure setuptools is not unnecessarily constrained for 2.10:
 ## acac89d6bb7079412e711a50a3f06681132a2723: cuda: append --allow-unsupported-compiler to CUDAFLAGS for dependent_spec
 ## 438abd1e09f0cea9cb0ccc7e0326adcd0408196b: herwig3: add CT14(?n)lo pdfsets as build-time resources
+## d4fb37cedfb7552a753bdc9c0c4792082f4b46e8: py-tensorflow: add libclang variant
 ## 4dc856a13e9066ca3249a593d351af8cda521fa3: root: add v6.40.00, v6.40.02

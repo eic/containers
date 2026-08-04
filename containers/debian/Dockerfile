@@ -124,7 +124,7 @@ fi
 # Install packages
 apt-get -yqq update
 apt-get -yqq install cpp${GCC} gcc${GCC} g++${GCC} gfortran${GCC}
-apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev
+apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev python3-clang${CLANG}
 if [ "${CLANG#-}" -ge 20 ]; then apt-get -yqq install flang${CLANG}; fi
 apt-get -yqq autoremove
 # Remove symlinks loop observed in nvidia/cuda devel images
@@ -297,7 +297,7 @@ spack compiler find --scope spack
 # Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
 yq -iy '.packages.gcc.externals[].extra_attributes += {"environment": {"set": {"GCC_AR": "gcc-ar"}}}' ${SPACK_ROOT}/etc/spack/packages.yaml
 # Ensure LLVM externals satisfy iwyu variant requirements (targets=all)
-yq -iy '.packages.llvm.externals[].spec += " targets=all"' ${SPACK_ROOT}/etc/spack/packages.yaml
+yq -iy '.packages.llvm.externals[].spec += " +python targets=all"' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame compilers
 spack config blame packages
 EOF
@@ -310,7 +310,6 @@ spack bootstrap now
 EOF
 
 ## Find external packages (if not already found as compilers)
-## - allow llvm to be buildable for py-numba > py-llvmlite
 RUN <<EOF
 set -e
 spack external find --scope spack llvm
