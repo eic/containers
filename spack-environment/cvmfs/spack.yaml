@@ -2,6 +2,7 @@ spack:
   include:
   - ../concretizer.yaml
   - ../config.yaml
+  - ../env_vars.yaml
   - ../packages.yaml
   - ../packages_cvmfs_geant4data.yaml
   - ../packages_root_without_opengl.yaml
