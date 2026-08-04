@@ -38,7 +38,6 @@ spack:
   - fjcontrib
   - fmt
   - g4occt
-  - gaudi
   - gdb
   - geant4 +opengl
   - gfal2
@@ -55,8 +54,6 @@ spack:
   - iwyu
   - jana2
   - just
-  - k4actstracking
-  - k4fwcore
   - lcov
   - lhapdf
   - lhapdfsets

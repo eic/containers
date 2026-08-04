@@ -187,18 +187,16 @@ for build_type in "${BUILD_TYPES[@]}"; do
   build_type="${build_type#"${build_type%%[![:space:]]*}"}"; build_type="${build_type%"${build_type##*[![:space:]]}"}"
 
   ## Resolve optional version overrides (nightly always resolves; default only if version set)
-  unset EDM4EIC_SHA EICRECON_SHA EPIC_SHA JUGGLER_SHA
+  unset EDM4EIC_SHA EICRECON_SHA EPIC_SHA
   if [ "${build_type}" = "nightly" ]; then
     EDM4EIC_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/EDM4eic "${EDM4EIC_VERSION:-main}")
     EICRECON_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/EICrecon "${EICRECON_VERSION:-main}")
     EPIC_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/epic "${EPIC_VERSION:-main}")
-    JUGGLER_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/juggler "${JUGGLER_VERSION:-main}")
   else
     ## default build: only resolve if version is explicitly provided
     [ -n "${EDM4EIC_VERSION}" ]  && EDM4EIC_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/EDM4eic  "${EDM4EIC_VERSION}")
     [ -n "${EICRECON_VERSION}" ] && EICRECON_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/EICrecon "${EICRECON_VERSION}")
     [ -n "${EPIC_VERSION}" ]     && EPIC_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref"     eic/epic     "${EPIC_VERSION}")
-    [ -n "${JUGGLER_VERSION}" ]  && JUGGLER_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref"  eic/juggler  "${JUGGLER_VERSION}")
   fi
 
   ## Build the docker buildx command as an array for safe quoting
@@ -286,7 +284,6 @@ for build_type in "${BUILD_TYPES[@]}"; do
   [ -n "${EDM4EIC_SHA}" ]  && build_cmd+=(--build-arg "EDM4EIC_SHA=${EDM4EIC_SHA}")
   [ -n "${EICRECON_SHA}" ] && build_cmd+=(--build-arg "EICRECON_SHA=${EICRECON_SHA}")
   [ -n "${EPIC_SHA}" ]     && build_cmd+=(--build-arg "EPIC_SHA=${EPIC_SHA}")
-  [ -n "${JUGGLER_SHA}" ]  && build_cmd+=(--build-arg "JUGGLER_SHA=${JUGGLER_SHA}")
 
   ## Additional build contexts
   build_cmd+=(--build-context "spack-environment=spack-environment")

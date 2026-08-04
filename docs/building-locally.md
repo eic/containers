@@ -205,7 +205,6 @@ directly, Dockerfile `ARG` defaults apply instead.
 | `EDM4EIC_SHA` | Custom edm4eic commit | |
 | `EICRECON_SHA` | Custom eicrecon commit | |
 | `EPIC_SHA` | Custom epic commit | |
-| `JUGGLER_SHA` | Custom juggler commit | |
 
 ## Troubleshooting
 
