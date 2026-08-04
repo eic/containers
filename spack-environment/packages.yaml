@@ -16,7 +16,6 @@ packages:
     # 'prefer' under 'all' remains a weaker default that can be superseded by
     # package-specific requirements.
     prefer:
-    - '%gcc'
     # FIXME any ipo preference breaks llvm external reuse
     #- +ipo
     - build_system=cmake
@@ -24,7 +23,6 @@ packages:
     - when: '+cuda'
       spec: cuda_arch=75
     require:
-    - '%gcc'
     # FIXME any ipo requirement breaks llvm external reuse
     #- any_of: [+ipo, '@:']
     - any_of: [build_system=cmake, '@:']
@@ -35,7 +33,7 @@ packages:
     - cxxstd=17
   acts:
     require:
-    - '@45.1.1'
+    - '@45.3.0'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
@@ -57,7 +55,7 @@ packages:
     - +root +zlib
   algorithms:
     require:
-    - '@1.2.0'
+    - '@1.3.0'
   arrow:
     require:
     - '@22:'
@@ -75,10 +73,20 @@ packages:
     - +iostreams +locale +log +math +program_options +python +random +regex
     - +serialization +system +test +thread +timer +wave
     - cxxstd=20
+  c:
+    prefer:
+    - gcc
+    require:
+    - gcc
+  cxx:
+    prefer:
+    - gcc
+    require:
+    - gcc
   cairo:
     require:
     - '@1.18.2:'
-    - +fc+ft+X+pdf+gobject
+    - +fc+ft+X+pdf+gobject build_system=meson
   catch2:
     require:
     - '@3.4.0:'
@@ -94,7 +102,7 @@ packages:
     - -shared
   clhep:
     require:
-    - '@2.4.7.1'
+    - '@2.4.7.2'
     - cxxstd=20
   cli11:
     require:
@@ -111,6 +119,9 @@ packages:
   cppcoro:
     require:
     - '@10bbcdbf2be3ad3aa56febcf4c7662d771460a99'
+  curl:
+    require:
+    - tls=openssl
   dawn:
     require:
     - '@3_91a'
@@ -124,8 +135,8 @@ packages:
     - '@1.16.2:'
   dd4hep:
     require:
-    - '@1.36'
-    - +ddg4 +ddcad +edm4hep +hepmc3 +xercesc
+    - '@1.37'
+    - +ddg4 +ddcad +edm4hep +g4hepem +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
     package_attributes:
       install_source: true
@@ -140,11 +151,11 @@ packages:
     - '@656aa3192b097a631ddd1e0380e80c26fd6644a7'
   edm4eic:
     require:
-    - '@8.9.0' # EDM4EIC_VERSION
+    - '@8.10.0' # EDM4EIC_VERSION
     - cxxstd=20
   edm4hep:
     require:
-    - '@0.99.4'
+    - '@1.0'
     - cxxstd=20
   egl:
     buildable: False
@@ -156,12 +167,15 @@ packages:
     - '@0.3.0'
   eic-smear:
     require:
-    - '@1.1.17'
+    - '@1.2.2'
   eicrecon:
     require:
-    - '@1.37.1' # EICRECON_VERSION
+    - '@1.39.2' # EICRECON_VERSION
     package_attributes:
       install_source: true
+  eicsimubeameffects:
+    require:
+    - '@1.1'
   eigen:
     require:
     - '@3.4.0'
@@ -186,7 +200,7 @@ packages:
     - plugins=cxx
   fjcontrib:
     require:
-    - '@1.051'
+    - '@1.101'
   flame:
     require:
     - libflame
@@ -194,6 +208,11 @@ packages:
     require:
     - '@11.2.0:11'
     - +shared cxxstd=20
+  fortran:
+    prefer:
+    - gcc
+    require:
+    - gcc
   freetype:
     require:
     - build_system=autotools
@@ -218,11 +237,29 @@ packages:
     externals:
     - spec: g4ndl@4.7.1
       prefix: /opt/software/externals/g4ndl
+  g4nudexlib:
+    buildable: False
+    externals:
+    - spec: g4nudexlib@1.0
+      prefix: /opt/software/externals/g4nudexlib
+  g4tendl:
+    buildable: False
+    externals:
+    - spec: g4tendl@1.4
+      prefix: /opt/software/externals/g4tendl
+  g4urrpt:
+    buildable: False
+    externals:
+    - spec: g4urrpt@1.1
+      prefix: /opt/software/externals/g4urrpt
   geant4:
     require:
-    - '@11.3.2.east'
+    - '@11.4.1.east'
     - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
+  geant4-data:
+    require:
+    - +nudexlib +tendl +urrpt
   gettext:
     require:
     - +libxml2
@@ -235,6 +272,9 @@ packages:
   gl:
     require:
     - glx
+  glu:
+    require:
+    - openglu
   gloo:
     require:
     - '@2023-12-03'
@@ -244,9 +284,7 @@ packages:
     - +expat ~ghostscript +pangocairo
   harfbuzz:
     require:
-    # harfbuzz fails to find cairo.h in the gir parts of cmake builds when cairo is meson-built
-    - spec: build_system=meson
-      when: +gobject ^cairo build_system=meson
+    - build_system=meson
   hdf5:
     require:
     - ~cxx ~fortran +hl +ipo ~java ~map +mpi +shared ~subfiling ~szip ~threadsafe +tools
@@ -256,10 +294,15 @@ packages:
     - +python +rootio
   hepmcmerger:
     require:
-    - '@2.2.0'
+    - '@2.4.0'
   heppdt:
     require:
     - '@2.06.01'
+  herwig3:
+    require:
+    - '@7.3.0'
+    - ~njet ~vbfnlo
+    - fflags=-fno-range-check
   highfive:
     require:
     - +mpi
@@ -274,24 +317,24 @@ packages:
       install_source: true
   irt2:
     require:
-    - '@2.1.3'
+    - '@2.2.0'
     package_attributes:
       install_source: true
   iwyu:
     require:
-    - '@0.23:'
+    - '@0.23:0.24'  # pinned to avoid depending on newer llvm than system
   jana2:
     require:
-    - '@2026.02.00'
-    - -ipo +podio +root +zmq
+    - '@2026.03.00'
+    - -ipo ~perfetto +podio +root +zmq
     package_attributes:
       install_source: true
   juggler:
     require:
-    - '@15.1.0' # JUGGLER_VERSION
+    - '@15.2.0' # JUGGLER_VERSION
   julia:
     require:
-    - '@1.11'
+    - '@1.12'
   just:
     require:
     - '@1.46.0'
@@ -300,7 +343,7 @@ packages:
     - '@0.1'
   k4fwcore:
     require:
-    - '@1.3'
+    - '@1.5'
   lapack:
     require:
     - openblas
@@ -314,6 +357,17 @@ packages:
     require:
     - '@6.5.5'
     - +python
+  lhapdfsets:
+    buildable: False
+    externals:
+    - spec: lhapdfsets@6.5.5 sets=MMHT2014lo68cl,MMHT2014nlo68cl,CT14lo,CT14nlo
+      # Technically not a prefix as spack installs under share/lhapdfsets,
+      # but the only role of this package is to provide LHAPDF_DATA_PATH.
+      prefix: /cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current
+      extra_attributes:
+        environment:
+          set:
+            LHAPDF_DATA_PATH: /cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current
   #llvm:
     #require:
     #- any_of: [~gold, '@:']
@@ -340,7 +394,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.4.7'
+    - '@1.8.0'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
@@ -364,6 +418,11 @@ packages:
     externals:
     - spec: opengl@4.6
       prefix: /usr
+  openglu:
+    buildable: False
+    externals:
+    - spec: openglu@1.3
+      prefix: /usr
   openldap:
     require:
     - ~sasl
@@ -371,9 +430,12 @@ packages:
     require:
     - '@2.1.4:'
     - processes=ppvj,ppjj
+  optix-dev:
+    require:
+    - '@9.0.0'
   osg-ca-certs:
     require:
-    - '@1.119.igtf.1.128'
+    - '@1.141.igtf.1.141'
   pcre:
     require:
     - build_system=cmake
@@ -391,7 +453,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@1.6'
+    - '@1.7'
     - cxxstd=20
     - +datasource +rntuple
     package_attributes:
@@ -402,10 +464,10 @@ packages:
     - +plot
   protobuf:
     require:
-    - '@28.3'
+    - '@32.1'
   pyrobird:
     require:
-    - '@0.1.23:'
+    - '@git.25b6556e473b99dbbb3b4663d34d683e28acfd5e'
     - +xrootd
     - spec: ~batch
       when: '@:0.2.6'
@@ -437,7 +499,7 @@ packages:
     - '@2025.2.0:'
   py-epic-capybara:
     require:
-    - '@git.9e72c8425829d981d06b30363eb0274ce867518d'
+    - '@git.30735bc79b3d78afae1744775f863bb194527fe2'
   py-flatbuffers:
     require:
     - '@25.9.23:'
@@ -478,10 +540,13 @@ packages:
     - backend=tensorflow
   py-llvmlite:
     require:
-    - '@0.44.0'
+    - '@0.45.1:0.47'  # limited by llvm@20
   py-lmfit:
     require:
     - '@1.0.2:'
+  py-matplotlib:
+    require:
+    - '@3.10'  # avoid FT_Render_Glyph errors possibly due to https://github.com/matplotlib/matplotlib/pull/30059
   py-mplhep:
     require:
     - '@0.4.0:'
@@ -490,7 +555,7 @@ packages:
     - '@5.8:' # avoid py-jupyter-server and snakemake divergence
   py-numba:
     require:
-    - '@0.61.0:'
+    - '@0.62.0:0.65'  # limited by llvm@20
   py-numpy:
     require:
     - '@2.2'  # pin to avoid duplicates in eic_tf
@@ -502,7 +567,7 @@ packages:
     - '@1.22.2:'
   py-openpyxl:
     require:
-    - '@3.1.2'
+    - '@3.1.5:'
   py-pandas:
     require:
     - '@2.2.3:'
@@ -517,7 +582,7 @@ packages:
     - '@3.6.0:'
   py-protobuf:
     require:
-    - '@5.28.3'
+    - '@6.32.1'
   py-pygithub:
     require:
     - '@2.1.1:'
@@ -535,7 +600,7 @@ packages:
     - '@13:'
   py-rucio-clients:
     require:
-    - '@37.3.0:'
+    - '@40.2.0:'
     - +argcomplete
   py-scipy:
     require:
@@ -546,9 +611,12 @@ packages:
   py-seaborn:
     require:
     - '@0.13.2:'
+  py-setuptools:
+    require:
+    - '@80:'
   py-tensorflow:
     require:
-    - '@2.20'
+    - '@2.21'
   py-toml:
     require:
     - '@0.10.2:'
@@ -579,13 +647,16 @@ packages:
     require:
     - '@6.7.2:'
     - +opengl
+  rdma-core:
+    require:
+    - ~pyverbs  # avoid constraint in https://github.com/spack/spack-packages/pull/2791
   rivet:
     require:
     - '@4.1.0:'
     - hepmc=3 plugin-match=HERA,LEP,MC
   root:
     require:
-    - '@6.38.00'
+    - '@6.40.02'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   sherpa:
@@ -594,7 +665,7 @@ packages:
     - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root ~internal_pdfs +ipo +lhapdf +lhole +mpi +openloops +pythia +python ~recola +rivet +root ~ufo
   simphony:
     require:
-    - '@0.3.0'
+    - '@0.7.0'
   simsipm:
     require:
     - '@2.1.0'
@@ -641,6 +712,9 @@ packages:
     require:
     - '@2.8.0'
     - -xnnpack
+  timeframebuilder:
+    require:
+    - '@0.9.1:'
   valgrind:
     require:
     - '@3.20.0:'

@@ -151,7 +151,7 @@ is shown here. Refer to `spack.sh` and `spack-packages.sh` for the current lists
 
 ```bash
 # From spack.sh (illustrative — see spack.sh for actual commits)
-SPACK_VERSION="v1.1.0"
+SPACK_VERSION="v1.1.1"
 SPACK_CHERRYPICKS=$(cat <<- EOF
 09f75ee426a2e05e0543570821582480ff823ba5
 a462612b64e97fa7dfe461c32c58553fd6ec63c5
@@ -205,6 +205,17 @@ concretizer:
 - **`host_compatible: false`**: Build for target architecture, not host
 - **`unify: true`**: Single version of each package in environment
 - **`reuse: false`**: Don't reuse packages from buildcache during concretization
+
+Environment-specific duplicate allowances are configured in each environment `spack.yaml`:
+
+```yaml
+spack:
+  concretizer:
+    duplicates:
+      max_dupes:
+        epic: 10
+        py-urllib3: 2
+```
 
 ## Key Packages
 

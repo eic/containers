@@ -29,6 +29,7 @@ spack:
   - east
   - edm4hep
   - eic-smear
+  - eicsimubeameffects
   - eigen
   - emacs
   - epic-generator
@@ -47,6 +48,7 @@ spack:
   - hepmc3
   - hepmcmerger
   - heppdt
+  - herwig3
   - imagemagick
   - irt
   - irt2
@@ -57,6 +59,7 @@ spack:
   - k4fwcore
   - lcov
   - lhapdf
+  - lhapdfsets
   - libtool
   - lzo
   - madx
@@ -126,6 +129,7 @@ spack:
   - py-yapf
   - rivet
   - root
+  - timeframebuilder
   - sherpa
   - simsipm
   - slurm sysconfdir=/etc/slurm

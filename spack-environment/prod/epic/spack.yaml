@@ -1,11 +1,10 @@
 spack:
   include:
+  - ../spack.lock
   - ../../concretizer.yaml
   - ../../config.yaml
   - ../../packages.yaml
   - ../../view.yaml
-  include_concrete:
-  - /opt/spack-environment/prod
   specs:
   - algorithms
   - edm4eic

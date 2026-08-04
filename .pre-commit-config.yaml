@@ -13,7 +13,7 @@ repos:
     - id: check-added-large-files
 
 - repo: https://github.com/hadolint/hadolint
-  rev: v2.14.0
+  rev: v2.15.1
   hooks:
     - id: hadolint
       args:
@@ -27,9 +27,9 @@ repos:
       exclude: ^containers/eic/Dockerfile$
 
 - repo: https://github.com/shellcheck-py/shellcheck-py
-  rev: v0.10.0.1
+  rev: v0.11.0.1
   hooks:
     - id: shellcheck
       types: [shell]
       args: [--severity=warning, -x]
-      files: (^[^/]+\.sh$|^\.ci/resolve_git_ref$)
+      files: (^[^/]+\.sh$|^scripts/[^/]+\.sh$|^scripts/resolve_git_ref$|^scripts/check_image_size$)

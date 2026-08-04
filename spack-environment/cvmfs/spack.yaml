@@ -6,8 +6,6 @@ spack:
   - ../packages_cvmfs_geant4data.yaml
   - ../packages_root_without_opengl.yaml
   - ../view.yaml
-  concretizer:
-    unify: when_possible
   specs:
   - acts
   - actsvg
@@ -75,4 +73,5 @@ spack:
   - root
   - snakemake
   - spdlog
+  - timeframebuilder
   - xrootd
