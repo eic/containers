@@ -24,6 +24,7 @@ de97f131df3dbc940151f406afd5c2c1158a660c
 caf013be0ee1594fdbba8feb07ffecc88474a2b0
 75395349957ad785cca50002dffb18bbcb48af27
 dcf9162c02da6fbde05bdbc595561b7956f5381b
+7cd1d840b9fe0c17ef24cbb2d83bff443fd15279
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -45,3 +46,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## caf013be0ee1594fdbba8feb07ffecc88474a2b0: Add missing xxd dep
 ## 75395349957ad785cca50002dffb18bbcb48af27: py-torch: ensure setuptools is not unnecessarily constrained for 2.10:
 ## dcf9162c02da6fbde05bdbc595561b7956f5381b: cargo-c: depends_on pkgconfig
+## 7cd1d840b9fe0c17ef24cbb2d83bff443fd15279: professor: add v2.5.6 and re-enable in the HEP stack
