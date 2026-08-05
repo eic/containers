@@ -5,6 +5,10 @@ spack:
   - ../packages.yaml
   - ../packages_root_without_opengl.yaml
   - ../view.yaml
+  concretizer:
+    duplicates:
+      max_dupes:
+        llvm: 2  # julia requires llvm with specific symbol suffixes
   specs:
   - acts
   - cmake

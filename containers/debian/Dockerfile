@@ -37,39 +37,44 @@ rm -f /etc/apt/apt.conf.d/docker-clean
 ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
 echo "US/Eastern" > /etc/timezone
 apt-get -yqq update
-apt-get -yqq install --no-install-recommends                            \
-        bc                                                              \
-        bzip2                                                           \
-        ca-certificates                                                 \
-        ccache                                                          \
-        curl                                                            \
-        file                                                            \
-        gawk                                                            \
-        gdb                                                             \
-        git                                                             \
-        gnupg2                                                          \
-        iproute2                                                        \
-        iputils-ping                                                    \
-        iputils-tracepath                                               \
-        less                                                            \
-        libc6-dbg                                                       \
-        libegl-dev                                                      \
-        libgl-dev                                                       \
-        libglew-dev                                                     \
-        libglx-dev                                                      \
-        libopengl-dev                                                   \
-        locales                                                         \
-        make                                                            \
-        moreutils                                                       \
-        nano                                                            \
-        openssh-client                                                  \
-        parallel                                                        \
-        patch                                                           \
-        time                                                            \
-        unzip                                                           \
-        vim-nox                                                         \
-        wget                                                            \
-        yq
+# Keep these in the base layer for OS setup, Spack prerequisites, or
+# system externals that we do not want rebuilt inside Spack.
+sed -e 's/[[:space:]]*#.*$//' -e '/^[[:space:]]*$/d' <<'EOF_APT_PACKAGES' \
+  | xargs -r apt-get -yqq install --no-install-recommends
+bc                # bootstrap script helper
+bzip2             # Spack prerequisite
+ca-certificates   # system CA trust for apt/git/curl
+ccache            # shared compiler cache outside Spack prefixes
+curl              # bootstrap downloader
+file              # Spack prerequisite
+gawk              # script helper
+gdb               # system debugger
+git               # Spack prerequisite
+gnupg2            # buildcache signing/verification
+iproute2          # network diagnostics
+iputils-ping      # network diagnostics
+iputils-tracepath # network diagnostics
+less              # base pager
+libc6-dbg         # debug symbols for the system glibc
+libegl-dev        # system GL external; avoids bundling Mesa/LLVM swrast in Spack
+libgl-dev         # system GL external; avoids bundling Mesa/LLVM swrast in Spack
+libglew-dev       # system GL external; avoids bundling Mesa/LLVM swrast in Spack
+libglx-dev        # system GL external; avoids bundling Mesa/LLVM swrast in Spack
+libopengl-dev     # system GL external; avoids bundling Mesa/LLVM swrast in Spack
+libzstd-dev       # undeclared dependency of llvm-dev
+locales           # OS locale generation
+make              # Spack prerequisite
+moreutils         # script helper
+nano              # base editor
+openssh-client    # SSH transport outside Spack envs
+parallel          # script helper
+patch             # Spack prerequisite
+time              # build timing/debugging
+unzip             # Spack prerequisite
+vim-nox           # base editor
+wget              # bootstrap downloader
+yq                # edits Spack config before install
+EOF_APT_PACKAGES
 apt-get -yqq autoremove
 localedef -i en_US -f UTF-8 en_US.UTF-8
 EOF
@@ -104,7 +109,7 @@ case ${ID} in
     apt-get -yqq install software-properties-common
     add-apt-repository ppa:ubuntu-toolchain-r/ppa
     case ${VERSION_CODENAME} in
-      noble) GCC="-13" ; CLANG="-17" ;;
+      noble) GCC="-14" ; CLANG="-20" ;;
       *) echo "Unsupported VERSION_CODENAME=${VERSION_CODENAME}" ; exit 1 ;;
     esac ;;
   *) echo "Unsupported ID=${ID}" ; exit 1 ;;
@@ -119,10 +124,10 @@ fi
 # Install packages
 apt-get -yqq update
 apt-get -yqq install cpp${GCC} gcc${GCC} g++${GCC} gfortran${GCC}
-apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev
+apt-get -yqq install clang${CLANG} clang-tidy${CLANG} clang-format${CLANG} libclang${CLANG}-dev libc++${CLANG}-dev python3-clang${CLANG}
 if [ "${CLANG#-}" -ge 20 ]; then apt-get -yqq install flang${CLANG}; fi
 apt-get -yqq autoremove
-# Remove symlinks loop in nvidia/cuda:12.5.1-devel-ubuntu24.04
+# Remove symlinks loop observed in nvidia/cuda devel images
 rm -f /usr/bin/cpp /etc/alternatives/cpp
 # Ensure alternatives without version tags
 update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp${GCC} 100
@@ -151,11 +156,14 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=apt-${TARGETPLATF
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=apt-lists-${TARGETPLATFORM} <<EOF
 rm -f /etc/apt/apt.conf.d/docker-clean
 apt-get -yqq update
-apt-get -yqq install --no-install-recommends                            \
-        jq                                                              \
-        python3                                                         \
-        python3-dev                                                     \
-        python-is-python3
+# Spack relies on basic utilities being present on the system where it runs.
+sed -e 's/[[:space:]]*#.*$//' -e '/^[[:space:]]*$/d' <<'EOF_APT_PACKAGES' \
+  | xargs -r apt-get -yqq install --no-install-recommends
+jq                # repo script helper
+python3           # Spack prerequisite
+python3-dev       # Python extension builds during bootstrap
+python-is-python3 # repo scripts expect `python`
+EOF_APT_PACKAGES
 EOF
 
 ## Setup git
@@ -289,7 +297,7 @@ spack compiler find --scope spack
 # Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
 yq -iy '.packages.gcc.externals[].extra_attributes += {"environment": {"set": {"GCC_AR": "gcc-ar"}}}' ${SPACK_ROOT}/etc/spack/packages.yaml
 # Ensure LLVM externals satisfy iwyu variant requirements (targets=all)
-yq -iy '.packages.llvm.externals[].spec += " targets=all"' ${SPACK_ROOT}/etc/spack/packages.yaml
+yq -iy '.packages.llvm.externals[].spec += " +python targets=all"' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame compilers
 spack config blame packages
 EOF
@@ -302,12 +310,15 @@ spack bootstrap now
 EOF
 
 ## Find external packages (if not already found as compilers)
-## - allow llvm to be buildable for py-numba > py-llvmlite
 RUN <<EOF
 set -e
 spack external find --scope spack llvm
 spack external find --scope spack --not-buildable gcc
 spack external find --scope spack --not-buildable --path /usr/local/cuda/bin cuda
+# Clang 20+ is not in CUDA's supported compiler list; amend the external spec so that
+# the +allow-unsupported-compilers variant disables the build-system conflict check.
+# Note: this uses the python-based yq. Future base image upgrades may cause syntax change.
+yq -iy 'if .packages.cuda.externals then .packages.cuda.externals[].spec += " +allow-unsupported-compilers" else . end' ${SPACK_ROOT}/etc/spack/packages.yaml
 spack config blame packages
 EOF
 

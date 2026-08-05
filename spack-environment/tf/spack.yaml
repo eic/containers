@@ -4,10 +4,6 @@ spack:
   - ../config.yaml
   - ../packages.yaml
   - ../view.yaml
-  concretizer:
-    duplicates:
-      max_dupes:
-        llvm: 2  # py-llvmlite needs a different llvm from external
   specs:
   - edm4hep
   - onnx

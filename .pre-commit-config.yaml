@@ -13,7 +13,7 @@ repos:
     - id: check-added-large-files
 
 - repo: https://github.com/hadolint/hadolint
-  rev: v2.14.0
+  rev: v2.15.1
   hooks:
     - id: hadolint
       args:
@@ -32,4 +32,4 @@ repos:
     - id: shellcheck
       types: [shell]
       args: [--severity=warning, -x]
-      files: (^[^/]+\.sh$|^\.ci/resolve_git_ref$|^\.ci/check_image_size$)
+      files: (^[^/]+\.sh$|^scripts/[^/]+\.sh$|^scripts/resolve_git_ref$|^scripts/check_image_size$)
