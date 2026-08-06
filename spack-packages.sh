@@ -23,6 +23,9 @@ a7c32f24cd5b69b237dc974804a71326306f4e58
 de97f131df3dbc940151f406afd5c2c1158a660c
 caf013be0ee1594fdbba8feb07ffecc88474a2b0
 75395349957ad785cca50002dffb18bbcb48af27
+dcf9162c02da6fbde05bdbc595561b7956f5381b
+92bf08b6223c29ab81983daf0408a5a991934fa6
+7cd1d840b9fe0c17ef24cbb2d83bff443fd15279
 acac89d6bb7079412e711a50a3f06681132a2723
 438abd1e09f0cea9cb0ccc7e0326adcd0408196b
 d4fb37cedfb7552a753bdc9c0c4792082f4b46e8
@@ -47,6 +50,9 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## de97f131df3dbc940151f406afd5c2c1158a660c: TensorFlow: add v2.21.0
 ## caf013be0ee1594fdbba8feb07ffecc88474a2b0: Add missing xxd dep
 ## 75395349957ad785cca50002dffb18bbcb48af27: py-torch: ensure setuptools is not unnecessarily constrained for 2.10:
+## dcf9162c02da6fbde05bdbc595561b7956f5381b: cargo-c: depends_on pkgconfig
+## 92bf08b6223c29ab81983daf0408a5a991934fa6: professor: cast version to str
+## 7cd1d840b9fe0c17ef24cbb2d83bff443fd15279: professor: add v2.5.6 and re-enable in the HEP stack
 ## acac89d6bb7079412e711a50a3f06681132a2723: cuda: append --allow-unsupported-compiler to CUDAFLAGS for dependent_spec
 ## 438abd1e09f0cea9cb0ccc7e0326adcd0408196b: herwig3: add CT14(?n)lo pdfsets as build-time resources
 ## d4fb37cedfb7552a753bdc9c0c4792082f4b46e8: py-tensorflow: add libclang variant
