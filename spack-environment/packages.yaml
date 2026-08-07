@@ -40,6 +40,8 @@ packages:
       when: '^dd4hep %gcc'
     - spec: '%clang'
       when: '^dd4hep %clang'
+    package_attributes:
+      install_source: true
   actsvg:
     require:
     - '@0.4.56'
@@ -136,6 +138,8 @@ packages:
     - '@1.37'
     - +ddg4 +ddcad +edm4hep +g4hepem +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
+    package_attributes:
+      install_source: true
   doxygen:
     require:
     - +graphviz
@@ -167,6 +171,8 @@ packages:
   eicrecon:
     require:
     - '@1.39.2' # EICRECON_VERSION
+    package_attributes:
+      install_source: true
   eicsimubeameffects:
     require:
     - '@1.1'
@@ -179,6 +185,8 @@ packages:
   epic:
     require:
     - 'artifacts=epic_craterlake'
+    package_attributes:
+      install_source: true
   epic-generator:
     require:
     - '@1.1.8'
@@ -305,9 +313,13 @@ packages:
   irt:
     require:
     - '@1.0.10'
+    package_attributes:
+      install_source: true
   irt2:
     require:
     - '@2.2.0'
+    package_attributes:
+      install_source: true
   iwyu:
     require:
     - '@0.23:0.24'  # pinned to avoid depending on newer llvm than system
@@ -315,6 +327,8 @@ packages:
     require:
     - '@2026.03.00'
     - -ipo ~perfetto +podio +root +zmq
+    package_attributes:
+      install_source: true
   juggler:
     require:
     - '@15.2.0' # JUGGLER_VERSION
@@ -443,6 +457,7 @@ packages:
     - cxxstd=20
     - +datasource +rntuple
     package_attributes:
+      install_source: true
       run_tests: true
   prmon:
     require:
