@@ -151,7 +151,7 @@ packages:
     - cxxstd=20
   edm4hep:
     require:
-    - '@1.0'
+    - '@1.1'
     - cxxstd=20
   egl:
     buildable: False
