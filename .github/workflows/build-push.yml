@@ -481,6 +481,58 @@ jobs:
           name: eic-${{ matrix.ENV }}-${{ matrix.arch }}-nightly-digest
           path: /tmp/digests/${{ matrix.arch }}-nightly.digest
           retention-days: 1
+      - name: Export spack.lock files
+        run: |
+          set -e
+          slugify() { echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-63; }
+          ARCH=$(echo "${{ matrix.PLATFORM }}" | sed 's|linux/||; s|/|_|g')
+          CI_COMMIT_REF_SLUG="$(slugify "${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}")"
+          CI_DEFAULT_BRANCH_SLUG="$(slugify "${GITHUB_BASE_REF:-${{ github.event.repository.default_branch }}}")"
+          CACHE_BASE="${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
+
+          ## Common build args: same as the main build (needed for BuildKit registry cache to match).
+          COMMON_ARGS=(
+            --file containers/eic/Dockerfile
+            --platform "${{ matrix.PLATFORM }}"
+            --build-arg "DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/"
+            --build-arg "INTERNAL_TAG=${{ env.INTERNAL_TAG }}"
+            --build-arg "BUILDER_IMAGE=${{ matrix.BUILDER_IMAGE }}"
+            --build-arg "RUNTIME_IMAGE=${{ matrix.RUNTIME_IMAGE }}"
+            --build-arg "ENV=${{ matrix.ENV }}"
+            --cache-from "type=registry,ref=${CACHE_BASE}-default-${CI_COMMIT_REF_SLUG}-${ARCH}"
+            --cache-from "type=registry,ref=${CACHE_BASE}-default-${CI_DEFAULT_BRANCH_SLUG}-${ARCH}"
+            --cache-from "type=registry,ref=${CACHE_BASE}-nightly-${CI_COMMIT_REF_SLUG}-${ARCH}"
+            --cache-from "type=registry,ref=${CACHE_BASE}-nightly-${CI_DEFAULT_BRANCH_SLUG}-${ARCH}"
+            --build-context spack-environment=spack-environment
+          )
+
+          mkdir -p /tmp/spack-locks
+
+          ## Export default spack.lock (available for all environments and targets).
+          ## This is a fast export build that hits registry cache from the main build.
+          docker buildx build "${COMMON_ARGS[@]}" \
+            --target spack_lock_default_export \
+            --output "type=local,dest=/tmp/spack-lock-default-export" \
+            containers/eic
+          mv /tmp/spack-lock-default-export/spack.lock /tmp/spack-locks/default.spack.lock 2>/dev/null || true
+
+          ## Export custom (epic) spack.lock (only present for full builds).
+          if [ "${{ matrix.target }}" = "final" ]; then
+            docker buildx build "${COMMON_ARGS[@]}" \
+              --target spack_lock_custom_export \
+              --output "type=local,dest=/tmp/spack-lock-custom-export" \
+              containers/eic || true
+            mv /tmp/spack-lock-custom-export/spack.lock /tmp/spack-locks/custom.spack.lock 2>/dev/null || true
+          fi
+
+          ls -la /tmp/spack-locks/
+      - name: Upload spack.lock files as artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: spack-lock-${{ matrix.ENV }}-${{ matrix.arch }}
+          path: /tmp/spack-locks/*.spack.lock
+          if-no-files-found: warn
+          retention-days: 90
 
   eic-manifest:
     name: Push ${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }} ${{ matrix.BUILD_TYPE }} manifest
@@ -574,6 +626,91 @@ jobs:
           docker buildx imagetools create \
             $TAG_ARGS \
             ${{ steps.digests.outputs.all }}
+
+  spack-diff:
+    name: Spack diff (${{ matrix.ENV }}, ${{ matrix.arch }})
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+    needs: eic-manifest
+    runs-on: ${{ matrix.runner }}
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - ENV: ci
+          arch: amd64
+          runner: ubuntu-latest
+        - ENV: xl
+          arch: amd64
+          runner: ubuntu-latest
+    steps:
+    - name: Download new spack.lock artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: spack-lock-${{ matrix.ENV }}-${{ matrix.arch }}
+        path: /tmp/spack-locks-new/
+    - name: Download previous spack.lock artifact
+      id: download_ref
+      uses: dawidd6/action-download-artifact@v21
+      with:
+        branch: ${{ github.base_ref || github.event.merge_group.base_ref }}
+        path: /tmp/spack-locks-ref/
+        name: spack-lock-${{ matrix.ENV }}-${{ matrix.arch }}
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: "success"
+        if_no_artifact_found: warn
+    - name: Show spack environment diff
+      if: steps.download_ref.outputs.found_artifact == 'true'
+      shell: bash --login -eo pipefail {0}
+      continue-on-error: true
+      run: |
+        cat > /tmp/compare_spack_locks.py << 'PYEOF'
+        import json, subprocess, sys, os, glob
+        old_dir, new_dir = sys.argv[1], sys.argv[2]
+        def load_lock(path):
+            try:
+                with open(path) as f:
+                    data = json.load(f)
+                return {v['name']: {'version': v.get('version', '?'), 'hash': k}
+                        for k, v in data.get('concrete_specs', {}).items()}
+            except (FileNotFoundError, KeyError, json.JSONDecodeError):
+                return None
+        for lock_file in sorted(glob.glob(os.path.join(new_dir, '*.spack.lock'))):
+            lock_name = os.path.basename(lock_file)[:-len('.spack.lock')]
+            old = load_lock(os.path.join(old_dir, os.path.basename(lock_file)))
+            new_lock = load_lock(lock_file)
+            if old is None or new_lock is None:
+                print(f'Skipping {lock_name}: no reference lock file found')
+                continue
+            print(f'\n=== Spack environment diff: {lock_name} ===')
+            all_names = sorted(set(old) | set(new_lock))
+            changed, any_change = [], False
+            for name in all_names:
+                if name not in old:
+                    print(f'  + {name}@{new_lock[name]["version"]}'); any_change = True
+                elif name not in new_lock:
+                    print(f'  - {name}@{old[name]["version"]}'); any_change = True
+                elif old[name]['hash'] != new_lock[name]['hash']:
+                    o, n = old[name]['version'], new_lock[name]['version']
+                    print(f'  ~ {name}: {o} -> {n}'); any_change = True
+                    if o != n:
+                        changed.append((name, o, n))
+            if not any_change:
+                print('  (no changes)')
+            for name, o, n in changed[:3]:
+                print(f'\n  --- spack diff {name}@{o} {name}@{n} ---')
+                try:
+                    r = subprocess.run(['spack', 'diff', f'{name}@{o}', f'{name}@{n}'],
+                        capture_output=True, text=True, timeout=60)
+                    print('\n'.join(f'  {ln}' for ln in (r.stdout or r.stderr or '(no output)').splitlines()))
+                except Exception as e:
+                    print(f'  ({e})')
+        PYEOF
+        python3 /tmp/compare_spack_locks.py /tmp/spack-locks-ref /tmp/spack-locks-new
 
   npsim-gun:
     name: npsim (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, ${{ matrix.arch }})

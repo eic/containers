@@ -444,3 +444,25 @@ RUN echo -e "\n - eic_container: ${CI_COMMIT_SHA}" | tee -a /etc/eic_info /etc/j
 
 ## Hotfix for misbehaving OSG nodes
 RUN mkdir /hadoop /localscratch
+
+
+## ========================================================================================
+## spack_lock_default_export
+## - scratch-based export stage for CI artifact extraction of the default spack.lock
+## ========================================================================================
+FROM scratch AS spack_lock_default_export
+ARG ENV=xl
+COPY --from=builder_concretization_default \
+  /opt/spack-environment/${ENV}/spack.lock \
+  /
+
+
+## ========================================================================================
+## spack_lock_custom_export
+## - scratch-based export stage for CI artifact extraction of the custom spack.lock
+## ========================================================================================
+FROM scratch AS spack_lock_custom_export
+ARG ENV=xl
+COPY --from=builder_concretization_custom \
+  /opt/spack-environment/${ENV}/epic/spack.lock \
+  /
