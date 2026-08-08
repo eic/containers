@@ -668,49 +668,21 @@ jobs:
       shell: bash --login -eo pipefail {0}
       continue-on-error: true
       run: |
-        cat > /tmp/compare_spack_locks.py << 'PYEOF'
-        import json, subprocess, sys, os, glob
-        old_dir, new_dir = sys.argv[1], sys.argv[2]
-        def load_lock(path):
-            try:
-                with open(path) as f:
-                    data = json.load(f)
-                return {v['name']: {'version': v.get('version', '?'), 'hash': k}
-                        for k, v in data.get('concrete_specs', {}).items()}
-            except (FileNotFoundError, KeyError, json.JSONDecodeError):
-                return None
-        for lock_file in sorted(glob.glob(os.path.join(new_dir, '*.spack.lock'))):
-            lock_name = os.path.basename(lock_file)[:-len('.spack.lock')]
-            old = load_lock(os.path.join(old_dir, os.path.basename(lock_file)))
-            new_lock = load_lock(lock_file)
-            if old is None or new_lock is None:
-                print(f'Skipping {lock_name}: no reference lock file found')
-                continue
-            print(f'\n=== Spack environment diff: {lock_name} ===')
-            all_names = sorted(set(old) | set(new_lock))
-            changed, any_change = [], False
-            for name in all_names:
-                if name not in old:
-                    print(f'  + {name}@{new_lock[name]["version"]}'); any_change = True
-                elif name not in new_lock:
-                    print(f'  - {name}@{old[name]["version"]}'); any_change = True
-                elif old[name]['hash'] != new_lock[name]['hash']:
-                    o, n = old[name]['version'], new_lock[name]['version']
-                    print(f'  ~ {name}: {o} -> {n}'); any_change = True
-                    if o != n:
-                        changed.append((name, o, n))
-            if not any_change:
-                print('  (no changes)')
-            for name, o, n in changed[:3]:
-                print(f'\n  --- spack diff {name}@{o} {name}@{n} ---')
-                try:
-                    r = subprocess.run(['spack', 'diff', f'{name}@{o}', f'{name}@{n}'],
-                        capture_output=True, text=True, timeout=60)
-                    print('\n'.join(f'  {ln}' for ln in (r.stdout or r.stderr or '(no output)').splitlines()))
-                except Exception as e:
-                    print(f'  ({e})')
-        PYEOF
-        python3 /tmp/compare_spack_locks.py /tmp/spack-locks-ref /tmp/spack-locks-new
+        for new_lock in /tmp/spack-locks-new/*.spack.lock; do
+          lock_name=$(basename "${new_lock}" .spack.lock)
+          ref_lock=/tmp/spack-locks-ref/${lock_name}.spack.lock
+          echo "=== Spack environment diff: ${lock_name} ==="
+          cat "${new_lock}" > /tmp/${lock_name}.spack.lock
+          if [ -f "${ref_lock}" ]; then
+            jq -r '.concrete_specs | to_entries[] | "\(.value.name) \(.key) \(.value.version)"' "${ref_lock}" | sort > /tmp/ref_specs.txt
+            jq -r '.concrete_specs | to_entries[] | "\(.value.name) \(.key) \(.value.version)"' "${new_lock}" | sort > /tmp/new_specs.txt
+            join /tmp/ref_specs.txt /tmp/new_specs.txt | while read -r name ref_hash new_hash ref_ver new_ver; do
+              if [ "${ref_hash}" != "${new_hash}" ] && [ "${ref_ver}" != "${new_ver}" ]; then
+                spack diff "${name}@${ref_ver}" "${name}@${new_ver}" || true
+              fi
+            done
+          fi
+        done
 
   npsim-gun:
     name: npsim (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, ${{ matrix.arch }})
