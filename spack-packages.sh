@@ -52,6 +52,7 @@ f3085a0fd9c327692475fbb72b8b9f738c541358
 d18c9ad43ea50d71e666c8a859da3293e4776c19
 55be3f79a559d1e8f5ae8dffd1516569f444b5d0
 e30e760a6959a4112d5dc04ecc0755813eaee8ee
+3dcad5bb860184c91c17b97a9f3b13252d26d309
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -101,3 +102,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## d18c9ad43ea50d71e666c8a859da3293e4776c19: py-mcp: new package (with missing deps, py-pyjwt 2.10.1)
 ## 55be3f79a559d1e8f5ae8dffd1516569f444b5d0: opencode, bun: new packages
 ## e30e760a6959a4112d5dc04ecc0755813eaee8ee: py-awkward-cpp: require py-pybind11@3: for @48:
+## 3dcad5bb860184c91c17b97a9f3b13252d26d309: readline: switch url for patch download
