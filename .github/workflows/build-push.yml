@@ -484,46 +484,20 @@ jobs:
       - name: Export spack.lock files
         run: |
           set -e
-          slugify() { echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-63; }
-          ARCH=$(echo "${{ matrix.PLATFORM }}" | sed 's|linux/||; s|/|_|g')
-          CI_COMMIT_REF_SLUG="$(slugify "${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}")"
-          CI_DEFAULT_BRANCH_SLUG="$(slugify "${GITHUB_BASE_REF:-${{ github.event.repository.default_branch }}}")"
-          CACHE_BASE="${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/buildcache:${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
-
-          ## Common build args: same as the main build (needed for BuildKit registry cache to match).
-          COMMON_ARGS=(
-            --file containers/eic/Dockerfile
-            --platform "${{ matrix.PLATFORM }}"
-            --build-arg "DOCKER_REGISTRY=${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/"
-            --build-arg "INTERNAL_TAG=${{ env.INTERNAL_TAG }}"
-            --build-arg "BUILDER_IMAGE=${{ matrix.BUILDER_IMAGE }}"
-            --build-arg "RUNTIME_IMAGE=${{ matrix.RUNTIME_IMAGE }}"
-            --build-arg "ENV=${{ matrix.ENV }}"
-            --cache-from "type=registry,ref=${CACHE_BASE}-default-${CI_COMMIT_REF_SLUG}-${ARCH}"
-            --cache-from "type=registry,ref=${CACHE_BASE}-default-${CI_DEFAULT_BRANCH_SLUG}-${ARCH}"
-            --cache-from "type=registry,ref=${CACHE_BASE}-nightly-${CI_COMMIT_REF_SLUG}-${ARCH}"
-            --cache-from "type=registry,ref=${CACHE_BASE}-nightly-${CI_DEFAULT_BRANCH_SLUG}-${ARCH}"
-            --build-context spack-environment=spack-environment
-          )
-
+          IMAGE_REPO="${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
+          DIGEST=$(jq -r '."containerimage.digest"' /tmp/build-metadata-default.json)
           mkdir -p /tmp/spack-locks
 
-          ## Export default spack.lock (available for all environments and targets).
-          ## This is a fast export build that hits registry cache from the main build.
-          docker buildx build "${COMMON_ARGS[@]}" \
-            --target spack_lock_default_export \
-            --output "type=local,dest=/tmp/spack-lock-default-export" \
-            containers/eic
-          mv /tmp/spack-lock-default-export/spack.lock /tmp/spack-locks/default.spack.lock 2>/dev/null || true
-
-          ## Export custom (epic) spack.lock (only present for full builds).
+          ## Create a temporary container from the built image (already pushed by digest) and
+          ## docker cp the spack.lock files out of it — no second build needed.
+          CONTAINER=$(docker create "${IMAGE_REPO}@${DIGEST}")
+          docker cp "${CONTAINER}:/opt/spack-environment/${{ matrix.ENV }}/spack.lock" \
+            /tmp/spack-locks/default.spack.lock 2>/dev/null || true
           if [ "${{ matrix.target }}" = "final" ]; then
-            docker buildx build "${COMMON_ARGS[@]}" \
-              --target spack_lock_custom_export \
-              --output "type=local,dest=/tmp/spack-lock-custom-export" \
-              containers/eic || true
-            mv /tmp/spack-lock-custom-export/spack.lock /tmp/spack-locks/custom.spack.lock 2>/dev/null || true
+            docker cp "${CONTAINER}:/opt/spack-environment/${{ matrix.ENV }}/epic/spack.lock" \
+              /tmp/spack-locks/custom.spack.lock 2>/dev/null || true
           fi
+          docker rm "${CONTAINER}"
 
           ls -la /tmp/spack-locks/
       - name: Upload spack.lock files as artifacts
