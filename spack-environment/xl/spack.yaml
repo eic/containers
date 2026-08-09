@@ -5,7 +5,13 @@ spack:
   - ../packages.yaml
   - ../packages_root_with_opengl.yaml
   - ../view.yaml
+  definitions:
+  - when: arch.satisfies("platform=linux")
+    extra_packages: [strace]
+  - when: arch.satisfies("platform=darwin")
+    extra_packages: []
   specs:
+  - $extra_packages
   - acts
   - actsvg
   - afterburner
@@ -133,8 +139,6 @@ spack:
   - snakemake
   - spdlog
   - stow
-  - spec: strace
-    when: platform=linux
   - valgrind
   - xeyes
   - xrootd
