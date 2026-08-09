@@ -31,9 +31,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
+        uses: actions/checkout@v7
 
       - name: Extract Spack configuration
         id: spack-config
@@ -63,11 +61,16 @@ jobs:
           # Extract buildcache URL from mirrors.yaml.in (simplified - get the version)
           echo "buildcache-version=${SPACKPACKAGES_VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Checkout and configure spack
+      - name: Checkout Spack repository
+        uses: actions/checkout@v7
+        with:
+          repo: https://github.com/spack/spack.git
+          path: ${{ github.workspace }}/spack
+          ref: ${{ steps.spack-config.outputs.spack-version }}
+
+      - name: Configure spack
         run: |
-          git clone --filter=tree:0 https://github.com/spack/spack.git ${{ github.workspace }}/spack
           cd ${{ github.workspace }}/spack
-          git checkout ${{ steps.spack-config.outputs.spack-version }}
           echo "${{ github.workspace }}/spack/bin" >> $GITHUB_PATH
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
@@ -82,12 +85,16 @@ jobs:
             git cherry-pick "${commit}"
           done < <(echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
 
-      - name: Checkout and configure spack-packages
+      - name: Checkout spack-packages repository
+        uses: actions/checkout@v7
+        with:
+          repo: https://github.com/spack/spack-packages.git
+          path: ${{ github.workspace }}/spack/var/spack/repos/spack-packages
+          ref: ${{ steps.spack-config.outputs.spackpackages-version }}
+
+      - name: Configure spack-packages
         run: |
-          cd ${{ github.workspace }}/spack
-          git clone --filter=tree:0 https://github.com/spack/spack-packages.git var/spack/repos/spack-packages
-          cd var/spack/repos/spack-packages
-          git checkout ${{ steps.spack-config.outputs.spackpackages-version }}
+          cd ${{ github.workspace }}/spack/var/spack/repos/spack-packages
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
@@ -104,23 +111,27 @@ jobs:
           cd ${{ github.workspace }}/spack
           spack repo add var/spack/repos/spack-packages/repos/spack_repo/builtin
 
-      - name: Checkout and configure key4hep-spack
-        run: |
-          cd ${{ github.workspace }}/spack
-          git clone --filter=tree:0 https://github.com/key4hep/key4hep-spack.git var/spack/repos/key4hep-spack
-          cd var/spack/repos/key4hep-spack
-          git checkout ${{ steps.spack-config.outputs.key4hepspack-version }}
+      - name: Checkout key4hep-spack repository
+        uses: actions/checkout@v7
+        with:
+          repo: https://github.com/key4hep/key4hep-spack.git
+          path: ${{ github.workspace }}/spack/var/spack/repos/key4hep-spack
+          ref: ${{ steps.spack-config.outputs.key4hepspack-version }}
 
+      - name: Configure key4hep-spack
+        run: |
           cd ${{ github.workspace }}/spack
           spack repo add var/spack/repos/key4hep-spack
 
-      - name: Checkout and configure eic-spack
-        run: |
-          cd ${{ github.workspace }}/spack
-          git clone --filter=tree:0 https://github.com/eic/eic-spack.git var/spack/repos/eic-spack
-          cd var/spack/repos/eic-spack
-          git checkout ${{ steps.spack-config.outputs.eicspack-version }}
+      - name: Checkout eic-spack repository
+        uses: actions/checkout@v7
+        with:
+          repo: https://github.com/eic/eic-spack.git
+          path: ${{ github.workspace }}/spack/var/spack/repos/eic-spack
+          ref: ${{ steps.spack-config.outputs.eicspack-version }}
 
+      - name: Configure eic-spack
+        run: |
           cd ${{ github.workspace }}/spack
           spack repo add var/spack/repos/eic-spack/spack_repo/eic
 
