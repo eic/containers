@@ -122,7 +122,7 @@ jobs:
 
       - name: Concretize
         run: |
-          spack -e spack-environment/${{matrix.ENV}} concretize -f
+          spack -e spack-environment/${{matrix.ENV}} -c view:false concretize --force
 
       - name: Configure buildcache
         run: |
@@ -134,7 +134,7 @@ jobs:
 
       - name: Install base environment
         run: |
-          spack -e spack-environment/${{matrix.ENV}} install --no-check-signature --show-log-on-error
+          spack -e spack-environment/${{matrix.ENV}} -c view:false install --no-check-signature --show-log-on-error
 
       - name: Install epic environment
         run: |
