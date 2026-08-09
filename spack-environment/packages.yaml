@@ -75,23 +75,23 @@ packages:
     prefer:
     - spec: gcc
       when: platform=linux
-    - spec: clang
+    - spec: apple-clang
       when: platform=darwin
     require:
     - spec: gcc
       when: platform=linux
-    - spec: clang
+    - spec: apple-clang
       when: platform=darwin
   cxx:
     prefer:
     - spec: gcc
       when: platform=linux
-    - spec: clang
+    - spec: apple-clang
       when: platform=darwin
     require:
     - spec: gcc
       when: platform=linux
-    - spec: clang
+    - spec: apple-clang
       when: platform=darwin
   cairo:
     require:
@@ -216,12 +216,12 @@ packages:
     prefer:
     - spec: gcc
       when: platform=linux
-    - spec: clang
+    - spec: gcc
       when: platform=darwin
     require:
     - spec: gcc
       when: platform=linux
-    - spec: clang
+    - spec: gcc
       when: platform=darwin
   freetype:
     require:
