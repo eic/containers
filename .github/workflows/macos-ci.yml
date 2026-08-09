@@ -51,16 +51,11 @@ jobs:
           # Extract buildcache URL from mirrors.yaml.in (simplified - get the version)
           echo "buildcache-version=${SPACKPACKAGES_VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Setup Spack
-        uses: spack/setup-spack@v2.1.1
-        with:
-          ref: ${{ steps.spack-config.outputs.spack-version }}
-          color: true
-          path: ${{ github.workspace }}/spack
-
-      - name: Apply Spack cherry-picks
+      - name: Checkout and configure spack
         run: |
+          git clone --filter=tree:0 https://github.com/spack/spack-packages.git ${{ github.workspace }}/spack
           cd ${{ github.workspace }}/spack
+          git checkout ${{ steps.spack-config.outputs.spack-version }}
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
@@ -73,7 +68,7 @@ jobs:
       - name: Checkout and configure spack-packages
         run: |
           cd ${{ github.workspace }}/spack
-          git clone https://github.com/spack/spack-packages.git var/spack/repos/spack-packages
+          git clone --filter=tree:0 https://github.com/spack/spack-packages.git var/spack/repos/spack-packages
           cd var/spack/repos/spack-packages
           git checkout ${{ steps.spack-config.outputs.spackpackages-version }}
           git config user.name "GitHub Actions"
