@@ -444,4 +444,3 @@ RUN echo -e "\n - eic_container: ${CI_COMMIT_SHA}" | tee -a /etc/eic_info /etc/j
 
 ## Hotfix for misbehaving OSG nodes
 RUN mkdir /hadoop /localscratch
-
