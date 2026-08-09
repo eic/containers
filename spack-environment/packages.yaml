@@ -672,9 +672,11 @@ packages:
   root:
     require:
     - '@6.40.02'
-    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
+    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
-    - spec: -opengl -webgui
+    - spec: +x
+      when: platform=linux
+    - spec: ~x
       when: platform=darwin
   sherpa:
     require:
