@@ -64,9 +64,10 @@ jobs:
       - name: Checkout Spack repository
         uses: actions/checkout@v7
         with:
-          repo: https://github.com/spack/spack.git
-          path: ${{ github.workspace }}/spack
+          repository: spack/spack
+          path: spack
           ref: ${{ steps.spack-config.outputs.spack-version }}
+          fetch-depth: 0
 
       - name: Configure spack
         run: |
