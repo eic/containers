@@ -141,7 +141,8 @@ spack:
   - snakemake
   - spdlog
   - stow
-  - strace
+  - spec: strace
+    when: platform=linux
   - uproot-mcp-server
   - valgrind
   - xeyes
