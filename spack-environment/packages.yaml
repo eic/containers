@@ -450,6 +450,7 @@ packages:
   professor:
     require:
     - '@2.5.6:2'
+    - ~interactive
   protobuf:
     require:
     - '@32.1'
