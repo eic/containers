@@ -281,10 +281,16 @@ packages:
     - ~gtk
   gl:
     require:
-    - glx
+    - spec: glx
+      when: platform=linux
+    - spec: apple-gl
+      when: platform=darwin
   glu:
     require:
-    - openglu
+    - spec: openglu
+      when: platform=linux
+    - spec: apple-glu
+      when: platform=darwin
   gloo:
     require:
     - '@2023-12-03'
