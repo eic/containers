@@ -117,25 +117,25 @@ jobs:
 
       - name: Add Spack environment
         run: |
-          spack env activate -d spack-environment/${{matrix.ENV}}
-          spack compiler find
-          spack external find llvm
+          spack -e spack-environment/${{matrix.ENV}} compiler find
+          spack -e spack-environment/${{matrix.ENV}} external find llvm
 
       - name: Concretize
         run: |
-          spack env activate -d spack-environment/${{matrix.ENV}}
-          spack concretize -f
+          spack -e spack-environment/${{matrix.ENV}} concretize -f
 
       - name: Configure buildcache
         run: |
-          spack env activate -d spack-environment/${{matrix.ENV}}
-          spack mirror add eic \
+          spack -e spack-environment/${{matrix.ENV}} mirror add eic \
             --autopush --unsigned \
             --oci-username-variable GITHUB_REGISTRY_USER \
             --oci-password-variable GITHUB_REGISTRY_TOKEN \
             oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
 
-      - name: Install
+      - name: Install base environment
         run: |
-          spack env activate -d spack-environment/${{matrix.ENV}}
-          spack install --no-check-signature --show-log-on-error
+          spack -e spack-environment/${{matrix.ENV}} install --no-check-signature --show-log-on-error
+
+      - name: Install epic environment
+        run: |
+          spack -e spack-environment/${{matrix.ENV}}/epic install --no-check-signature --show-log-on-error
