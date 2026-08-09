@@ -266,8 +266,12 @@ packages:
     require:
     - '@11.4.1.east'
     - cxxstd=20 -vecgeom +threads -vtk
-    - any_of: [+opengl +qt +x11, -opengl -qt -x11]
-    - spec: -opengl -qt -x11
+    - any_of: [+opengl +qt, -opengl -qt]
+    - spec: ~x11
+      when: ~opengl platform=linux
+    - spec: +x11
+      when: +opengl platform=linux
+    - spec: ~x11
       when: platform=darwin
   geant4-data:
     require:
