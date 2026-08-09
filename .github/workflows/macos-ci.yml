@@ -56,9 +56,10 @@ jobs:
 
       - name: Checkout and configure spack
         run: |
-          git clone --filter=tree:0 https://github.com/spack/spack-packages.git ${{ github.workspace }}/spack
+          git clone --filter=tree:0 https://github.com/spack/spack.git ${{ github.workspace }}/spack
           cd ${{ github.workspace }}/spack
           git checkout ${{ steps.spack-config.outputs.spack-version }}
+          echo "${{ github.workspace }}/spack/bin" >> $GITHUB_PATH
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
