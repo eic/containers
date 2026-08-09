@@ -24,6 +24,10 @@ jobs:
       matrix:
         ENV: [ci, xl]
 
+    env:
+      GITHUB_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
+      GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -96,8 +100,11 @@ jobs:
       - name: Configure buildcache
         run: |
           spack env activate -d spack-environment/${{matrix.ENV}}
-          spack mirror add eic oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
-          spack buildcache keys --install --trust
+          spack mirror add eic \
+            --autopush --unsigned \
+            --oci-username-variable GITHUB_REGISTRY_USER \
+            --oci-password-variable GITHUB_REGISTRY_TOKEN \
+            oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
 
       - name: Install
         run: |
