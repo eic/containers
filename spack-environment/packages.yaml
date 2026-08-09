@@ -73,14 +73,26 @@ packages:
     - cxxstd=20
   c:
     prefer:
-    - gcc
+    - spec: gcc
+      when: platform=linux
+    - spec: clang
+      when: platform=darwin
     require:
-    - gcc
+    - spec: gcc
+      when: platform=linux
+    - spec: clang
+      when: platform=darwin
   cxx:
     prefer:
-    - gcc
+    - spec: gcc
+      when: platform=linux
+    - spec: clang
+      when: platform=darwin
     require:
-    - gcc
+    - spec: gcc
+      when: platform=linux
+    - spec: clang
+      when: platform=darwin
   cairo:
     require:
     - '@1.18.2:'
@@ -202,9 +214,15 @@ packages:
     - +shared cxxstd=20
   fortran:
     prefer:
-    - gcc
+    - spec: gcc
+      when: platform=linux
+    - spec: clang
+      when: platform=darwin
     require:
-    - gcc
+    - spec: gcc
+      when: platform=linux
+    - spec: clang
+      when: platform=darwin
   freetype:
     require:
     - build_system=autotools
