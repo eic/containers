@@ -657,17 +657,11 @@ packages:
   qt:
     require:
     - '@5.15.12:'
-    - spec: +opengl
-      when: platform=linux
-    - spec: ~opengl
-      when: platform=darwin
+    - +opengl
   qt-base:
     require:
     - '@6.7.2:'
-    - spec: +opengl
-      when: platform=linux
-    - spec: ~opengl
-      when: platform=darwin
+    - +opengl
   rdma-core:
     require:
     - ~pyverbs  # avoid constraint in https://github.com/spack/spack-packages/pull/2791
