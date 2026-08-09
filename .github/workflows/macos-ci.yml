@@ -72,10 +72,14 @@ jobs:
           git config user.email "actions@github.com"
 
           # Apply cherry-picks from spack.sh (match only valid git commit hashes)
-          echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' | while read -r commit; do
+          while read -r commit; do
+            if git merge-base --is-ancestor "${commit}" HEAD; then
+              echo "Skipping already applied ${commit}"
+              continue
+            fi
             echo "Cherry-picking ${commit}"
             git cherry-pick "${commit}"
-          done
+          done < <(echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
 
       - name: Checkout and configure spack-packages
         run: |
@@ -87,10 +91,14 @@ jobs:
           git config user.email "actions@github.com"
 
           # Apply cherry-picks from spack-packages.sh (match only valid git commit hashes)
-          echo "${{ steps.spack-config.outputs.spackpackages-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' | while read -r commit; do
+          while read -r commit; do
+            if git merge-base --is-ancestor "${commit}" HEAD; then
+              echo "Skipping already applied ${commit}"
+              continue
+            fi
             echo "Cherry-picking ${commit}"
             git cherry-pick "${commit}"
-          done
+          done < <(echo "${{ steps.spack-config.outputs.spackpackages-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
 
           cd ${{ github.workspace }}/spack
           spack repo add var/spack/repos/spack-packages/repos/spack_repo/builtin
