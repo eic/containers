@@ -101,6 +101,8 @@ jobs:
           git clone --filter=tree:0 https://github.com/key4hep/key4hep-spack.git var/spack/repos/key4hep-spack
           cd var/spack/repos/key4hep-spack
           git checkout ${{ steps.spack-config.outputs.key4hepspack-version }}
+
+          cd ${{ github.workspace }}/spack
           spack repo add var/spack/repos/key4hep-spack
 
       - name: Checkout and configure eic-spack
@@ -109,6 +111,8 @@ jobs:
           git clone --filter=tree:0 https://github.com/eic/eic-spack.git var/spack/repos/eic-spack
           cd var/spack/repos/eic-spack
           git checkout ${{ steps.spack-config.outputs.eicspack-version }}
+
+          cd ${{ github.workspace }}/spack
           spack repo add var/spack/repos/eic-spack/spack_repo/eic
 
       - name: Add Spack environment
