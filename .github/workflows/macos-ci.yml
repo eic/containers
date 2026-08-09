@@ -146,4 +146,4 @@ jobs:
 
       - name: Install epic environment
         run: |
-          spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install install --no-check-signature --show-log-on-error
+          spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install --no-check-signature --show-log-on-error
