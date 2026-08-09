@@ -133,7 +133,8 @@ spack:
   - snakemake
   - spdlog
   - stow
-  - strace
+  - spec: strace
+    when: platform=linux
   - valgrind
   - xeyes
   - xrootd
