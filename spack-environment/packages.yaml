@@ -267,6 +267,8 @@ packages:
     - '@11.4.1.east'
     - cxxstd=20 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
+    - spec: -opengl -qt -x11
+      when: platform=darwin
   geant4-data:
     require:
     - +nudexlib +tendl +urrpt
@@ -651,11 +653,17 @@ packages:
   qt:
     require:
     - '@5.15.12:'
-    - +opengl
+    - spec: +opengl
+      when: platform=linux
+    - spec: ~opengl
+      when: platform=darwin
   qt-base:
     require:
     - '@6.7.2:'
-    - +opengl
+    - spec: +opengl
+      when: platform=linux
+    - spec: ~opengl
+      when: platform=darwin
   rdma-core:
     require:
     - ~pyverbs  # avoid constraint in https://github.com/spack/spack-packages/pull/2791
@@ -668,6 +676,8 @@ packages:
     - '@6.40.02'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
+    - spec: -opengl -webgui
+      when: platform=darwin
   sherpa:
     require:
     - '@3.0.1'
