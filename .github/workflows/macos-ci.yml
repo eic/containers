@@ -87,7 +87,6 @@ jobs:
           spack env activate -d spack-environment/${{matrix.ENV}}
           spack compiler find
           spack external find llvm
-          spack external find --not-buildable cmake
 
       - name: Concretize
         run: |
