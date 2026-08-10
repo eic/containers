@@ -19,8 +19,9 @@ deb4f17d93dbe012403614245334f7c73fcc086f
 47780b2c59a8356c1f13cd7c8d250e3250c15ba8
 28bd1a044251fca35e14ba55d7ddb567deadcdaa
 72269859719d77f986be7cc752946650d020ac3f
-de97f131df3dbc940151f406afd5c2c1158a660c
-caf013be0ee1594fdbba8feb07ffecc88474a2b0
+125ca0c4f3b8bb2c5312c571e27006d9ddc06085
+7a6fa1c4f62f27531c93ecfeedad30181e9616f9
+c72830c64ceda0390b12e0b7ddda6418fa3806be
 75395349957ad785cca50002dffb18bbcb48af27
 acac89d6bb7079412e711a50a3f06681132a2723
 438abd1e09f0cea9cb0ccc7e0326adcd0408196b
@@ -43,8 +44,9 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 47780b2c59a8356c1f13cd7c8d250e3250c15ba8: py-pynacl: depends on gmake, type build
 ## 28bd1a044251fca35e14ba55d7ddb567deadcdaa: py-throttler: add v1.2.3
 ## 72269859719d77f986be7cc752946650d020ac3f: py-tensorboard: add v2.21.0
-## de97f131df3dbc940151f406afd5c2c1158a660c: TensorFlow: add v2.21.0
-## caf013be0ee1594fdbba8feb07ffecc88474a2b0: Add missing xxd dep
+## 125ca0c4f3b8bb2c5312c571e27006d9ddc06085: TensorFlow: add v2.21.0
+## 7a6fa1c4f62f27531c93ecfeedad30181e9616f9: Add missing xxd dep
+## c72830c64ceda0390b12e0b7ddda6418fa3806be: Workaround for macOS arm64 compile bug
 ## 75395349957ad785cca50002dffb18bbcb48af27: py-torch: ensure setuptools is not unnecessarily constrained for 2.10:
 ## acac89d6bb7079412e711a50a3f06681132a2723: cuda: append --allow-unsupported-compiler to CUDAFLAGS for dependent_spec
 ## 438abd1e09f0cea9cb0ccc7e0326adcd0408196b: herwig3: add CT14(?n)lo pdfsets as build-time resources
