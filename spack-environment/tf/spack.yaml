@@ -4,7 +4,13 @@ spack:
   - ../config.yaml
   - ../packages.yaml
   - ../view.yaml
+  definitions:
+  - when: arch.satisfies("platform=linux")
+    tensorflow: [py-tensorflow +cuda]
+  - when: arch.satisfies("platform=darwin")
+    tensorflow: [py-tensorflow ~cuda]
   specs:
+  - $tensorflow
   - edm4hep
   - onnx
   - osg-ca-certs
@@ -42,7 +48,6 @@ spack:
   - py-rucio-clients
   - py-scipy
   - py-seaborn
-  - py-tensorflow +cuda
   - py-tf2onnx
   - py-toml
   - py-uproot
