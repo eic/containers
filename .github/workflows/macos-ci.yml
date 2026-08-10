@@ -89,8 +89,8 @@ jobs:
       - name: Checkout spack-packages repository
         uses: actions/checkout@v7
         with:
-          repo: https://github.com/spack/spack-packages.git
-          path: ${{ github.workspace }}/spack/var/spack/repos/spack-packages
+          repository: spack/spack-packages
+          path: spack/var/spack/repos/spack-packages
           ref: ${{ steps.spack-config.outputs.spackpackages-version }}
 
       - name: Configure spack-packages
@@ -115,8 +115,8 @@ jobs:
       - name: Checkout key4hep-spack repository
         uses: actions/checkout@v7
         with:
-          repo: https://github.com/key4hep/key4hep-spack.git
-          path: ${{ github.workspace }}/spack/var/spack/repos/key4hep-spack
+          repository: key4hep/key4hep-spack
+          path: spack/var/spack/repos/key4hep-spack
           ref: ${{ steps.spack-config.outputs.key4hepspack-version }}
 
       - name: Configure key4hep-spack
@@ -127,8 +127,8 @@ jobs:
       - name: Checkout eic-spack repository
         uses: actions/checkout@v7
         with:
-          repo: https://github.com/eic/eic-spack.git
-          path: ${{ github.workspace }}/spack/var/spack/repos/eic-spack
+          repository: eic/eic-spack
+          path: spack/var/spack/repos/eic-spack
           ref: ${{ steps.spack-config.outputs.eicspack-version }}
 
       - name: Configure eic-spack
