@@ -13,7 +13,7 @@ SPACKPACKAGES_VERSION="v2026.06.0"
 read -r -d '' SPACKPACKAGES_CHERRYPICKS <<- \
 --- || true
 384fd54caf18c6393607bff018853747d02c6e0f
-f5742718da7bd1d078ddc8423011a82ef2e3c759
+bd9b4838fbf9e4ca01ad7b6c6df633ddcc750d71
 deb4f17d93dbe012403614245334f7c73fcc086f
 82a6d07a37d13c247e84417055f9cb5b4802ac4f
 47780b2c59a8356c1f13cd7c8d250e3250c15ba8
@@ -37,7 +37,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
 ## 384fd54caf18c6393607bff018853747d02c6e0f: github-copilot: new package
-## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
+## bd9b4838fbf9e4ca01ad7b6c6df633ddcc750d71: gaudi: workaround test-dependency bug with a when
 ## deb4f17d93dbe012403614245334f7c73fcc086f: fix: add latest osg-ca-cert
 ## 82a6d07a37d13c247e84417055f9cb5b4802ac4f: osg-ca-certs: depends on gmake and perl, type build
 ## 47780b2c59a8356c1f13cd7c8d250e3250c15ba8: py-pynacl: depends on gmake, type build
