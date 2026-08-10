@@ -78,6 +78,7 @@ jobs:
 
           # Fetch branches from which we cherry-pick
           git fetch origin pull/51584/head:pr-51584
+          git fetch origin pull/52207/head:pr-52207
 
           # Apply cherry-picks from spack.sh (match only valid git commit hashes)
           while read -r commit; do
