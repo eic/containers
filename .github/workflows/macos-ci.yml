@@ -33,6 +33,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      - name: Set Deployment Target to match runner SDK
+        run: |
+          # Fetch the active SDK version (e.g., 14.5)
+          CURRENT_SDK=$(xcrun --show-sdk-version)
+          
+          # Export it to the GitHub environment so all future steps use it
+          echo "MACOSX_DEPLOYMENT_TARGET=$CURRENT_SDK" >> $GITHUB_ENV
+
       - name: Extract Spack configuration
         id: spack-config
         run: |
