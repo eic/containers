@@ -77,6 +77,7 @@ jobs:
           git config user.email "actions@github.com"
 
           # Fetch branches from which we cherry-pick
+          git fetch origin refs/heads/develop:refs/heads/develop
           git fetch origin pull/51584/head:pr-51584
           git fetch origin pull/52207/head:pr-52207
 
@@ -102,6 +103,9 @@ jobs:
           cd ${{ github.workspace }}/spack/var/spack/repos/spack-packages
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
+
+          # Fetch branches from which we cherry-pick
+          git fetch origin refs/heads/develop:refs/heads/develop
 
           # Apply cherry-picks from spack-packages.sh (match only valid git commit hashes)
           while read -r commit; do
