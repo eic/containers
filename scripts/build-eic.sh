@@ -180,6 +180,13 @@ done
 ## Enable xtrace and pipefail for the build loop
 set -o xtrace -o pipefail
 
+## Compute install flags: base flags plus debug capture for the dbg environment
+SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+if [ "${ENV}" = "dbg" ]; then
+  SPACK_INSTALL_FLAGS="${SPACK_INSTALL_FLAGS} --debug-source --debug-symbols"
+fi
+build_cmd+=(--build-arg "SPACK_INSTALL_FLAGS=${SPACK_INSTALL_FLAGS}")
+
 ## Build each type sequentially; the shared base Docker stages (default env concretization
 ## and installation) are reused from BuildKit's layer cache after the first build.
 for build_type in "${BUILD_TYPES[@]}"; do
