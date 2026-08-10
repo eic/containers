@@ -5,7 +5,15 @@ spack:
   - ../packages.yaml
   - ../packages_root_with_opengl.yaml
   - ../view.yaml
+  definitions:
+  # Note that in definitions 'when' takes a python expression as argument
+  # https://spack.readthedocs.io/en/latest/environments.html#spec-list-references
+  - when: arch.satisfies("platform=linux")
+    linux_packages: [strace, valgrind]
+  - when: arch.satisfies("platform=darwin")
+    linux_packages: []
   specs:
+  - $linux_packages
   - acts
   - actsvg
   - afterburner
@@ -133,8 +141,6 @@ spack:
   - snakemake
   - spdlog
   - stow
-  - strace
-  - valgrind
   - xeyes
   - xrootd
   - xrootd-mcp-server

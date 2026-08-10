@@ -1,0 +1,185 @@
+name: macOS CI Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ENV: [ci, xl, tf]
+
+    env:
+      GITHUB_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
+      GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set Deployment Target to match runner SDK
+        run: |
+          # Fetch the active SDK version (e.g., 14.5)
+          CURRENT_SDK=$(xcrun --show-sdk-version)
+
+          # Export it to the GitHub environment so all future steps use it
+          echo "MACOSX_DEPLOYMENT_TARGET=$CURRENT_SDK" >> $GITHUB_ENV
+
+      - name: Extract Spack configuration
+        id: spack-config
+        run: |
+          # Source spack.sh to get SPACK_VERSION and SPACK_CHERRYPICKS
+          source spack.sh
+          echo "spack-version=${SPACK_VERSION}" >> $GITHUB_OUTPUT
+          echo "spack-cherrypicks<<EOF" >> $GITHUB_OUTPUT
+          echo "${SPACK_CHERRYPICKS}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Source spack-packages.sh to get SPACKPACKAGES_VERSION and SPACKPACKAGES_CHERRYPICKS
+          source spack-packages.sh
+          echo "spackpackages-version=${SPACKPACKAGES_VERSION}" >> $GITHUB_OUTPUT
+          echo "spackpackages-cherrypicks<<EOF" >> $GITHUB_OUTPUT
+          echo "${SPACKPACKAGES_CHERRYPICKS}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Source key4hep-spack.sh to get KEY4HEPSPACK_VERSION
+          source key4hep-spack.sh
+          echo "key4hepspack-version=${KEY4HEPSPACK_VERSION}" >> $GITHUB_OUTPUT
+
+          # Source eic-spack.sh to get EICSPACK_VERSION
+          source eic-spack.sh
+          echo "eicspack-version=${EICSPACK_VERSION}" >> $GITHUB_OUTPUT
+
+          # Extract buildcache URL from mirrors.yaml.in (simplified - get the version)
+          echo "buildcache-version=${SPACKPACKAGES_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Checkout Spack repository
+        uses: actions/checkout@v7
+        with:
+          repository: spack/spack
+          path: spack
+          ref: ${{ steps.spack-config.outputs.spack-version }}
+          fetch-depth: 0
+
+      - name: Configure spack
+        run: |
+          cd ${{ github.workspace }}/spack
+          echo "${{ github.workspace }}/spack/bin" >> $GITHUB_PATH
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          # Fetch branches from which we cherry-pick
+          git fetch origin refs/heads/develop:refs/heads/develop
+          git fetch origin pull/51584/head:pr-51584
+          git fetch origin pull/52207/head:pr-52207
+
+          # Apply cherry-picks from spack.sh (match only valid git commit hashes)
+          while read -r commit; do
+            if git merge-base --is-ancestor "${commit}" HEAD; then
+              echo "Skipping already applied ${commit}"
+              continue
+            fi
+            echo "Cherry-picking ${commit}"
+            git cherry-pick "${commit}"
+          done < <(echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
+
+      - name: Checkout spack-packages repository
+        uses: actions/checkout@v7
+        with:
+          repository: spack/spack-packages
+          path: spack/var/spack/repos/spack-packages
+          ref: ${{ steps.spack-config.outputs.spackpackages-version }}
+
+      - name: Configure spack-packages
+        run: |
+          cd ${{ github.workspace }}/spack/var/spack/repos/spack-packages
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          # Fetch branches from which we cherry-pick
+          git fetch origin refs/heads/develop:refs/heads/develop
+          git fetch origin pull/3698/head:pr-3698
+          git fetch origin pull/4871/head:pr-4871
+          git fetch origin pull/5856/head:pr-5856
+
+          # Apply cherry-picks from spack-packages.sh (match only valid git commit hashes)
+          while read -r commit; do
+            if git merge-base --is-ancestor "${commit}" HEAD; then
+              echo "Skipping already applied ${commit}"
+              continue
+            fi
+            echo "Cherry-picking ${commit}"
+            git cherry-pick "${commit}"
+          done < <(echo "${{ steps.spack-config.outputs.spackpackages-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
+
+          cd ${{ github.workspace }}/spack
+          spack repo add var/spack/repos/spack-packages/repos/spack_repo/builtin
+
+      - name: Checkout key4hep-spack repository
+        uses: actions/checkout@v7
+        with:
+          repository: key4hep/key4hep-spack
+          path: spack/var/spack/repos/key4hep-spack
+          ref: ${{ steps.spack-config.outputs.key4hepspack-version }}
+
+      - name: Configure key4hep-spack
+        run: |
+          cd ${{ github.workspace }}/spack
+          spack repo add var/spack/repos/key4hep-spack
+
+      - name: Checkout eic-spack repository
+        uses: actions/checkout@v7
+        with:
+          repository: eic/eic-spack
+          path: spack/var/spack/repos/eic-spack
+          ref: ${{ steps.spack-config.outputs.eicspack-version }}
+
+      - name: Configure eic-spack
+        run: |
+          cd ${{ github.workspace }}/spack
+          spack repo add var/spack/repos/eic-spack/spack_repo/eic
+
+      - name: Add Spack environment
+        run: |
+          spack compiler find --scope site
+          spack external find --scope site llvm
+
+      - name: Configure buildcache
+        run: |
+          spack mirror add --scope site eic \
+            --autopush --unsigned \
+            --oci-username-variable GITHUB_REGISTRY_USER \
+            --oci-password-variable GITHUB_REGISTRY_TOKEN \
+            oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
+
+      - name: Concretize base environment
+        run: |
+          spack -e spack-environment/${{matrix.ENV}} -c view:false concretize --force
+
+      - name: Install base environment
+        run: |
+          spack -e spack-environment/${{matrix.ENV}} -c view:false install --no-check-signature --show-log-on-error
+
+      - name: Concretize epic environment
+        run: |
+          spack -e spack-environment/${{matrix.ENV}}/epic -c view:false concretize --force
+
+      - name: Install epic environment
+        run: |
+          spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install --no-check-signature --show-log-on-error
