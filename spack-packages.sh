@@ -13,7 +13,6 @@ SPACKPACKAGES_VERSION="v2026.06.0"
 read -r -d '' SPACKPACKAGES_CHERRYPICKS <<- \
 --- || true
 384fd54caf18c6393607bff018853747d02c6e0f
-20444b8e9382e659360a1446688d10a8c2d2ad31
 f5742718da7bd1d078ddc8423011a82ef2e3c759
 deb4f17d93dbe012403614245334f7c73fcc086f
 82a6d07a37d13c247e84417055f9cb5b4802ac4f
@@ -38,7 +37,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
 ## 384fd54caf18c6393607bff018853747d02c6e0f: github-copilot: new package
-## 20444b8e9382e659360a1446688d10a8c2d2ad31: github-copilot: add v1.0.8
 ## f5742718da7bd1d078ddc8423011a82ef2e3c759: gaudi: workaround test-dependency bug with a when
 ## deb4f17d93dbe012403614245334f7c73fcc086f: fix: add latest osg-ca-cert
 ## 82a6d07a37d13c247e84417055f9cb5b4802ac4f: osg-ca-certs: depends on gmake and perl, type build
