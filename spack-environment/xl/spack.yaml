@@ -9,11 +9,11 @@ spack:
   # Note that in definitions 'when' takes a python expression as argument
   # https://spack.readthedocs.io/en/latest/environments.html#spec-list-references
   - when: arch.satisfies("platform=linux")
-    extra_packages: [strace]
+    linux_packages: [strace, valgrind]
   - when: arch.satisfies("platform=darwin")
-    extra_packages: []
+    linux_packages: []
   specs:
-  - $extra_packages
+  - $linux_packages
   - acts
   - actsvg
   - afterburner
@@ -141,7 +141,6 @@ spack:
   - snakemake
   - spdlog
   - stow
-  - valgrind
   - xeyes
   - xrootd
   - xrootd-mcp-server
