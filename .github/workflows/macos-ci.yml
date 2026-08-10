@@ -76,6 +76,9 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
+          # Fetch branches from which we cherry-pick
+          git fetch origin pull/51584/head:pr-51584
+
           # Apply cherry-picks from spack.sh (match only valid git commit hashes)
           while read -r commit; do
             if git merge-base --is-ancestor "${commit}" HEAD; then
