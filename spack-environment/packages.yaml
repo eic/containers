@@ -60,7 +60,7 @@ packages:
     - +brotli +bz2 +dataset +filesystem +glog +ipc +jemalloc +lz4 +parquet +snappy +zlib +zstd
   binutils:
     require:
-    - ~gold
+    - '@2.44:'
   blas:
     require:
     - openblas
