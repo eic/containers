@@ -5,6 +5,18 @@ spack:
   - ../packages.yaml
   - ../packages_root_without_opengl.yaml
   - ../view.yaml
+  definitions:
+  # Note that in definitions 'when' takes a python expression as argument
+  # https://spack.readthedocs.io/en/latest/environments.html#spec-list-references
+  - when: arch.satisfies("platform=linux")
+    linux_packages: 
+    - imagemagick
+    - nopayloadclient
+    - ollama
+    - py-numpy
+    - py-scipy
+  - when: arch.satisfies("platform=darwin")
+    linux_packages: []
   specs:
   - acts
   - actsvg
@@ -24,15 +36,12 @@ spack:
   - hepmc3
   - hepmcmerger
   - heppdt
-  - imagemagick
   - irt
   - irt2
   - iwyu
   - jana2
   - just
-  - nopayloadclient
   - npsim -geocad
-  - ollama
   - onnx
   - osg-ca-certs
   - pelican
@@ -58,14 +67,12 @@ spack:
   - py-matplotlib
   - py-mplhep
   - py-htgettoken
-  - py-numpy
   - py-onnx
   - py-onnxruntime
   - py-pandas
   - py-particle
   - py-pip
   - py-rucio-clients
-  - py-scipy
   - py-seaborn
   - py-snakemake-storage-plugin-fs
   - py-snakemake-storage-plugin-pelican
