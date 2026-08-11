@@ -30,6 +30,7 @@ d4fb37cedfb7552a753bdc9c0c4792082f4b46e8
 5c1471ca2093e1ed98abab9ea482f1c45845fb1b
 c61e6769fe7556654815193f8ff2efb6cfec5fda
 bb6307167d40820ccd3fbf62bb59c22fd05c6a47
+b7819dfb21e2716761e0a99bc93a851eef0e6343
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -57,3 +58,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 5c1471ca2093e1ed98abab9ea482f1c45845fb1b: edm4hep: Add version 1.1
 ## c61e6769fe7556654815193f8ff2efb6cfec5fda: hepmc3: patch to remove cdll.LoadLibrary of unversioned libCore.so
 ## bb6307167d40820ccd3fbf62bb59c22fd05c6a47: acts: prepend to PYTHONPATH
+## b7819dfb21e2716761e0a99bc93a851eef0e6343: acts: add v46.4.0 through v46.8.1
