@@ -210,7 +210,7 @@ for build_type in "${BUILD_TYPES[@]}"; do
     SPACK_INSTALL_FLAGS="${SPACK_INSTALL_FLAGS} --debug-source --debug-symbols"
   fi
   build_cmd+=(--build-arg "SPACK_INSTALL_FLAGS=${SPACK_INSTALL_FLAGS}")
-  
+
   ## Output mode: push-by-digest in all CI modes; load locally
   if [ "${CI_MODE}" != "local" ]; then
     ## Push by digest; CI wrapper creates final tags via imagetools create.
