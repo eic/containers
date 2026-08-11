@@ -28,6 +28,7 @@ acac89d6bb7079412e711a50a3f06681132a2723
 d4fb37cedfb7552a753bdc9c0c4792082f4b46e8
 4dc856a13e9066ca3249a593d351af8cda521fa3
 c61e6769fe7556654815193f8ff2efb6cfec5fda
+bb6307167d40820ccd3fbf62bb59c22fd05c6a47
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -53,3 +54,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## d4fb37cedfb7552a753bdc9c0c4792082f4b46e8: py-tensorflow: add libclang variant
 ## 4dc856a13e9066ca3249a593d351af8cda521fa3: root: add v6.40.00, v6.40.02
 ## c61e6769fe7556654815193f8ff2efb6cfec5fda: hepmc3: patch to remove cdll.LoadLibrary of unversioned libCore.so
+## bb6307167d40820ccd3fbf62bb59c22fd05c6a47: acts: prepend to PYTHONPATH
