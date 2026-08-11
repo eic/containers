@@ -166,7 +166,7 @@ packages:
     - '@1.2.2'
   eicrecon:
     require:
-    - '@1.39.2' # EICRECON_VERSION
+    - '@1.40.0' # EICRECON_VERSION
   eicsimubeameffects:
     require:
     - '@1.1'
