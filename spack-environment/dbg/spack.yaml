@@ -5,6 +5,10 @@ spack:
   - ../packages.yaml
   - ../packages_root_without_opengl.yaml
   - ../view.yaml
+  packages:
+    compiler-wrapper:
+      require:
+      - '@1.1.0-build-id'
   specs:
   - acts build_type=Debug
   - cmake
