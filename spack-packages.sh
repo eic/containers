@@ -27,6 +27,7 @@ acac89d6bb7079412e711a50a3f06681132a2723
 438abd1e09f0cea9cb0ccc7e0326adcd0408196b
 d4fb37cedfb7552a753bdc9c0c4792082f4b46e8
 4dc856a13e9066ca3249a593d351af8cda521fa3
+c61e6769fe7556654815193f8ff2efb6cfec5fda
 bb6307167d40820ccd3fbf62bb59c22fd05c6a47
 ---
 ## Optional hash table with comma-separated file list
@@ -52,4 +53,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 438abd1e09f0cea9cb0ccc7e0326adcd0408196b: herwig3: add CT14(?n)lo pdfsets as build-time resources
 ## d4fb37cedfb7552a753bdc9c0c4792082f4b46e8: py-tensorflow: add libclang variant
 ## 4dc856a13e9066ca3249a593d351af8cda521fa3: root: add v6.40.00, v6.40.02
+## c61e6769fe7556654815193f8ff2efb6cfec5fda: hepmc3: patch to remove cdll.LoadLibrary of unversioned libCore.so
 ## bb6307167d40820ccd3fbf62bb59c22fd05c6a47: acts: prepend to PYTHONPATH
