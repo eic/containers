@@ -151,7 +151,7 @@ packages:
     - cxxstd=20
   edm4hep:
     require:
-    - '@1.1'
+    - '@git.f87de123bb1a56dfab7cdcb7f3cfb9dd51fc9313=1.1'
     - cxxstd=20
   egl:
     buildable: False
