@@ -446,6 +446,7 @@ packages:
     - cxxstd=20
     - +arrow +datasource +parquet +rntuple
     package_attributes:
+      git: https://github.com/wdconinc/podio.git
       run_tests: true
   prmon:
     require:
