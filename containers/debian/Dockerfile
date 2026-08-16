@@ -322,11 +322,13 @@ yq -iy 'if .packages.cuda.externals then .packages.cuda.externals[].spec += " +a
 spack config blame packages
 EOF
 
-## Setup buildcache mirrors
-## - this always adds the read-only mirror to the container
-## - the write-enabled mirror is provided later as a secret mount
+## Setup source and buildcache mirrors
+## - this always adds the source mirror of eic-spack packages
+## - this always adds the read-only buildcache mirror to the container
+## - the write-enabled buildcache mirror is provided later as a secret mount
 RUN --mount=type=cache,target=/var/cache/spack <<EOF
 set -e
+spack mirror add --scope spack --type source eic-spack-mirror https://eic.github.io/eic-spack-mirror
 spack mirror add --scope spack --signed spack-${SPACK_VERSION} https://binaries.spack.io/${SPACK_VERSION}
 spack mirror add --scope spack --unsigned ghcr-${SPACKPACKAGES_VERSION} oci://ghcr.io/eic/spack-${SPACKPACKAGES_VERSION}
 spack mirror list
