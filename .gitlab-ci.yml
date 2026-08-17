@@ -477,6 +477,7 @@ eic-manifest:
   needs:
     - version
     - job: eic
+      optional: true
   script:
     - apk add bash jq
     - |
