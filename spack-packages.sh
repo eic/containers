@@ -59,6 +59,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 5c1471ca2093e1ed98abab9ea482f1c45845fb1b: edm4hep: Add version 1.1
 ## c61e6769fe7556654815193f8ff2efb6cfec5fda: hepmc3: patch to remove cdll.LoadLibrary of unversioned libCore.so
 ## bb6307167d40820ccd3fbf62bb59c22fd05c6a47: acts: prepend to PYTHONPATH
-## bb6307167d40820ccd3fbf62bb59c22fd05c6a47: acts: prepend to PYTHONPATH
 ## 6fff3bd98c2157600cb716a3d7116f0a235446f1: acts: cleanup deps for removed versions
 ## b7819dfb21e2716761e0a99bc93a851eef0e6343: acts: add v46.4.0 through v46.8.1
