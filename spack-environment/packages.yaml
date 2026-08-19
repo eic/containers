@@ -168,7 +168,7 @@ packages:
     - '@1.2.2'
   eicrecon:
     require:
-    - '@git.cf925f831503342e546bcb609e937ed8d4e17e8f=1.40.0' # EICRECON_VERSION
+    - '@git.095558398aae4cdd3682759eb8bada4ea594036a=1.40.0' # EICRECON_VERSION
   eicsimubeameffects:
     require:
     - '@1.1'
