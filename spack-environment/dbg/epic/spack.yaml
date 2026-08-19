@@ -5,6 +5,10 @@ spack:
   - ../../config.yaml
   - ../../packages.yaml
   - ../../view.yaml
+  packages:
+    compiler-wrapper:
+      require:
+      - '@1.1.0-build-id'
   specs:
   - algorithms build_type=Debug
   - edm4eic build_type=Debug
