@@ -133,7 +133,7 @@ packages:
     - '@1.16.2:'
   dd4hep:
     require:
-    - '@git.a2f0c397aec24ead00dbc68684c2c3989c102365=master'
+    - '@git.8f0d2193956e0000029e8cad477473a6a2fa31ff=master'
     - +ddg4 +ddcad +edm4hep +g4hepem +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
     package_attributes:
