@@ -967,11 +967,11 @@ jobs:
       run: |
         source /opt/detector/epic-main/bin/thisepic.sh
         export DETECTOR_CONFIG=${{ matrix.detector_config }}
-        
+
         # Create named pipe for arrow streaming
         FIFO_NAME="sim_streaming_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.arrow"
         mkfifo "$FIFO_NAME"
-        
+
         # Start npsim in background, writing to the pipe
         npsim \
           --compactFile ${DETECTOR_PATH}/${{ matrix.detector_config }}.xml \
@@ -983,20 +983,20 @@ jobs:
           -N 100 \
           --outputFile "$FIFO_NAME" \
           -v WARNING &
-        
+
         NPSIM_PID=$!
-        
+
         # Run eicrecon reading from the pipe
         eicrecon \
           -Ppodio:output_file=rec_streaming_${{ matrix.particle }}_1GeV_20GeV_${{ matrix.detector_config }}.edm4eic.root \
           "$FIFO_NAME"
-        
+
         # Wait for npsim to complete
         wait $NPSIM_PID
-        
+
         # Clean up the pipe
         rm -f "$FIFO_NAME"
-        
+
         echo "Arrow streaming test completed successfully"
     - uses: actions/upload-artifact@v7
       with:
