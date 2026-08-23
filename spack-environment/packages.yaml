@@ -422,6 +422,9 @@ packages:
   osg-ca-certs:
     require:
     - '@1.141.igtf.1.141'
+  pandorasdk:
+    require:
+    - '@5:'
   pcre:
     require:
     - build_system=cmake
