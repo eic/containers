@@ -313,7 +313,7 @@ packages:
     - '@0.23:0.24'  # pinned to avoid depending on newer llvm than system
   jana2:
     require:
-    - '@2026.03.00'
+    - '@2026.03.01'
     - -ipo ~perfetto +podio +root +zmq
   juggler:
     require:
