@@ -45,6 +45,7 @@ c44cd71db91d6e6c68cb604dcb87311b49b1bedb
 683c5a698d88d657a99f3adefee0fe98d30927ae
 409826414a2221be56011f8f0f912905dae558cd
 63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51
+2700b8c7c7902cc9b3d19af1a57183bdeaf21c44
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -87,3 +88,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 683c5a698d88d657a99f3adefee0fe98d30927ae: dd4hep: url_for_version for master version
 ## 409826414a2221be56011f8f0f912905dae558cd: podio: Add version 1.8 and new parquet variant
 ## 63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51: edm4hep: patch for new podio arrow targets
+## 2700b8c7c7902cc9b3d19af1a57183bdeaf21c44: compiler-wrapper: add 1.1.0-build-id prototype version (spack-packages#6214)
+
