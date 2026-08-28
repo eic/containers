@@ -38,6 +38,7 @@ b7819dfb21e2716761e0a99bc93a851eef0e6343
 0e793b360b1383044923a19146f7d977f3107a41
 4c53d69e7e02fb346500b6269e43a26d1010d0f7
 ded706e8eb08bae4ac1cd4618c594bee4040a00e
+8090c2e88e44621599b1e6e2a1f6243fd8ec78d3
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -73,3 +74,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 0e793b360b1383044923a19146f7d977f3107a41: pandora*: Update PandoraPFA repository URLs
 ## 4c53d69e7e02fb346500b6269e43a26d1010d0f7: pandora*: add v5.*
 ## ded706e8eb08bae4ac1cd4618c594bee4040a00e: acts: pass root variant to examples
+## 8090c2e88e44621599b1e6e2a1f6243fd8ec78d3: root: add v6.40.04
