@@ -46,6 +46,8 @@ c44cd71db91d6e6c68cb604dcb87311b49b1bedb
 409826414a2221be56011f8f0f912905dae558cd
 63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51
 2700b8c7c7902cc9b3d19af1a57183bdeaf21c44
+4b54f295bed925f1a33f3954bd05903e53142406
+0d28d22b92a113cd15bee2c7d474bef002de901b
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -89,4 +91,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 409826414a2221be56011f8f0f912905dae558cd: podio: Add version 1.8 and new parquet variant
 ## 63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51: edm4hep: patch for new podio arrow targets
 ## 2700b8c7c7902cc9b3d19af1a57183bdeaf21c44: compiler-wrapper: add 1.1.0-build-id prototype version (spack-packages#6214)
-
+## 4b54f295bed925f1a33f3954bd05903e53142406: compiler-wrapper: add 1.1.0-build-id prototype version (spack-packages#6214)
+## 0d28d22b92a113cd15bee2c7d474bef002de901b: elfutils: patch debuginfod_find_source to accept ./-relative filenames (spack-packages #6259)
