@@ -442,9 +442,9 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@1.7'
+    - '@1.8'
     - cxxstd=20
-    - +datasource +rntuple
+    - +arrow +datasource +parquet +rntuple
     package_attributes:
       run_tests: true
   prmon:

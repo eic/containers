@@ -39,6 +39,12 @@ b7819dfb21e2716761e0a99bc93a851eef0e6343
 4c53d69e7e02fb346500b6269e43a26d1010d0f7
 ded706e8eb08bae4ac1cd4618c594bee4040a00e
 8090c2e88e44621599b1e6e2a1f6243fd8ec78d3
+c44cd71db91d6e6c68cb604dcb87311b49b1bedb
+33d01efa54ffc5b211cd5abc2df74841c032a722
+7e581611d81312d2a4228ad5d0b67bdd93217915
+683c5a698d88d657a99f3adefee0fe98d30927ae
+409826414a2221be56011f8f0f912905dae558cd
+63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -75,3 +81,9 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 4c53d69e7e02fb346500b6269e43a26d1010d0f7: pandora*: add v5.*
 ## ded706e8eb08bae4ac1cd4618c594bee4040a00e: acts: pass root variant to examples
 ## 8090c2e88e44621599b1e6e2a1f6243fd8ec78d3: root: add v6.40.04
+## c44cd71db91d6e6c68cb604dcb87311b49b1bedb: podio: add a patch to be able to build with fmt 12
+## 33d01efa54ffc5b211cd5abc2df74841c032a722: podio: add arrow variant
+## 7e581611d81312d2a4228ad5d0b67bdd93217915: podio,sio: url_for_version for main version
+## 683c5a698d88d657a99f3adefee0fe98d30927ae: dd4hep: url_for_version for master version
+## 409826414a2221be56011f8f0f912905dae558cd: podio: Add version 1.8 and new parquet variant
+## 63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51: edm4hep: patch for new podio arrow targets
