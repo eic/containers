@@ -47,7 +47,7 @@ c44cd71db91d6e6c68cb604dcb87311b49b1bedb
 63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51
 2700b8c7c7902cc9b3d19af1a57183bdeaf21c44
 4b54f295bed925f1a33f3954bd05903e53142406
-0d28d22b92a113cd15bee2c7d474bef002de901b
+5945d81a8359eed559ec60b1be9151de57473f51
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -92,4 +92,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51: edm4hep: patch for new podio arrow targets
 ## 2700b8c7c7902cc9b3d19af1a57183bdeaf21c44: compiler-wrapper: add 1.1.0-build-id prototype version (spack-packages#6214)
 ## 4b54f295bed925f1a33f3954bd05903e53142406: compiler-wrapper: add 1.1.0-build-id prototype version (spack-packages#6214)
-## 0d28d22b92a113cd15bee2c7d474bef002de901b: elfutils: patch debuginfod_find_source to accept ./-relative filenames (spack-packages #6259)
+## 5945d81a8359eed559ec60b1be9151de57473f51: elfutils: patch debuginfod_find_source to accept ./-relative filenames (spack-packages #6259)
