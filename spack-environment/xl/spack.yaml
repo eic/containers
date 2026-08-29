@@ -22,7 +22,6 @@ spack:
   - cnpy
   - covfie
   - cppcoro
-  - dawn
   - dd4hep
   - doxygen
   - east
