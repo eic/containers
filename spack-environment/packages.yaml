@@ -330,6 +330,9 @@ packages:
   k4fwcore:
     require:
     - '@1.5'
+  lager:
+    require:
+    - '@3.7'
   lapack:
     require:
     - openblas
