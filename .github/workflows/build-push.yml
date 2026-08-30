@@ -481,6 +481,32 @@ jobs:
           name: eic-${{ matrix.ENV }}-${{ matrix.arch }}-nightly-digest
           path: /tmp/digests/${{ matrix.arch }}-nightly.digest
           retention-days: 1
+      - name: Export spack.lock files
+        run: |
+          set -e
+          IMAGE_REPO="${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
+          DIGEST=$(jq -r '."containerimage.digest"' /tmp/build-metadata-default.json)
+          mkdir -p /tmp/spack-locks
+
+          ## Create a temporary container from the built image (already pushed by digest) and
+          ## docker cp the spack.lock files out of it — no second build needed.
+          CONTAINER=$(docker create "${IMAGE_REPO}@${DIGEST}")
+          docker cp "${CONTAINER}:/opt/spack-environment/${{ matrix.ENV }}/spack.lock" \
+            /tmp/spack-locks/default.spack.lock 2>/dev/null || true
+          if [ "${{ matrix.target }}" = "final" ]; then
+            docker cp "${CONTAINER}:/opt/spack-environment/${{ matrix.ENV }}/epic/spack.lock" \
+              /tmp/spack-locks/custom.spack.lock 2>/dev/null || true
+          fi
+          docker rm "${CONTAINER}"
+
+          ls -la /tmp/spack-locks/
+      - name: Upload spack.lock files as artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: spack-lock-${{ matrix.ENV }}-${{ matrix.arch }}
+          path: /tmp/spack-locks/*.spack.lock
+          if-no-files-found: warn
+          retention-days: 90
 
   eic-manifest:
     name: Push ${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }} ${{ matrix.BUILD_TYPE }} manifest
@@ -574,6 +600,63 @@ jobs:
           docker buildx imagetools create \
             $TAG_ARGS \
             ${{ steps.digests.outputs.all }}
+
+  spack-diff:
+    name: Spack diff (${{ matrix.ENV }}, ${{ matrix.arch }})
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+    needs: eic-manifest
+    runs-on: ${{ matrix.runner }}
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - ENV: ci
+          arch: amd64
+          runner: ubuntu-latest
+        - ENV: xl
+          arch: amd64
+          runner: ubuntu-latest
+    steps:
+    - name: Download new spack.lock artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: spack-lock-${{ matrix.ENV }}-${{ matrix.arch }}
+        path: /tmp/spack-locks-new/
+    - name: Download previous spack.lock artifact
+      id: download_ref
+      uses: dawidd6/action-download-artifact@v21
+      with:
+        branch: ${{ github.base_ref || github.event.merge_group.base_ref }}
+        path: /tmp/spack-locks-ref/
+        name: spack-lock-${{ matrix.ENV }}-${{ matrix.arch }}
+        workflow: ".github/workflows/build-push.yml"
+        workflow_conclusion: "success"
+        if_no_artifact_found: warn
+    - name: Show spack environment diff
+      if: steps.download_ref.outputs.found_artifact == 'true'
+      shell: bash --login -eo pipefail {0}
+      continue-on-error: true
+      run: |
+        for new_lock in /tmp/spack-locks-new/*.spack.lock; do
+          lock_name=$(basename "${new_lock}" .spack.lock)
+          ref_lock=/tmp/spack-locks-ref/${lock_name}.spack.lock
+          echo "=== Spack environment diff: ${lock_name} ==="
+          cat "${new_lock}" > /tmp/${lock_name}.spack.lock
+          if [ -f "${ref_lock}" ]; then
+            jq -r '.concrete_specs | to_entries[] | "\(.value.name) \(.key) \(.value.version)"' "${ref_lock}" | sort > /tmp/ref_specs.txt
+            jq -r '.concrete_specs | to_entries[] | "\(.value.name) \(.key) \(.value.version)"' "${new_lock}" | sort > /tmp/new_specs.txt
+            join /tmp/ref_specs.txt /tmp/new_specs.txt | while read -r name ref_hash new_hash ref_ver new_ver; do
+              if [ "${ref_hash}" != "${new_hash}" ] && [ "${ref_ver}" != "${new_ver}" ]; then
+                spack diff "${name}@${ref_ver}" "${name}@${new_ver}" || true
+              fi
+            done
+          fi
+        done
 
   npsim-gun:
     name: npsim (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, ${{ matrix.arch }})
