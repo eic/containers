@@ -97,4 +97,3 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## f3085a0fd9c327692475fbb72b8b9f738c541358: opencascade: pass tcl library paths to the cmake build to fix mac builds
 ## 4b54f295bed925f1a33f3954bd05903e53142406: compiler-wrapper: add 1.1.0-build-id prototype version (spack-packages#6214)
 ## 5945d81a8359eed559ec60b1be9151de57473f51: elfutils: patch debuginfod_find_source to accept ./-relative filenames (spack-packages #6259)
- 
