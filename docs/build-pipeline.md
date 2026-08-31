@@ -25,21 +25,21 @@ flowchart TB
         BM --> E4[eic_xl arm64]
         E1 & E2 --> EM1[eic-manifest ci]
         E3 & E4 --> EM2[eic-manifest xl]
-        
+
         %% Parallel benchmark execution
         E1 --> N1[npsim-gun amd64]
         E2 --> N2[npsim-gun arm64]
         E1 --> D1[npsim-dis amd64]
         E2 --> D2[npsim-dis arm64]
-        
+
         N1 & N2 --> NC[npsim-gun-cross-arch]
         D1 & D2 --> DC[npsim-dis-cross-arch]
-        
+
         N1 --> R1[eicrecon-gun amd64]
         N2 --> R2[eicrecon-gun arm64]
         D1 --> RD1[eicrecon-dis amd64]
         D2 --> RD2[eicrecon-dis arm64]
-        
+
         R1 & R2 --> RC[eicrecon-gun-cross-arch]
         RD1 & RD2 --> RDC[eicrecon-dis-cross-arch]
     end
