@@ -26,7 +26,7 @@ flowchart TB
         E1 & E2 --> EM1[eic-manifest ci]
         E3 & E4 --> EM2[eic-manifest xl]
 
-        %% Parallel benchmark execution
+        %% Parallel smoke test execution
         E1 --> N1[npsim-gun amd64]
         E2 --> N2[npsim-gun arm64]
         E1 --> D1[npsim-dis amd64]
