@@ -635,7 +635,7 @@ packages:
     - any_of: [+opengl +webgui, -opengl -webgui]
   rucio-eic-mcp-server:
     require:
-    - '@0.1.0:'
+    - '@main'  # native streamable HTTP; pin to '@0.2.0:' once v0.2.0 is tagged
   sherpa:
     require:
     - '@3.0.1'
@@ -679,9 +679,6 @@ packages:
   strace:
     require:
     - -mpers
-  supergateway:
-    require:
-    - '@3.4.3:'
   swig:
     require:
     - '@4.1:'  # constrain to avoid duplicates in eic_tf
@@ -694,7 +691,7 @@ packages:
     - -xnnpack
   uproot-mcp-server:
     require:
-    - '@0.1.0:'
+    - '@main'  # native streamable HTTP; pin to '@0.2.0:' once v0.2.0 is tagged
   valgrind:
     require:
     - '@3.20.0:'
@@ -710,7 +707,7 @@ packages:
     - cxxstd=20 -davix +python +scitokens-cpp
   xrootd-mcp-server:
     require:
-    - '@0.1.0:'
+    - '@main'  # native streamable HTTP; pin to '@0.2.0:' once v0.2.0 is tagged
   yoda:
     require:
     - '@2.1.0:'

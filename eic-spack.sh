@@ -7,4 +7,5 @@ EICSPACK_ORGREPO="eic/eic-spack"
 ## note: nightly builds could use a branch e.g. releases/v0.19
 ## TESTING: head of eic-spack#986 (develop@dd8a73e + the MCP/opencode
 ## recipes); bump to the merge SHA before undrafting.
+## TODO(push): bump to the new feat/mcp-servers head (native HTTP, no supergateway).
 EICSPACK_VERSION="44bb45e3d8874740410d7152ce8f778893dcb86b"

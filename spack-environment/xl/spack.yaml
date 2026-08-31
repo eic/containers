@@ -136,7 +136,6 @@ spack:
   - spdlog
   - stow
   - strace
-  - supergateway
   - uproot-mcp-server
   - valgrind
   - xeyes
