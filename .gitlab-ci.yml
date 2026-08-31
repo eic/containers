@@ -389,19 +389,8 @@ eic:
       - BUILD_IMAGE: eic_
         ENV:
         - ci
-        - cvmfs
         - xl
         BUILD_TYPE: "default,nightly"
-        BUILDER_IMAGE: debian_stable_base
-        RUNTIME_IMAGE: debian_stable_base
-        PLATFORM: linux/amd64
-      ## Default-only environments (no nightly variant needed)
-      - BUILD_IMAGE: eic_
-        ENV:
-        - dbg
-        - jl
-        - prod
-        BUILD_TYPE: "default"
         BUILDER_IMAGE: debian_stable_base
         RUNTIME_IMAGE: debian_stable_base
         PLATFORM: linux/amd64
