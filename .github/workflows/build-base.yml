@@ -11,6 +11,10 @@ on:
         description: 'Build week identifier'
         required: true
         type: string
+      jobs:
+        description: 'Number of parallel build jobs'
+        required: true
+        type: number
 
 env:
   DH_REGISTRY: docker.io
@@ -20,6 +24,7 @@ env:
   GH_REGISTRY_USER: eic
   GH_PUSH: 1
   SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: 0.9
+  JOBS: ${{ inputs.jobs }}
 
 jobs:
   build:

@@ -11,6 +11,10 @@ on:
         description: 'Prefix for job names'
         required: true
         type: string
+      jobs:
+        description: 'Number of parallel build jobs'
+        required: true
+        type: number
 
 env:
   DH_REGISTRY: docker.io
@@ -21,6 +25,7 @@ env:
   GH_PUSH: 1
   SIZE_LIMIT_EIC_CI_GIB: 3.1
   SIZE_LIMIT_EIC_XL_GIB: 4.7
+  JOBS: ${{ inputs.jobs }}
 
 jobs:
   build:
