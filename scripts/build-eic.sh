@@ -309,4 +309,15 @@ for build_type in "${BUILD_TYPES[@]}"; do
 
   ## Execute
   "${build_cmd[@]}" 2>&1 | tee "build-${build_type}.log"
+
+  ## Tag with architecture-specific tag for parallel benchmark execution
+  ## (CI only, and only for final stage builds that produce runnable images)
+  if [ "${CI_MODE}" != "local" ] && [ "${BUILD_TARGET}" = "final" ]; then
+    DIGEST=$(jq -r '."containerimage.digest"' "${METADATA_FILE%.json}-${build_type}.json")
+    if [ -n "${DIGEST}" ] && [ "${DIGEST}" != "null" ]; then
+      ARCH_TAG="${IMAGE_REPO}:${INTERNAL_TAG}-${build_type}-${ARCH}"
+      echo "Creating architecture-specific tag: ${ARCH_TAG}"
+      docker buildx imagetools create --tag "${ARCH_TAG}" "${IMAGE_REPO}@${DIGEST}"
+    fi
+  fi
 done
