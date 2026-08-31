@@ -394,14 +394,6 @@ eic:
         BUILDER_IMAGE: debian_stable_base
         RUNTIME_IMAGE: debian_stable_base
         PLATFORM: linux/amd64
-      ## Nightly-only (no default variant; ci_without_acts is nightly-specific)
-      - BUILD_IMAGE: eic_
-        ENV:
-        - ci_without_acts
-        BUILD_TYPE: "nightly"
-        BUILDER_IMAGE: debian_stable_base
-        RUNTIME_IMAGE: debian_stable_base
-        PLATFORM: linux/amd64
 #      - BUILD_IMAGE: oneapi_
 #        ENV:
 #        - prod
