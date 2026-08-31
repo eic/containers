@@ -115,7 +115,7 @@ jobs:
 
   base:
     name: Build cuda base images
-    needs: [env, base-debian]
+    needs: [env]
     uses: ./.github/workflows/build-base.yml
     secrets: inherit
     with:
@@ -143,7 +143,7 @@ jobs:
   base-manifest:
     name: Push ${{ matrix.BUILD_IMAGE }} manifest
     runs-on: ubuntu-latest
-    needs: base
+    needs: [base, base-debian]
     strategy:
       matrix:
         include:
