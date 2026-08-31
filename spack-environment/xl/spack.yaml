@@ -70,7 +70,6 @@ spack:
   - ollama
   - onnx
   - opencascade
-  - opencode
   - osg-ca-certs
   - pelican
   - phonebook-cli
