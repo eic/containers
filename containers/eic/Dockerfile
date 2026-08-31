@@ -50,7 +50,8 @@ ENV SPACK_COLOR="always"
 ENV GIT_TERMINAL_PROMPT=0
 
 # Concretization (default environment)
-RUN <<EOF
+RUN --mount=type=cache,target=/root/.spack/cache/concretization,id=spack-concretization-${TARGETPLATFORM} \
+    <<EOF
 set -e
 spack env activate --without-view --dir ${SPACK_ENV}
 spack concretize --force
@@ -71,10 +72,10 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider build installation i
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
-    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
-    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
-    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
-    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER,required=false        \
+    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
+    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
+    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
@@ -121,10 +122,10 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation
 # Installation (default environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
-    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
-    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
-    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
-    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER,required=false        \
+    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
+    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
+    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
     <<EOF
 set -e
 spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
@@ -150,10 +151,10 @@ ENV SPACK_ENV=/opt/spack-environment/${ENV}/epic
 ARG EDM4EIC_SHA=""
 ARG EICRECON_SHA=""
 ARG EPIC_SHA=""
-ARG JUGGLER_SHA=""
 
 # Concretization (custom environment)
-RUN <<EOF
+RUN --mount=type=cache,target=/root/.spack/cache/concretization,id=spack-concretization-${TARGETPLATFORM} \
+    <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
 if [ -n "${EDM4EIC_SHA}" ] ; then
@@ -168,10 +169,6 @@ if [ -n "${EPIC_SHA}" ] ; then
   sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_SHA}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
   sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_SHA}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
   spack deconcretize -y --all epic
-fi
-if [ -n "${JUGGLER_SHA}" ] ; then
-  sed -i "/# JUGGLER_VERSION$/ s/@[^' ]*/@git.${JUGGLER_SHA}=main/" /opt/spack-environment/packages.yaml
-  spack deconcretize -y --all juggler
 fi
 spack concretize --force
 EOF
@@ -191,10 +188,10 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider build installation i
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
-    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
-    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
-    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
-    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER,required=false        \
+    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
+    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
+    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
@@ -243,10 +240,10 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation
 # Installation (custom environment, from buildcache)
 RUN --mount=type=cache,target=/var/cache/spack                          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
-    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER        \
-    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD \
-    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER \
-    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN \
+    --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER,required=false        \
+    --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
+    --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
+    --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
     <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}

@@ -129,7 +129,6 @@ spack:
   - epic@25.08.0           # Tagged versions
   - epic@25.09.0
   - epic@25.10.0
-  - juggler
 ```
 
 ## Version Control
@@ -239,7 +238,6 @@ spack:
 | `eicrecon` | EIC reconstruction framework |
 | `epic` | EPIC detector geometry |
 | `npsim` | Nuclear physics simulation |
-| `juggler` | Gaudi algorithms for EIC |
 | `irt` | Imaging RICH Toolkit |
 
 ### Development Tools

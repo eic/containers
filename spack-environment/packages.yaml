@@ -33,7 +33,7 @@ packages:
     - cxxstd=17
   acts:
     require:
-    - '@45.3.0'
+    - '@46.8.1'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
@@ -53,7 +53,7 @@ packages:
     - +root +zlib
   algorithms:
     require:
-    - '@1.3.0'
+    - '@2.0.0'
   arrow:
     require:
     - '@22:'
@@ -151,7 +151,7 @@ packages:
     - cxxstd=20
   edm4hep:
     require:
-    - '@1.0'
+    - '@1.1'
     - cxxstd=20
   egl:
     buildable: False
@@ -169,7 +169,10 @@ packages:
     - '@1.2.2'
   eicrecon:
     require:
-    - '@1.39.1' # EICRECON_VERSION
+    - '@1.40.0' # EICRECON_VERSION
+  eicsimubeameffects:
+    require:
+    - '@1.1'
   eigen:
     require:
     - '@3.4.0'
@@ -286,10 +289,15 @@ packages:
     - +python +rootio
   hepmcmerger:
     require:
-    - '@2.3.0'
+    - '@2.4.0'
   heppdt:
     require:
     - '@2.06.01'
+  herwig3:
+    require:
+    - '@7.3.0'
+    - ~njet ~vbfnlo
+    - fflags=-fno-range-check
   highfive:
     require:
     - +mpi
@@ -308,7 +316,7 @@ packages:
     - '@0.23:0.24'  # pinned to avoid depending on newer llvm than system
   jana2:
     require:
-    - '@2026.03.00'
+    - '@2026.03.01'
     - -ipo ~perfetto +podio +root +zmq
   juggler:
     require:
@@ -338,6 +346,17 @@ packages:
     require:
     - '@6.5.5'
     - +python
+  lhapdfsets:
+    buildable: False
+    externals:
+    - spec: lhapdfsets@6.5.5 sets=MMHT2014lo68cl,MMHT2014nlo68cl,CT14lo,CT14nlo
+      # Technically not a prefix as spack installs under share/lhapdfsets,
+      # but the only role of this package is to provide LHAPDF_DATA_PATH.
+      prefix: /cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current
+      extra_attributes:
+        environment:
+          set:
+            LHAPDF_DATA_PATH: /cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current
   #llvm:
     #require:
     #- any_of: [~gold, '@:']
@@ -364,7 +383,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.6.1'
+    - '@1.8.0'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
@@ -400,9 +419,15 @@ packages:
     require:
     - '@2.1.4:'
     - processes=ppvj,ppjj
+  optix-dev:
+    require:
+    - '@9.0.0'
   osg-ca-certs:
     require:
     - '@1.141.igtf.1.141'
+  pandorasdk:
+    require:
+    - '@5:'
   pcre:
     require:
     - build_system=cmake
@@ -420,14 +445,18 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@1.7'
+    - '@1.8'
     - cxxstd=20
-    - +datasource +rntuple
+    - +arrow +datasource +parquet +rntuple
     package_attributes:
       run_tests: true
   prmon:
     require:
     - +plot
+  professor:
+    require:
+    - '@2.5.6:2'
+    - ~interactive
   protobuf:
     require:
     - '@32.1'
@@ -465,7 +494,7 @@ packages:
     - '@2025.2.0:'
   py-epic-capybara:
     require:
-    - '@git.901344f63fa0dfa2f9d2f92f25587fc08fea165a'
+    - '@git.30735bc79b3d78afae1744775f863bb194527fe2'
   py-flatbuffers:
     require:
     - '@25.9.23:'
@@ -506,7 +535,7 @@ packages:
     - backend=tensorflow
   py-llvmlite:
     require:
-    - '@0.44.0'
+    - '@0.45.1:0.47'  # limited by llvm@20
   py-lmfit:
     require:
     - '@1.0.2:'
@@ -526,7 +555,7 @@ packages:
     - '@5.8:' # avoid py-jupyter-server and snakemake divergence
   py-numba:
     require:
-    - '@0.61.0:'
+    - '@0.62.0:0.65'  # limited by llvm@20
   py-numpy:
     require:
     - '@2.2'  # pin to avoid duplicates in eic_tf
@@ -627,7 +656,7 @@ packages:
     - hepmc=3 plugin-match=HERA,LEP,MC
   root:
     require:
-    - '@6.38.04'
+    - '@6.40.04'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   rucio-eic-mcp-server:
@@ -686,6 +715,9 @@ packages:
     require:
     - '@2.8.0'
     - -xnnpack
+  timeframebuilder:
+    require:
+    - '@0.9.1:'
   uproot-mcp-server:
     require:
     - '@main'  # native streamable HTTP; pin to '@0.2.0:' once v0.2.0 is tagged

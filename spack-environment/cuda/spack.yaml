@@ -31,7 +31,6 @@ spack:
   - fjcontrib
   - fmt
   - g4adept +cuda
-  - gaudi
   - gdb
   - geant4
   - graphviz
@@ -42,10 +41,9 @@ spack:
   - irt2
   - jana2
   - just
-  - k4actstracking
-  - k4fwcore
   - lcov
   - lhapdf
+  - lhapdfsets
   - madx
   - nano
   - nopayloadclient
