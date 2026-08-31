@@ -313,11 +313,16 @@ for build_type in "${BUILD_TYPES[@]}"; do
   ## Tag with architecture-specific tag for parallel benchmark execution
   ## (CI only, and only for final stage builds that produce runnable images)
   if [ "${CI_MODE}" != "local" ] && [ "${BUILD_TARGET}" = "final" ]; then
-    DIGEST=$(jq -r '."containerimage.digest"' "${METADATA_FILE%.json}-${build_type}.json")
-    if [ -n "${DIGEST}" ] && [ "${DIGEST}" != "null" ]; then
-      ARCH_TAG="${IMAGE_REPO}:${INTERNAL_TAG}-${build_type}-${ARCH}"
-      echo "Creating architecture-specific tag: ${ARCH_TAG}"
-      docker buildx imagetools create --tag "${ARCH_TAG}" "${IMAGE_REPO}@${DIGEST}"
+    metadata_file="${METADATA_FILE%.json}-${build_type}.json"
+    if [ -f "${metadata_file}" ]; then
+      DIGEST=$(jq -r '."containerimage.digest" // empty' "${metadata_file}")
+      if [ -n "${DIGEST}" ] && [ "${DIGEST}" != "null" ]; then
+        ARCH_TAG="${IMAGE_REPO}:${INTERNAL_TAG}-${build_type}-${ARCH}"
+        echo "Creating architecture-specific tag: ${ARCH_TAG}"
+        docker buildx imagetools create --tag "${ARCH_TAG}" "${IMAGE_REPO}@${DIGEST}"
+      fi
+    else
+      echo "Warning: metadata file not found: ${metadata_file}; skipping arch-specific tag" >&2
     fi
   fi
 done
