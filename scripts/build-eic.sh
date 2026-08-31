@@ -309,6 +309,10 @@ for build_type in "${BUILD_TYPES[@]}"; do
 
   ## Execute
   "${build_cmd[@]}" 2>&1 | tee "build-${build_type}.log"
+  build_rc=${PIPESTATUS[0]}
+  if [ "${build_rc}" -ne 0 ]; then
+    exit "${build_rc}"
+  fi
 
   ## Tag with architecture-specific tag for parallel benchmark execution
   ## (CI only, and only for final stage builds that produce runnable images)
