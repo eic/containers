@@ -45,7 +45,7 @@ flowchart TB
     end
 ```
 
-**Note**: Smoke test jobs (npsim, eicrecon) start immediately after their corresponding architecture's `eic` build completes, without waiting for the multi-architecture manifest. This parallelizes the pipeline and provides faster feedback on simulation regressions.
+**Note**: Smoke test jobs (npsim, eicrecon) start after the `eic-ci` CI image build completes, without waiting for the multi-architecture manifest. This parallelizes the pipeline and provides faster feedback on simulation regressions.
 
 ## Job Details
 
