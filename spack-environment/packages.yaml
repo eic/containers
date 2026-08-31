@@ -401,6 +401,9 @@ packages:
   opencascade:
     require:
     - '@7.8.1:'
+  opencode:
+    require:
+    - '@1.18.3:'
     - +application_framework -vtk
   opengl:
     buildable: False
