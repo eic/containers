@@ -45,6 +45,7 @@ spack:
   - py-eic-rucio-policy-package
   - py-epic-capybara
   - py-graphviz
+  - py-hatchling
   - py-hepunits
   - py-hist
   - py-histoprint
