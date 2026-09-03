@@ -133,9 +133,11 @@ packages:
     - '@1.16.2:'
   dd4hep:
     require:
-    - '@1.37'
+    - '@git.fd72fb6b0e736e31123941936751ff7100af544d=master'
     - +ddg4 +ddcad +edm4hep +g4hepem +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
+    package_attributes:
+      git: https://github.com/wdconinc/DD4hep.git
   doxygen:
     require:
     - +graphviz
@@ -147,11 +149,11 @@ packages:
     - '@656aa3192b097a631ddd1e0380e80c26fd6644a7'
   edm4eic:
     require:
-    - '@8.10.0' # EDM4EIC_VERSION
+    - '@git.018c1e804f58046bda1476d6691167e37ba3195e=8.10.0' # EDM4EIC_VERSION
     - cxxstd=20
   edm4hep:
     require:
-    - '@1.1'
+    - '@git.f87de123bb1a56dfab7cdcb7f3cfb9dd51fc9313=1.1'
     - cxxstd=20
   egl:
     buildable: False
@@ -166,7 +168,7 @@ packages:
     - '@1.2.2'
   eicrecon:
     require:
-    - '@1.40.0' # EICRECON_VERSION
+    - '@git.331b8e2984e6fd50581f62768176e3702e5cb8e8=1.40.0' # EICRECON_VERSION
   eicsimubeameffects:
     require:
     - '@1.1'
