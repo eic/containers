@@ -79,120 +79,73 @@ jobs:
           echo "CUDA_OS=${{ env.CUDA_OS }}" >> $GITHUB_OUTPUT
           echo "BUILDWEEK=$(date +%Yw%V)" >> $GITHUB_OUTPUT
 
-  base:
-    name: Build ${{ matrix.BUILD_IMAGE }} on ${{ matrix.arch }}
-    runs-on: ${{ matrix.runner }}
+  base-debian:
+    name: Build debian base images
     needs: env
-    strategy:
-      matrix:
-        include:
-        - BASE_IMAGE: debian:trixie-slim
-          BUILD_IMAGE: debian_stable_base
-          PLATFORM: linux/amd64
-          runner: ubuntu-latest
-          arch: amd64
-        - BASE_IMAGE: debian:trixie-slim
-          BUILD_IMAGE: debian_stable_base
-          PLATFORM: linux/amd64/v3
-          runner: ubuntu-latest
-          arch: amd64_v3
-        - BASE_IMAGE: debian:trixie-slim
-          BUILD_IMAGE: debian_stable_base
-          PLATFORM: linux/arm64
-          runner: ubuntu-24.04-arm
-          arch: arm64
-        - BASE_IMAGE: nvidia/cuda:${{ needs.env.outputs.CUDA_VERSION }}-devel-${{ needs.env.outputs.CUDA_OS }}
-          BUILD_IMAGE: cuda_devel
-          PLATFORM: linux/amd64
-          runner: ubuntu-latest
-          arch: amd64
-        - BASE_IMAGE: nvidia/cuda:${{ needs.env.outputs.CUDA_VERSION }}-runtime-${{ needs.env.outputs.CUDA_OS }}
-          BUILD_IMAGE: cuda_runtime
-          PLATFORM: linux/amd64
-          runner: ubuntu-latest
-          arch: amd64
-      fail-fast: false
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-        with:
-          platforms: linux/amd64,linux/amd64/v3,linux/arm64
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-        id: buildx
-      - name: Cache build mounts
-        # Cache mount contents (ccache, apt cache, spack cache) using GitHub Actions cache
-        # This is separate from the registry cache which stores image layers
-        # Reference: https://docs.docker.com/build/ci/github-actions/cache/#cache-mounts
-        # Implementation: https://github.com/reproducible-containers/buildkit-cache-dance
-        uses: actions/cache@v6
-        id: cache-base-mounts
-        with:
-          path: cache-mount-base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}
-          key: ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-${{ github.ref_name }}-${{ needs.env.outputs.BUILDWEEK }}
-          restore-keys: |
-            ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-main-${{ needs.env.outputs.BUILDWEEK }}
-            ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-main
-            ${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-base-mounts-
-      - name: Inject cache mounts into builder
-        uses: reproducible-containers/buildkit-cache-dance@v3
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-dir: cache-mount-base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}
-          cache-map: |
+    uses: ./.github/workflows/build-base.yml
+    secrets: inherit
+    with:
+      buildweek: ${{ needs.env.outputs.BUILDWEEK }}
+      jobs: 4
+      matrix: |
+        {
+          "include": [
             {
-              "var-cache-apt": "/var/cache/apt",
-              "var-lib-apt": "/var/lib/apt",
-              "var-cache-spack": "/var/cache/spack"
+              "BASE_IMAGE": "debian:trixie-slim",
+              "BUILD_IMAGE": "debian_stable_base",
+              "PLATFORM": "linux/amd64",
+              "runner": "ubuntu-latest",
+              "arch": "amd64"
+            },
+            {
+              "BASE_IMAGE": "debian:trixie-slim",
+              "BUILD_IMAGE": "debian_stable_base",
+              "PLATFORM": "linux/amd64/v3",
+              "runner": "ubuntu-latest",
+              "arch": "amd64_v3"
+            },
+            {
+              "BASE_IMAGE": "debian:trixie-slim",
+              "BUILD_IMAGE": "debian_stable_base",
+              "PLATFORM": "linux/arm64",
+              "runner": "ubuntu-24.04-arm",
+              "arch": "arm64"
             }
-          skip-extraction: ${{ steps.cache-base-mounts.outputs.cache-hit }}
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v4
-        if: ${{ env.GH_PUSH == '1' }}
-        with:
-          registry: ${{ env.GH_REGISTRY }}
-          username: ${{ secrets.GHCR_REGISTRY_USER }}
-          password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
-      - name: Build and push
-        env:
-          BUILD_IMAGE: ${{ matrix.BUILD_IMAGE }}
-          BASE_IMAGE: ${{ matrix.BASE_IMAGE }}
-          PLATFORM: ${{ matrix.PLATFORM }}
-          BUILDWEEK: ${{ needs.env.outputs.BUILDWEEK }}
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          METADATA_FILE: /tmp/build-metadata.json
-        run: bash scripts/build-base.sh
-      - name: Export digest to file
-        run: |
-          DIGEST=$(jq -r '."containerimage.digest"' /tmp/build-metadata.json)
-          IMAGE="${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}"
-          mkdir -p /tmp/digests
-          echo "${IMAGE}@${DIGEST}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
-      - name: Check image size
-        run: |
-          FULLNAME="${{ matrix.BUILD_IMAGE }}"
-          LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
-          LIMIT="${!LIMIT_VAR}"
-          if [ -n "${LIMIT}" ]; then
-            scripts/check_image_size \
-              "${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${FULLNAME}@$(jq -r '."containerimage.digest"' /tmp/build-metadata.json)" \
-              "${LIMIT}"
-          else
-            echo "No size limit configured for ${FULLNAME}, skipping check."
-          fi
-      - name: Upload digest as artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: base-${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}-digest
-          path: /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
-          retention-days: 1
+          ]
+        }
+
+  base:
+    name: Build cuda base images
+    needs: [env]
+    uses: ./.github/workflows/build-base.yml
+    secrets: inherit
+    with:
+      buildweek: ${{ needs.env.outputs.BUILDWEEK }}
+      jobs: 4
+      matrix: |
+        {
+          "include": [
+            {
+              "BASE_IMAGE": "nvidia/cuda:${{ needs.env.outputs.CUDA_VERSION }}-devel-${{ needs.env.outputs.CUDA_OS }}",
+              "BUILD_IMAGE": "cuda_devel",
+              "PLATFORM": "linux/amd64",
+              "runner": "ubuntu-latest",
+              "arch": "amd64"
+            },
+            {
+              "BASE_IMAGE": "nvidia/cuda:${{ needs.env.outputs.CUDA_VERSION }}-runtime-${{ needs.env.outputs.CUDA_OS }}",
+              "BUILD_IMAGE": "cuda_runtime",
+              "PLATFORM": "linux/amd64",
+              "runner": "ubuntu-latest",
+              "arch": "amd64"
+            }
+          ]
+        }
 
   base-manifest:
     name: Push ${{ matrix.BUILD_IMAGE }} manifest
     runs-on: ubuntu-latest
-    needs: base
+    needs: [base, base-debian]
     strategy:
       matrix:
         include:
@@ -282,205 +235,121 @@ jobs:
             $TAG_ARGS \
             ${{ steps.digests.outputs.all }}
 
-  eic:
-    name: Build ${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }} on ${{ matrix.arch }}
-    runs-on: ${{ matrix.runner }}
+  eic-ci:
+    name: Build EIC CI images
     needs: base-manifest
-    strategy:
-      matrix:
-        include:
-        - BUILD_IMAGE: eic_
-          BUILD_TYPE: "default,nightly"
-          BUILDER_IMAGE: debian_stable_base
-          RUNTIME_IMAGE: debian_stable_base
-          ENV: ci
-          arch: amd64
-          runner: ubuntu-latest
-          PLATFORM: linux/amd64
-          target: final
-        - BUILD_IMAGE: eic_
-          BUILD_TYPE: "default,nightly"
-          BUILDER_IMAGE: debian_stable_base
-          RUNTIME_IMAGE: debian_stable_base
-          ENV: ci
-          arch: amd64_v3
-          runner: ubuntu-latest
-          PLATFORM: linux/amd64/v3
-          target: final
-        - BUILD_IMAGE: eic_
-          BUILD_TYPE: "default,nightly"
-          BUILDER_IMAGE: debian_stable_base
-          RUNTIME_IMAGE: debian_stable_base
-          ENV: ci
-          arch: arm64
-          runner: ubuntu-24.04-arm
-          PLATFORM: linux/arm64
-          target: final
-        - BUILD_IMAGE: eic_
-          BUILD_TYPE: "default,nightly"
-          BUILDER_IMAGE: debian_stable_base
-          RUNTIME_IMAGE: debian_stable_base
-          ENV: xl
-          arch: amd64
-          runner: ubuntu-latest
-          PLATFORM: linux/amd64
-          target: final
-        - BUILD_IMAGE: eic_
-          BUILD_TYPE: "default,nightly"
-          BUILDER_IMAGE: debian_stable_base
-          RUNTIME_IMAGE: debian_stable_base
-          ENV: xl
-          arch: amd64_v3
-          runner: ubuntu-latest
-          PLATFORM: linux/amd64/v3
-          target: final
-        - BUILD_IMAGE: eic_
-          BUILD_TYPE: "default,nightly"
-          BUILDER_IMAGE: debian_stable_base
-          RUNTIME_IMAGE: debian_stable_base
-          ENV: xl
-          arch: arm64
-          runner: ubuntu-24.04-arm
-          PLATFORM: linux/arm64
-          target: final
-        - BUILD_IMAGE: eic_
-          BUILD_TYPE: "default"
-          BUILDER_IMAGE: cuda_devel
-          RUNTIME_IMAGE: cuda_devel
-          ENV: cuda
-          arch: amd64
-          runner: ubuntu-latest
-          PLATFORM: linux/amd64
-          target: builder_concretization_default
-        - BUILD_IMAGE: eic_
-          BUILD_TYPE: "default"
-          BUILDER_IMAGE: cuda_devel
-          RUNTIME_IMAGE: cuda_runtime
-          ENV: tf
-          arch: amd64
-          runner: ubuntu-latest
-          PLATFORM: linux/amd64
-          target: builder_concretization_default
-      fail-fast: false
-    steps:
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          android: true
-          dotnet: true
-      - name: Checkout
-        uses: actions/checkout@v7
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-        with:
-          platforms: linux/amd64,linux/amd64/v3,linux/arm64
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-        id: buildx
-      - name: Cache build mounts
-        # Cache mount contents (ccache, apt cache, spack cache) using GitHub Actions cache
-        # This is separate from the registry cache which stores image layers
-        # Reference: https://docs.docker.com/build/ci/github-actions/cache/#cache-mounts
-        # Implementation: https://github.com/reproducible-containers/buildkit-cache-dance
-        uses: actions/cache@v6
-        id: cache-eic-mounts
-        with:
-          path: cache-mount-eic-${{ matrix.arch }}
-          key: ${{ matrix.arch }}-eic-${{ matrix.ENV }}-mounts-${{ github.ref_name }}
-          restore-keys: |
-            ${{ matrix.arch }}-eic-${{ matrix.ENV }}-mounts-main
-            ${{ matrix.arch }}-eic-${{ matrix.ENV }}-mounts-
-            ${{ matrix.arch }}-eic-mounts-
-      - name: Inject cache mounts into builder
-        uses: reproducible-containers/buildkit-cache-dance@v3
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-dir: cache-mount-eic-${{ matrix.arch }}
-          cache-map: |
+    uses: ./.github/workflows/build-eic.yml
+    secrets: inherit
+    with:
+      job-name-prefix: "eic-ci"
+      jobs: 4
+      matrix: |
+        {
+          "include": [
             {
-              "ccache": "/ccache",
-              "var-cache-spack": "/var/cache/spack"
+              "BUILD_IMAGE": "eic_",
+              "BUILD_TYPE": "default,nightly",
+              "BUILDER_IMAGE": "debian_stable_base",
+              "RUNTIME_IMAGE": "debian_stable_base",
+              "ENV": "ci",
+              "arch": "amd64",
+              "runner": "ubuntu-latest",
+              "PLATFORM": "linux/amd64",
+              "target": "final"
+            },
+            {
+              "BUILD_IMAGE": "eic_",
+              "BUILD_TYPE": "default,nightly",
+              "BUILDER_IMAGE": "debian_stable_base",
+              "RUNTIME_IMAGE": "debian_stable_base",
+              "ENV": "ci",
+              "arch": "amd64_v3",
+              "runner": "ubuntu-latest",
+              "PLATFORM": "linux/amd64/v3",
+              "target": "final"
+            },
+            {
+              "BUILD_IMAGE": "eic_",
+              "BUILD_TYPE": "default,nightly",
+              "BUILDER_IMAGE": "debian_stable_base",
+              "RUNTIME_IMAGE": "debian_stable_base",
+              "ENV": "ci",
+              "arch": "arm64",
+              "runner": "ubuntu-24.04-arm",
+              "PLATFORM": "linux/arm64",
+              "target": "final"
             }
-          skip-extraction: ${{ steps.cache-eic-mounts.outputs.cache-hit }}
-      - name: Login to Docker Hub
-        uses: docker/login-action@v4
-        if: ${{ env.DH_PUSH == '1' }}
-        with:
-          registry: ${{ env.DH_REGISTRY }}
-          username: ${{ env.DH_REGISTRY_USER }}
-          password: ${{ secrets.DH_EICWEB_TOKEN }}
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v4
-        if: ${{ env.GH_PUSH == '1' }}
-        with:
-          registry: ${{ env.GH_REGISTRY }}
-          username: ${{ secrets.GHCR_REGISTRY_USER }}
-          password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
-      - name: Build and push
-        env:
-          BUILD_IMAGE: ${{ matrix.BUILD_IMAGE }}
-          ENV: ${{ matrix.ENV }}
-          BUILD_TYPE: ${{ matrix.BUILD_TYPE }}
-          BUILD_TARGET: ${{ matrix.target }}
-          BUILDER_IMAGE: ${{ matrix.BUILDER_IMAGE }}
-          RUNTIME_IMAGE: ${{ matrix.RUNTIME_IMAGE }}
-          PLATFORM: ${{ matrix.PLATFORM }}
-          CI_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
-          CI_REGISTRY_PASSWORD: ${{ secrets.GHCR_REGISTRY_TOKEN }}
-          GITHUB_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
-          GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          METADATA_FILE: /tmp/build-metadata.json
-        run: bash scripts/build-eic.sh
-      - name: Export digests to files
-        run: |
-          IMAGE="${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
-          mkdir -p /tmp/digests
-          for metadata_file in /tmp/build-metadata-*.json; do
-            build_type="${metadata_file#/tmp/build-metadata-}"
-            build_type="${build_type%.json}"
-            DIGEST=$(jq -r '."containerimage.digest"' "${metadata_file}")
-            echo "${IMAGE}@${DIGEST}" > "/tmp/digests/${{ matrix.arch }}-${build_type}.digest"
-          done
-      - name: Check image size
-        # Only check final images; concretization-only targets (cuda, tf) don't produce a full image
-        if: ${{ matrix.target == 'final' }}
-        run: |
-          FULLNAME="${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
-          LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
-          LIMIT="${!LIMIT_VAR}"
-          if [ -n "${LIMIT}" ]; then
-            metadata_file=/tmp/build-metadata-default.json
-            [ -f "${metadata_file}" ] || metadata_file=$(ls /tmp/build-metadata-*.json | head -1)
-            scripts/check_image_size \
-              "${{ env.GH_REGISTRY }}/${{ env.GH_REGISTRY_USER }}/${FULLNAME}@$(jq -r '."containerimage.digest"' "${metadata_file}")" \
-              "${LIMIT}"
-          else
-            echo "No size limit configured for ${FULLNAME}, skipping check."
-          fi
-      - name: Check produced build types
-        id: built-types
-        run: |
-          [ -f /tmp/digests/${{ matrix.arch }}-default.digest ] \
-            && echo "has_default=true" >> $GITHUB_OUTPUT \
-            || echo "has_default=false" >> $GITHUB_OUTPUT
-          [ -f /tmp/digests/${{ matrix.arch }}-nightly.digest ] \
-            && echo "has_nightly=true" >> $GITHUB_OUTPUT \
-            || echo "has_nightly=false" >> $GITHUB_OUTPUT
-      - name: Upload default digest as artifact
-        if: steps.built-types.outputs.has_default == 'true'
-        uses: actions/upload-artifact@v7
-        with:
-          name: eic-${{ matrix.ENV }}-${{ matrix.arch }}-default-digest
-          path: /tmp/digests/${{ matrix.arch }}-default.digest
-          retention-days: 1
-      - name: Upload nightly digest as artifact
-        if: steps.built-types.outputs.has_nightly == 'true'
-        uses: actions/upload-artifact@v7
-        with:
-          name: eic-${{ matrix.ENV }}-${{ matrix.arch }}-nightly-digest
-          path: /tmp/digests/${{ matrix.arch }}-nightly.digest
-          retention-days: 1
+          ]
+        }
+
+  eic:
+    name: Build EIC images
+    needs: [base, eic-ci]
+    uses: ./.github/workflows/build-eic.yml
+    secrets: inherit
+    with:
+      job-name-prefix: "eic"
+      jobs: 4
+      matrix: |
+        {
+          "include": [
+            {
+              "BUILD_IMAGE": "eic_",
+              "BUILD_TYPE": "default,nightly",
+              "BUILDER_IMAGE": "debian_stable_base",
+              "RUNTIME_IMAGE": "debian_stable_base",
+              "ENV": "xl",
+              "arch": "amd64",
+              "runner": "ubuntu-latest",
+              "PLATFORM": "linux/amd64",
+              "target": "final"
+            },
+            {
+              "BUILD_IMAGE": "eic_",
+              "BUILD_TYPE": "default,nightly",
+              "BUILDER_IMAGE": "debian_stable_base",
+              "RUNTIME_IMAGE": "debian_stable_base",
+              "ENV": "xl",
+              "arch": "amd64_v3",
+              "runner": "ubuntu-latest",
+              "PLATFORM": "linux/amd64/v3",
+              "target": "final"
+            },
+            {
+              "BUILD_IMAGE": "eic_",
+              "BUILD_TYPE": "default,nightly",
+              "BUILDER_IMAGE": "debian_stable_base",
+              "RUNTIME_IMAGE": "debian_stable_base",
+              "ENV": "xl",
+              "arch": "arm64",
+              "runner": "ubuntu-24.04-arm",
+              "PLATFORM": "linux/arm64",
+              "target": "final"
+            },
+            {
+              "BUILD_IMAGE": "eic_",
+              "BUILD_TYPE": "default",
+              "BUILDER_IMAGE": "cuda_devel",
+              "RUNTIME_IMAGE": "cuda_devel",
+              "ENV": "cuda",
+              "arch": "amd64",
+              "runner": "ubuntu-latest",
+              "PLATFORM": "linux/amd64",
+              "target": "builder_concretization_default"
+            },
+            {
+              "BUILD_IMAGE": "eic_",
+              "BUILD_TYPE": "default",
+              "BUILDER_IMAGE": "cuda_devel",
+              "RUNTIME_IMAGE": "cuda_runtime",
+              "ENV": "tf",
+              "arch": "amd64",
+              "runner": "ubuntu-latest",
+              "PLATFORM": "linux/amd64",
+              "target": "builder_concretization_default"
+            }
+          ]
+        }
 
   eic-manifest:
     name: Push ${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }} ${{ matrix.BUILD_TYPE }} manifest
@@ -578,9 +447,9 @@ jobs:
   npsim-gun:
     name: npsim (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, ${{ matrix.arch }})
     runs-on: ${{ matrix.runner }}
-    needs: eic-manifest
+    needs: eic-ci
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default-${{ matrix.arch }}
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -663,9 +532,9 @@ jobs:
   npsim-dis:
     name: npsim (DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }}, ${{ matrix.arch }})
     runs-on: ${{ matrix.runner }}
-    needs: eic-manifest
+    needs: eic-ci
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default-${{ matrix.arch }}
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -760,9 +629,9 @@ jobs:
   eicrecon-gun:
     name: eicrecon (gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, ${{ matrix.arch }})
     runs-on: ${{ matrix.runner }}
-    needs: [eic-manifest, npsim-gun]
+    needs: [eic-ci, npsim-gun]
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default-${{ matrix.arch }}
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -844,9 +713,9 @@ jobs:
   eicrecon-dis:
     name: eicrecon (DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }}, ${{ matrix.arch }})
     runs-on: ${{ matrix.runner }}
-    needs: [eic-manifest, npsim-dis]
+    needs: [eic-ci, npsim-dis]
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default-${{ matrix.arch }}
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -944,9 +813,9 @@ jobs:
   npsim-dis-cross-arch:
     name: capybara (npsim DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }}, amd64 vs arm64)
     runs-on: ubuntu-latest
-    needs: [eic-manifest, npsim-dis]
+    needs: npsim-dis
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default-amd64
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -986,9 +855,9 @@ jobs:
   eicrecon-dis-cross-arch:
     name: capybara (eicrecon DIS, ${{ matrix.beam }}, minQ2=${{ matrix.minq2 }}, ${{ matrix.detector_config }}, amd64 vs arm64)
     runs-on: ubuntu-latest
-    needs: [eic-manifest, eicrecon-dis]
+    needs: eicrecon-dis
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default-amd64
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -1028,9 +897,9 @@ jobs:
   npsim-gun-cross-arch:
     name: capybara (npsim gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, amd64 vs arm64)
     runs-on: ubuntu-latest
-    needs: [eic-manifest, npsim-gun]
+    needs: npsim-gun
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default-amd64
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
@@ -1069,9 +938,9 @@ jobs:
   eicrecon-gun-cross-arch:
     name: capybara (eicrecon gun, ${{ matrix.particle }}, ${{ matrix.detector_config }}, amd64 vs arm64)
     runs-on: ubuntu-latest
-    needs: [eic-manifest, eicrecon-gun]
+    needs: eicrecon-gun
     container:
-      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default-amd64
       credentials:
         username: ${{ secrets.GHCR_REGISTRY_USER }}
         password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
