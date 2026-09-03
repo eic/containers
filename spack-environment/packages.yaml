@@ -164,6 +164,9 @@ packages:
   eic-smear:
     require:
     - '@1.2.2'
+  eiccontent:
+    require:
+    - '@eic'
   eicrecon:
     require:
     - '@1.40.0' # EICRECON_VERSION
