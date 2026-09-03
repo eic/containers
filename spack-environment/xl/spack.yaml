@@ -54,6 +54,7 @@ spack:
   - iwyu
   - jana2
   - just
+  - lager
   - lcov
   - lhapdf
   - lhapdfsets
