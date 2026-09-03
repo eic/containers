@@ -20,6 +20,11 @@ on:
         required: false
         type: boolean
         default: false
+      max-parallel:
+        description: 'Maximum parallel matrix jobs'
+        required: false
+        type: number
+        default: 4
 
 env:
   DH_REGISTRY: docker.io
@@ -38,6 +43,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(inputs.matrix) }}
       fail-fast: ${{ inputs.fail-fast }}
+      max-parallel: ${{ inputs.max-parallel }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
