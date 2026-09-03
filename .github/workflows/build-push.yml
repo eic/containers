@@ -252,39 +252,28 @@ jobs:
       max-parallel: 4
       matrix: |
         {
+          "BUILD_IMAGE": ["eic_"],
+          "BUILD_TYPE": ["default,nightly"],
+          "BUILDER_IMAGE": ["debian_stable_base"],
+          "RUNTIME_IMAGE": ["debian_stable_base"],
+          "ENV": ["ci"],
+          "target": ["final"],
+          "arch": ["amd64", "amd64_v3", "arm64"],
           "include": [
             {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default,nightly",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "ci",
               "arch": "amd64",
               "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64",
-              "target": "final"
+              "PLATFORM": "linux/amd64"
             },
             {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default,nightly",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "ci",
               "arch": "amd64_v3",
               "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64/v3",
-              "target": "final"
+              "PLATFORM": "linux/amd64/v3"
             },
             {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default,nightly",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "ci",
               "arch": "arm64",
               "runner": "ubuntu-24.04-arm",
-              "PLATFORM": "linux/arm64",
-              "target": "final"
+              "PLATFORM": "linux/arm64"
             }
           ]
         }
@@ -301,226 +290,107 @@ jobs:
       max-parallel: 4
       matrix: |
         {
+          "BUILD_IMAGE": ["eic_"],
+          "ENV": [
+            "cvmfs",
+            "dbg",
+            "jl",
+            "prod",
+            "ci_without_acts",
+            "xl",
+            "cuda",
+            "tf"
+          ],
+          "arch": ["amd64", "amd64_v3", "arm64"],
           "include": [
             {
-              "BUILD_IMAGE": "eic_",
+              "arch": "amd64",
+              "runner": "ubuntu-latest",
+              "PLATFORM": "linux/amd64"
+            },
+            {
+              "arch": "amd64_v3",
+              "runner": "ubuntu-latest",
+              "PLATFORM": "linux/amd64/v3"
+            },
+            {
+              "arch": "arm64",
+              "runner": "ubuntu-24.04-arm",
+              "PLATFORM": "linux/arm64"
+            },
+            {
+              "ENV": "cvmfs",
               "BUILD_TYPE": "default,nightly",
               "BUILDER_IMAGE": "debian_stable_base",
               "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "cvmfs",
-              "arch": "amd64",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64",
               "target": "final"
             },
             {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default,nightly",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "cvmfs",
-              "arch": "amd64_v3",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64/v3",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default,nightly",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "cvmfs",
-              "arch": "arm64",
-              "runner": "ubuntu-24.04-arm",
-              "PLATFORM": "linux/arm64",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
               "ENV": "dbg",
-              "arch": "amd64",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
               "BUILD_TYPE": "default",
               "BUILDER_IMAGE": "debian_stable_base",
               "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "dbg",
-              "arch": "amd64_v3",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64/v3",
               "target": "final"
             },
             {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "dbg",
-              "arch": "arm64",
-              "runner": "ubuntu-24.04-arm",
-              "PLATFORM": "linux/arm64",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
               "ENV": "jl",
-              "arch": "amd64",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
               "BUILD_TYPE": "default",
               "BUILDER_IMAGE": "debian_stable_base",
               "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "jl",
-              "arch": "amd64_v3",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64/v3",
               "target": "final"
             },
             {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "jl",
-              "arch": "arm64",
-              "runner": "ubuntu-24.04-arm",
-              "PLATFORM": "linux/arm64",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
               "ENV": "prod",
-              "arch": "amd64",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
               "BUILD_TYPE": "default",
               "BUILDER_IMAGE": "debian_stable_base",
               "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "prod",
-              "arch": "amd64_v3",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64/v3",
               "target": "final"
             },
             {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "prod",
-              "arch": "arm64",
-              "runner": "ubuntu-24.04-arm",
-              "PLATFORM": "linux/arm64",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
+              "ENV": "ci_without_acts",
               "BUILD_TYPE": "nightly",
               "BUILDER_IMAGE": "debian_stable_base",
               "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "ci_without_acts",
-              "arch": "amd64",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64",
               "target": "final"
             },
             {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "nightly",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "ci_without_acts",
-              "arch": "amd64_v3",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64/v3",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "nightly",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "ci_without_acts",
-              "arch": "arm64",
-              "runner": "ubuntu-24.04-arm",
-              "PLATFORM": "linux/arm64",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
+              "ENV": "xl",
               "BUILD_TYPE": "default,nightly",
               "BUILDER_IMAGE": "debian_stable_base",
               "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "xl",
-              "arch": "amd64",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64",
               "target": "final"
             },
             {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default,nightly",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "xl",
-              "arch": "amd64_v3",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64/v3",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default,nightly",
-              "BUILDER_IMAGE": "debian_stable_base",
-              "RUNTIME_IMAGE": "debian_stable_base",
-              "ENV": "xl",
-              "arch": "arm64",
-              "runner": "ubuntu-24.04-arm",
-              "PLATFORM": "linux/arm64",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
+              "ENV": "cuda",
               "BUILD_TYPE": "default",
               "BUILDER_IMAGE": "cuda_devel",
               "RUNTIME_IMAGE": "cuda_devel",
-              "ENV": "cuda",
-              "arch": "amd64",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64",
               "target": "builder_concretization_default"
             },
             {
-              "BUILD_IMAGE": "eic_",
+              "ENV": "tf",
               "BUILD_TYPE": "default",
               "BUILDER_IMAGE": "cuda_devel",
               "RUNTIME_IMAGE": "cuda_runtime",
-              "ENV": "tf",
-              "arch": "amd64",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64",
               "target": "builder_concretization_default"
+            }
+          ],
+          "exclude": [
+            {
+              "ENV": "cuda",
+              "arch": "amd64_v3"
+            },
+            {
+              "ENV": "cuda",
+              "arch": "arm64"
+            },
+            {
+              "ENV": "tf",
+              "arch": "amd64_v3"
+            },
+            {
+              "ENV": "tf",
+              "arch": "arm64"
             }
           ]
         }
