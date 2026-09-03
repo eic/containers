@@ -87,6 +87,7 @@ jobs:
     with:
       buildweek: ${{ needs.env.outputs.BUILDWEEK }}
       jobs: 4
+      fail-fast: false
       matrix: |
         {
           "include": [
@@ -122,6 +123,7 @@ jobs:
     with:
       buildweek: ${{ needs.env.outputs.BUILDWEEK }}
       jobs: 4
+      fail-fast: false
       matrix: |
         {
           "include": [
@@ -244,6 +246,7 @@ jobs:
     with:
       job-name-prefix: "eic-ci"
       jobs: 4
+      fail-fast: false
       matrix: |
         {
           "include": [
@@ -291,6 +294,7 @@ jobs:
     with:
       job-name-prefix: "eic"
       jobs: 4
+      fail-fast: false
       matrix: |
         {
           "include": [
