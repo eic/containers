@@ -5,12 +5,16 @@ spack:
   - ../packages.yaml
   - ../packages_root_without_opengl.yaml
   - ../view.yaml
+  packages:
+    compiler-wrapper:
+      require:
+      - '@1.1.0-build-id'
   specs:
   - acts build_type=Debug
   - cmake
   - dd4hep build_type=Debug
   - edm4hep build_type=Debug
-  - gdb
+  - gdb ^elfutils@0.194+debuginfod
   - irt build_type=Debug
   - jana2 build_type=Debug
   - valgrind

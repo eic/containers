@@ -204,6 +204,15 @@ for build_type in "${BUILD_TYPES[@]}"; do
   # shellcheck disable=SC2206  # word splitting is intentional: BUILD_OPTIONS is a space-separated list
   build_cmd+=(${BUILD_OPTIONS})
 
+  ## Compute install flags: base flags plus debug capture for the dbg environment
+  SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+  SPACK_BUILDER_INSTALL_FLAGS="${SPACK_INSTALL_FLAGS}"
+  if [ "${ENV}" = "dbg" ]; then
+    SPACK_BUILDER_INSTALL_FLAGS="${SPACK_BUILDER_INSTALL_FLAGS} --no-cache --debug-source --debug-symbols"
+  fi
+  build_cmd+=(--build-arg "SPACK_INSTALL_FLAGS=${SPACK_INSTALL_FLAGS}")
+  build_cmd+=(--build-arg "SPACK_BUILDER_INSTALL_FLAGS=${SPACK_BUILDER_INSTALL_FLAGS}")
+
   ## Output mode: push-by-digest in all CI modes; load locally
   if [ "${CI_MODE}" != "local" ]; then
     ## Push by digest; CI wrapper creates final tags via imagetools create.
