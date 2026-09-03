@@ -166,7 +166,7 @@ packages:
     - '@1.2.2'
   eiccontent:
     require:
-    - '@eic'
+    - '@3.2.0'
   eicrecon:
     require:
     - '@1.40.0' # EICRECON_VERSION
