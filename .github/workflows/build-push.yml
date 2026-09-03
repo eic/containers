@@ -147,6 +147,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [base, base-debian]
     strategy:
+      fail-fast: false
       matrix:
         include:
         - BUILD_IMAGE: debian_stable_base
@@ -521,6 +522,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: eic
     strategy:
+      fail-fast: false
       matrix:
         include:
         - BUILD_IMAGE: eic_
