@@ -1,8 +1,13 @@
 name: build-push
 
 on:
-  schedule:
-    - cron: "30 */6 * * *"
+  workflow_call:
+    inputs:
+      nightly:
+        description: 'Enable nightly tag (e.g., eic_ci:nightly)'
+        required: false
+        type: boolean
+        default: false
   push:
     branches:
     - master
@@ -50,6 +55,9 @@ env:
 
   ## Internal tag used for the CI
   INTERNAL_TAG: pipeline-${{ github.run_id }}
+
+  ## Enable nightly tag (e.g., eic_ci:nightly)
+  NIGHTLY: ${{ inputs.nightly || false }}
 
   ## Compressed image size caps (GiB).  Fail the build if a final image exceeds
   ## these limits to catch regressions early (e.g. accidental Spack-built LLVM).
@@ -432,6 +440,7 @@ jobs:
             type=ref,prefix=unstable-pr-,event=pr,suffix=-${{ matrix.BUILD_TYPE }}
             type=match,pattern=^v(\d+\.\d+\.\d+-.*)$,group=1,enable=${{ matrix.BUILD_TYPE == 'default' }}
             type=match,pattern=^v(\d+\.\d+\.\d+-.*)$,group=1,suffix=-nightly,enable=${{ matrix.BUILD_TYPE == 'nightly' }}
+            type=raw,value=nightly,enable=${{ matrix.BUILD_TYPE == 'nightly' && env.NIGHTLY == 'true' }}
       - name: Create and push manifest list
         run: |
           # Create tag arguments from the multi-line 'tags' output from the meta step
