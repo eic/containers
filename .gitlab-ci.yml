@@ -404,7 +404,6 @@ eic:
       - BUILD_IMAGE: eic_
         ENV:
         - cuda
-        - tf
         BUILD_TYPE: "default,nightly"
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_runtime
