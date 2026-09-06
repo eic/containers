@@ -23,3 +23,7 @@ mirrors:
       access_pair:
         id_variable: GITHUB_REGISTRY_USER
         secret_variable: GITHUB_REGISTRY_TOKEN
+   eic-spack-mirror:
+     url: https://eic.github.io/eic-spack-mirror
+     binary: false
+     source: true
