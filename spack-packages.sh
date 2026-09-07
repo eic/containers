@@ -47,6 +47,7 @@ c44cd71db91d6e6c68cb604dcb87311b49b1bedb
 63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51
 d18c9ad43ea50d71e666c8a859da3293e4776c19
 55be3f79a559d1e8f5ae8dffd1516569f444b5d0
+e30e760a6959a4112d5dc04ecc0755813eaee8ee
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -89,5 +90,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 683c5a698d88d657a99f3adefee0fe98d30927ae: dd4hep: url_for_version for master version
 ## 409826414a2221be56011f8f0f912905dae558cd: podio: Add version 1.8 and new parquet variant
 ## 63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51: edm4hep: patch for new podio arrow targets
-## d18c9ad43ea50d71e666c8a859da3293e4776c19: py-mcp: new package (with missing deps, py-pyjwt 2.10.1) (#5637)
-## 55be3f79a559d1e8f5ae8dffd1516569f444b5d0: opencode, bun: new packages (#5639)
+## d18c9ad43ea50d71e666c8a859da3293e4776c19: py-mcp: new package (with missing deps, py-pyjwt 2.10.1)
+## 55be3f79a559d1e8f5ae8dffd1516569f444b5d0: opencode, bun: new packages
+## e30e760a6959a4112d5dc04ecc0755813eaee8ee: py-awkward-cpp: require py-pybind11@3: for @48:
