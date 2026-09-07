@@ -665,7 +665,7 @@ packages:
     - any_of: [+opengl +webgui, -opengl -webgui]
   rucio-eic-mcp-server:
     require:
-    - '@main'  # no 0.2.0 tag yet
+    - '@=0.2.0'
   sherpa:
     require:
     - '@3.0.1'
