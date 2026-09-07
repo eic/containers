@@ -400,7 +400,7 @@ packages:
       # https://github.com/spack/spack-packages/pull/2890
   opencascade:
     require:
-    - '@7.8.1:'
+    - '@8:'
     - +application_framework -vtk
   opengl:
     buildable: False
