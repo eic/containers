@@ -126,7 +126,7 @@ jobs:
             echo "${IMAGE}@${DIGEST}" > "/tmp/digests/${{ matrix.arch }}-${build_type}.digest"
           done
       - name: Check image size
-        # Only check final images; concretization-only targets (cuda, tf) don't produce a full image
+        # Only check final images; concretization-only targets (cuda) don't produce a full image
         if: ${{ matrix.target == 'final' }}
         run: |
           FULLNAME="${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
