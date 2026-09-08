@@ -403,18 +403,7 @@ jobs:
             },
             {
               "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "default",
-              "BUILDER_IMAGE": "cuda_devel",
-              "RUNTIME_IMAGE": "cuda_runtime",
-              "ENV": "tf",
-              "arch": "amd64",
-              "runner": "ubuntu-latest",
-              "PLATFORM": "linux/amd64",
-              "target": "final"
-            },
-            {
-              "BUILD_IMAGE": "eic_",
-              "BUILD_TYPE": "nightly",
+              "BUILD_TYPE": "default,nightly",
               "BUILDER_IMAGE": "cuda_devel",
               "RUNTIME_IMAGE": "cuda_runtime",
               "ENV": "tf",
