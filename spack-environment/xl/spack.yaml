@@ -35,10 +35,12 @@ spack:
       - build_type=RelWithDebInfo
     professor:
       require:
-      - build_type=RelWithDebInfo
+      - cflags=-g
+      - cxxflags=-g
     pythia8:
       require:
-      - build_type=RelWithDebInfo
+      - cflags=-g
+      - cxxflags=-g
     sherpa:
       require:
       - build_type=RelWithDebInfo
