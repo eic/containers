@@ -208,7 +208,7 @@ for build_type in "${BUILD_TYPES[@]}"; do
   SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
   SPACK_BUILDER_INSTALL_FLAGS="${SPACK_INSTALL_FLAGS}"
   if [ "${ENV}" = "dbg" ] || [ "${ENV}" = "xl" ]; then
-    SPACK_BUILDER_INSTALL_FLAGS="${SPACK_BUILDER_INSTALL_FLAGS} --no-cache --debug-source --debug-symbols"
+    SPACK_BUILDER_INSTALL_FLAGS="${SPACK_BUILDER_INSTALL_FLAGS} --debug-source --debug-symbols"
   fi
   build_cmd+=(--build-arg "SPACK_INSTALL_FLAGS=${SPACK_INSTALL_FLAGS}")
   build_cmd+=(--build-arg "SPACK_BUILDER_INSTALL_FLAGS=${SPACK_BUILDER_INSTALL_FLAGS}")
