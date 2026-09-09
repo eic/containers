@@ -310,7 +310,7 @@ packages:
     - '@1.0.10'
   irt2:
     require:
-    - '@2.2.0'
+    - '@2.2.1'
   iwyu:
     require:
     - '@0.23:0.24'  # pinned to avoid depending on newer llvm than system
