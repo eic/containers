@@ -40,11 +40,6 @@ variables:
   SIZE_LIMIT_EIC_CUDA_GIB: "8.1"
   SIZE_LIMIT_EIC_DEV_CUDA_GIB: "10.9"
 
-  ## is this nightly or not?
-  NIGHTLY: ""
-  ## Add to tag
-  NIGHTLY_TAG: "nightly"
-
   ## Additional options for docker build (e.g. --no-cache)
   BUILD_OPTIONS: ""
 
@@ -500,11 +495,6 @@ eic-manifest:
             [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
             [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
           fi
-        fi
-        if [ "${BUILD_TYPE}" = "nightly" ] && [ -n "${NIGHTLY}" ]; then
-          [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
-          [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
-          [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
         fi
       done
 
