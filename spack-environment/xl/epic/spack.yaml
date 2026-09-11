@@ -11,9 +11,34 @@ spack:
       max_dupes:
         epic: 10
   packages:
+    compiler-wrapper:
+      require:
+      - '@1.1.0-build-id'
+    root:
+      require:
+      - build_type=RelWithDebInfo
     geant4:
       require:
       - +opengl
+      - build_type=RelWithDebInfo
+    acts:
+      require:
+      - build_type=RelWithDebInfo
+    celeritas:
+      require:
+      - build_type=RelWithDebInfo
+    dd4hep:
+      require:
+      - build_type=RelWithDebInfo
+    edm4hep:
+      require:
+      - build_type=RelWithDebInfo
+    hepmc3:
+      require:
+      - build_type=RelWithDebInfo
+    podio:
+      require:
+      - build_type=RelWithDebInfo
   specs:
   - algorithms
   - edm4eic
@@ -25,3 +50,5 @@ spack:
   - epic@26.07.1
   - epic@26.07.2
   - epic@26.08.0
+  repos:
+    builtin_local: /uufs/chpc.utah.edu/common/home/u6059911/GIT/spack-packages/repos/spack_repo/builtin_local
