@@ -1,4 +1,11 @@
 ci:
+  # The `hadolint` hook is `language: system`: it runs whatever `hadolint`
+  # binary is on PATH rather than installing one.  pre-commit.ci does not
+  # provide that binary, so without this skip the hook fails there with
+  # "Executable `hadolint` not found".  (The alternative `hadolint-docker`
+  # hook id is `language: docker_image`, which pre-commit.ci does not support
+  # either.)  hadolint therefore only ever runs locally, for contributors who
+  # have it installed; see the note on that hook below.
   skip: [hadolint]
 
 repos:
@@ -24,7 +31,39 @@ repos:
         # Shebang absolute path: false positives from heredoc blocks interpreted by hadolint
         - --ignore=SC2239
         - --failure-threshold=warning
-      exclude: ^containers/eic/Dockerfile$
+      # Both of our Dockerfiles are excluded because hadolint cannot parse
+      # them: its Dockerfile grammar does not handle a heredoc nested inside a
+      # RUN heredoc, which is how the commented apt package lists are written.
+      # It aborts with a parse error at the first line of the outer heredoc
+      # body and reports no findings at all, e.g.
+      #
+      #   containers/debian/Dockerfile:36:1 unexpected 'r' expecting ...
+      #
+      # This is an upstream limitation, not a configuration problem; v2.15.1
+      # is the latest release and still has it.  The hook is kept so that any
+      # new Dockerfile without nested heredocs is still linted.
+      #
+      # Dockerfile checking is meanwhile enforced during the build itself:
+      # both files carry `#check=error=true`, which promotes BuildKit's own
+      # Dockerfile checks to build failures.  BuildKit parses heredocs
+      # correctly, so that gate does cover these files -- and it runs in CI on
+      # every build, which this hook does not.
+      exclude: ^containers/(debian|eic)/Dockerfile$
+
+- repo: https://github.com/rhysd/actionlint
+  rev: v1.7.12
+  hooks:
+    - id: actionlint
+      # language: golang, so this builds from source and runs on pre-commit.ci
+      # (unlike actionlint-docker).  The hook's own `files` pattern already
+      # restricts it to .github/workflows/.
+      args:
+        # actionlint pipes `run:` blocks through shellcheck when it finds one
+        # on PATH, which makes the hook's behaviour depend on whether the
+        # surrounding environment happens to provide it.  Pin it off so the
+        # hook is deterministic and checks workflow structure only; the
+        # shellcheck hook below covers the repository's shell files.
+        - -shellcheck=
 
 - repo: https://github.com/shellcheck-py/shellcheck-py
   rev: v0.11.0.1-1
@@ -32,4 +71,14 @@ repos:
     - id: shellcheck
       types: [shell]
       args: [--severity=warning, -x]
-      files: (^[^/]+\.sh$|^scripts/[^/]+\.sh$|^scripts/resolve_git_ref$|^scripts/check_image_size$)
+      # No `files` pattern: `types: [shell]` already selects every shell file
+      # in the repository, by extension or by shebang.  An explicit allowlist
+      # was previously used here and silently left the scripts shipped inside
+      # the images -- containers/eic/{eic-shell,eic-info,eic-news,*.sh} and
+      # containers/eic/profile.d/*.sh -- unchecked.
+      #
+      # containers/debian/bashrc is a general-purpose interactive bashrc
+      # rather than build tooling.  It is excluded so that enabling coverage
+      # here does not depend on first reworking ~350 lines of aliases and
+      # prompt helpers; cleaning it up is worth doing separately.
+      exclude: ^containers/debian/bashrc$
