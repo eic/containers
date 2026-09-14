@@ -23,8 +23,6 @@ env:
   GH_REGISTRY: ghcr.io
   GH_REGISTRY_USER: eic
   GH_PUSH: 1
-  SIZE_LIMIT_EIC_CI_GIB: 3.1
-  SIZE_LIMIT_EIC_XL_GIB: 4.7
   JOBS: ${{ inputs.jobs }}
 
 jobs:
@@ -118,6 +116,8 @@ jobs:
         # Only check final images; concretization-only targets (cuda, tf) don't produce a full image
         if: ${{ matrix.target == 'final' }}
         run: |
+          # Caps are defined once in image-size-limits.sh; see that file to change one.
+          . ./image-size-limits.sh
           FULLNAME="${{ matrix.BUILD_IMAGE }}${{ matrix.ENV }}"
           LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
           LIMIT="${!LIMIT_VAR}"

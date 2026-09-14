@@ -60,15 +60,6 @@ env:
   ## Internal tag used for the CI
   INTERNAL_TAG: pipeline-${{ github.run_id }}
 
-  ## Compressed image size caps (GiB).  Fail the build if a final image exceeds
-  ## these limits to catch regressions early (e.g. accidental Spack-built LLVM).
-  ## To update: measure the compressed sizes of the published master images,
-  ## add ~15% headroom, round up, and update here and in .gitlab-ci.yml
-  ## variables.
-  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: 0.9
-  SIZE_LIMIT_EIC_CI_GIB: 3.1
-  SIZE_LIMIT_EIC_XL_GIB: 4.7
-
 jobs:
   env:
     ## The env context is not available in matrix, only in steps,
@@ -80,6 +71,7 @@ jobs:
       CUDA_VERSION: ${{ steps.env.outputs.CUDA_VERSION }}
       CUDA_OS: ${{ steps.env.outputs.CUDA_OS }}
       BUILDWEEK: ${{ steps.env.outputs.BUILDWEEK }}
+      JOBS: ${{ steps.env.outputs.JOBS }}
     steps:
       - name: Turn env into outputs
         id: env
@@ -87,6 +79,7 @@ jobs:
           echo "CUDA_VERSION=${{ env.CUDA_VERSION }}" >> $GITHUB_OUTPUT
           echo "CUDA_OS=${{ env.CUDA_OS }}" >> $GITHUB_OUTPUT
           echo "BUILDWEEK=$(date +%Yw%V)" >> $GITHUB_OUTPUT
+          echo "JOBS=${{ env.JOBS }}" >> $GITHUB_OUTPUT
 
   base-debian:
     name: Build debian base images
@@ -95,7 +88,7 @@ jobs:
     secrets: inherit
     with:
       buildweek: ${{ needs.env.outputs.BUILDWEEK }}
-      jobs: 4
+      jobs: ${{ fromJSON(needs.env.outputs.JOBS) }}
       matrix: |
         {
           "include": [
@@ -130,7 +123,7 @@ jobs:
     secrets: inherit
     with:
       buildweek: ${{ needs.env.outputs.BUILDWEEK }}
-      jobs: 4
+      jobs: ${{ fromJSON(needs.env.outputs.JOBS) }}
       matrix: |
         {
           "include": [
@@ -246,12 +239,12 @@ jobs:
 
   eic-ci:
     name: Build EIC CI images
-    needs: base-manifest
+    needs: [env, base-manifest]
     uses: ./.github/workflows/build-eic.yml
     secrets: inherit
     with:
       job-name-prefix: "eic-ci"
-      jobs: 4
+      jobs: ${{ fromJSON(needs.env.outputs.JOBS) }}
       matrix: |
         {
           "include": [
@@ -293,12 +286,12 @@ jobs:
 
   eic:
     name: Build EIC images
-    needs: [base, eic-ci]
+    needs: [env, base, eic-ci]
     uses: ./.github/workflows/build-eic.yml
     secrets: inherit
     with:
       job-name-prefix: "eic"
-      jobs: 4
+      jobs: ${{ fromJSON(needs.env.outputs.JOBS) }}
       matrix: |
         {
           "include": [

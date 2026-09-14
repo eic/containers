@@ -28,17 +28,9 @@ variables:
   ## Number of jobs to start during container builds
   JOBS: 32
 
-  ## Compressed image size caps (GiB).  Fail the build if a final image exceeds
-  ## these limits to catch regressions early (e.g. accidental Spack-built LLVM).
-  ## To update: measure the current master-tag compressed image sizes using
-  ## registry or CI tooling, add ~15% headroom, round up, and update here and
-  ## in .github/workflows/build-push.yml env.
-  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: "0.9"
-  SIZE_LIMIT_EIC_CI_GIB: "3.1"
-  SIZE_LIMIT_EIC_XL_GIB: "4.7"
-  SIZE_LIMIT_EIC_TF_GIB: "6.1"
-  SIZE_LIMIT_EIC_CUDA_GIB: "8.1"
-  SIZE_LIMIT_EIC_DEV_CUDA_GIB: "10.9"
+  ## Compressed image size caps (GiB) live in image-size-limits.sh, which the
+  ## base and eic jobs source below.  They are shared with the GitHub Actions
+  ## workflows rather than duplicated here.
 
   ## is this nightly or not?
   NIGHTLY: ""
@@ -348,6 +340,8 @@ base:
     - apk add git bash jq
     - bash scripts/build-base.sh
     - |
+      # Caps are defined once in image-size-limits.sh; see that file to change one.
+      . ./image-size-limits.sh
       LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${BUILD_IMAGE}" | tr '[:lower:]' '[:upper:]')_GIB"
       LIMIT=$(printenv "${LIMIT_VAR}" || true)
       if [ -n "${LIMIT}" ]; then
@@ -450,6 +444,8 @@ eic:
     - apk add git bash coreutils jq
     - bash scripts/build-eic.sh
     - |
+      # Caps are defined once in image-size-limits.sh; see that file to change one.
+      . ./image-size-limits.sh
       FULLNAME="${BUILD_IMAGE}${ENV}"
       LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
       LIMIT=$(printenv "${LIMIT_VAR}" || true)
