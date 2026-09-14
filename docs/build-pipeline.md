@@ -32,11 +32,13 @@ flowchart TB
         B1 & B0 & B2 --> BM[base-manifest]
         BM --> RE["build-eic.yml<br/>(reusable)"]
         RE --> E1[eic_ci amd64]
+        RE --> E0[eic_ci amd64_v3]
         RE --> E2[eic_ci arm64]
         RE --> E3[eic_xl amd64]
+        RE --> E5[eic_xl amd64_v3]
         RE --> E4[eic_xl arm64]
-        E1 & E2 --> EM1[eic-manifest ci]
-        E3 & E4 --> EM2[eic-manifest xl]
+        E1 & E0 & E2 --> EM1[eic-manifest ci]
+        E3 & E5 & E4 --> EM2[eic-manifest xl]
 
         %% Parallel smoke test execution
         E1 --> N1[npsim-gun amd64]
