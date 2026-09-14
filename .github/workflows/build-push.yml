@@ -20,15 +20,6 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  ## Supersede in-flight pull request builds: a new push to a PR makes the
-  ## running build obsolete, and each one occupies runners for hours across
-  ## three architectures.  No build work is lost, because Spack pushes to the
-  ## buildcache mirrors as packages finish (autopush) rather than at the end of
-  ## the job, so a cancelled build leaves its completed packages available to
-  ## the run that replaces it.
-  ##
-  ## Builds on master, the schedule, and workflow_dispatch are never cancelled: they publish
-  ## images and populate the caches that pull requests build against.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
