@@ -39,9 +39,9 @@ repos:
       #
       #   containers/debian/Dockerfile:36:1 unexpected 'r' expecting ...
       #
-      # This is an upstream limitation, not a configuration problem; v2.15.1
-      # is the latest release and still has it.  The hook is kept so that any
-      # new Dockerfile without nested heredocs is still linted.
+      # This is an upstream limitation, not a configuration problem; the
+      # pinned hadolint version (v2.15.1) still has it.  The hook is kept so
+      # that any new Dockerfile without nested heredocs is still linted.
       #
       # Dockerfile checking is meanwhile enforced during the build itself:
       # both files carry `#check=error=true`, which promotes BuildKit's own
