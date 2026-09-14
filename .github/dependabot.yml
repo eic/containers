@@ -9,3 +9,17 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+
+  # Base images. Note this covers only literal FROM lines, which in this
+  # repository means containers/eic/Dockerfile.spack-cache-cleanup alone: every
+  # other FROM is parameterised (FROM ${BASE_IMAGE}, FROM ${DOCKER_REGISTRY}...)
+  # and the images those resolve to are written in CI configuration, which
+  # Dependabot's docker ecosystem does not read. So debian:trixie-slim in the
+  # build matrices, nvidia/cuda via CUDA_VERSION/CUDA_OS, and the docker and
+  # singularity images in .gitlab-ci.yml still have to be bumped by hand.
+  - package-ecosystem: "docker"
+    directories:
+      - "/containers/debian"
+      - "/containers/eic"
+    schedule:
+      interval: "weekly"
