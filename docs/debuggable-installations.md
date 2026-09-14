@@ -145,7 +145,7 @@ flowchart TB
         A2["resolves /buildid/&lt;id&gt;/{debuginfo,source}<br/>against OCI manifest"]
         A1 --> A2
     end
-    
+
     subgraph Elfutils["elfutils, libdebuginfod client"]
         EL1["patched: accepts ./-relative<br/>DWARF filenames<br/>(cherry-pick  spack/spack-packages#6259)"]
     end
