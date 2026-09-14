@@ -27,7 +27,7 @@ concurrency:
   ## the job, so a cancelled build leaves its completed packages available to
   ## the run that replaces it.
   ##
-  ## Builds on master, tags and the schedule are never cancelled: they publish
+  ## Builds on master, the schedule, and workflow_dispatch are never cancelled: they publish
   ## images and populate the caches that pull requests build against.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
