@@ -115,7 +115,7 @@ flowchart TB
         D1["spack install $SPACK_BUILDER_INSTALL_FLAGS<br/>(compiles for real, dbg/xl-scoped)"]
         D2["new_installer.py phase.execute()<br/>(cherry-pick spack/spack#52949)<br/>routed through cc.sh"]
         D3["install_debug_artifacts()<br/>split_debug_symbols()<br/>write_gdbinit()<br/>(cherry-pick spack/spack#52949)"]
-	D1 --> D2
+        D1 --> D2
         D2 -->|"machine-agnostic DWARF paths + build-id already embedded)"| D3
     end
 
