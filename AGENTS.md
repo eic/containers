@@ -12,8 +12,13 @@ This repository builds and maintains multi-architecture container images for the
 
 The repository produces container images available at:
 - `ghcr.io/eic/debian_stable_base` - Base image with compilers and Spack
+- `ghcr.io/eic/cuda_devel`, `ghcr.io/eic/cuda_runtime` - CUDA base images
 - `ghcr.io/eic/eic_ci` - Minimal CI environment
 - `ghcr.io/eic/eic_xl` - Full development environment
+
+Further images (`eic_cvmfs`, `eic_dbg`, `eic_jl`, `eic_prod`, `eic_tf`,
+`eic_cuda`, `eic_dev_cuda`, `eic_ci_without_acts`) are built from the
+corresponding `spack-environment/*/` environments, currently on GitLab CI.
 
 ## Architecture
 
@@ -44,16 +49,20 @@ All images support both `linux/amd64` and `linux/arm64` architectures through pa
 ```
 .
 ├── .github/workflows/
-│   ├── build-push.yml          # Main CI/CD pipeline
+│   ├── build-push.yml          # Main CI/CD pipeline (calls the two below)
+│   ├── build-base.yml          # Reusable: build one base image
+│   ├── build-eic.yml           # Reusable: build one EIC image
 │   ├── docs.yml                # Documentation deployment
-│   └── mirror.yaml             # Mirror synchronization
+│   ├── mirror.yaml             # Mirror synchronization
+│   └── pr-backport.yml         # Backport merged PRs to stable branches
 ├── containers/
 │   ├── debian/Dockerfile       # Base image with Spack and compilers
 │   └── eic/Dockerfile          # EIC environment (multi-stage)
-├── spack-environment/
+├── spack-environment/          # Nine environments: ci, ci_without_acts,
+│   │                           # cuda, cvmfs, dbg, jl, prod, tf, xl
 │   ├── packages.yaml           # Package versions, variants, and preferences
-│   ├── ci/spack.yaml           # CI environment spec
-│   └── xl/spack.yaml           # Full (XL) environment spec
+│   ├── <env>/spack.yaml        # Default spec list for that environment
+│   └── <env>/epic/spack.yaml   # Custom-version overlay (epic, eicrecon, ...)
 ├── spack.sh                    # Spack core version and cherry-picks
 ├── spack-packages.sh           # Spack-packages version and cherry-picks
 ├── eic-spack.sh                # EIC-spack repository configuration
@@ -197,9 +206,12 @@ The GitLab CI configuration (`.gitlab-ci.yml`) runs similar build jobs but in th
 
 ### Version Tracking
 
-- Update versions in **both** places when applicable:
-  - `spack-environment/xl/epic/spack.yaml`
-  - `spack-environment/cuda/epic/spack.yaml`
+- Update versions in **every** environment that declares the package, not
+  just one: the overlay specs live in `spack-environment/<env>/epic/spack.yaml`
+  for all nine environments.
+- The `# EDM4EIC_VERSION`, `# EICRECON_VERSION` and `# EPIC_VERSION` trailing
+  marker comments are load-bearing: `containers/eic/Dockerfile` keys its `sed`
+  version overrides on them. Do not reword or drop them.
 - Update version files (`*.sh`) for Spack repository changes
 - Document version updates in commit messages
 
@@ -297,7 +309,10 @@ Update in `containers/debian/Dockerfile` with version-specific logic.
 ## Buildcache Management
 
 - Buildcache tags follow pattern: `{BUILD_IMAGE}-{GITHUB_REF_POINT_SLUG}-{arch}`
-- Tags are automatically cleaned on PR close by cleanup workflows
+- On GitLab CI, the `clean_unstable_mr` and `clean_pipeline` jobs remove
+  merge-request and pipeline tags at the end of a pipeline
+- On GitHub Actions there is **no** buildcache cleanup workflow; ghcr.io
+  buildcache tags accumulate. See issue #89 and PR #90
 - Buildcaches stored in GitLab registry at `eicweb.phy.anl.gov` (project ID 290)
 
 ## Additional Resources

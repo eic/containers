@@ -57,7 +57,10 @@ When modifying files, follow these patterns:
 When updating package versions:
 1. Check if cherry-pick needed in `spack-packages.sh`
 2. Update version in `spack-environment/packages.yaml`
-3. Update in **both** `xl` and `cuda` subdirectories if epic-related
+3. Update every `spack-environment/<env>/epic/spack.yaml` that declares the
+   package (there are nine environments, not just `xl` and `cuda`), and keep
+   the trailing `# EPIC_VERSION` style marker comments intact -- the
+   Dockerfile keys its version overrides on them
 
 ### Testing Changes
 
