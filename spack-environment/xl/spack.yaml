@@ -5,6 +5,45 @@ spack:
   - ../packages.yaml
   - ../packages_root_with_opengl.yaml
   - ../view.yaml
+  packages:
+    compiler-wrapper:
+      require:
+      - '@1.1.0-build-id'
+    root:
+      require:
+      - build_type=RelWithDebInfo
+    geant4:
+      require:
+      - build_type=RelWithDebInfo
+    acts:
+      require:
+      - build_type=RelWithDebInfo
+    celeritas:
+      require:
+      - build_type=RelWithDebInfo
+    dd4hep:
+      require:
+      - build_type=RelWithDebInfo
+    edm4hep:
+      require:
+      - build_type=RelWithDebInfo
+    hepmc3:
+      require:
+      - build_type=RelWithDebInfo
+    podio:
+      require:
+      - build_type=RelWithDebInfo
+    professor:
+      require:
+      - cflags=-g
+      - cxxflags=-g
+    pythia8:
+      require:
+      - cflags=-g
+      - cxxflags=-g
+    sherpa:
+      require:
+      - build_type=RelWithDebInfo
   specs:
   - acts
   - actsvg
@@ -39,7 +78,7 @@ spack:
   - fjcontrib
   - fmt
   - g4occt
-  - gdb
+  - gdb ^elfutils@0.194+debuginfod
   - geant4 +opengl
   - gfal2
   - gfal2-util

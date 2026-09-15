@@ -48,6 +48,8 @@ c44cd71db91d6e6c68cb604dcb87311b49b1bedb
 9385426b49d2c49d026629cb5e96bb5893824e3d
 d1bfcea155bb51220a4baddfcc75a0ba4d4b972c
 f3085a0fd9c327692475fbb72b8b9f738c541358
+fdd30418cfd404a8de135c5fcfc349d5de87f84b
+5945d81a8359eed559ec60b1be9151de57473f51
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -93,3 +95,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 9385426b49d2c49d026629cb5e96bb5893824e3d: opencascade: add v7.9.2, v7.9.3
 ## d1bfcea155bb51220a4baddfcc75a0ba4d4b972c: opencascade: add v8.0.0, v8.0.0.p1
 ## f3085a0fd9c327692475fbb72b8b9f738c541358: opencascade: pass tcl library paths to the cmake build to fix mac builds
+## fdd30418cfd404a8de135c5fcfc349d5de87f84b: compiler-wrapper: add 1.1.0-build-id prototype version (spack-packages#6214)
+## 5945d81a8359eed559ec60b1be9151de57473f51: elfutils: patch debuginfod_find_source to accept ./-relative filenames (spack-packages #6259)

@@ -12,6 +12,7 @@ The EIC container infrastructure provides scientific software environments for t
 - [Build Pipeline](build-pipeline.md) - GitHub Actions workflow details
 - [Building Locally](building-locally.md) - Instructions for local builds with caching
 - [Spack Environment](spack-environment.md) - Spack configuration and packages
+- [Debuggable Installations](debuggable-installations.md) - Debugging mechanism for Spack packages
 
 ## Container Images
 

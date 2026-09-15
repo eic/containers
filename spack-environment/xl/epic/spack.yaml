@@ -11,9 +11,34 @@ spack:
       max_dupes:
         epic: 10
   packages:
+    compiler-wrapper:
+      require:
+      - '@1.1.0-build-id'
+    root:
+      require:
+      - build_type=RelWithDebInfo
     geant4:
       require:
       - +opengl
+      - build_type=RelWithDebInfo
+    acts:
+      require:
+      - build_type=RelWithDebInfo
+    celeritas:
+      require:
+      - build_type=RelWithDebInfo
+    dd4hep:
+      require:
+      - build_type=RelWithDebInfo
+    edm4hep:
+      require:
+      - build_type=RelWithDebInfo
+    hepmc3:
+      require:
+      - build_type=RelWithDebInfo
+    podio:
+      require:
+      - build_type=RelWithDebInfo
   specs:
   - algorithms
   - edm4eic

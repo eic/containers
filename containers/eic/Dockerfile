@@ -46,6 +46,7 @@ ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
 ARG SPACK_INSTALL_FLAGS="--no-check-signature --show-log-on-error --yes-to-all"
+ARG SPACK_BUILDER_INSTALL_FLAGS="${SPACK_INSTALL_FLAGS}"
 ENV SPACK_COLOR="always"
 ENV GIT_TERMINAL_PROMPT=0
 
@@ -79,7 +80,7 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+spack ${SPACK_FLAGS} install ${SPACK_BUILDER_INSTALL_FLAGS}
 spack clean --downloads --stage
 ccache --show-stats
 ccache --zero-stats
@@ -195,7 +196,7 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+spack ${SPACK_FLAGS} install ${SPACK_BUILDER_INSTALL_FLAGS}
 spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
