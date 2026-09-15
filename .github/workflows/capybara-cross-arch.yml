@@ -1,0 +1,69 @@
+name: Capybara Cross-Architecture Comparison (Reusable)
+
+## Compare the amd64 and arm64 builds of one simulation or reconstruction
+## artifact with capybara, and publish the report as a .capy artifact for
+## merge-capybara to collect.
+##
+## This was four near-identical jobs in build-push.yml differing only in an
+## artifact name stem and a file extension. Callers keep their own matrix and
+## pass the stem through, so adding a detector config or a beam energy is
+## still a one-line change at the call site.
+##
+## Naming convention this relies on, unchanged from before:
+##   artifact name  <stem>_<arch>.<extension>     e.g. sim_pi_..._amd64.edm4hep.root
+##   file inside it <stem>.<extension>            e.g. sim_pi_....edm4hep.root
+##   report         <stem>_amd64_vs_arm64{,.capy}
+
+on:
+  workflow_call:
+    inputs:
+      label:
+        description: 'Human-readable description of the comparison, used in the job name'
+        required: true
+        type: string
+      stem:
+        description: 'Artifact name stem, without the _<arch> suffix and without the extension'
+        required: true
+        type: string
+      extension:
+        description: 'File extension, e.g. edm4hep.root or edm4eic.root'
+        required: true
+        type: string
+
+jobs:
+  compare:
+    name: capybara (${{ inputs.label }}, amd64 vs arm64)
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eic/eic_ci:pipeline-${{ github.run_id }}-default-amd64
+      credentials:
+        username: ${{ secrets.GHCR_REGISTRY_USER }}
+        password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+    steps:
+    - name: Download amd64 artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: ${{ inputs.stem }}_amd64.${{ inputs.extension }}
+        path: amd64/
+    - name: Download arm64 artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: ${{ inputs.stem }}_arm64.${{ inputs.extension }}
+        path: arm64/
+    - name: Compare amd64 vs arm64 artifacts
+      shell: bash --login -eo pipefail {0}
+      run: |
+        mkdir capybara-reports
+        capybara bara \
+          "amd64/${{ inputs.stem }}.${{ inputs.extension }}" \
+          "arm64/${{ inputs.stem }}.${{ inputs.extension }}" \
+          2>&1 | tee capybara-reports/capybara.log
+        mv capybara-reports "${{ inputs.stem }}_amd64_vs_arm64"
+        touch ".${{ inputs.stem }}_amd64_vs_arm64"
+    - uses: actions/upload-artifact@v7
+      with:
+        name: ${{ inputs.stem }}_amd64_vs_arm64.capy
+        path: |
+          .${{ inputs.stem }}_amd64_vs_arm64
+          ${{ inputs.stem }}_amd64_vs_arm64/
+        if-no-files-found: error
