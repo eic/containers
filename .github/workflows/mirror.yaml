@@ -36,7 +36,12 @@ jobs:
         fetch-depth: 0
         ref: ${{ github.head_ref }}
     - name: Push to EICweb
-      uses: eic/gitlab-sync@master
+      ## Pinned to a commit rather than @master: this step is handed
+      ## GITLAB_TOKEN and GITLAB_USERNAME, so a moving branch ref would let
+      ## any change to that repository run with our credentials without
+      ## review here.  The v1 tag is behind master, so master's current
+      ## commit is pinned instead to keep behaviour identical.
+      uses: eic/gitlab-sync@975a67e4d71642c528c722bd5270ccd664e2dd11 # master as of 2026-09-14
       with:
         url: https://eicweb.phy.anl.gov/containers/eic_container.git/
         token: ${{ secrets.GITLAB_TOKEN }}

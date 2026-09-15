@@ -880,7 +880,11 @@ jobs:
         delete-merged: true
 
   list-open-prs:
-    uses: eic/actions/.github/workflows/list-open-prs.yml@main
+    ## Pinned to a commit rather than @main; this reusable workflow is
+    ## called without `secrets:`, so the exposure is smaller than the
+    ## mirror step, but a moving ref is still unreviewed code in our
+    ## pipeline.  eic/actions publishes no tags, so a commit it is.
+    uses: eic/actions/.github/workflows/list-open-prs.yml@f98411b4df37705a36731b60f83df0d1695f64ae # main as of 2026-09-14
 
   get-docs-from-open-prs:
     runs-on: ubuntu-latest
