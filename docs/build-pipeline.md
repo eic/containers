@@ -104,7 +104,7 @@ sequenceDiagram
     GH->>GH: Download digest artifacts
     GH->>R: Login to registry
     GH->>GH: Compute metadata tags
-    GH->>R: Create manifest list<br/>combining amd64 + amd64_v3 + arm64
+    GH->>R: Create manifest list<br/>combining available per-arch digests
 ```
 
 **Output Tags:**
