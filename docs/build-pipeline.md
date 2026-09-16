@@ -2,6 +2,15 @@
 
 The container build pipeline is implemented as a GitHub Actions workflow. This document describes the workflow structure and job dependencies.
 
+`build-push.yml` orchestrates the pipeline but does not itself contain the build steps. Each image is built by one of two **reusable workflows**, which `build-push.yml` calls with a JSON matrix describing the images and architectures to produce:
+
+| Reusable workflow | Builds | Called as |
+|---|---|---|
+| `build-base.yml` | `debian_stable_base`, `cuda_devel`, `cuda_runtime` | `base-debian`, `base` |
+| `build-eic.yml` | `eic_ci`, `eic_xl` (and the concretization-only `cuda`, `tf` targets) | `eic-ci`, `eic` |
+
+Both take `matrix`, `jobs` and (for the base images) `buildweek` inputs, and both delegate the actual build to `scripts/build-base.sh` / `scripts/build-eic.sh`, which are shared with GitLab CI.
+
 ## Workflow Overview
 
 ```mermaid
@@ -13,18 +22,23 @@ flowchart TB
         T4[Manual Dispatch]
     end
 
-    T1 & T2 & T3 & T4 --> W[build-push workflow]
+    T1 & T2 & T3 & T4 --> W[build-push.yml]
 
     subgraph "Jobs"
-        W --> B1[base amd64]
-        W --> B2[base arm64]
-        B1 & B2 --> BM[base-manifest]
-        BM --> E1[eic_ci amd64]
-        BM --> E2[eic_ci arm64]
-        BM --> E3[eic_xl amd64]
-        BM --> E4[eic_xl arm64]
-        E1 & E2 --> EM1[eic-manifest ci]
-        E3 & E4 --> EM2[eic-manifest xl]
+        W --> RB["build-base.yml<br/>(reusable)"]
+        RB --> B1[base amd64]
+        RB --> B0[base amd64_v3]
+        RB --> B2[base arm64]
+        B1 & B0 & B2 --> BM[base-manifest]
+        BM --> RE["build-eic.yml<br/>(reusable)"]
+        RE --> E1[eic_ci amd64]
+        RE --> E0[eic_ci amd64_v3]
+        RE --> E2[eic_ci arm64]
+        RE --> E3[eic_xl amd64]
+        RE --> E5[eic_xl amd64_v3]
+        RE --> E4[eic_xl arm64]
+        E1 & E0 & E2 --> EM1[eic-manifest ci]
+        E3 & E5 & E4 --> EM2[eic-manifest xl]
 
         %% Parallel smoke test execution
         E1 --> N1[npsim-gun amd64]
@@ -90,7 +104,7 @@ sequenceDiagram
     GH->>GH: Download digest artifacts
     GH->>R: Login to registry
     GH->>GH: Compute metadata tags
-    GH->>R: Create manifest list<br/>combining amd64 + arm64
+    GH->>R: Create manifest list<br/>combining available per-arch digests
 ```
 
 **Output Tags:**
