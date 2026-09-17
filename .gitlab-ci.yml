@@ -368,7 +368,7 @@ base-manifest:
   script:
     - apk add bash jq
     - |
-      docker buildx imagetools create --help | grep -q -- '--annotation'
+      docker buildx imagetools create --help | grep -q -- '--annotation' || { echo "ERROR: docker buildx imagetools create does not support --annotation"; exit 1; }
       CREATED_AT="${CI_PIPELINE_CREATED_AT:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
       CREATED_ANNOTATION="index:org.opencontainers.image.created=${CREATED_AT}"
       for metadata_file in build-metadata-*.json; do
@@ -484,7 +484,7 @@ eic-manifest:
   script:
     - apk add bash jq
     - |
-      docker buildx imagetools create --help | grep -q -- '--annotation'
+      docker buildx imagetools create --help | grep -q -- '--annotation' || { echo "ERROR: docker buildx imagetools create does not support --annotation"; exit 1; }
       CREATED_AT="${CI_PIPELINE_CREATED_AT:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
       CREATED_ANNOTATION="index:org.opencontainers.image.created=${CREATED_AT}"
       for metadata_file in build-metadata-*.json; do
