@@ -368,16 +368,17 @@ base-manifest:
   script:
     - apk add bash jq
     - |
+      CREATED_ANNOTATION="index:org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
       for metadata_file in build-metadata-*.json; do
         BUILD_IMAGE="${metadata_file#build-metadata-}"; BUILD_IMAGE="${BUILD_IMAGE%.json}"
         CI_REGISTRY_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
         IMAGE_REPO="${CI_REGISTRY_PREFIX}/${BUILD_IMAGE}"
         DIGEST=$(jq -r '."containerimage.digest"' "${metadata_file}")
-        docker buildx imagetools create --tag "${IMAGE_REPO}:${INTERNAL_TAG}" "${IMAGE_REPO}@${DIGEST}"
+        docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${IMAGE_REPO}:${INTERNAL_TAG}" "${IMAGE_REPO}@${DIGEST}"
         if [ -n "${EXPORT_TAG}" ]; then
-          [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-          [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-          [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${CI_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${DH_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${GH_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
         fi
       done
 
@@ -481,6 +482,7 @@ eic-manifest:
   script:
     - apk add bash jq
     - |
+      CREATED_ANNOTATION="index:org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
       for metadata_file in build-metadata-*.json; do
         ## Parse filename: build-metadata-<IMAGE_NAME>-<BUILD_TYPE>.json
         base="${metadata_file#build-metadata-}"; base="${base%.json}"
@@ -489,22 +491,22 @@ eic-manifest:
         CI_REGISTRY_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
         IMAGE_REPO="${CI_REGISTRY_PREFIX}/${IMAGE_NAME}"
         DIGEST=$(jq -r '."containerimage.digest"' "${metadata_file}")
-        docker buildx imagetools create --tag "${IMAGE_REPO}:${INTERNAL_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+        docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${IMAGE_REPO}:${INTERNAL_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
         if [ -n "${EXPORT_TAG}" ]; then
           if [ "${BUILD_TYPE}" = "default" ]; then
-            [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-            [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-            [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${CI_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${DH_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${GH_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
           else
-            [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
-            [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
-            [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${CI_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${IMAGE_REPO}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${DH_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${GH_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
           fi
         fi
         if [ "${BUILD_TYPE}" = "nightly" ] && [ -n "${NIGHTLY}" ]; then
-          [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
-          [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
-          [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${CI_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${IMAGE_REPO}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${DH_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${GH_PUSH}" ] && docker buildx imagetools create --annotation "${CREATED_ANNOTATION}" --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
         fi
       done
 
