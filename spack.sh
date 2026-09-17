@@ -12,7 +12,7 @@ read -r -d '' SPACK_CHERRYPICKS <<- \
 --- || true
 292b0dcaba3b2a5e3f9668d205d39fee2c715721
 678e506a95b319c573ba7e84703b06d7275ab80e
-8d7657135a510c66add669b67cf02e01822f414f
+a346767b52f3fed1eb8d33ffdbbec6b2dfd2d7d7
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
@@ -22,6 +22,6 @@ read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 ## [hash]: [description]
 ## 292b0dcaba3b2a5e3f9668d205d39fee2c715721: fix: write created time field with OCI buildcache config
 ## 678e506a95b319c573ba7e84703b06d7275ab80e: fix: don't map prefix to view root for pkgs excluded from view
-## 8d7657135a510c66add669b67cf02e01822f414f: feat: debuggable installations (source hook, symbol
+## a346767b52f3fed1eb8d33ffdbbec6b2dfd2d7d7: feat: debuggable installations (source hook, symbol
 ##   splitting, gdbinit, OCI autopush) plus debuginfod, squashed and cherry-picked via open draft
 ##   PR spack/spack#52949
