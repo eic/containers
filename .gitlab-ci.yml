@@ -369,7 +369,8 @@ base-manifest:
     - apk add bash jq
     - |
       docker buildx imagetools create --help | grep -q -- '--annotation'
-      CREATED_ANNOTATION="index:org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      CREATED_AT="${CI_PIPELINE_CREATED_AT:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
+      CREATED_ANNOTATION="index:org.opencontainers.image.created=${CREATED_AT}"
       for metadata_file in build-metadata-*.json; do
         BUILD_IMAGE="${metadata_file#build-metadata-}"; BUILD_IMAGE="${BUILD_IMAGE%.json}"
         CI_REGISTRY_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
@@ -484,7 +485,8 @@ eic-manifest:
     - apk add bash jq
     - |
       docker buildx imagetools create --help | grep -q -- '--annotation'
-      CREATED_ANNOTATION="index:org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      CREATED_AT="${CI_PIPELINE_CREATED_AT:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
+      CREATED_ANNOTATION="index:org.opencontainers.image.created=${CREATED_AT}"
       for metadata_file in build-metadata-*.json; do
         ## Parse filename: build-metadata-<IMAGE_NAME>-<BUILD_TYPE>.json
         base="${metadata_file#build-metadata-}"; base="${base%.json}"
