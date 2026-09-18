@@ -80,6 +80,12 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
+if echo "${SPACK_BUILDER_INSTALL_FLAGS}" | grep -q -- '--debug-source\|--debug-symbols'; then
+  DEBUG_SCOPED_PKGS=$(yq -r '.spack.packages | keys | .[]' "${SPACK_ENV}/spack.yaml" | grep -v '^compiler-wrapper$')
+  if [ -n "${DEBUG_SCOPED_PKGS}" ]; then
+    spack ${SPACK_FLAGS} install ${SPACK_BUILDER_INSTALL_FLAGS} --no-cache ${DEBUG_SCOPED_PKGS}
+  fi
+fi
 spack ${SPACK_FLAGS} install ${SPACK_BUILDER_INSTALL_FLAGS}
 spack clean --downloads --stage
 ccache --show-stats
@@ -196,6 +202,12 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
+if echo "${SPACK_BUILDER_INSTALL_FLAGS}" | grep -q -- '--debug-source\|--debug-symbols'; then
+  DEBUG_SCOPED_PKGS=$(yq -r '.spack.packages | keys | .[]' "${SPACK_ENV}/spack.yaml" | grep -v '^compiler-wrapper$')
+  if [ -n "${DEBUG_SCOPED_PKGS}" ]; then
+    spack ${SPACK_FLAGS} install ${SPACK_BUILDER_INSTALL_FLAGS} --no-cache ${DEBUG_SCOPED_PKGS}
+  fi
+fi
 spack ${SPACK_FLAGS} install ${SPACK_BUILDER_INSTALL_FLAGS}
 spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
