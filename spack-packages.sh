@@ -48,6 +48,7 @@ b6b5da02e9b5ccf6e3092c7740e677e770019646
 9385426b49d2c49d026629cb5e96bb5893824e3d
 d1bfcea155bb51220a4baddfcc75a0ba4d4b972c
 f3085a0fd9c327692475fbb72b8b9f738c541358
+7aecd8a8648316fc90a695cbd28d5f3d3a5c30a2
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -93,3 +94,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 9385426b49d2c49d026629cb5e96bb5893824e3d: opencascade: add v7.9.2, v7.9.3
 ## d1bfcea155bb51220a4baddfcc75a0ba4d4b972c: opencascade: add v8.0.0, v8.0.0.p1
 ## f3085a0fd9c327692475fbb72b8b9f738c541358: opencascade: pass tcl library paths to the cmake build to fix mac builds
+## 7aecd8a8648316fc90a695cbd28d5f3d3a5c30a2: dd4hep: add v1.38 with new g4hepem variant
