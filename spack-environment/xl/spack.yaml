@@ -26,10 +26,12 @@ spack:
   - dawncut
   - dd4hep
   - doxygen
+  - dusk
   - east
   - edm4hep
   - eic-mcp
   - eic-smear
+  - eiccontent
   - eicsimubeameffects
   - eigen
   - emacs

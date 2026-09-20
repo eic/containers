@@ -23,7 +23,6 @@ env:
   GH_REGISTRY: ghcr.io
   GH_REGISTRY_USER: eic
   GH_PUSH: 1
-  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: 0.9
   JOBS: ${{ inputs.jobs }}
 
 jobs:
@@ -93,6 +92,8 @@ jobs:
           echo "${IMAGE}@${DIGEST}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
       - name: Check image size
         run: |
+          # Caps are defined once in image-size-limits.sh; see that file to change one.
+          . ./image-size-limits.sh
           FULLNAME="${{ matrix.BUILD_IMAGE }}"
           LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
           LIMIT="${!LIMIT_VAR}"

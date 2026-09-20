@@ -44,7 +44,7 @@ c44cd71db91d6e6c68cb604dcb87311b49b1bedb
 7e581611d81312d2a4228ad5d0b67bdd93217915
 683c5a698d88d657a99f3adefee0fe98d30927ae
 409826414a2221be56011f8f0f912905dae558cd
-63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51
+b6b5da02e9b5ccf6e3092c7740e677e770019646
 9385426b49d2c49d026629cb5e96bb5893824e3d
 d1bfcea155bb51220a4baddfcc75a0ba4d4b972c
 f3085a0fd9c327692475fbb72b8b9f738c541358
@@ -92,7 +92,7 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 7e581611d81312d2a4228ad5d0b67bdd93217915: podio,sio: url_for_version for main version
 ## 683c5a698d88d657a99f3adefee0fe98d30927ae: dd4hep: url_for_version for master version
 ## 409826414a2221be56011f8f0f912905dae558cd: podio: Add version 1.8 and new parquet variant
-## 63b8b9c3ac8ddcb2b9aafcd8160ff33bd6210f51: edm4hep: patch for new podio arrow targets
+## b6b5da02e9b5ccf6e3092c7740e677e770019646: edm4hep: add version 1.1.1
 ## 9385426b49d2c49d026629cb5e96bb5893824e3d: opencascade: add v7.9.2, v7.9.3
 ## d1bfcea155bb51220a4baddfcc75a0ba4d4b972c: opencascade: add v8.0.0, v8.0.0.p1
 ## f3085a0fd9c327692475fbb72b8b9f738c541358: opencascade: pass tcl library paths to the cmake build to fix mac builds

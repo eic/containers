@@ -13,6 +13,7 @@ spack:
   - covfie
   - dd4hep
   - edm4hep
+  - eiccontent
   - eigen
   - fastjet
   - fjcontrib
@@ -35,6 +36,7 @@ spack:
   - ollama
   - onnx
   - osg-ca-certs
+  - pandorasdk
   - pelican
   - podio
   - prmon

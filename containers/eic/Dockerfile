@@ -70,7 +70,7 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider build installation i
 
 # Installation (default environment)
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
-    --mount=type=cache,target=/var/cache/spack                          \
+    --mount=type=cache,target=/var/cache/spack,sharing=locked           \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER,required=false        \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
@@ -120,7 +120,7 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (default configuration, $TARGETPLATFORM)"
 
 # Installation (default environment, from buildcache)
-RUN --mount=type=cache,target=/var/cache/spack                          \
+RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER,required=false        \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
@@ -186,7 +186,7 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider build installation i
 
 # Installation (custom environment)
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
-    --mount=type=cache,target=/var/cache/spack                          \
+    --mount=type=cache,target=/var/cache/spack,sharing=locked          \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER,required=false        \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
@@ -238,7 +238,7 @@ ARG TARGETPLATFORM
 LABEL org.opencontainers.image.title="Electron-Ion Collider runtime installation image (custom configuration, $TARGETPLATFORM)"
 
 # Installation (custom environment, from buildcache)
-RUN --mount=type=cache,target=/var/cache/spack                          \
+RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
     --mount=type=secret,id=mirrors,target=/opt/spack/etc/spack/mirrors.yaml \
     --mount=type=secret,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER,required=false        \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
