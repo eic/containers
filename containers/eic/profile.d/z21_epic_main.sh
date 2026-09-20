@@ -5,6 +5,12 @@
 # - /etc/jug_info contains version info: 25.08.0-stable-*
 # - /opt/detector/epic-${version}/bin/thisepic.sh exists
 file=/etc/jug_info
+# A wrapper that blocks propagation of $@, $1, etc.
+_sourceWithoutArgs() {
+    local fileToSource="$1"
+    shift
+    . "$fileToSource"
+}
 if test -z "$DETECTOR_PATH" -a -z "$DETECTOR_CONFIG" ; then
   if test -f "$file" ; then
     version="main"
@@ -19,7 +25,7 @@ if test -z "$DETECTOR_PATH" -a -z "$DETECTOR_CONFIG" ; then
     thisepic=/opt/detector/epic-${version}/bin/thisepic.sh
     if test -f "$thisepic" ; then
       # shellcheck source=/dev/null  # path depends on the detected version
-      . "$thisepic"
+      _sourceWithoutArgs "$thisepic"
     fi
   fi
 fi
