@@ -161,6 +161,9 @@ packages:
     externals:
     - spec: egl@1.5.0
       prefix: /usr
+  eic-mcp:
+    require:
+    - '@0.2.0:'
   eic-opticks:
     require:
     - '@0.3.0'
@@ -408,6 +411,9 @@ packages:
     require:
     - '@8:'
     - +application_framework -vtk
+  opencode:
+    require:
+    - '@1.18.3:'
   opengl:
     buildable: False
     externals:
@@ -548,6 +554,9 @@ packages:
   py-matplotlib:
     require:
     - '@3.10'  # avoid FT_Render_Glyph errors possibly due to https://github.com/matplotlib/matplotlib/pull/30059
+  py-mcp:
+    require:
+    - '@1.28:'  # no +cli: its click pin conflicts with flask's
   py-mplhep:
     require:
     - '@0.4.0:'
@@ -660,6 +669,9 @@ packages:
     - '@6.40.04'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
+  rucio-eic-mcp-server:
+    require:
+    - '@=0.2.0'
   sherpa:
     require:
     - '@3.0.1'
@@ -716,6 +728,9 @@ packages:
   timeframebuilder:
     require:
     - '@0.9.1:'
+  uproot-mcp-server:
+    require:
+    - '@0.2.0:'
   valgrind:
     require:
     - '@3.20.0:'
@@ -729,9 +744,15 @@ packages:
     require:
     - '@5.7.0:'
     - cxxstd=20 -davix +python +scitokens-cpp
+  xrootd-mcp-server:
+    require:
+    - '@0.2.2:'
   yoda:
     require:
     - '@2.1.0:'
+  zenodo-mcp-server:
+    require:
+    - '@0.1.0:'
   zlib-api:
     require:
     - zlib-ng
