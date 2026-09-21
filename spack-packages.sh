@@ -49,6 +49,9 @@ b6b5da02e9b5ccf6e3092c7740e677e770019646
 d1bfcea155bb51220a4baddfcc75a0ba4d4b972c
 f3085a0fd9c327692475fbb72b8b9f738c541358
 3761e323f59bec2046ecafd544c3cb15aca8b514
+d18c9ad43ea50d71e666c8a859da3293e4776c19
+55be3f79a559d1e8f5ae8dffd1516569f444b5d0
+e30e760a6959a4112d5dc04ecc0755813eaee8ee
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -95,3 +98,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## d1bfcea155bb51220a4baddfcc75a0ba4d4b972c: opencascade: add v8.0.0, v8.0.0.p1
 ## f3085a0fd9c327692475fbb72b8b9f738c541358: opencascade: pass tcl library paths to the cmake build to fix mac builds
 ## 3761e323f59bec2046ecafd544c3cb15aca8b514: dd4hep: add v1.38 with new g4hepem variant
+## d18c9ad43ea50d71e666c8a859da3293e4776c19: py-mcp: new package (with missing deps, py-pyjwt 2.10.1)
+## 55be3f79a559d1e8f5ae8dffd1516569f444b5d0: opencode, bun: new packages
+## e30e760a6959a4112d5dc04ecc0755813eaee8ee: py-awkward-cpp: require py-pybind11@3: for @48:
