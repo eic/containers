@@ -434,6 +434,7 @@ eic:
     - when: always
   extends: .build
   stage: eic
+  retry: 2
   variables:
     ## scripts/build-eic.sh appends -<build_type>.json per loop iteration; drop ${BUILD_TYPE} from here
     METADATA_FILE: "build-metadata-${BUILD_IMAGE}${ENV}.json"
