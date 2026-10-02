@@ -1,14 +1,18 @@
 name: Update eic-spack pin
+
 on:
   schedule:
     - cron: '23 3 * * *' # nightly
   workflow_dispatch:
+
 permissions:
   contents: write # push the update branch
   pull-requests: write # create/update the pull request
+
 concurrency:
   group: update-eic-spack
   cancel-in-progress: false
+
 jobs:
   update:
     name: Update eic-spack commit hash
@@ -22,6 +26,7 @@ jobs:
           # other workflows. Set the EIC_SPACK_UPDATE_TOKEN secret (a PAT or
           # GitHub App token) for the PR to get CI runs.
           token: ${{ secrets.EIC_SPACK_UPDATE_TOKEN || github.token }}
+
       - name: Create or update pull request
         env:
           GH_TOKEN: ${{ secrets.EIC_SPACK_UPDATE_TOKEN || github.token }}
