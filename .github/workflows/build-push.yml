@@ -535,7 +535,7 @@ jobs:
       fail-fast: false
       matrix:
         beam: [5x41, 10x100, 18x275]
-        minq2: [1, 1000]
+        minq2: [1, 100]
         detector_config: [epic_craterlake]
         arch: [amd64, arm64]
         include:
@@ -545,25 +545,26 @@ jobs:
           runner: ubuntu-24.04-arm
         exclude:
         - beam: 5x41
-          minq2: 1000
+          minq2: 100
         - beam: 10x100
           minq2: 1
           arch: arm64
         - beam: 10x100
-          minq2: 1000
+          minq2: 100
           arch: arm64
         - beam: 18x275
           minq2: 1
           arch: arm64
         - beam: 18x275
-          minq2: 1000
+          minq2: 100
           arch: arm64
     steps:
     - name: Produce simulation files
       shell: bash --login -eo pipefail {0}
       run: |
         source /opt/detector/epic-main/bin/thisepic.sh
-        url=root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/DIS/NC/${{ matrix.beam }}/minQ2=${{ matrix.minq2 }}/pythia8NCDIS_${{ matrix.beam }}_minQ2=${{ matrix.minq2 }}_beamEffects_xAngle=-0.025_hiDiv_1.hepmc3.tree.root
+        did=epic:/EVGEN/DIS/pythia8.316-1.0/NC/noRad/ep/${{matrix.beam}}/q2_${{matrix.minq2}}to${{matrix.minq2}}0/pythia8.316-1.0_NC_noRad_ep_${{matrix.beam}}_q2_${{matrix.minq2}}to${{matrix.minq2}}0_run000.hepmc3.tree.root
+        url=$(rucio replica list file --protocols root --pfns --rses isopenaccess $did | head -n 1)
         npsim \
           --compactFile ${DETECTOR_PATH}/${{ matrix.detector_config }}.xml \
           -N 100 --inputFiles ${url} --random.seed 1 \
@@ -716,7 +717,7 @@ jobs:
       fail-fast: false
       matrix:
         beam: [5x41, 10x100, 18x275]
-        minq2: [1, 1000]
+        minq2: [1, 100]
         detector_config: [epic_craterlake]
         arch: [amd64, arm64]
         include:
@@ -726,18 +727,18 @@ jobs:
           runner: ubuntu-24.04-arm
         exclude:
         - beam: 5x41
-          minq2: 1000
+          minq2: 100
         - beam: 10x100
           minq2: 1
           arch: arm64
         - beam: 10x100
-          minq2: 1000
+          minq2: 100
           arch: arm64
         - beam: 18x275
           minq2: 1
           arch: arm64
         - beam: 18x275
-          minq2: 1000
+          minq2: 100
           arch: arm64
     steps:
     - uses: actions/download-artifact@v8
