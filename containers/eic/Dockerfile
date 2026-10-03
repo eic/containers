@@ -389,7 +389,7 @@ EOF
 ## Place cvmfs catalogs
 RUN <<EOF
 set -e
-# Benchmark and campaign git repos each change independently
+# Benchmark git repos each change independently
 touch /opt/benchmarks/.cvmfscatalog
 find /opt/benchmarks -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
 EOF
