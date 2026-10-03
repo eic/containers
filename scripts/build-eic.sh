@@ -147,9 +147,6 @@ echo "Resolving git SHAs..."
 BENCHMARK_COM_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/common_bench master)
 BENCHMARK_DET_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/detector_benchmarks master)
 BENCHMARK_PHY_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/physics_benchmarks master)
-CAMPAIGNS_HEPMC3_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/simulation_campaign_hepmc3 main)
-CAMPAIGNS_CONDOR_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/job_submission_condor main)
-CAMPAIGNS_SLURM_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/job_submission_slurm main)
 
 ## Compute per-ENV duplicate allowlist (independent of build type)
 case "${ENV}" in
@@ -243,9 +240,6 @@ for build_type in "${BUILD_TYPES[@]}"; do
   build_cmd+=(--build-arg "BENCHMARK_COM_SHA=${BENCHMARK_COM_SHA}")
   build_cmd+=(--build-arg "BENCHMARK_DET_SHA=${BENCHMARK_DET_SHA}")
   build_cmd+=(--build-arg "BENCHMARK_PHY_SHA=${BENCHMARK_PHY_SHA}")
-  build_cmd+=(--build-arg "CAMPAIGNS_HEPMC3_SHA=${CAMPAIGNS_HEPMC3_SHA}")
-  build_cmd+=(--build-arg "CAMPAIGNS_CONDOR_SHA=${CAMPAIGNS_CONDOR_SHA}")
-  build_cmd+=(--build-arg "CAMPAIGNS_SLURM_SHA=${CAMPAIGNS_SLURM_SHA}")
 
   if [ "${CI_MODE}" != "local" ]; then
     build_cmd+=(--build-arg "DOCKER_REGISTRY=${CI_REGISTRY_PREFIX}/")
