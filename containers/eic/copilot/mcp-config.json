@@ -3,7 +3,8 @@
     "eic-xrootd-mcp-server": {
       "command": "/opt/local/bin/xrootd-mcp-server",
       "env": {
-        "XROOTD_SERVER": "root://dtn-eic.jlab.org"
+        "XROOTD_SERVER": "root://dtn2304.jlab.org:8443",
+        "XROOTD_BASE_DIR": "/jlab-osdf-ro/eic/EPIC/volatile"
       }
     },
     "eic-zenodo-mcp-server": {
