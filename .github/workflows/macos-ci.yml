@@ -120,6 +120,12 @@ jobs:
 
           # Apply cherry-picks from spack-packages.sh (match only valid git commit hashes)
           while read -r commit; do
+            # Commits on forks/unmerged PRs are not in the default clone, but
+            # GitHub serves any commit in the fork network by SHA from the parent
+            if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
+              echo "Fetching ${commit} by SHA"
+              git fetch origin "${commit}"
+            fi
             if git merge-base --is-ancestor "${commit}" HEAD; then
               echo "Skipping already applied ${commit}"
               continue
