@@ -9,7 +9,7 @@ spack:
   # Note that in definitions 'when' takes a python expression as argument
   # https://spack.readthedocs.io/en/latest/environments.html#spec-list-references
   - when: arch.satisfies("platform=linux")
-    linux_packages: 
+    linux_packages:
     - imagemagick
     - nopayloadclient
     - ollama
