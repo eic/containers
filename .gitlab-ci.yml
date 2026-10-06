@@ -132,17 +132,19 @@ version:
         NIGHTLY_TAG="${VERSION}-nightly"
         EXPORT_TAG="${VERSION}"
         DH_PUSH=""
-      elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ] && [ -n "${GITHUB_PR}" ]; then
-        # GitHub PR mirrored to eicweb (eic/containers, eic/epic or eic/EICrecon)
+      elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ] && [[ "${GITHUB_REPOSITORY}" == "eic/containers" ]] && [ -n "${GITHUB_PR}" ]; then
+        # actual GitHub PR on eic/containers itself, mirrored to eicweb
         VERSION="unstable-mr-${GITHUB_PR}"
         NIGHTLY_TAG="${VERSION}-nightly"
         EXPORT_TAG="${VERSION}"
         DH_PUSH=""
       elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ] && [[ "${GITHUB_REPOSITORY}" != "eic/containers" ]]; then
-        # downstream trigger from eic/epic or eic/EICrecon (not a PR, not our own ref)
+        # downstream trigger from eic/epic or eic/EICrecon (PR or push, not our own ref)
         VERSION="${CI_COMMIT_BRANCH}"
         GH_PUSH=""
         DH_PUSH=""
+      # else: eic/containers trigger without GITHUB_PR (tag/branch push mirrored from
+      # GitHub, not a PR) falls through to the CI_COMMIT_TAG/CI_COMMIT_BRANCH detection below
       elif [[ "$CI_COMMIT_TAG" =~ ^v[0-9.]+\.[0-9]+\.[0-9]+ ]]; then
         VERSION="${CI_COMMIT_TAG:1}"
         EXPORT_TAG="${VERSION}"
