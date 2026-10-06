@@ -480,7 +480,7 @@ jobs:
         if-no-files-found: error
     - name: Download previous artifact
       id: download_previous_artifact
-      uses: dawidd6/action-download-artifact@v24
+      uses: dawidd6/action-download-artifact@v27
       with:
         branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
         path: ref/
@@ -578,7 +578,7 @@ jobs:
         if-no-files-found: error
     - name: Download previous artifact
       id: download_previous_artifact
-      uses: dawidd6/action-download-artifact@v24
+      uses: dawidd6/action-download-artifact@v27
       with:
         branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
         path: ref/
@@ -660,7 +660,7 @@ jobs:
         if-no-files-found: error
     - name: Download previous artifact
       id: download_previous_artifact
-      uses: dawidd6/action-download-artifact@v24
+      uses: dawidd6/action-download-artifact@v27
       with:
         branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
         path: ref/
@@ -760,7 +760,7 @@ jobs:
         if-no-files-found: error
     - name: Download previous artifact
       id: download_previous_artifact
-      uses: dawidd6/action-download-artifact@v24
+      uses: dawidd6/action-download-artifact@v27
       with:
         branch: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
         path: ref/
@@ -893,7 +893,7 @@ jobs:
     steps:
     - name: Download capybara artifact (other PRs)
       id: download_capybara
-      uses: dawidd6/action-download-artifact@v24
+      uses: dawidd6/action-download-artifact@v27
       if: github.event.pull_request.number != matrix.pr
       with:
         commit: ${{ matrix.head_sha }}
@@ -922,7 +922,7 @@ jobs:
     steps:
     - name: Download capybara artifact (in PR)
       id: download_capybara
-      uses: dawidd6/action-download-artifact@v24
+      uses: dawidd6/action-download-artifact@v27
       if: github.ref_name != 'master'
       with:
         branch: master
