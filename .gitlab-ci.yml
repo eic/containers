@@ -139,7 +139,8 @@ version:
         EXPORT_TAG="${VERSION}"
         DH_PUSH=""
       elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ] && [[ "${GITHUB_REPOSITORY}" != "eic/containers" ]]; then
-        # downstream trigger from eic/epic or eic/EICrecon (PR or push, not our own ref)
+        # downstream trigger from another repo (e.g. eic/epic, eic/EICrecon,
+        # eic/EDM4eic), PR or push, not our own ref
         VERSION="${CI_COMMIT_BRANCH}"
         GH_PUSH=""
         DH_PUSH=""
@@ -153,10 +154,13 @@ version:
           grep -- "- epic@${GEOM_VERSION}" "${ENV_FILE}" >/dev/null \
             || ( echo "Unable to locate epic release package for ${GEOM_VERSION} in ${ENV_FILE}"; exit 1; )
         done
-      elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-(alpha|beta|stable) ]]; then
+      # Parens/alternation avoided in the patterns below: the alpine image's
+      # /bin/sh (BusyBox ash) chokes on raw '(' inside [[ =~ ]] with a hard
+      # syntax error, rather than just failing to match.
+      elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-alpha ]] || [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-beta ]] || [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-stable ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
         EXPORT_TAG="${VERSION}"
-      elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-[a-z]+-(alpha|beta|stable) ]]; then
+      elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-[a-z]+-alpha ]] || [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-[a-z]+-beta ]] || [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-[a-z]+-stable ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
         EXPORT_TAG="${VERSION}"
       elif [[ "$CI_COMMIT_BRANCH" =~ ^master$ ]]; then
