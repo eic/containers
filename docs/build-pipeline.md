@@ -125,7 +125,6 @@ sequenceDiagram
     GH->>GH: Free disk space
     GH->>GH: Checkout repository
     GH->>GH: Resolve benchmark SHAs
-    GH->>GH: Resolve campaign SHAs
     GH->>GH: Generate mirrors.yaml
     GH->>GH: Setup Docker Buildx
     GH->>C: Restore build mount caches<br/>ccache, spack source
@@ -142,7 +141,6 @@ sequenceDiagram
 - `ENV` - Environment type (`ci` or `xl`)
 - `INTERNAL_TAG` - Base image tag to build from
 - Benchmark SHAs for common_bench, detector_benchmarks, etc.
-- Campaign SHAs for simulation_campaign_hepmc3, job_submission_*, etc.
 
 **Secret Mounts:**
 - `mirrors.yaml` - Spack buildcache configuration with credentials

@@ -386,27 +386,12 @@ git -C /opt/benchmarks/physics_benchmarks checkout ${BENCHMARK_PHY_SHA:-master}
 ln -sf /opt/benchmarks/common_bench /opt/benchmarks/physics_benchmarks/.local
 EOF
 
-## Install campaigns into the container
-ARG CAMPAIGNS_HEPMC3_SHA=""
-ARG CAMPAIGNS_CONDOR_SHA=""
-ARG CAMPAIGNS_SLURM_SHA=""
-RUN <<EOF
-git clone https://github.com/eic/simulation_campaign_hepmc3.git /opt/campaigns/hepmc3
-git -C /opt/campaigns/hepmc3 checkout ${CAMPAIGNS_HEPMC3_SHA:-main}
-git clone https://github.com/eic/job_submission_condor.git /opt/campaigns/condor
-git -C /opt/campaigns/condor checkout ${CAMPAIGNS_CONDOR_SHA:-main}
-git clone https://github.com/eic/job_submission_slurm.git /opt/campaigns/slurm
-git -C /opt/campaigns/slurm checkout ${CAMPAIGNS_SLURM_SHA:-main}
-EOF
-
 ## Place cvmfs catalogs
 RUN <<EOF
 set -e
-# Benchmark and campaign git repos each change independently
+# Benchmark git repos each change independently
 touch /opt/benchmarks/.cvmfscatalog
 find /opt/benchmarks -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
-touch /opt/campaigns/.cvmfscatalog
-find /opt/campaigns -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
 EOF
 
 ## make sure we have the entrypoints setup correctly
