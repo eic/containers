@@ -4,6 +4,8 @@
 # - /etc/jug_info contains a line with jug_.*
 # - /etc/jug_info contains version info: 25.08.0-stable-*
 # - /opt/detector/epic-${version}/bin/thisepic.sh exists
+# If $DETECTOR_PATH is set, the installed geometry with that path is loaded again
+# (a00_cleanup.sh resets LD_LIBRARY_PATH each time the profile scripts run).
 file=/etc/jug_info
 # A wrapper that blocks propagation of $@, $1, etc.
 _sourceWithoutArgs() {
@@ -11,7 +13,15 @@ _sourceWithoutArgs() {
     shift
     . "$fileToSource"
 }
-if test -z "$DETECTOR_PATH" -a -z "$DETECTOR_CONFIG" ; then
+if test -n "$DETECTOR_PATH" ; then
+  thisepic=$(grep -lxF "export DETECTOR_PATH=$(readlink -f "$DETECTOR_PATH")" /opt/detector/epic-*/bin/thisepic.sh 2>/dev/null | head -n 1)
+  if test -n "$thisepic" ; then
+    config="$DETECTOR_CONFIG"
+    # shellcheck source=/dev/null  # path depends on the selected geometry
+    _sourceWithoutArgs "$thisepic"
+    export DETECTOR_CONFIG="${config:-$DETECTOR_CONFIG}"
+  fi
+elif test -z "$DETECTOR_CONFIG" ; then
   if test -f "$file" ; then
     version="main"
     eic_container_version=$(sed -n 's/.*jug_.*: \(.*\)/\1/p' "$file")
