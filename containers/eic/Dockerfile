@@ -157,18 +157,56 @@ RUN --mount=type=cache,target=/root/.spack/cache/concretization,id=spack-concret
     <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
+
+## Apply an in-place version override, failing if it matched nothing.
+##
+## sed exits 0 when its address matches no line, so a marker comment that has
+## been renamed, reformatted or dropped silently turns an override into a
+## no-op. The image is then built against the default version while the build
+## arguments say otherwise -- the failure mode behind issue #26. Compare the
+## file before and after instead of trusting sed's exit status.
+require_override() {
+  marker="$1" ; file="$2" ; shift 2
+  before=$(cat "${file}")
+  for expr in "$@" ; do
+    sed -i "${expr}" "${file}"
+  done
+  if [ "${before}" = "$(cat "${file}")" ] ; then
+    echo "ERROR: ${marker} override requested but nothing changed in ${file}." >&2
+    echo "       The '# ${marker}' marker is missing, or the spec it tags no" >&2
+    echo "       longer has the expected form. Refusing to build against the" >&2
+    echo "       default version while reporting the override as applied." >&2
+    exit 1
+  fi
+  ## Log the resulting spec. `|| true` keeps this purely informational line
+  ## from tripping `set -e` if the marker is ever not re-emitted.
+  echo "Applied ${marker} override in ${file}:"
+  grep -n "# ${marker}\$" "${file}" || true
+}
+
 if [ -n "${EDM4EIC_SHA}" ] ; then
-  sed -i "/# EDM4EIC_VERSION$/ s/@[^' ]*/@git.${EDM4EIC_SHA}=main/" /opt/spack-environment/packages.yaml
+  require_override EDM4EIC_VERSION /opt/spack-environment/packages.yaml \
+    "/# EDM4EIC_VERSION\$/ s/@[^' ]*/@git.${EDM4EIC_SHA}=main/"
   spack deconcretize -y --all edm4eic
 fi
 if [ -n "${EICRECON_SHA}" ] ; then
-  sed -i "/# EICRECON_VERSION$/ s/@[^' ]*/@git.${EICRECON_SHA}=main/" /opt/spack-environment/packages.yaml
+  require_override EICRECON_VERSION /opt/spack-environment/packages.yaml \
+    "/# EICRECON_VERSION\$/ s/@[^' ]*/@git.${EICRECON_SHA}=main/"
   spack deconcretize -y --all eicrecon
 fi
 if [ -n "${EPIC_SHA}" ] ; then
-  sed -i "/# EPIC_VERSION$/ s/epic\s/epic@git.${EPIC_SHA}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
-  sed -i "/# EPIC_VERSION$/ s/epic@main\s/epic@git.${EPIC_SHA}=main /" /opt/spack-environment/${ENV}/epic/spack.yaml
-  spack deconcretize -y --all epic
+  ## Unlike the two above, the epic marker lives in the per-environment spec
+  ## file, and some environments (tf) deliberately build no epic at all. Only
+  ## require the override to apply where an epic spec is actually present, so
+  ## that a dropped marker still fails loudly without breaking those.
+  if grep -qE '^[[:space:]]*-[[:space:]]*epic([@[:space:]]|$)' /opt/spack-environment/${ENV}/epic/spack.yaml ; then
+    require_override EPIC_VERSION /opt/spack-environment/${ENV}/epic/spack.yaml \
+      "/# EPIC_VERSION\$/ s/epic\s/epic@git.${EPIC_SHA}=main /" \
+      "/# EPIC_VERSION\$/ s/epic@main\s/epic@git.${EPIC_SHA}=main /"
+    spack deconcretize -y --all epic
+  else
+    echo "Environment ${ENV} declares no epic spec; skipping EPIC_VERSION override."
+  fi
 fi
 spack concretize --force
 EOF
