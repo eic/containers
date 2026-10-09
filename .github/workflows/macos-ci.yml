@@ -109,6 +109,7 @@ jobs:
         with:
           repository: spack/spack-packages
           path: spack/var/spack/repos/spack-packages
+          fetch-depth: 0
           ref: ${{ steps.spack-config.outputs.spackpackages-version }}
 
       - name: Configure spack-packages
@@ -172,12 +173,23 @@ jobs:
           spack external find --scope site llvm
 
       - name: Configure buildcache
+        env:
+          # Only push to the buildcache from trusted contexts: pushes to
+          # master, manual runs, and PRs from this repository. PRs from forks
+          # get no secrets and only read from the (public) buildcache.
+          PUSH_BUILDCACHE: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         run: |
-          spack mirror add --scope site eic \
-            --autopush --unsigned \
-            --oci-username-variable GITHUB_REGISTRY_USER \
-            --oci-password-variable GITHUB_REGISTRY_TOKEN \
-            oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
+          mirror=oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
+          if [ "${PUSH_BUILDCACHE}" = "true" ] && [ -n "${GITHUB_REGISTRY_TOKEN}" ]; then
+            spack mirror add --scope site eic \
+              --autopush --unsigned \
+              --oci-username-variable GITHUB_REGISTRY_USER \
+              --oci-password-variable GITHUB_REGISTRY_TOKEN \
+              "${mirror}"
+          else
+            echo "Buildcache is read-only for this run"
+            spack mirror add --scope site eic --unsigned "${mirror}"
+          fi
 
       - name: Concretize base environment
         run: |
