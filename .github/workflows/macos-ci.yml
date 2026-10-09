@@ -200,18 +200,23 @@ jobs:
         continue-on-error: true
         run: |
           # Surface the real exception behind numpy's generic
-          # "should not import numpy from its source directory" message
+          # "should not import numpy from its source directory" message,
+          # both in a plain loaded environment and in a package build environment
           for env in spack-environment/${{matrix.ENV}} spack-environment/${{matrix.ENV}}/epic; do
             echo "::group::${env}"
-            spack -e "${env}" find -lpv py-numpy openblas || true
-            eval "$(spack -e "${env}" load --sh py-numpy)" || true
-            cd /tmp
-            which python3 || true
-            python3 -v -c 'import numpy' 2>&1 | tail -40 || true
-            python3 -c 'import numpy.version; print(numpy.version.version)' || true
-            for so in $(find "$(spack -e "${env}" location -i py-numpy)" -name '_multiarray_umath*.so' | head -1); do
-              otool -L "${so}" || true
+            spack -e "${env}" -c view:false find -lpv py-numpy openblas || true
+            echo "--- loaded environment"
+            (
+              eval "$(spack -e "${env}" -c view:false load --sh py-numpy)"
+              cd /tmp
+              python3 -c 'import numpy; print(numpy.__version__, numpy.__file__)' 2>&1 | tail -30
+              so=$(find "$(spack -e "${env}" -c view:false location -i py-numpy)" -name '_multiarray_umath*.so' | head -1)
+              otool -L "${so}"
+            ) || true
+            echo "--- build environment of a failing dependent"
+            for pkg in py-scipy py-numexpr; do
+              spack -e "${env}" -c view:false build-env "${pkg}" -- \
+                python3 -c 'import sys, numpy; print(numpy.__file__)' 2>&1 | tail -40 || true
             done
-            cd - > /dev/null
             echo "::endgroup::"
           done
