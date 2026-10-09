@@ -2,7 +2,6 @@ spack:
   include:
   - ../concretizer.yaml
   - ../config.yaml
-  - ../packages.yaml
   - path: ../packages_darwin.yaml
     when: platform == "darwin"
   - path: ../packages_linux.yaml
@@ -10,6 +9,7 @@ spack:
   - ../packages_cvmfs_geant4data.yaml
   - ../packages_root_without_opengl.yaml
   - ../view.yaml
+  - ../packages.yaml
   specs:
   - acts
   - actsvg
