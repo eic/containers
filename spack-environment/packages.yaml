@@ -60,7 +60,7 @@ packages:
     - +brotli +bz2 +dataset +filesystem +glog +ipc +jemalloc +lz4 +parquet +snappy +zlib +zstd
   binutils:
     require:
-    - '@2.44:'
+    - ~gold
   blas:
     require:
     - openblas
@@ -73,26 +73,14 @@ packages:
     - cxxstd=20
   c:
     prefer:
-    - spec: gcc
-      when: platform=linux
-    - spec: apple-clang
-      when: platform=darwin
+    - gcc
     require:
-    - spec: gcc
-      when: platform=linux
-    - spec: apple-clang
-      when: platform=darwin
+    - gcc
   cxx:
     prefer:
-    - spec: gcc
-      when: platform=linux
-    - spec: apple-clang
-      when: platform=darwin
+    - gcc
     require:
-    - spec: gcc
-      when: platform=linux
-    - spec: apple-clang
-      when: platform=darwin
+    - gcc
   cairo:
     require:
     - '@1.18.2:'
@@ -223,15 +211,9 @@ packages:
     - +shared cxxstd=20
   fortran:
     prefer:
-    - spec: gcc
-      when: platform=linux
-    - spec: gcc
-      when: platform=darwin
+    - gcc
     require:
-    - spec: gcc
-      when: platform=linux
-    - spec: gcc
-      when: platform=darwin
+    - gcc
   freetype:
     require:
     - build_system=autotools
@@ -275,13 +257,7 @@ packages:
     require:
     - '@11.4.1.east'
     - cxxstd=20 -vecgeom +threads -vtk
-    - any_of: [+opengl +qt, -opengl -qt]
-    - spec: ~x11
-      when: ~opengl platform=linux
-    - spec: +x11
-      when: +opengl platform=linux
-    - spec: ~x11
-      when: platform=darwin
+    - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   geant4-data:
     require:
     - +nudexlib +tendl +urrpt
@@ -296,16 +272,10 @@ packages:
     - ~gtk
   gl:
     require:
-    - spec: glx
-      when: platform=linux
-    - spec: apple-gl
-      when: platform=darwin
+    - glx
   glu:
     require:
-    - spec: openglu
-      when: platform=linux
-    - spec: apple-glu
-      when: platform=darwin
+    - openglu
   gloo:
     require:
     - '@2023-12-03'
@@ -697,12 +667,8 @@ packages:
   root:
     require:
     - '@6.40.04'
-    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +xrootd +ssl
+    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
-    - spec: +x
-      when: platform=linux
-    - spec: ~x
-      when: platform=darwin
   rucio-eic-mcp-server:
     require:
     - '@=0.2.0'
