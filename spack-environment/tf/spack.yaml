@@ -9,8 +9,13 @@ spack:
     tensorflow: [py-tensorflow +cuda]
   - when: arch.satisfies("platform=darwin")
     tensorflow: [py-tensorflow ~cuda]
+  - when: arch.satisfies("platform=linux")
+    linux_packages: [py-onnxruntime]
+  - when: arch.satisfies("platform=darwin")
+    linux_packages: []
   specs:
   - $tensorflow
+  - $linux_packages
   - edm4hep
   - onnx
   - osg-ca-certs
@@ -40,7 +45,6 @@ spack:
   - py-numba
   - py-numpy
   - py-onnx
-  - py-onnxruntime
   - py-pandas
   - py-particle
   - py-pip

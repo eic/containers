@@ -194,3 +194,24 @@ jobs:
       - name: Install epic environment
         run: |
           spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install --no-check-signature --show-log-on-error
+
+      - name: Diagnose numpy import
+        if: failure()
+        continue-on-error: true
+        run: |
+          # Surface the real exception behind numpy's generic
+          # "should not import numpy from its source directory" message
+          for env in spack-environment/${{matrix.ENV}} spack-environment/${{matrix.ENV}}/epic; do
+            echo "::group::${env}"
+            spack -e "${env}" find -lpv py-numpy openblas || true
+            eval "$(spack -e "${env}" load --sh py-numpy)" || true
+            cd /tmp
+            which python3 || true
+            python3 -v -c 'import numpy' 2>&1 | tail -40 || true
+            python3 -c 'import numpy.version; print(numpy.version.version)' || true
+            for so in $(find "$(spack -e "${env}" location -i py-numpy)" -name '_multiarray_umath*.so' | head -1); do
+              otool -L "${so}" || true
+            done
+            cd - > /dev/null
+            echo "::endgroup::"
+          done
