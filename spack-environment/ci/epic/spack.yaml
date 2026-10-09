@@ -6,6 +6,8 @@ spack:
   - path: ../../packages_darwin.yaml
     when: platform == "darwin"
   - ../../packages.yaml
+  - path: ../../packages_linux.yaml
+    when: platform == "linux"
   - ../../view.yaml
   packages:
     geant4:

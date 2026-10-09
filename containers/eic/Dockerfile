@@ -224,6 +224,7 @@ COPY --from=builder_installation_custom \
   /opt/spack-environment/${ENV}/epic/
 COPY --from=builder_installation_custom \
   /opt/spack-environment/packages.yaml \
+  /opt/spack-environment/packages_linux.yaml \
   /opt/spack-environment/
 
 
