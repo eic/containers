@@ -9,7 +9,23 @@ spack:
   # Note that in definitions 'when' takes a python expression as argument
   # https://spack.readthedocs.io/en/latest/environments.html#spec-list-references
   - when: arch.satisfies("platform=linux")
-    linux_packages: [strace, valgrind]
+    linux_packages:
+    - dawncut
+    - gdb
+    - gfal2
+    - gfal2-util
+    - graphviz
+    - herwig3
+    - imagemagick
+    - lcov
+    - madx
+    - mosquitto
+    - nopayloadclient
+    - ollama
+    - py-onnxruntime
+    - slurm sysconfdir=/etc/slurm
+    - strace
+    - valgrind
   - when: arch.satisfies("platform=darwin")
     linux_packages: []
   specs:
@@ -31,7 +47,6 @@ spack:
   - covfie
   - cppcoro
   - dawn
-  - dawncut
   - dd4hep
   - doxygen
   - dusk
@@ -49,36 +64,25 @@ spack:
   - fjcontrib
   - fmt
   - g4occt
-  - gdb
   - geant4 +opengl
-  - gfal2
-  - gfal2-util
   - github-copilot
-  - graphviz
   - hepmc3
   - hepmcmerger
   - heppdt
-  - herwig3
-  - imagemagick
   - irt
   - irt2
   - iwyu
   - jana2
   - just
   - lager
-  - lcov
   - lhapdf
   - lhapdfsets
   - libtool
   - lzo
-  - madx
-  - mosquitto
   - multitime
   - nano
   - ninja
-  - nopayloadclient
   - npsim
-  - ollama
   - onnx
   - opencascade
   - opencode
@@ -117,7 +121,6 @@ spack:
   - py-htgettoken
   - py-numpy
   - py-onnx
-  - py-onnxruntime
   - py-openpyxl
   - py-pandas
   - py-particle
@@ -145,7 +148,6 @@ spack:
   - timeframebuilder
   - sherpa
   - simsipm
-  - slurm sysconfdir=/etc/slurm
   - snakemake
   - spdlog
   - stow
