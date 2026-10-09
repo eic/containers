@@ -10,14 +10,19 @@ spack:
   # https://spack.readthedocs.io/en/latest/environments.html#spec-list-references
   - when: arch.satisfies("platform=linux")
     linux_packages:
+    - gfal2
+    - gfal2-util
+    - graphviz
     - imagemagick
     - nopayloadclient
     - ollama
     - py-numpy
+    - py-onnxruntime
     - py-scipy
   - when: arch.satisfies("platform=darwin")
     linux_packages: []
   specs:
+  - $linux_packages
   - acts
   - actsvg
   - afterburner
@@ -31,9 +36,6 @@ spack:
   - fjcontrib
   - fmt
   - geant4 -opengl
-  - gfal2
-  - gfal2-util
-  - graphviz
   - hepmc3
   - hepmcmerger
   - heppdt
@@ -70,7 +72,6 @@ spack:
   - py-mplhep
   - py-htgettoken
   - py-onnx
-  - py-onnxruntime
   - py-pandas
   - py-particle
   - py-pip
