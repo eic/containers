@@ -91,6 +91,11 @@ jobs:
 
           # Apply cherry-picks from spack.sh (match only valid git commit hashes)
           while read -r commit; do
+            # Commits on branches/forks not fetched above are served by SHA
+            if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
+              echo "Fetching ${commit} by SHA"
+              git fetch origin "${commit}"
+            fi
             if git merge-base --is-ancestor "${commit}" HEAD; then
               echo "Skipping already applied ${commit}"
               continue
