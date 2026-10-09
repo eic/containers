@@ -1,0 +1,38 @@
+# macOS overrides for packages.yaml, included only on darwin via
+#   - path: ../packages_darwin.yaml
+#     when: platform == "darwin"
+# This scope must be listed after any packages_root_*.yaml and before
+# packages.yaml, so that `::` replaces the Linux settings of packages.yaml
+# but keeps the lists from the more specific includes.
+packages:
+  binutils:
+    require::
+    - '@2.44:'
+  c:
+    prefer::
+    - apple-clang
+    require::
+    - apple-clang
+  cxx:
+    prefer::
+    - apple-clang
+    require::
+    - apple-clang
+  geant4:
+    require::
+    - '@11.4.1.east'
+    - cxxstd=20 -vecgeom +threads -vtk
+    - any_of: [+opengl +qt, -opengl -qt]
+    - ~x11
+  gl:
+    require::
+    - apple-gl
+  glu:
+    require::
+    - apple-glu
+  root:
+    require::
+    - '@6.40.04'
+    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +xrootd +ssl
+    - any_of: [+opengl +webgui, -opengl -webgui]
+    - ~x

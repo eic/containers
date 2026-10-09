@@ -2,6 +2,8 @@ spack:
   include:
   - ../concretizer.yaml
   - ../config.yaml
+  - path: ../packages_darwin.yaml
+    when: platform == "darwin"
   - ../packages.yaml
   - ../view.yaml
   definitions:

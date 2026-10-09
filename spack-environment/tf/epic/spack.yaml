@@ -3,6 +3,8 @@ spack:
   - ../spack.lock
   - ../../concretizer.yaml
   - ../../config.yaml
+  - path: ../../packages_darwin.yaml
+    when: platform == "darwin"
   - ../../packages.yaml
   - ../../view.yaml
   specs:
