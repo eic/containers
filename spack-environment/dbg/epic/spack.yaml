@@ -3,12 +3,12 @@ spack:
   - ../spack.lock
   - ../../concretizer.yaml
   - ../../config.yaml
-  - ../../packages.yaml
   - path: ../../packages_darwin.yaml
     when: platform == "darwin"
   - path: ../../packages_linux.yaml
     when: platform == "linux"
   - ../../view.yaml
+  - ../../packages.yaml
   specs:
   - algorithms build_type=Debug
   - edm4eic build_type=Debug

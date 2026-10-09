@@ -5,10 +5,10 @@ spack:
   - ../packages_root_with_opengl.yaml
   - path: ../packages_darwin.yaml
     when: platform == "darwin"
-  - ../packages.yaml
   - path: ../packages_linux.yaml
     when: platform == "linux"
   - ../view.yaml
+  - ../packages.yaml
   definitions:
   # Note that in definitions 'when' takes a python expression as argument
   # https://spack.readthedocs.io/en/latest/environments.html#spec-list-references

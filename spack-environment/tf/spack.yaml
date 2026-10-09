@@ -4,10 +4,10 @@ spack:
   - ../config.yaml
   - path: ../packages_darwin.yaml
     when: platform == "darwin"
-  - ../packages.yaml
   - path: ../packages_linux.yaml
     when: platform == "linux"
   - ../view.yaml
+  - ../packages.yaml
   definitions:
   - when: arch.satisfies("platform=linux")
     tensorflow: [py-tensorflow +cuda]
