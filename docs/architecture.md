@@ -152,3 +152,4 @@ Package versions are controlled through several configuration files:
 | `key4hep-spack.sh` | Key4HEP-spack version |
 | `eic-spack.sh` | EIC-spack version |
 | `spack-environment/packages.yaml` | Package version preferences and variants |
+| `spack-environment/packages_linux.yaml`, `packages_darwin.yaml` | Platform-specific settings (compiler, GL, X11), included per platform |
