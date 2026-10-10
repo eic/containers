@@ -225,6 +225,7 @@ COPY --from=builder_installation_custom \
 COPY --from=builder_installation_custom \
   /opt/spack-environment/packages.yaml \
   /opt/spack-environment/packages_linux.yaml \
+  /opt/spack-environment/packages_darwin.yaml \
   /opt/spack-environment/
 
 
