@@ -54,6 +54,7 @@ d18c9ad43ea50d71e666c8a859da3293e4776c19
 e30e760a6959a4112d5dc04ecc0755813eaee8ee
 3dcad5bb860184c91c17b97a9f3b13252d26d309
 1f62e6dad616bc35838c3406cdb8bddaeb140f8c
+2c6cffb62077d9e335b740497da9e1628984e772
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -105,3 +106,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## e30e760a6959a4112d5dc04ecc0755813eaee8ee: py-awkward-cpp: require py-pybind11@3: for @48:
 ## 3dcad5bb860184c91c17b97a9f3b13252d26d309: readline: switch url for patch download
 ## 1f62e6dad616bc35838c3406cdb8bddaeb140f8c: openblas: fix dylib install name for cmake build on macOS
+## 2c6cffb62077d9e335b740497da9e1628984e772: binutils: add v2.47
