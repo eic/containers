@@ -12,9 +12,9 @@ spack:
   - when: arch.satisfies("platform=linux")
     tensorflow: [py-tensorflow +cuda]
   - when: arch.satisfies("platform=darwin")
-    tensorflow: [py-tensorflow ~cuda]
+    tensorflow: []
   - when: arch.satisfies("platform=linux")
-    linux_packages: [py-onnxruntime]
+    linux_packages: [py-keras, py-onnxruntime, py-tf2onnx]
   - when: arch.satisfies("platform=darwin")
     linux_packages: []
   specs:
@@ -40,7 +40,6 @@ spack:
   - py-jinja2-cli
   - py-jupyter-console
   - py-jupyterlab
-  - py-keras
   - py-lmfit
   - py-lxml
   - py-matplotlib
@@ -56,7 +55,6 @@ spack:
   - py-rucio-clients
   - py-scipy
   - py-seaborn
-  - py-tf2onnx
   - py-toml
   - py-uproot
   - py-vector
