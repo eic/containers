@@ -2,9 +2,13 @@ spack:
   include:
   - ../concretizer.yaml
   - ../config.yaml
-  - ../packages.yaml
+  - path: ../packages_darwin.yaml
+    when: platform == "darwin"
+  - path: ../packages_linux.yaml
+    when: platform == "linux"
   - ../packages_root_without_opengl.yaml
   - ../view.yaml
+  - ../packages.yaml
   specs:
   - acts build_type=Debug
   - cmake

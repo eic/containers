@@ -58,9 +58,6 @@ packages:
     require:
     - '@22:'
     - +brotli +bz2 +dataset +filesystem +glog +ipc +jemalloc +lz4 +parquet +snappy +zlib +zstd
-  binutils:
-    require:
-    - ~gold
   blas:
     require:
     - openblas
@@ -71,16 +68,6 @@ packages:
     - +iostreams +locale +log +math +program_options +python +random +regex
     - +serialization +system +test +thread +timer +wave
     - cxxstd=20
-  c:
-    prefer:
-    - gcc
-    require:
-    - gcc
-  cxx:
-    prefer:
-    - gcc
-    require:
-    - gcc
   cairo:
     require:
     - '@1.18.2:'
@@ -136,9 +123,6 @@ packages:
     - '@1.38'
     - +ddg4 +ddcad +edm4hep +g4hepem +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
-  doxygen:
-    require:
-    - +graphviz
   dpmjet:
     require:
     - '@19.3.5'
@@ -257,7 +241,6 @@ packages:
     require:
     - '@11.4.1.east'
     - cxxstd=20 -vecgeom +threads -vtk
-    - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   geant4-data:
     require:
     - +nudexlib +tendl +urrpt
@@ -270,12 +253,6 @@ packages:
   ghostscript:
     require:
     - ~gtk
-  gl:
-    require:
-    - glx
-  glu:
-    require:
-    - openglu
   gloo:
     require:
     - '@2023-12-03'
@@ -667,7 +644,7 @@ packages:
   root:
     require:
     - '@6.40.04'
-    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
+    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   rucio-eic-mcp-server:
     require:

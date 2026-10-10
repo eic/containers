@@ -2,10 +2,41 @@ spack:
   include:
   - ../concretizer.yaml
   - ../config.yaml
-  - ../packages.yaml
   - ../packages_root_with_opengl.yaml
+  - path: ../packages_darwin.yaml
+    when: platform == "darwin"
+  - path: ../packages_linux.yaml
+    when: platform == "linux"
   - ../view.yaml
+  - ../packages.yaml
+  definitions:
+  # Note that in definitions 'when' takes a python expression as argument
+  # https://spack.readthedocs.io/en/latest/environments.html#spec-list-references
+  - when: arch.satisfies("platform=linux")
+    linux_packages:
+    - dawncut
+    - estarlight
+    - gdb
+    - gfal2
+    - gfal2-util
+    - graphviz
+    - herwig3
+    - imagemagick
+    - lager
+    - lcov
+    - madx
+    - mosquitto
+    - nopayloadclient
+    - ollama
+    - py-onnxruntime
+    - sherpa
+    - slurm sysconfdir=/etc/slurm
+    - strace
+    - valgrind
+  - when: arch.satisfies("platform=darwin")
+    linux_packages: []
   specs:
+  - $linux_packages
   - acts
   - actsvg
   - afterburner
@@ -23,7 +54,6 @@ spack:
   - covfie
   - cppcoro
   - dawn
-  - dawncut
   - dd4hep
   - doxygen
   - dusk
@@ -36,41 +66,28 @@ spack:
   - eigen
   - emacs
   - epic-generator
-  - estarlight
   - fastjet
   - fjcontrib
   - fmt
   - g4occt
-  - gdb
   - geant4 +opengl
-  - gfal2
-  - gfal2-util
   - github-copilot
-  - graphviz
   - hepmc3
   - hepmcmerger
   - heppdt
-  - herwig3
-  - imagemagick
   - irt
   - irt2
   - iwyu
   - jana2
   - just
-  - lager
-  - lcov
   - lhapdf
   - lhapdfsets
   - libtool
   - lzo
-  - madx
-  - mosquitto
   - multitime
   - nano
   - ninja
-  - nopayloadclient
   - npsim
-  - ollama
   - onnx
   - opencascade
   - opencode
@@ -109,7 +126,6 @@ spack:
   - py-htgettoken
   - py-numpy
   - py-onnx
-  - py-onnxruntime
   - py-openpyxl
   - py-pandas
   - py-particle
@@ -135,15 +151,11 @@ spack:
   - root
   - rucio-eic-mcp-server
   - timeframebuilder
-  - sherpa
   - simsipm
-  - slurm sysconfdir=/etc/slurm
   - snakemake
   - spdlog
   - stow
-  - strace
   - uproot-mcp-server
-  - valgrind
   - xeyes
   - xrootd
   - xrootd-mcp-server

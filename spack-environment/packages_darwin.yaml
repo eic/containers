@@ -1,0 +1,35 @@
+# macOS-specific settings, complementing the cross-platform packages.yaml.
+# Included from the environments via
+#   - path: ../packages_darwin.yaml
+#     when: platform == "darwin"
+# See packages_linux.yaml for the Linux counterpart.
+packages:
+  binutils:
+    require:
+    - '@2.47:'  # 2.46.1 libiberty does not build with Apple clang 21+
+  doxygen:
+    require:
+    - ~graphviz
+  c:
+    prefer:
+    - apple-clang
+    require:
+    - apple-clang
+  cxx:
+    prefer:
+    - apple-clang
+    require:
+    - apple-clang
+  geant4:
+    require:
+    - any_of: [+opengl +qt, -opengl -qt]
+    - ~x11
+  gl:
+    require:
+    - apple-gl
+  glu:
+    require:
+    - apple-glu
+  root:
+    require:
+    - ~x

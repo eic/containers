@@ -1,0 +1,36 @@
+# Linux-specific settings, complementing the cross-platform packages.yaml.
+# Included from the environments via
+#   - path: ../packages_linux.yaml
+#     when: platform == "linux"
+# See packages_darwin.yaml for the macOS counterpart. Do not use `when:` on
+# the virtual packages (c, cxx, ...) here: such conditional requirements are
+# not applied, which silently switches the compiler.
+packages:
+  binutils:
+    require:
+    - ~gold
+  c:
+    prefer:
+    - gcc
+    require:
+    - gcc
+  cxx:
+    prefer:
+    - gcc
+    require:
+    - gcc
+  doxygen:
+    require:
+    - +graphviz
+  geant4:
+    require:
+    - any_of: [+opengl +qt +x11, -opengl -qt -x11]
+  gl:
+    require:
+    - glx
+  glu:
+    require:
+    - openglu
+  root:
+    require:
+    - +x
