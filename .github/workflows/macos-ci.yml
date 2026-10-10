@@ -244,7 +244,7 @@ jobs:
           echo "::endgroup::"
           echo "::group::clang include search path"
           clang -E -v -x c /dev/null 2>&1 | sed -n '/search starts here/,/End of search list/p'
-          find /usr/local/include /opt/homebrew/include -maxdepth 2 \( -name limits.h -o -name fcntl.h -o -name spawn.h \) 2>/dev/null
+          find /usr/local/include /opt/homebrew/include -maxdepth 2 \( -name limits.h -o -name fcntl.h -o -name spawn.h \) 2>/dev/null || true
           echo "::endgroup::"
           for log in $(find "${TMPDIR:-/var/folders}" /var/folders -path '*spack-stage-binutils-*' -name config.log -path '*libiberty*' 2>/dev/null | head -2); do
             echo "::group::${log}"
