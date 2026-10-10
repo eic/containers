@@ -7,6 +7,9 @@ packages:
   binutils:
     require:
     - '@2.44:'
+    # libiberty/fibheap.c uses LONG_MIN without including <limits.h>, which
+    # newer Apple clang (21+) no longer provides implicitly
+    - cflags="-include limits.h"
   c:
     prefer:
     - apple-clang
