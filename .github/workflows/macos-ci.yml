@@ -171,11 +171,6 @@ jobs:
         run: |
           spack compiler find --scope site
           spack external find --scope site llvm
-          # binutils (a build dependency of e.g. py-onnxruntime) does not
-          # build from source with Apple clang 21+, use Homebrew's instead
-          brew install binutils
-          spack external find --scope site --path "$(brew --prefix binutils)/bin" binutils
-          spack config --scope site get packages
 
       - name: Configure buildcache
         env:
