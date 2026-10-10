@@ -15,18 +15,21 @@ spack:
   - when: arch.satisfies("platform=linux")
     linux_packages:
     - dawncut
+    - estarlight
     - gdb
     - gfal2
     - gfal2-util
     - graphviz
     - herwig3
     - imagemagick
+    - lager
     - lcov
     - madx
     - mosquitto
     - nopayloadclient
     - ollama
     - py-onnxruntime
+    - sherpa
     - slurm sysconfdir=/etc/slurm
     - strace
     - valgrind
@@ -63,7 +66,6 @@ spack:
   - eigen
   - emacs
   - epic-generator
-  - estarlight
   - fastjet
   - fjcontrib
   - fmt
@@ -78,7 +80,6 @@ spack:
   - iwyu
   - jana2
   - just
-  - lager
   - lhapdf
   - lhapdfsets
   - libtool
@@ -150,7 +151,6 @@ spack:
   - root
   - rucio-eic-mcp-server
   - timeframebuilder
-  - sherpa
   - simsipm
   - snakemake
   - spdlog
