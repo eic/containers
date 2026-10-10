@@ -123,9 +123,6 @@ packages:
     - '@1.38'
     - +ddg4 +ddcad +edm4hep +g4hepem +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
-  doxygen:
-    require:
-    - +graphviz
   dpmjet:
     require:
     - '@19.3.5'
