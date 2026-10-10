@@ -55,6 +55,7 @@ e30e760a6959a4112d5dc04ecc0755813eaee8ee
 3dcad5bb860184c91c17b97a9f3b13252d26d309
 1f62e6dad616bc35838c3406cdb8bddaeb140f8c
 2c6cffb62077d9e335b740497da9e1628984e772
+b9de13f9bde2543adb270ebeb1700f5639837745
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -107,3 +108,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 3dcad5bb860184c91c17b97a9f3b13252d26d309: readline: switch url for patch download
 ## 1f62e6dad616bc35838c3406cdb8bddaeb140f8c: openblas: fix dylib install name for cmake build on macOS
 ## 2c6cffb62077d9e335b740497da9e1628984e772: binutils: add v2.47
+## b9de13f9bde2543adb270ebeb1700f5639837745: Fix package builds for xcode tools v27 when on MacOS v26
