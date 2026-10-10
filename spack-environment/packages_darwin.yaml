@@ -7,9 +7,8 @@ packages:
   binutils:
     require:
     - '@2.44:'
-    # libiberty relies on implicit declarations and transitive includes
-    # (LONG_MIN, dup2, ...) that newer Apple clang (21+) rejects
-    - cflags="-include limits.h -include unistd.h -Wno-error=implicit-function-declaration"
+    # Building binutils from source fails with Apple clang 21+ (libiberty
+    # relies on implicit declarations); CI provides it as a Homebrew external
   doxygen:
     require:
     - ~graphviz
