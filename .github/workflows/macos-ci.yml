@@ -244,8 +244,10 @@ jobs:
           echo "::endgroup::"
           for log in $(find "${TMPDIR:-/var/folders}" /var/folders -path '*spack-stage-binutils-*' -name config.log -path '*libiberty*' 2>/dev/null | head -2); do
             echo "::group::${log}"
-            grep -nE "^(CC|CFLAGS|CPPFLAGS|LDFLAGS)=|limits\.h|fcntl\.h|spawn\.h|unistd\.h" "${log}" | head -60
-            echo "--- first failing conftest"
-            grep -nB2 -A12 -E "fatal error|error:" "${log}" | head -80
+            echo "--- limits.h probe"
+            grep -n -A32 "configure:[0-9]*: checking for limits.h" "${log}" | head -45
+            echo "--- deployment target"
+            grep -c "overriding deployment version" "${log}" || true
+            grep -n "MACOSX_DEPLOYMENT_TARGET\|ac_c_werror_flag" "${log}" | head -10
             echo "::endgroup::"
           done
