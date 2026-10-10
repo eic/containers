@@ -241,3 +241,19 @@ jobs:
             done
             echo "::endgroup::"
           done
+
+      - name: Diagnose binutils configure
+        if: failure()
+        continue-on-error: true
+        run: |
+          # Why do libiberty's configure header probes fail on the runner?
+          echo "::group::environment"
+          env | sort | grep -vE 'TOKEN|SECRET|PASSWORD'
+          echo "::endgroup::"
+          for log in $(find "${TMPDIR:-/var/folders}" /var/folders -path '*spack-stage-binutils-*' -name config.log -path '*libiberty*' 2>/dev/null | head -2); do
+            echo "::group::${log}"
+            grep -nE "^(CC|CFLAGS|CPPFLAGS|LDFLAGS)=|limits\.h|fcntl\.h|spawn\.h|unistd\.h" "${log}" | head -60
+            echo "--- first failing conftest"
+            grep -nB2 -A12 -E "fatal error|error:" "${log}" | head -80
+            echo "::endgroup::"
+          done
