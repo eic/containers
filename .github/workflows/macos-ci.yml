@@ -242,6 +242,18 @@ jobs:
           echo "::group::environment"
           env | sort | grep -vE 'TOKEN|SECRET|PASSWORD'
           echo "::endgroup::"
+          echo "::group::deployment target"
+          sw_vers
+          echo "SYSTEM_VERSION_COMPAT=${SYSTEM_VERSION_COMPAT-unset}"
+          spack python -c 'import spack.operating_systems.mac_os as m; print("spack macos_version:", m.macos_version())' || true
+          python3 -c 'import platform; print("python mac_ver:", platform.mac_ver()[0])' || true
+          for env in spack-environment/${{matrix.ENV}}; do
+            echo "--- build environment of binutils"
+            spack -e "${env}" -c view:false build-env binutils -- env 2>&1 | grep -iE 'MACOSX|SYSTEM_VERSION|SDKROOT|DEPLOYMENT|FLAGS' || true
+            echo "--- what clang computes there"
+            spack -e "${env}" -c view:false build-env binutils -- sh -c 'cd "$TMPDIR" && echo "int main(void){return 0;}" > dt.c && clang -c dt.c -o dt.o; clang -### -c dt.c 2>&1 | grep -oE "\"-target-sdk-version\"|\"-triple\" \"[^\"]+\"|\"-mmacos[^\"]*\""' 2>&1 | tail -20 || true
+          done
+          echo "::endgroup::"
           echo "::group::clang include search path"
           clang -E -v -x c /dev/null 2>&1 | sed -n '/search starts here/,/End of search list/p'
           find /usr/local/include /opt/homebrew/include -maxdepth 2 \( -name limits.h -o -name fcntl.h -o -name spawn.h \) 2>/dev/null || true
