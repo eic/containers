@@ -171,6 +171,11 @@ jobs:
         run: |
           spack compiler find --scope site
           spack external find --scope site llvm
+          # binutils (a build dependency of e.g. py-onnxruntime) does not
+          # build from source with Apple clang 21+, use Homebrew's instead
+          brew install binutils
+          spack external find --scope site --path "$(brew --prefix binutils)/bin" binutils
+          spack config --scope site get packages
 
       - name: Configure buildcache
         env:
@@ -196,8 +201,9 @@ jobs:
           # The environments' views (view.yaml) live under /opt, which is
           # not writable by default on macOS runners; the epic environment
           # updates them even with -c view:false
+          # (spack also renames /opt/local, so /opt itself must be writable)
           sudo mkdir -p /opt/local /opt/detector
-          sudo chown "$(id -u):$(id -g)" /opt/local /opt/detector
+          sudo chown "$(id -u):$(id -g)" /opt /opt/local /opt/detector
 
       - name: Concretize base environment
         run: |
