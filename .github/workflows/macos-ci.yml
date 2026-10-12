@@ -250,6 +250,10 @@ jobs:
           for env in spack-environment/${{matrix.ENV}}; do
             echo "--- build environment of binutils"
             spack -e "${env}" -c view:false build-env binutils -- env 2>&1 | grep -iE 'MACOSX|SYSTEM_VERSION|SDKROOT|DEPLOYMENT|FLAGS' || true
+            echo "--- MACOSX_DEPLOYMENT_TARGET per dependency of binutils (build-env of each)"
+            for dep in flex bison gettext zlib zlib-ng pkgconf gmake diffutils texinfo m4 libiconv zstd binutils; do
+              echo "${dep}: $(spack -e "${env}" -c view:false build-env "${dep}" -- sh -c 'echo "${MACOSX_DEPLOYMENT_TARGET-unset}"' 2>&1 | tail -1)"
+            done
             echo "--- what clang computes there"
             spack -e "${env}" -c view:false build-env binutils -- sh -c 'cd "$TMPDIR" && echo "int main(void){return 0;}" > dt.c && clang -c dt.c -o dt.o; clang -### -c dt.c 2>&1 | grep -oE "\"-target-sdk-version\"|\"-triple\" \"[^\"]+\"|\"-mmacos[^\"]*\""' 2>&1 | tail -20 || true
           done
