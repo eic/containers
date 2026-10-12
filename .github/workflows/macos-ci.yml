@@ -254,6 +254,10 @@ jobs:
             for dep in flex bison gettext zlib zlib-ng pkgconf gmake diffutils texinfo m4 libiconv zstd binutils; do
               echo "${dep}: $(spack -e "${env}" -c view:false build-env "${dep}" -- sh -c 'echo "${MACOSX_DEPLOYMENT_TARGET-unset}"' 2>&1 | tail -1)"
             done
+            echo "--- dependencies considered for the pkgconf build environment (10.16) and their own value"
+            for dep in $(spack -d -e "${env}" -c view:false build-env pkgconf -- true 2>&1 | sed -n 's/.*Adding env modifications for \([^ ]*\).*/\1/p' | sort -u); do
+              echo "${dep}: $(spack -e "${env}" -c view:false build-env "${dep}" -- sh -c 'echo "${MACOSX_DEPLOYMENT_TARGET-unset}"' 2>&1 | tail -1)"
+            done
             echo "--- what clang computes there"
             spack -e "${env}" -c view:false build-env binutils -- sh -c 'cd "$TMPDIR" && echo "int main(void){return 0;}" > dt.c && clang -c dt.c -o dt.o; clang -### -c dt.c 2>&1 | grep -oE "\"-target-sdk-version\"|\"-triple\" \"[^\"]+\"|\"-mmacos[^\"]*\""' 2>&1 | tail -20 || true
           done
