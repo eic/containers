@@ -59,6 +59,7 @@ e07e4f4066977605e0eb0675614ef45baa7d8e6f
 09f5644e0623079c880d618ff256176fe301469e
 d69526ad8b5190298a6f0e101954ad4c5141f62c
 b9de13f9bde2543adb270ebeb1700f5639837745
+e9b2c22d99fc3e16d93d1f1d47f89dc6e1a55826
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -115,3 +116,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 09f5644e0623079c880d618ff256176fe301469e: flex: fix libfl link failure on macOS
 ## d69526ad8b5190298a6f0e101954ad4c5141f62c: libevent: fix dylib link failure on macOS
 ## b9de13f9bde2543adb270ebeb1700f5639837745: Fix package builds for xcode tools v27 when on MacOS v26
+## e9b2c22d99fc3e16d93d1f1d47f89dc6e1a55826: py-onnxruntime: use Spack's protoc also on Darwin
