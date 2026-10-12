@@ -28,6 +28,9 @@ jobs:
     env:
       GITHUB_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
       GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+      CVMFS_REPO: singularity.opensciencegrid.org
+      CVMFS_PATH_PREFIX: eicweb
+      PUBLISH_IMAGE_REPO: ghcr.io/${{ github.repository_owner }}
 
     steps:
       - name: Checkout repository
@@ -159,10 +162,47 @@ jobs:
           cd ${{ github.workspace }}/spack
           spack repo add var/spack/repos/eic-spack/spack_repo/eic
 
+      - name: Setup CVMFS mount point and install directories
+        id: cvmfs-dirs
+        run: |
+          # Set up synthetic firmlink for /cvmfs on macOS
+          sudo mkdir -p /System/Volumes/Data/cvmfs
+          sudo chown -R "$(id -u):$(id -g)" /System/Volumes/Data/cvmfs
+          if ! grep -q '^cvmfs[[:space:]]' /etc/synthetic.conf 2>/dev/null; then
+            printf 'cvmfs\tSystem/Volumes/Data/cvmfs\n' | sudo tee -a /etc/synthetic.conf
+          fi
+          sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || true
+
+          # Determine tags and install root
+          IMAGE_NAME="mac_${{ matrix.ENV }}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            PRIMARY_TAG="unstable-pr-${{ github.event.pull_request.number }}"
+          elif [ "${{ github.ref_name }}" = "master" ]; then
+            PRIMARY_TAG="nightly"
+          else
+            PRIMARY_TAG="${{ github.ref_name }}"
+          fi
+
+          INSTALL_PREFIX="/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}/${IMAGE_NAME}:${PRIMARY_TAG}"
+          echo "install-prefix=${INSTALL_PREFIX}" >> $GITHUB_OUTPUT
+          echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "primary-tag=${PRIMARY_TAG}" >> $GITHUB_OUTPUT
+
+          mkdir -p "${INSTALL_PREFIX}/opt/software" \
+                   "${INSTALL_PREFIX}/opt/local" \
+                   "${INSTALL_PREFIX}/opt/detector" \
+                   "${INSTALL_PREFIX}/opt/spack-environment"
+
       - name: Add Spack environment
         run: |
           spack compiler find --scope site
           spack external find --scope site llvm
+          INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
+          spack config --scope site add "config:install_tree:root:${INSTALL_PREFIX}/opt/software"
+          spack -e spack-environment/${{ matrix.ENV }} config add "view:default:root:${INSTALL_PREFIX}/opt/local"
+          spack -e spack-environment/${{ matrix.ENV }} config add "view:detectors:root:${INSTALL_PREFIX}/opt/detector"
+          spack -e spack-environment/${{ matrix.ENV }}/epic config add "view:default:root:${INSTALL_PREFIX}/opt/local"
+          spack -e spack-environment/${{ matrix.ENV }}/epic config add "view:detectors:root:${INSTALL_PREFIX}/opt/detector"
 
       - name: Configure buildcache
         env:
@@ -183,15 +223,6 @@ jobs:
             spack mirror add --scope site eic --unsigned "${mirror}"
           fi
 
-      - name: Create view directories
-        run: |
-          # The environments' views (view.yaml) live under /opt, which is
-          # not writable by default on macOS runners; the epic environment
-          # updates them even with -c view:false
-          # (spack also renames /opt/local, so /opt itself must be writable)
-          sudo mkdir -p /opt/local /opt/detector
-          sudo chown "$(id -u):$(id -g)" /opt /opt/local /opt/detector
-
       - name: Concretize base environment
         run: |
           spack -e spack-environment/${{matrix.ENV}} -c view:false concretize --force
@@ -207,6 +238,104 @@ jobs:
       - name: Install epic environment
         run: |
           spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install --no-check-signature --show-log-on-error
+
+      - name: Regenerate views
+        run: |
+          spack -e spack-environment/${{matrix.ENV}} env view regenerate || true
+          spack -e spack-environment/${{matrix.ENV}}/epic env view regenerate
+
+      - name: Setup environment and metadata
+        run: |
+          INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
+
+          # Generate portable setup.sh for macOS users from Spack environment
+          spack env activate --sh --dir spack-environment/${{matrix.ENV}}/epic > "${INSTALL_PREFIX}/setup.sh"
+          chmod +x "${INSTALL_PREFIX}/setup.sh"
+
+          # Detector symlinks fixup
+          if [ -d "${INSTALL_PREFIX}/opt/detector" ]; then
+            (
+              shopt -s nullglob
+              cd "${INSTALL_PREFIX}/opt/detector"
+              for detector in epic-git.*_* ; do
+                ln -sf "${detector}" "epic-${detector/*_/}"
+              done
+              if [ ! -e epic-main ] && [ -d epic-main_* ]; then
+                ln -sf epic-main_* epic-main
+              fi
+            )
+          fi
+
+          # Copy spack environment definition
+          cp -r spack-environment "${INSTALL_PREFIX}/opt/spack-environment"
+
+          # Place CVMFS catalog markers
+          touch "${INSTALL_PREFIX}/opt/software/.cvmfscatalog"
+          find "${INSTALL_PREFIX}/opt/software" -mindepth 1 -maxdepth 2 -type d -exec touch {}/.cvmfscatalog \;
+          touch "${INSTALL_PREFIX}/opt/local/.cvmfscatalog"
+          find "${INSTALL_PREFIX}/opt/local" -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+          touch "${INSTALL_PREFIX}/opt/detector/.cvmfscatalog"
+          find "${INSTALL_PREFIX}/opt/detector" -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
+          touch "${INSTALL_PREFIX}/opt/spack-environment/.cvmfscatalog"
+
+      - name: Smoke test installed environment
+        run: |
+          INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
+          echo "Testing environment activation from ${INSTALL_PREFIX}/setup.sh..."
+          source "${INSTALL_PREFIX}/setup.sh"
+          which python3
+          python3 --version
+          python3 -c "import sys; print('Python sys.path:', sys.path)"
+          if command -v root.exe >/dev/null 2>&1; then
+            root.exe -b -q -e 'std::cout << "ROOT " << gROOT->GetVersion() << " functional\n";'
+          fi
+
+      - name: Setup crane
+        uses: imjasonh/setup-crane@v0.7
+
+      - name: Package and publish container
+        env:
+          PUSH_CONTAINER: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          if [ "${PUSH_CONTAINER}" != "true" ]; then
+            echo "Skipping container publishing (push disabled or running in unprivileged fork context)."
+            exit 0
+          fi
+
+          INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
+          IMAGE_NAME="${{ steps.cvmfs-dirs.outputs.image-name }}"
+          PRIMARY_TAG="${{ steps.cvmfs-dirs.outputs.primary-tag }}"
+          PUBLISH_IMAGE="${{ env.PUBLISH_IMAGE_REPO }}/${IMAGE_NAME}:${PRIMARY_TAG}"
+
+          TAGS=("${PRIMARY_TAG}")
+          if [ "${{ github.ref_name }}" = "master" ] && [ "${{ github.event_name }}" != "pull_request" ]; then
+            TAGS+=("master" "latest")
+          fi
+
+          # Optional authentication if custom credentials provided (setup-crane already authenticates to ghcr.io by default)
+          if [ -n "${GITHUB_REGISTRY_TOKEN}" ]; then
+            REGISTRY_USER="${GITHUB_REGISTRY_USER:-${{ github.actor }}}"
+            echo "${GITHUB_REGISTRY_TOKEN}" | crane auth login ghcr.io -u "${REGISTRY_USER}" --password-stdin
+          fi
+
+          LAYER_TAR="/tmp/layer.tar.gz"
+          echo "Archiving clean install tree directly from ${INSTALL_PREFIX}..."
+          tar -czf "${LAYER_TAR}" -C "${INSTALL_PREFIX}" .
+          echo "Layer archive size: $(du -h "${LAYER_TAR}" | cut -f1)"
+
+          echo "Appending layer onto alpine:latest base and pushing ${PUBLISH_IMAGE}..."
+          crane append \
+            --platform=linux/arm64 \
+            -b alpine:latest \
+            -f "${LAYER_TAR}" \
+            -t "${PUBLISH_IMAGE}"
+
+          for tag in "${TAGS[@]:1}"; do
+            echo "Tagging ${{ env.PUBLISH_IMAGE_REPO }}/${IMAGE_NAME}:${tag}..."
+            crane tag "${PUBLISH_IMAGE}" "${tag}"
+          done
+          rm -f "${LAYER_TAR}"
+          echo "Container published successfully!"
 
       - name: Diagnose numpy import
         if: failure()
