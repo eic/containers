@@ -4,14 +4,6 @@
 #     when: platform == "darwin"
 # See packages_linux.yaml for the Linux counterpart.
 packages:
-  binutils:
-    require:
-    - '@2.47:'  # 2.46.1 libiberty does not build with Apple clang 21+
-    # clang warns "overriding deployment version from '10.16' to '11.0'" on
-    # every invocation; libiberty's configure treats any stderr output of its
-    # header probes (clang -E, which only sees cppflags) as failure, leaving
-    # HAVE_LIMITS_H, HAVE_FCNTL_H, ... unset
-    - cflags=-Wno-overriding-deployment-version cppflags=-Wno-overriding-deployment-version
   doxygen:
     require:
     - ~graphviz
