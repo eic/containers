@@ -198,11 +198,13 @@ jobs:
           spack compiler find --scope site
           spack external find --scope site llvm
           INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
-          spack config --scope site add "config:install_tree:root:${INSTALL_PREFIX}/opt/software"
-          spack -e spack-environment/${{ matrix.ENV }} config add "view:default:root:${INSTALL_PREFIX}/opt/local"
-          spack -e spack-environment/${{ matrix.ENV }} config add "view:detectors:root:${INSTALL_PREFIX}/opt/detector"
-          spack -e spack-environment/${{ matrix.ENV }}/epic config add "view:default:root:${INSTALL_PREFIX}/opt/local"
-          spack -e spack-environment/${{ matrix.ENV }}/epic config add "view:detectors:root:${INSTALL_PREFIX}/opt/detector"
+          spack config --scope site add "config:install_tree:root:'${INSTALL_PREFIX}/opt/software'"
+          spack -e spack-environment/${{ matrix.ENV }} config add "view:{}"
+          spack -e spack-environment/${{ matrix.ENV }} config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
+          spack -e spack-environment/${{ matrix.ENV }} config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
+          spack -e spack-environment/${{ matrix.ENV }}/epic config add "view:{}"
+          spack -e spack-environment/${{ matrix.ENV }}/epic config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
+          spack -e spack-environment/${{ matrix.ENV }}/epic config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
 
       - name: Configure buildcache
         env:
