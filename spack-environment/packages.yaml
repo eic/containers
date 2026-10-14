@@ -169,7 +169,7 @@ packages:
     - '@0.3.0'
   eic-smear:
     require:
-    - '@1.2.2'
+    - '@1.2.3'
   eiccontent:
     require:
     - '@3.2.0'
