@@ -173,6 +173,13 @@ jobs:
           fi
           sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || true
 
+          # The environments' views (view.yaml) default to /opt/local and
+          # /opt/detector, which Spack touches during environment initialization
+          # before custom views are applied. Spack also renames the view directory,
+          # so /opt itself must be writable.
+          sudo mkdir -p /opt/local /opt/detector
+          sudo chown "$(id -u):$(id -g)" /opt /opt/local /opt/detector
+
           # Determine tags and install root
           IMAGE_NAME="mac_${{ matrix.ENV }}"
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -203,9 +210,6 @@ jobs:
           spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:{}"
           spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
           spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
-          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:{}"
-          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
-          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
 
       - name: Configure buildcache
         env:
@@ -233,6 +237,14 @@ jobs:
       - name: Install base environment
         run: |
           spack -e spack-environment/${{matrix.ENV}} -c view:false install --no-check-signature --show-log-on-error
+
+      - name: Add epic environment
+        run: |
+          set -x
+          INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
+          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:{}"
+          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
+          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
 
       - name: Concretize epic environment
         run: |
