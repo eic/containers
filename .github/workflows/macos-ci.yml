@@ -31,6 +31,7 @@ jobs:
       CVMFS_REPO: singularity.opensciencegrid.org
       CVMFS_PATH_PREFIX: eicweb
       PUBLISH_IMAGE_REPO: ghcr.io/${{ github.repository_owner }}
+      SPACK_INSTALL_FLAGS: "--no-cache --no-check-signature --show-log-on-error"
 
     steps:
       - name: Checkout repository
@@ -207,6 +208,7 @@ jobs:
           spack external find --scope site llvm
           INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
           spack config --scope site add "config:install_tree:root:'${INSTALL_PREFIX}/opt/software'"
+          spack config --scope site add "config:install_tree:padded_length:128"
           spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:{}"
           spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
           spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
@@ -236,7 +238,7 @@ jobs:
 
       - name: Install base environment
         run: |
-          spack -e spack-environment/${{matrix.ENV}} -c view:false install --no-check-signature --show-log-on-error
+          spack -e spack-environment/${{matrix.ENV}} -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
 
       - name: Add epic environment
         run: |
@@ -252,7 +254,7 @@ jobs:
 
       - name: Install epic environment
         run: |
-          spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install --no-check-signature --show-log-on-error
+          spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
 
       - name: Regenerate views
         run: |
