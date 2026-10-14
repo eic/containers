@@ -191,7 +191,7 @@ jobs:
             PRIMARY_TAG="${{ github.ref_name }}"
           fi
 
-          INSTALL_PREFIX="/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}/${IMAGE_NAME}:${PRIMARY_TAG}"
+          INSTALL_PREFIX="/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}/${IMAGE_NAME}-${PRIMARY_TAG}"
           echo "install-prefix=${INSTALL_PREFIX}" >> $GITHUB_OUTPUT
           echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
           echo "primary-tag=${PRIMARY_TAG}" >> $GITHUB_OUTPUT
@@ -200,6 +200,7 @@ jobs:
                    "${INSTALL_PREFIX}/opt/local" \
                    "${INSTALL_PREFIX}/opt/detector" \
                    "${INSTALL_PREFIX}/opt/spack-environment"
+          ln -sfn "${IMAGE_NAME}-${PRIMARY_TAG}" "/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}/${IMAGE_NAME}:${PRIMARY_TAG}"
 
       - name: Add Spack environment
         run: |
