@@ -101,25 +101,27 @@ jobs:
           done < <(echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
 
           # Fallback to source build when binary relocation fails (e.g. unpadded binaries in buildcache)
-          python3 - <<'EOF'
-          path = "lib/spack/spack/installer/build.py"
-          with open(path) as f:
-              content = f.read()
-          target = """    send_state("relocating", state_stream)
-    with timer.measure("install"):
-        spack.binary_distribution.extract_tarball(spec, tarball_stage, force=False, timer=timer)"""
-          replacement = """    send_state("relocating", state_stream)
-    try:
-        with timer.measure("install"):
-            spack.binary_distribution.extract_tarball(spec, tarball_stage, force=False, timer=timer)
-    except Exception as e:
-        spack.util.tty.warn(f"Failed to install {spec.name} from binary cache ({e}); falling back to source build")
-        return False"""
-          if target in content:
-              with open(path, "w") as f:
-                  f.write(content.replace(target, replacement, 1))
-              print("Patched install_from_buildcache to fall back to source build on relocation failure")
-          EOF
+          python3 -c '
+          import pathlib
+          path = pathlib.Path("lib/spack/spack/new_installer.py")
+          content = path.read_text()
+          old = (
+              "    send_state(\"relocating\", state_stream)\n"
+              "    spack.binary_distribution.extract_tarball(spec, tarball_stage, force=False)"
+          )
+          new = (
+              "    send_state(\"relocating\", state_stream)\n"
+              "    try:\n"
+              "        spack.binary_distribution.extract_tarball(spec, tarball_stage, force=False)\n"
+              "    except Exception as e:\n"
+              "        shutil.rmtree(spec.prefix, ignore_errors=True)\n"
+              "        spack.llnl.util.tty.warn(f\"Failed to install {spec.name} from binary cache ({e}); falling back to source build\")\n"
+              "        return False"
+          )
+          if old in content:
+              path.write_text(content.replace(old, new, 1))
+              print("Patched new_installer.py to fall back to source build on binary relocation failure")
+          '
 
       - name: Checkout spack-packages repository
         uses: actions/checkout@v7
