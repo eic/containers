@@ -27,6 +27,11 @@ packages:
   glu:
     require:
     - apple-glu
+  libxml2:
+    prefer:
+    - build_system=autotools
+    require:
+    - any_of: [build_system=autotools, '@:']
   root:
     require:
     - ~x
