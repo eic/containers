@@ -328,7 +328,7 @@ jobs:
           python3 --version
           python3 -c "import sys; print('Python sys.path:', sys.path)"
           if command -v root.exe >/dev/null 2>&1; then
-            root.exe -b -q -e 'std::cout << "ROOT " << gROOT->GetVersion() << " functional\n";'
+            root.exe -b -q -e 'std::cout << "ROOT " << gROOT->GetVersion() << " functional\n"; gSystem->Exit(0);'
           fi
 
       - name: Setup crane
