@@ -31,7 +31,7 @@ jobs:
       CVMFS_REPO: singularity.opensciencegrid.org
       CVMFS_PATH_PREFIX: eicweb
       PUBLISH_IMAGE_REPO: ghcr.io/${{ github.repository_owner }}
-      SPACK_INSTALL_FLAGS: "--no-cache --no-check-signature --show-log-on-error"
+      SPACK_INSTALL_FLAGS: "--no-check-signature --show-log-on-error"
 
     steps:
       - name: Checkout repository
