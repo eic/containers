@@ -28,8 +28,8 @@ jobs:
     env:
       GITHUB_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
       GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
-      CVMFS_REPO: singularity.opensciencegrid.org
-      CVMFS_PATH_PREFIX: eicweb
+      CVMFS_REPO: unpacked.cern.ch
+      CVMFS_PATH_PREFIX: ghcr.io/eic
       PUBLISH_IMAGE_REPO: ghcr.io/${{ github.repository_owner }}
       SPACK_INSTALL_FLAGS: "--no-check-signature --show-log-on-error"
 
@@ -197,24 +197,15 @@ jobs:
           fi
           sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || true
 
-          # The environments' views (view.yaml) default to /opt/local and
-          # /opt/detector, which Spack touches during environment initialization
-          # before custom views are applied. Spack also renames the view directory,
-          # so /opt itself must be writable.
-          sudo mkdir -p /opt/local /opt/detector
-          sudo chown "$(id -u):$(id -g)" /opt /opt/local /opt/detector
+          # Create directories for Phase 1 build in /opt and make /opt writable
+          sudo mkdir -p /opt/software /opt/local /opt/detector
+          sudo chown -R "$(id -u):$(id -g)" /opt
 
-          # Determine tags and install root
+          # Target image name, tag, and install prefix
           IMAGE_NAME="mac_${{ matrix.ENV }}"
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            PRIMARY_TAG="unstable-pr-${{ github.event.pull_request.number }}"
-          elif [ "${{ github.ref_name }}" = "master" ]; then
-            PRIMARY_TAG="nightly"
-          else
-            PRIMARY_TAG="${{ github.ref_name }}"
-          fi
+          PRIMARY_TAG="nightly"
 
-          INSTALL_PREFIX="/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}/${IMAGE_NAME}-${PRIMARY_TAG}"
+          INSTALL_PREFIX="/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}/${IMAGE_NAME}:${PRIMARY_TAG}"
           echo "install-prefix=${INSTALL_PREFIX}" >> $GITHUB_OUTPUT
           echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
           echo "primary-tag=${PRIMARY_TAG}" >> $GITHUB_OUTPUT
@@ -223,19 +214,6 @@ jobs:
                    "${INSTALL_PREFIX}/opt/local" \
                    "${INSTALL_PREFIX}/opt/detector" \
                    "${INSTALL_PREFIX}/opt/spack-environment"
-          ln -sfn "${IMAGE_NAME}-${PRIMARY_TAG}" "/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}/${IMAGE_NAME}:${PRIMARY_TAG}"
-
-      - name: Add Spack environment
-        run: |
-          set -x
-          spack compiler find --scope site
-          spack external find --scope site llvm
-          INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
-          spack config --scope site add "config:install_tree:root:'${INSTALL_PREFIX}/opt/software'"
-          spack config --scope site add "config:install_tree:padded_length:128"
-          spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:{}"
-          spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
-          spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
 
       - name: Configure buildcache
         env:
@@ -244,6 +222,8 @@ jobs:
           # get no secrets and only read from the (public) buildcache.
           PUSH_BUILDCACHE: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         run: |
+          mkdir -p /tmp/buildcache
+          spack mirror add --scope site --autopush --unsigned local-buildcache file:///tmp/buildcache
           mirror=oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
           if [ "${PUSH_BUILDCACHE}" = "true" ] && [ -n "${GITHUB_REGISTRY_TOKEN}" ]; then
             spack mirror add --scope site eic \
@@ -255,30 +235,58 @@ jobs:
             echo "Buildcache is read-only for this run"
             spack mirror add --scope site eic --unsigned "${mirror}"
           fi
+          spack mirror list
+
+      - name: Configure Spack build tree
+        run: |
+          set -x
+          spack compiler find --scope site
+          spack external find --scope site llvm
+          spack config --scope site add "config:install_tree:root:'/opt/software'"
+          spack config --scope site add "config:install_tree:padded_length:128"
 
       - name: Concretize base environment
         run: |
           spack -e spack-environment/${{matrix.ENV}} -c view:false concretize --force
 
-      - name: Install base environment
+      - name: Build base environment
         run: |
           spack -e spack-environment/${{matrix.ENV}} -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
-
-      - name: Add epic environment
-        run: |
-          set -x
-          INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
-          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:{}"
-          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
-          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
 
       - name: Concretize epic environment
         run: |
           spack -e spack-environment/${{matrix.ENV}}/epic -c view:false concretize --force
 
-      - name: Install epic environment
+      - name: Build epic environment
         run: |
           spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
+
+      - name: Sync local buildcache
+        run: |
+          spack -e spack-environment/${{matrix.ENV}} buildcache push --unsigned --update-index local-buildcache || true
+          spack -e spack-environment/${{matrix.ENV}}/epic buildcache push --unsigned --update-index local-buildcache || true
+          spack buildcache update-index local-buildcache || true
+
+      - name: Configure Spack target install tree
+        run: |
+          set -x
+          INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
+          spack config --scope site add "config:install_tree:root:'${INSTALL_PREFIX}/opt/software'"
+          spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:{}"
+          spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
+          spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
+          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:{}"
+          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
+          spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
+          spack config get config
+
+      - name: Install base environment into target prefix
+        run: |
+          spack -e spack-environment/${{matrix.ENV}} -c view:false install ${{ env.SPACK_INSTALL_FLAGS }} --use-buildcache only
+
+      - name: Install epic environment into target prefix
+        run: |
+          spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install ${{ env.SPACK_INSTALL_FLAGS }} --use-buildcache only
 
       - name: Garbage collect build-only dependencies
         run: |
