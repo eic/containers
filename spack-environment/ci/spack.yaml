@@ -18,6 +18,7 @@ spack:
     - gfal2-util
     - graphviz
     - imagemagick
+    - iwyu
     - nopayloadclient
     - ollama
     - py-numpy
@@ -45,7 +46,6 @@ spack:
   - heppdt
   - irt
   - irt2
-  - iwyu
   - jana2
   - just
   - npsim -geocad
