@@ -17,21 +17,22 @@ permissions:
   contents: read
   packages: write
 
+env:
+  GITHUB_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
+  GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+  CVMFS_REPO: unpacked.cern.ch
+  CVMFS_PATH_PREFIX: ghcr.io/eic
+  PUBLISH_IMAGE_REPO: ghcr.io/${{ github.repository_owner }}
+  SPACK_INSTALL_FLAGS: "--no-check-signature --show-log-on-error"
+
 jobs:
   build:
+    name: Build (${{ matrix.ENV }})
     runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
         ENV: [ci, xl, tf]
-
-    env:
-      GITHUB_REGISTRY_USER: ${{ secrets.GHCR_REGISTRY_USER }}
-      GITHUB_REGISTRY_TOKEN: ${{ secrets.GHCR_REGISTRY_TOKEN }}
-      CVMFS_REPO: unpacked.cern.ch
-      CVMFS_PATH_PREFIX: ghcr.io/eic
-      PUBLISH_IMAGE_REPO: ghcr.io/${{ github.repository_owner }}
-      SPACK_INSTALL_FLAGS: "--no-check-signature --show-log-on-error"
 
     steps:
       - name: Checkout repository
@@ -186,44 +187,23 @@ jobs:
           cd ${{ github.workspace }}/spack
           spack repo add var/spack/repos/eic-spack/spack_repo/eic
 
-      - name: Setup CVMFS mount point and install directories
-        id: cvmfs-dirs
+      - name: Setup build directory
         run: |
-          # Set up synthetic firmlink for /cvmfs on macOS
-          sudo mkdir -p /System/Volumes/Data/cvmfs
-          sudo chown -R "$(id -u):$(id -g)" /System/Volumes/Data/cvmfs
-          if ! grep -q '^cvmfs[[:space:]]' /etc/synthetic.conf 2>/dev/null; then
-            printf 'cvmfs\tSystem/Volumes/Data/cvmfs\n' | sudo tee -a /etc/synthetic.conf
-          fi
-          sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || true
-
-          # Create directories for Phase 1 build in /opt and make /opt writable
           sudo mkdir -p /opt/software /opt/local /opt/detector
           sudo chown -R "$(id -u):$(id -g)" /opt
 
-          # Target image name, tag, and install prefix
-          IMAGE_NAME="mac_${{ matrix.ENV }}"
-          PRIMARY_TAG="nightly"
-
-          INSTALL_PREFIX="/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}/${IMAGE_NAME}:${PRIMARY_TAG}"
-          echo "install-prefix=${INSTALL_PREFIX}" >> $GITHUB_OUTPUT
-          echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "primary-tag=${PRIMARY_TAG}" >> $GITHUB_OUTPUT
-
-          mkdir -p "${INSTALL_PREFIX}/opt/software" \
-                   "${INSTALL_PREFIX}/opt/local" \
-                   "${INSTALL_PREFIX}/opt/detector" \
-                   "${INSTALL_PREFIX}/opt/spack-environment"
+      - name: Configure Spack build tree
+        run: |
+          set -x
+          spack compiler find --scope site
+          spack external find --scope site llvm
+          spack config --scope site add "config:install_tree:root:'/opt/software'"
+          spack config --scope site add "config:install_tree:padded_length:128"
 
       - name: Configure buildcache
         env:
-          # Only push to the buildcache from trusted contexts: pushes to
-          # master, manual runs, and PRs from this repository. PRs from forks
-          # get no secrets and only read from the (public) buildcache.
           PUSH_BUILDCACHE: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         run: |
-          mkdir -p /tmp/buildcache
-          spack mirror add --scope site --autopush --unsigned local-buildcache file:///tmp/buildcache
           mirror=oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
           if [ "${PUSH_BUILDCACHE}" = "true" ] && [ -n "${GITHUB_REGISTRY_TOKEN}" ]; then
             spack mirror add --scope site eic \
@@ -236,14 +216,6 @@ jobs:
             spack mirror add --scope site eic --unsigned "${mirror}"
           fi
           spack mirror list
-
-      - name: Configure Spack build tree
-        run: |
-          set -x
-          spack compiler find --scope site
-          spack external find --scope site llvm
-          spack config --scope site add "config:install_tree:root:'/opt/software'"
-          spack config --scope site add "config:install_tree:padded_length:128"
 
       - name: Concretize base environment
         run: |
@@ -261,15 +233,205 @@ jobs:
         run: |
           spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
 
-      - name: Sync local buildcache
+      - name: Diagnose numpy import
+        if: failure()
+        continue-on-error: true
         run: |
-          spack -e spack-environment/${{matrix.ENV}} buildcache push --unsigned --update-index local-buildcache || true
-          spack -e spack-environment/${{matrix.ENV}}/epic buildcache push --unsigned --update-index local-buildcache || true
-          spack buildcache update-index local-buildcache || true
+          for env in spack-environment/${{matrix.ENV}} spack-environment/${{matrix.ENV}}/epic; do
+            echo "::group::${env}"
+            spack -e "${env}" -c view:false find -lpv py-numpy openblas || true
+            echo "--- loaded environment"
+            (
+              eval "$(spack -e "${env}" -c view:false load --sh py-numpy)"
+              cd /tmp
+              python3 -c 'import numpy; print(numpy.__version__, numpy.__file__)' 2>&1 | tail -30
+              so=$(find "$(spack -e "${env}" -c view:false location -i py-numpy)" -name '_multiarray_umath*.so' | head -1)
+              otool -L "${so}"
+            ) || true
+            echo "--- build environment of a failing dependent"
+            for pkg in py-scipy py-numexpr; do
+              spack -e "${env}" -c view:false build-env "${pkg}" -- \
+                python3 -c 'import sys, numpy; print(numpy.__file__)' 2>&1 | tail -40 || true
+            done
+            echo "::endgroup::"
+          done
+
+  install:
+    name: Install & Publish (${{ matrix.ENV }})
+    needs: [build]
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ENV: [ci, xl, tf]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Extract Spack configuration
+        id: spack-config
+        run: |
+          # Source spack.sh to get SPACK_VERSION and SPACK_CHERRYPICKS
+          source spack.sh
+          echo "spack-version=${SPACK_VERSION}" >> $GITHUB_OUTPUT
+          echo "spack-cherrypicks<<EOF" >> $GITHUB_OUTPUT
+          echo "${SPACK_CHERRYPICKS}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Source spack-packages.sh to get SPACKPACKAGES_VERSION and SPACKPACKAGES_CHERRYPICKS
+          source spack-packages.sh
+          echo "spackpackages-version=${SPACKPACKAGES_VERSION}" >> $GITHUB_OUTPUT
+          echo "spackpackages-cherrypicks<<EOF" >> $GITHUB_OUTPUT
+          echo "${SPACKPACKAGES_CHERRYPICKS}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Source key4hep-spack.sh to get KEY4HEPSPACK_VERSION
+          source key4hep-spack.sh
+          echo "key4hepspack-version=${KEY4HEPSPACK_VERSION}" >> $GITHUB_OUTPUT
+
+          # Source eic-spack.sh to get EICSPACK_VERSION
+          source eic-spack.sh
+          echo "eicspack-version=${EICSPACK_VERSION}" >> $GITHUB_OUTPUT
+
+          # Extract buildcache URL from mirrors.yaml.in (simplified - get the version)
+          echo "buildcache-version=${SPACKPACKAGES_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Checkout Spack repository
+        uses: actions/checkout@v7
+        with:
+          repository: spack/spack
+          path: spack
+          ref: ${{ steps.spack-config.outputs.spack-version }}
+          fetch-depth: 0
+
+      - name: Configure spack
+        run: |
+          cd ${{ github.workspace }}/spack
+          echo "${{ github.workspace }}/spack/bin" >> $GITHUB_PATH
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          # Fetch branches from which we cherry-pick
+          git fetch origin refs/heads/develop:refs/heads/develop
+          git fetch origin pull/51584/head:pr-51584
+          git fetch origin pull/52207/head:pr-52207
+
+          # Apply cherry-picks from spack.sh (match only valid git commit hashes)
+          while read -r commit; do
+            # Commits on branches/forks not fetched above are served by SHA
+            if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
+              echo "Fetching ${commit} by SHA"
+              git fetch origin "${commit}"
+            fi
+            if git merge-base --is-ancestor "${commit}" HEAD; then
+              echo "Skipping already applied ${commit}"
+              continue
+            fi
+            echo "Cherry-picking ${commit}"
+            git cherry-pick "${commit}"
+          done < <(echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
+
+      - name: Checkout spack-packages repository
+        uses: actions/checkout@v7
+        with:
+          repository: spack/spack-packages
+          path: spack/var/spack/repos/spack-packages
+          fetch-depth: 0
+          ref: ${{ steps.spack-config.outputs.spackpackages-version }}
+
+      - name: Configure spack-packages
+        run: |
+          cd ${{ github.workspace }}/spack/var/spack/repos/spack-packages
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          # Fetch branches from which we cherry-pick
+          git fetch origin refs/heads/develop:refs/heads/develop
+          git fetch origin pull/3698/head:pr-3698
+          git fetch origin pull/4871/head:pr-4871
+          git fetch origin pull/5856/head:pr-5856
+
+          # Apply cherry-picks from spack-packages.sh (match only valid git commit hashes)
+          while read -r commit; do
+            # Commits on forks/unmerged PRs are not in the default clone, but
+            # GitHub serves any commit in the fork network by SHA from the parent
+            if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
+              echo "Fetching ${commit} by SHA"
+              git fetch origin "${commit}"
+            fi
+            if git merge-base --is-ancestor "${commit}" HEAD; then
+              echo "Skipping already applied ${commit}"
+              continue
+            fi
+            echo "Cherry-picking ${commit}"
+            git cherry-pick "${commit}"
+          done < <(echo "${{ steps.spack-config.outputs.spackpackages-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
+
+          cd ${{ github.workspace }}/spack
+          spack repo add var/spack/repos/spack-packages/repos/spack_repo/builtin
+
+      - name: Checkout key4hep-spack repository
+        uses: actions/checkout@v7
+        with:
+          repository: key4hep/key4hep-spack
+          path: spack/var/spack/repos/key4hep-spack
+          ref: ${{ steps.spack-config.outputs.key4hepspack-version }}
+
+      - name: Configure key4hep-spack
+        run: |
+          cd ${{ github.workspace }}/spack
+          spack repo add var/spack/repos/key4hep-spack
+
+      - name: Checkout eic-spack repository
+        uses: actions/checkout@v7
+        with:
+          repository: eic/eic-spack
+          path: spack/var/spack/repos/eic-spack
+          ref: ${{ steps.spack-config.outputs.eicspack-version }}
+
+      - name: Configure eic-spack
+        run: |
+          cd ${{ github.workspace }}/spack
+          spack repo add var/spack/repos/eic-spack/spack_repo/eic
+
+      - name: Setup CVMFS mount point and install directories
+        id: cvmfs-dirs
+        run: |
+          # Set up synthetic firmlink for /cvmfs on macOS
+          sudo mkdir -p /System/Volumes/Data/cvmfs
+          sudo chown -R "$(id -u):$(id -g)" /System/Volumes/Data/cvmfs
+          if ! grep -q '^cvmfs[[:space:]]' /etc/synthetic.conf 2>/dev/null; then
+            printf 'cvmfs\tSystem/Volumes/Data/cvmfs\n' | sudo tee -a /etc/synthetic.conf
+          fi
+          sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || true
+
+          # The environments' views (view.yaml) default to /opt/local and
+          # /opt/detector, which Spack touches during environment initialization
+          # before custom views are applied. Spack also renames the view directory,
+          # so /opt itself must be writable.
+          sudo mkdir -p /opt/local /opt/detector
+          sudo chown "$(id -u):$(id -g)" /opt /opt/local /opt/detector
+
+          # Target image name, tag, and install prefix
+          IMAGE_NAME="mac_${{ matrix.ENV }}"
+          PRIMARY_TAG="nightly"
+
+          INSTALL_PREFIX="/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}/${IMAGE_NAME}:${PRIMARY_TAG}"
+          echo "install-prefix=${INSTALL_PREFIX}" >> $GITHUB_OUTPUT
+          echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "primary-tag=${PRIMARY_TAG}" >> $GITHUB_OUTPUT
+
+          mkdir -p "${INSTALL_PREFIX}/opt/software" \
+                   "${INSTALL_PREFIX}/opt/local" \
+                   "${INSTALL_PREFIX}/opt/detector" \
+                   "${INSTALL_PREFIX}/opt/spack-environment"
 
       - name: Configure Spack target install tree
         run: |
           set -x
+          spack compiler find --scope site
+          spack external find --scope site llvm
           INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
           spack config --scope site add "config:install_tree:root:'${INSTALL_PREFIX}/opt/software'"
           spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:{}"
@@ -280,9 +442,32 @@ jobs:
           spack -e spack-environment/${{ matrix.ENV }}/epic -c view:false config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
           spack config get config
 
+      - name: Configure buildcache
+        run: |
+          mirror=oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
+          if [ -n "${GITHUB_REGISTRY_TOKEN}" ]; then
+            spack mirror add --scope site eic \
+              --unsigned \
+              --oci-username-variable GITHUB_REGISTRY_USER \
+              --oci-password-variable GITHUB_REGISTRY_TOKEN \
+              "${mirror}"
+          else
+            echo "Buildcache is read-only for this run"
+            spack mirror add --scope site eic --unsigned "${mirror}"
+          fi
+          spack mirror list
+
+      - name: Concretize base environment
+        run: |
+          spack -e spack-environment/${{matrix.ENV}} -c view:false concretize --force
+
       - name: Install base environment into target prefix
         run: |
           spack -e spack-environment/${{matrix.ENV}} -c view:false install ${{ env.SPACK_INSTALL_FLAGS }} --use-buildcache only
+
+      - name: Concretize epic environment
+        run: |
+          spack -e spack-environment/${{matrix.ENV}}/epic -c view:false concretize --force
 
       - name: Install epic environment into target prefix
         run: |
@@ -397,9 +582,6 @@ jobs:
         if: failure()
         continue-on-error: true
         run: |
-          # Surface the real exception behind numpy's generic
-          # "should not import numpy from its source directory" message,
-          # both in a plain loaded environment and in a package build environment
           for env in spack-environment/${{matrix.ENV}} spack-environment/${{matrix.ENV}}/epic; do
             echo "::group::${env}"
             spack -e "${env}" -c view:false find -lpv py-numpy openblas || true
