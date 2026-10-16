@@ -280,6 +280,13 @@ jobs:
         run: |
           spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
 
+      - name: Garbage collect build-only dependencies
+        run: |
+          spack gc --yes-to-all \
+            -e spack-environment/${{ matrix.ENV }} \
+            -e spack-environment/${{ matrix.ENV }}/epic
+          spack clean --stage --downloads
+
       - name: Regenerate views
         run: |
           spack -e spack-environment/${{matrix.ENV}} env view regenerate || true
