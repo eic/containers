@@ -42,6 +42,7 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider build concretization
 
 ## Copy our default environment
 COPY --from=spack-environment . /opt/spack-environment/
+COPY check-buildcache.py /usr/local/bin/check-buildcache.py
 ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
@@ -79,7 +80,19 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+spack env activate --without-view --dir ${SPACK_ENV}
+rm -f /tmp/rebuild.txt
+spack python /usr/local/bin/check-buildcache.py "${SPACK_ENV}" /tmp/rebuild.txt || true
+if [ -s /tmp/rebuild.txt ]; then
+  missing=$(cat /tmp/rebuild.txt)
+  echo "Building missing spec(s): ${missing}"
+  spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} ${missing}
+elif [ -f /tmp/rebuild.txt ]; then
+  echo "All packages in default environment already exist in buildcache. Skipping build."
+else
+  echo "Warning: check-buildcache failed; falling back to full environment install"
+  spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+fi
 spack clean --downloads --stage
 ccache --show-stats
 ccache --zero-stats
@@ -195,7 +208,18 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+rm -f /tmp/rebuild.txt
+spack python /usr/local/bin/check-buildcache.py "${SPACK_ENV}" /tmp/rebuild.txt || true
+if [ -s /tmp/rebuild.txt ]; then
+  missing=$(cat /tmp/rebuild.txt)
+  echo "Building missing spec(s): ${missing}"
+  spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} ${missing}
+elif [ -f /tmp/rebuild.txt ]; then
+  echo "All packages in custom environment already exist in buildcache. Skipping build."
+else
+  echo "Warning: check-buildcache failed; falling back to full environment install"
+  spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+fi
 spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
