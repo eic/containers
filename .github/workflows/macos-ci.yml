@@ -73,6 +73,9 @@ jobs:
           path: spack
           key: spack-repos-${{ runner.os }}-${{ hashFiles('spack.sh', 'spack-packages.sh', 'key4hep-spack.sh', 'eic-spack.sh') }}
 
+      - name: Add Spack to PATH
+        run: echo "${{ github.workspace }}/spack/bin" >> $GITHUB_PATH
+
       - name: Checkout Spack repository
         if: steps.cache-spack.outputs.cache-hit != 'true'
         uses: actions/checkout@v7
@@ -171,7 +174,7 @@ jobs:
           done < <(echo "${{ steps.spack-config.outputs.spackpackages-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
 
           cd ${{ github.workspace }}/spack
-          spack repo add --scope site var/spack/repos/spack-packages/repos/spack_repo/builtin
+          bin/spack repo add --scope site var/spack/repos/spack-packages/repos/spack_repo/builtin
 
       - name: Checkout key4hep-spack repository
         if: steps.cache-spack.outputs.cache-hit != 'true'
@@ -185,7 +188,7 @@ jobs:
         if: steps.cache-spack.outputs.cache-hit != 'true'
         run: |
           cd ${{ github.workspace }}/spack
-          spack repo add --scope site var/spack/repos/key4hep-spack
+          bin/spack repo add --scope site var/spack/repos/key4hep-spack
 
       - name: Checkout eic-spack repository
         if: steps.cache-spack.outputs.cache-hit != 'true'
@@ -199,10 +202,7 @@ jobs:
         if: steps.cache-spack.outputs.cache-hit != 'true'
         run: |
           cd ${{ github.workspace }}/spack
-          spack repo add --scope site var/spack/repos/eic-spack/spack_repo/eic
-
-      - name: Add Spack to PATH
-        run: echo "${{ github.workspace }}/spack/bin" >> $GITHUB_PATH
+          bin/spack repo add --scope site var/spack/repos/eic-spack/spack_repo/eic
 
       - name: Cache Spack concretizer
         uses: actions/cache@v4
@@ -249,7 +249,18 @@ jobs:
 
       - name: Build base environment
         run: |
-          spack -e spack-environment/${{matrix.ENV}} -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
+          mirror=oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
+          status=0
+          missing=$(spack python scripts/check-buildcache.py "spack-environment/${{ matrix.ENV }}" "$mirror") || status=$?
+          if [ "$status" -eq 0 ]; then
+            echo "All packages in base environment already exist in buildcache. Skipping build."
+          elif [ -n "$missing" ]; then
+            echo "Building missing spec(s) from base environment: $missing"
+            spack -e spack-environment/${{matrix.ENV}} -c view:false install ${{ env.SPACK_INSTALL_FLAGS }} $missing
+          else
+            echo "Warning: check-buildcache failed with status $status; falling back to full environment install"
+            spack -e spack-environment/${{matrix.ENV}} -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
+          fi
 
       - name: Concretize epic environment
         run: |
@@ -257,7 +268,18 @@ jobs:
 
       - name: Build epic environment
         run: |
-          spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
+          mirror=oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
+          status=0
+          missing=$(spack python scripts/check-buildcache.py "spack-environment/${{ matrix.ENV }}/epic" "$mirror") || status=$?
+          if [ "$status" -eq 0 ]; then
+            echo "All packages in epic environment already exist in buildcache. Skipping build."
+          elif [ -n "$missing" ]; then
+            echo "Building missing spec(s) from epic environment: $missing"
+            spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install ${{ env.SPACK_INSTALL_FLAGS }} $missing
+          else
+            echo "Warning: check-buildcache failed with status $status; falling back to full environment install"
+            spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
+          fi
 
       - name: Upload Spack lockfiles
         uses: actions/upload-artifact@v4
@@ -339,6 +361,9 @@ jobs:
           path: spack
           key: spack-repos-${{ runner.os }}-${{ hashFiles('spack.sh', 'spack-packages.sh', 'key4hep-spack.sh', 'eic-spack.sh') }}
 
+      - name: Add Spack to PATH
+        run: echo "${{ github.workspace }}/spack/bin" >> $GITHUB_PATH
+
       - name: Checkout Spack repository
         if: steps.cache-spack.outputs.cache-hit != 'true'
         uses: actions/checkout@v7
@@ -414,7 +439,7 @@ jobs:
           done < <(echo "${{ steps.spack-config.outputs.spackpackages-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
 
           cd ${{ github.workspace }}/spack
-          spack repo add --scope site var/spack/repos/spack-packages/repos/spack_repo/builtin
+          bin/spack repo add --scope site var/spack/repos/spack-packages/repos/spack_repo/builtin
 
       - name: Checkout key4hep-spack repository
         if: steps.cache-spack.outputs.cache-hit != 'true'
@@ -428,7 +453,7 @@ jobs:
         if: steps.cache-spack.outputs.cache-hit != 'true'
         run: |
           cd ${{ github.workspace }}/spack
-          spack repo add --scope site var/spack/repos/key4hep-spack
+          bin/spack repo add --scope site var/spack/repos/key4hep-spack
 
       - name: Checkout eic-spack repository
         if: steps.cache-spack.outputs.cache-hit != 'true'
@@ -442,10 +467,7 @@ jobs:
         if: steps.cache-spack.outputs.cache-hit != 'true'
         run: |
           cd ${{ github.workspace }}/spack
-          spack repo add --scope site var/spack/repos/eic-spack/spack_repo/eic
-
-      - name: Add Spack to PATH
-        run: echo "${{ github.workspace }}/spack/bin" >> $GITHUB_PATH
+          bin/spack repo add --scope site var/spack/repos/eic-spack/spack_repo/eic
 
       - name: Setup CVMFS mount point and install directories
         id: cvmfs-dirs
