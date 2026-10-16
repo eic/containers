@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Check concrete specs of a Spack environment against a binary buildcache.
 
-Outputs missing spec DAG hashes (prefixed with '/') to stdout, separated by spaces.
+Ignores external packages (which cannot be built by Spack).
+Outputs missing spec DAG hashes (prefixed with '/') to output-file (or stdout).
 Exits with 0 if all specs exist in the buildcache, or 1 if any specs are missing.
 """
 
@@ -17,20 +18,24 @@ from spack.oci.image import ImageReference
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: check-buildcache.py <env-dir> <mirror-url>", file=sys.stderr)
+        print("Usage: check-buildcache.py <env-dir> <mirror-url> [output-file]", file=sys.stderr)
         sys.exit(2)
 
     env_dir = sys.argv[1]
     mirror_url = sys.argv[2]
+    output_file = sys.argv[3] if len(sys.argv) > 3 else None
 
     env = ev.Environment(env_dir)
-    all_specs = env.all_specs()
+    # Ignore external specs as they are pre-installed on the host / not built
+    all_specs = [s for s in env.all_specs() if not s.external]
     if not all_specs:
-        print(f"No specs in environment {env_dir}", file=sys.stderr)
+        print(f"No non-external specs in environment {env_dir}", file=sys.stderr)
+        if output_file:
+            open(output_file, "w").close()
         sys.exit(0)
 
     target_image = ImageReference.from_url(mirror_url)
-    print(f"Checking {len(all_specs)} specs against {mirror_url}...", file=sys.stderr)
+    print(f"Checking {len(all_specs)} non-external specs against {mirror_url}...", file=sys.stderr)
 
     def is_missing(spec):
         tag = _oci_default_tag(spec)
@@ -49,10 +54,17 @@ def main():
         for s in missing:
             print(f"  - {s.short_spec} (/{s.dag_hash()})", file=sys.stderr)
         hashes = [f"/{s.dag_hash()}" for s in missing]
-        print(" ".join(hashes))
+        hashes_str = " ".join(hashes)
+        if output_file:
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write(hashes_str + "\n")
+        else:
+            print(hashes_str)
         sys.exit(1)
     else:
         print(f"All {len(all_specs)} specs already exist in buildcache.", file=sys.stderr)
+        if output_file:
+            open(output_file, "w").close()
         sys.exit(0)
 
 

@@ -204,6 +204,19 @@ jobs:
           cd ${{ github.workspace }}/spack
           bin/spack repo add --scope site var/spack/repos/eic-spack/spack_repo/eic
 
+      - name: Cache Spack bootstrap store
+        uses: actions/cache@v4
+        with:
+          path: ~/.spack/bootstrap/store
+          key: spack-bootstrap-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('spack.sh') }}
+          restore-keys: |
+            spack-bootstrap-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Bootstrap Spack
+        run: |
+          spack bootstrap now
+          spack bootstrap status
+
       - name: Cache Spack concretizer
         uses: actions/cache@v4
         with:
@@ -251,12 +264,14 @@ jobs:
         run: |
           mirror=oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
           status=0
-          missing=$(spack python scripts/check-buildcache.py "spack-environment/${{ matrix.ENV }}" "$mirror") || status=$?
-          if [ "$status" -eq 0 ]; then
-            echo "All packages in base environment already exist in buildcache. Skipping build."
-          elif [ -n "$missing" ]; then
+          rm -f rebuild.txt
+          spack python scripts/check-buildcache.py "spack-environment/${{ matrix.ENV }}" "$mirror" rebuild.txt || status=$?
+          if [ -s rebuild.txt ]; then
+            missing=$(cat rebuild.txt)
             echo "Building missing spec(s) from base environment: $missing"
             spack -e spack-environment/${{matrix.ENV}} -c view:false install ${{ env.SPACK_INSTALL_FLAGS }} $missing
+          elif [ "$status" -eq 0 ]; then
+            echo "All packages in base environment already exist in buildcache. Skipping build."
           else
             echo "Warning: check-buildcache failed with status $status; falling back to full environment install"
             spack -e spack-environment/${{matrix.ENV}} -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
@@ -270,12 +285,14 @@ jobs:
         run: |
           mirror=oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
           status=0
-          missing=$(spack python scripts/check-buildcache.py "spack-environment/${{ matrix.ENV }}/epic" "$mirror") || status=$?
-          if [ "$status" -eq 0 ]; then
-            echo "All packages in epic environment already exist in buildcache. Skipping build."
-          elif [ -n "$missing" ]; then
+          rm -f rebuild.txt
+          spack python scripts/check-buildcache.py "spack-environment/${{ matrix.ENV }}/epic" "$mirror" rebuild.txt || status=$?
+          if [ -s rebuild.txt ]; then
+            missing=$(cat rebuild.txt)
             echo "Building missing spec(s) from epic environment: $missing"
             spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install ${{ env.SPACK_INSTALL_FLAGS }} $missing
+          elif [ "$status" -eq 0 ]; then
+            echo "All packages in epic environment already exist in buildcache. Skipping build."
           else
             echo "Warning: check-buildcache failed with status $status; falling back to full environment install"
             spack -e spack-environment/${{matrix.ENV}}/epic -c view:false install ${{ env.SPACK_INSTALL_FLAGS }}
