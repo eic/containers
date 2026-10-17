@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-# Copyright 2026 Electron-Ion Collider
-# SPDX-License-Identifier: Apache-2.0
 """Check concrete specs of a Spack environment against a binary buildcache.
 
 Ignores external packages (which cannot be built by Spack).
