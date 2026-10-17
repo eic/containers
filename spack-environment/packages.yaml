@@ -721,7 +721,7 @@ packages:
     - -mpers
   swig:
     require:
-    - '@4.1:'  # constrain to avoid duplicates in eic_tf
+    - '@4.1:4.4'  # constrain to avoid duplicates in eic_tf; sherpa python bindings fail with swig@4.5
   tbb:
     require:
     - 'intel-tbb'
