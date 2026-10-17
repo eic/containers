@@ -631,6 +631,8 @@ packages:
     require:
     - '@0.10.2:'
   py-torch:
+    prefer:
+    - ~cuda
     require:
     - '@2.10.0:2'
     - -mkldnn
