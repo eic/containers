@@ -633,6 +633,8 @@ packages:
   py-torch:
     prefer:
     - ~cuda
+    - when: '+cuda'
+      spec: cuda_arch=75
     require:
     - '@2.10.0:2'
     - -mkldnn
