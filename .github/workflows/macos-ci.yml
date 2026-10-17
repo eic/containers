@@ -244,6 +244,7 @@ jobs:
           PUSH_BUILDCACHE: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         run: |
           mirror=oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
+          spack mirror rm --scope site eic 2>/dev/null || true
           if [ "${PUSH_BUILDCACHE}" = "true" ] && [ -n "${GITHUB_REGISTRY_TOKEN}" ]; then
             spack mirror add --scope site eic \
               --autopush --unsigned \
@@ -547,6 +548,7 @@ jobs:
       - name: Configure buildcache
         run: |
           mirror=oci://ghcr.io/eic/spack-${{ steps.spack-config.outputs.buildcache-version }}
+          spack mirror rm --scope site eic 2>/dev/null || true
           if [ -n "${GITHUB_REGISTRY_TOKEN}" ]; then
             spack mirror add --scope site eic \
               --unsigned \
