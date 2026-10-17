@@ -82,7 +82,7 @@ set -e
 export CCACHE_DIR=/ccache
 spack env activate --without-view --dir ${SPACK_ENV}
 rm -f /tmp/rebuild.txt
-spack python /usr/local/bin/check-buildcache.py "${SPACK_ENV}" /tmp/rebuild.txt || true
+spack python /usr/local/bin/check-buildcache.py "${SPACK_ENV}" /tmp/rebuild.txt
 if [ -s /tmp/rebuild.txt ]; then
   missing=$(cat /tmp/rebuild.txt)
   echo "Building missing spec(s): ${missing}"
@@ -90,8 +90,8 @@ if [ -s /tmp/rebuild.txt ]; then
 elif [ -f /tmp/rebuild.txt ]; then
   echo "All packages in default environment already exist in buildcache. Skipping build."
 else
-  echo "Warning: check-buildcache failed; falling back to full environment install"
-  spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+  echo "Error: check-buildcache failed" >&2
+  exit 1
 fi
 spack clean --downloads --stage
 ccache --show-stats
@@ -209,7 +209,7 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
 set -e
 export CCACHE_DIR=/ccache
 rm -f /tmp/rebuild.txt
-spack python /usr/local/bin/check-buildcache.py "${SPACK_ENV}" /tmp/rebuild.txt || true
+spack python /usr/local/bin/check-buildcache.py "${SPACK_ENV}" /tmp/rebuild.txt
 if [ -s /tmp/rebuild.txt ]; then
   missing=$(cat /tmp/rebuild.txt)
   echo "Building missing spec(s): ${missing}"
@@ -217,8 +217,8 @@ if [ -s /tmp/rebuild.txt ]; then
 elif [ -f /tmp/rebuild.txt ]; then
   echo "All packages in custom environment already exist in buildcache. Skipping build."
 else
-  echo "Warning: check-buildcache failed; falling back to full environment install"
-  spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+  echo "Error: check-buildcache failed" >&2
+  exit 1
 fi
 spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin

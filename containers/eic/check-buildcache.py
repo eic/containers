@@ -5,7 +5,7 @@
 
 Ignores external packages (which cannot be built by Spack).
 Outputs missing spec DAG hashes (prefixed with '/') to output-file (or stdout).
-Exits with 0 if all specs exist in the buildcache, or 1 if any specs are missing.
+Exits with 0 on success, or non-zero on error.
 """
 
 import concurrent.futures
@@ -91,7 +91,7 @@ def main():
                 f.write(hashes_str + "\n")
         else:
             print(hashes_str)
-        sys.exit(1)
+        sys.exit(0)
     else:
         print(f"All {len(all_specs)} specs already exist in buildcache.", file=sys.stderr)
         if output_file:
