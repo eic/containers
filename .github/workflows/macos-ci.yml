@@ -68,7 +68,7 @@ jobs:
 
       - name: Cache Spack checkouts
         id: cache-spack
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: spack
           key: spack-repos-${{ runner.os }}-${{ hashFiles('spack.sh', 'spack-packages.sh', 'key4hep-spack.sh', 'eic-spack.sh') }}
@@ -205,7 +205,7 @@ jobs:
           bin/spack repo add --scope site var/spack/repos/eic-spack/spack_repo/eic
 
       - name: Cache Spack bootstrap store
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.spack/bootstrap/store
           key: spack-bootstrap-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('spack.sh') }}
@@ -218,7 +218,7 @@ jobs:
           spack bootstrap status
 
       - name: Cache Spack concretizer
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.spack/cache/concretization
           key: spack-concretizer-${{ runner.os }}-${{ matrix.ENV }}-${{ hashFiles('spack.sh', 'spack-packages.sh', 'key4hep-spack.sh', 'eic-spack.sh', 'spack-environment/**') }}
@@ -306,7 +306,7 @@ jobs:
           fi
 
       - name: Upload Spack lockfiles
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: spack-locks-${{ matrix.ENV }}
           path: |
@@ -380,7 +380,7 @@ jobs:
 
       - name: Cache Spack checkouts
         id: cache-spack
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: spack
           key: spack-repos-${{ runner.os }}-${{ hashFiles('spack.sh', 'spack-packages.sh', 'key4hep-spack.sh', 'eic-spack.sh') }}
@@ -526,7 +526,7 @@ jobs:
                    "${INSTALL_PREFIX}/opt/spack-environment"
 
       - name: Download Spack lockfiles
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: spack-locks-${{ matrix.ENV }}
           path: spack-environment/${{ matrix.ENV }}
