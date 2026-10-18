@@ -522,8 +522,7 @@ jobs:
 
           mkdir -p "${INSTALL_PREFIX}/opt/software" \
                    "${INSTALL_PREFIX}/opt/local" \
-                   "${INSTALL_PREFIX}/opt/detector" \
-                   "${INSTALL_PREFIX}/opt/spack-environment"
+                   "${INSTALL_PREFIX}/opt/detector"
 
       - name: Download Spack lockfiles
         uses: actions/download-artifact@v8
@@ -597,9 +596,42 @@ jobs:
         run: |
           INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
 
+          # Copy spack environment definition into target prefix
+          mkdir -p "${INSTALL_PREFIX}/opt"
+          rm -rf "${INSTALL_PREFIX}/opt/spack-environment"
+          cp -r spack-environment "${INSTALL_PREFIX}/opt/spack-environment"
+
           # Generate portable setup.sh for macOS users from Spack environment
-          spack env activate --sh --dir spack-environment/${{matrix.ENV}}/epic > "${INSTALL_PREFIX}/setup.sh"
+          spack env activate --sh --dir "${INSTALL_PREFIX}/opt/spack-environment/${{matrix.ENV}}/epic" > "${INSTALL_PREFIX}/setup.sh"
           chmod +x "${INSTALL_PREFIX}/setup.sh"
+
+          # Ensure SPACK_ENV points under CVMFS target prefix and clean up runner-specific paths
+          python3 - "${INSTALL_PREFIX}" "${GITHUB_WORKSPACE}" << 'EOF'
+          import pathlib, re, sys
+          prefix = sys.argv[1]
+          workspace = sys.argv[2]
+          path = pathlib.Path(prefix) / "setup.sh"
+          content = path.read_text()
+
+          # Ensure SPACK_ENV points under target prefix
+          content = content.replace(
+              f"{workspace}/spack-environment",
+              f"{prefix}/opt/spack-environment"
+          )
+
+          # Clean PATH: retain target prefix/CVMFS bin directories and append ${PATH}
+          def clean_path(match):
+              val = match.group(1).strip("\"'")
+              placeholder = "__INSTALL_PREFIX__"
+              val_safe = val.replace(prefix, placeholder)
+              parts = val_safe.split(":")
+              dirs = [p.replace(placeholder, prefix) for p in parts if p.startswith(placeholder) or p.startswith("/cvmfs")]
+              bin_dirs = ":".join(dirs)
+              return f"export PATH={bin_dirs}:${{PATH}};"
+
+          content = re.sub(r"^export PATH=([^;\n]+);", clean_path, content, flags=re.MULTILINE)
+          path.write_text(content)
+          EOF
 
           # Detector symlinks fixup
           if [ -d "${INSTALL_PREFIX}/opt/detector" ]; then
@@ -614,9 +646,6 @@ jobs:
               fi
             )
           fi
-
-          # Copy spack environment definition
-          cp -r spack-environment "${INSTALL_PREFIX}/opt/spack-environment"
 
           # Place CVMFS catalog markers
           touch "${INSTALL_PREFIX}/opt/software/.cvmfscatalog"
