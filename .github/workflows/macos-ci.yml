@@ -112,48 +112,27 @@ jobs:
             git cherry-pick "${commit}"
           done < <(echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
 
-      - name: Patch Spack
-        run: |
+          # Fallback to source build when binary relocation fails (e.g. unpadded binaries in buildcache)
           python3 -c '
           import pathlib
-          p_new_installer = pathlib.Path("${{ github.workspace }}/spack/lib/spack/spack/new_installer.py")
-          if p_new_installer.exists():
-              content = p_new_installer.read_text()
-              old = (
-                  "    send_state(\"relocating\", state_stream)\n"
-                  "    spack.binary_distribution.extract_tarball(spec, tarball_stage, force=False)"
-              )
-              new = (
-                  "    send_state(\"relocating\", state_stream)\n"
-                  "    try:\n"
-                  "        spack.binary_distribution.extract_tarball(spec, tarball_stage, force=False)\n"
-                  "    except Exception as e:\n"
-                  "        shutil.rmtree(spec.prefix, ignore_errors=True)\n"
-                  "        spack.llnl.util.tty.warn(f\"Failed to install {spec.name} from binary cache ({e}); falling back to source build\")\n"
-                  "        return False"
-              )
-              if old in content:
-                  p_new_installer.write_text(content.replace(old, new, 1))
-                  print("Patched new_installer.py to fall back to source build on binary relocation failure")
-
-          p_bin_dist = pathlib.Path("${{ github.workspace }}/spack/lib/spack/spack/binary_distribution.py")
-          if p_bin_dist.exists():
-              content = p_bin_dist.read_text()
-              old = "    # Only then add the generic fallback of install prefix -> install prefix.\n    prefix_to_prefix[old_layout_root] = str(spack.store.STORE.layout.root)\n"
-              new = (
-                  "    # Only then add the generic fallback of install prefix -> install prefix.\n"
-                  "    prefix_to_prefix[old_layout_root] = str(spack.store.STORE.layout.root)\n"
-                  "    if sys.platform == \"darwin\":\n"
-                  "        for old_p, new_p in list(prefix_to_prefix.items()):\n"
-                  "            if old_p and old_p != \"/\":\n"
-                  "                if old_p.startswith(\"/System/Volumes/Data\"):\n"
-                  "                    prefix_to_prefix[old_p[len(\"/System/Volumes/Data\"):]] = new_p\n"
-                  "                else:\n"
-                  "                    prefix_to_prefix[\"/System/Volumes/Data\" + old_p] = new_p\n"
-              )
-              if old in content:
-                  p_bin_dist.write_text(content.replace(old, new, 1))
-                  print("Patched binary_distribution.py for macOS synthetic firmlink relocation")
+          path = pathlib.Path("lib/spack/spack/new_installer.py")
+          content = path.read_text()
+          old = (
+              "    send_state(\"relocating\", state_stream)\n"
+              "    spack.binary_distribution.extract_tarball(spec, tarball_stage, force=False)"
+          )
+          new = (
+              "    send_state(\"relocating\", state_stream)\n"
+              "    try:\n"
+              "        spack.binary_distribution.extract_tarball(spec, tarball_stage, force=False)\n"
+              "    except Exception as e:\n"
+              "        shutil.rmtree(spec.prefix, ignore_errors=True)\n"
+              "        spack.llnl.util.tty.warn(f\"Failed to install {spec.name} from binary cache ({e}); falling back to source build\")\n"
+              "        return False"
+          )
+          if old in content:
+              path.write_text(content.replace(old, new, 1))
+              print("Patched new_installer.py to fall back to source build on binary relocation failure")
           '
 
       - name: Checkout spack-packages repository
@@ -444,50 +423,6 @@ jobs:
             echo "Cherry-picking ${commit}"
             git cherry-pick "${commit}"
           done < <(echo "${{ steps.spack-config.outputs.spack-cherrypicks }}" | grep -E '^[a-f0-9]{40}$' || true)
-
-      - name: Patch Spack
-        run: |
-          python3 -c '
-          import pathlib
-          p_new_installer = pathlib.Path("${{ github.workspace }}/spack/lib/spack/spack/new_installer.py")
-          if p_new_installer.exists():
-              content = p_new_installer.read_text()
-              old = (
-                  "    send_state(\"relocating\", state_stream)\n"
-                  "    spack.binary_distribution.extract_tarball(spec, tarball_stage, force=False)"
-              )
-              new = (
-                  "    send_state(\"relocating\", state_stream)\n"
-                  "    try:\n"
-                  "        spack.binary_distribution.extract_tarball(spec, tarball_stage, force=False)\n"
-                  "    except Exception as e:\n"
-                  "        shutil.rmtree(spec.prefix, ignore_errors=True)\n"
-                  "        spack.llnl.util.tty.warn(f\"Failed to install {spec.name} from binary cache ({e}); falling back to source build\")\n"
-                  "        return False"
-              )
-              if old in content:
-                  p_new_installer.write_text(content.replace(old, new, 1))
-                  print("Patched new_installer.py to fall back to source build on binary relocation failure")
-
-          p_bin_dist = pathlib.Path("${{ github.workspace }}/spack/lib/spack/spack/binary_distribution.py")
-          if p_bin_dist.exists():
-              content = p_bin_dist.read_text()
-              old = "    # Only then add the generic fallback of install prefix -> install prefix.\n    prefix_to_prefix[old_layout_root] = str(spack.store.STORE.layout.root)\n"
-              new = (
-                  "    # Only then add the generic fallback of install prefix -> install prefix.\n"
-                  "    prefix_to_prefix[old_layout_root] = str(spack.store.STORE.layout.root)\n"
-                  "    if sys.platform == \"darwin\":\n"
-                  "        for old_p, new_p in list(prefix_to_prefix.items()):\n"
-                  "            if old_p and old_p != \"/\":\n"
-                  "                if old_p.startswith(\"/System/Volumes/Data\"):\n"
-                  "                    prefix_to_prefix[old_p[len(\"/System/Volumes/Data\"):]] = new_p\n"
-                  "                else:\n"
-                  "                    prefix_to_prefix[\"/System/Volumes/Data\" + old_p] = new_p\n"
-              )
-              if old in content:
-                  p_bin_dist.write_text(content.replace(old, new, 1))
-                  print("Patched binary_distribution.py for macOS synthetic firmlink relocation")
-          '
 
       - name: Checkout spack-packages repository
         if: steps.cache-spack.outputs.cache-hit != 'true'
