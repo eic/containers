@@ -627,7 +627,7 @@ jobs:
               parts = val_safe.split(":")
               dirs = [p.replace(placeholder, prefix) for p in parts if p.startswith(placeholder) or p.startswith("/cvmfs")]
               bin_dirs = ":".join(dirs)
-              return f"export PATH={bin_dirs}:${{PATH}};"
+              return f"export PATH={bin_dirs}:" + "${PATH};"
 
           content = re.sub(r"^export PATH=([^;\n]+);", clean_path, content, flags=re.MULTILINE)
           path.write_text(content)
