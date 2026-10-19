@@ -737,3 +737,56 @@ jobs:
             done
             echo "::endgroup::"
           done
+
+  test-cvmfs:
+    name: Test CVMFS Deployment (${{ matrix.ENV }})
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ENV: [ci]
+
+    steps:
+      - name: Setup CernVM-FS
+        uses: cvmfs-contrib/github-action-cvmfs@v5
+        with:
+          cvmfs_repositories: ${{ env.CVMFS_REPO }}
+
+      - name: Test deployed environment
+        run: |
+          DEPLOY_PREFIX="/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}/mac_${{ matrix.ENV }}:nightly"
+          echo "Checking CVMFS mount at /cvmfs/${{ env.CVMFS_REPO }}..."
+          ls -ld "/cvmfs/${{ env.CVMFS_REPO }}"
+
+          echo "Checking deployed environment directory at ${DEPLOY_PREFIX}..."
+          if [ ! -d "${DEPLOY_PREFIX}" ]; then
+            echo "Error: Directory ${DEPLOY_PREFIX} not found!"
+            ls -la "/cvmfs/${{ env.CVMFS_REPO }}/${{ env.CVMFS_PATH_PREFIX }}" || true
+            exit 1
+          fi
+
+          ls -la "${DEPLOY_PREFIX}"
+
+          echo "=== setup.sh contents ==="
+          cat "${DEPLOY_PREFIX}/setup.sh"
+
+          # If setup.sh references singularity.opensciencegrid.org (from older builds),
+          # set up a compatibility firmlink/symlink so those paths resolve on the runner
+          if grep -q "singularity.opensciencegrid.org" "${DEPLOY_PREFIX}/setup.sh"; then
+            echo "Creating compatibility symlink for singularity.opensciencegrid.org prefix..."
+            TARGET_DIR=$(readlink /cvmfs 2>/dev/null || echo "/Users/Shared/cvmfs")
+            sudo mkdir -p "${TARGET_DIR}/singularity.opensciencegrid.org/eicweb"
+            sudo ln -sfn "${DEPLOY_PREFIX}" "${TARGET_DIR}/singularity.opensciencegrid.org/eicweb/mac_ci-unstable-pr-95"
+          fi
+
+          echo "=== Activating environment ==="
+          source "${DEPLOY_PREFIX}/setup.sh"
+
+          echo "which python3: $(which python3)"
+          python3 --version
+          python3 -c "import sys; print('Python sys.path:', sys.path)"
+
+          if command -v root.exe >/dev/null 2>&1; then
+            echo "Testing ROOT..."
+            root.exe -b -q -e 'std::cout << "ROOT " << gROOT->GetVersion() << " functional\n"; gSystem->Exit(0);'
+          fi
