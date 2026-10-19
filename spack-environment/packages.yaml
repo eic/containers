@@ -91,7 +91,7 @@ packages:
     - -ipo
   celeritas:
     require:
-    - '@0.6.3:'
+    - '@0.7:'
     - +covfie +geant4 +hepmc3  +vecgeom
     - one_of: [~cuda +root, +cuda +ipo ~root]
   cernlib:
@@ -219,7 +219,7 @@ packages:
     - build_system=autotools
   g4adept:
     require:
-    - '@0.3.0'
+    - '@0.4.1'
     - +covfie
   g4occt:
     require:
@@ -631,6 +631,10 @@ packages:
     require:
     - '@0.10.2:'
   py-torch:
+    prefer:
+    - ~cuda
+    - when: '+cuda'
+      spec: cuda_arch=75
     require:
     - '@2.10.0:2'
     - -mkldnn
@@ -717,7 +721,7 @@ packages:
     - -mpers
   swig:
     require:
-    - '@4.1:'  # constrain to avoid duplicates in eic_tf
+    - '@4.1:4.4'  # constrain to avoid duplicates in eic_tf; sherpa python bindings fail with swig@4.5
   tbb:
     require:
     - 'intel-tbb'

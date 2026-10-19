@@ -1,2 +1,2 @@
 config:
-  deprecated: false
+  deprecated: true  # cppgsl to ms-gsl rename
