@@ -19,8 +19,7 @@ packages:
     - apple-clang
   geant4:
     require:
-    - any_of: [+opengl +qt, -opengl -qt]
-    - ~x11
+    - ~opengl ~qt
   gl:
     require:
     - apple-gl

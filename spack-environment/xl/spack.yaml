@@ -13,6 +13,10 @@ spack:
   # Note that in definitions 'when' takes a python expression as argument
   # https://spack.readthedocs.io/en/latest/environments.html#spec-list-references
   - when: arch.satisfies("platform=linux")
+    geant4: [geant4 +opengl]
+  - when: arch.satisfies("platform=darwin")
+    geant4: [geant4 -opengl]
+  - when: arch.satisfies("platform=linux")
     linux_packages:
     - dawncut
     - estarlight
@@ -71,7 +75,7 @@ spack:
   - fjcontrib
   - fmt
   - g4occt
-  - geant4 +opengl
+  - $geant4
   - github-copilot
   - hepmc3
   - hepmcmerger
