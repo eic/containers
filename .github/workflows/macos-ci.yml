@@ -770,19 +770,52 @@ jobs:
           echo "=== setup.sh contents ==="
           cat "${DEPLOY_PREFIX}/setup.sh"
 
-          # If setup.sh references singularity.opensciencegrid.org (from older builds),
-          # set up a compatibility firmlink/symlink so those paths resolve on the runner
-          if grep -q "singularity.opensciencegrid.org" "${DEPLOY_PREFIX}/setup.sh"; then
-            echo "Creating compatibility symlink for singularity.opensciencegrid.org prefix..."
-            TARGET_DIR=$(readlink /cvmfs 2>/dev/null || echo "/Users/Shared/cvmfs")
-            sudo mkdir -p "${TARGET_DIR}/singularity.opensciencegrid.org/eicweb"
-            sudo ln -sfn "${DEPLOY_PREFIX}" "${TARGET_DIR}/singularity.opensciencegrid.org/eicweb/mac_ci-unstable-pr-95"
+          # Inspect python3 in opt/local/bin to check for legacy build prefix
+          if [ -L "${DEPLOY_PREFIX}/opt/local/bin/python3" ]; then
+            TARGET=$(readlink "${DEPLOY_PREFIX}/opt/local/bin/python3")
+            echo "opt/local/bin/python3 symlink target: ${TARGET}"
+            if [ ! -e "${DEPLOY_PREFIX}/opt/local/bin/python3" ]; then
+              echo "Symlink target does not exist! Resolving legacy build prefix..."
+              OLD_PREFIX="${TARGET%%/opt/software*}"
+              echo "Detected legacy prefix: ${OLD_PREFIX}"
+              if [ -n "${OLD_PREFIX}" ] && [ "${OLD_PREFIX}" != "${TARGET}" ]; then
+                for root in "" "/Users/Shared" "/System/Volumes/Data"; do
+                  DEST="${root}${OLD_PREFIX}"
+                  DEST_DIR=$(dirname "${DEST}")
+                  echo "Creating compatibility link: ${DEST} -> ${DEPLOY_PREFIX}"
+                  sudo mkdir -p "${DEST_DIR}" 2>/dev/null || true
+                  sudo ln -sfn "${DEPLOY_PREFIX}" "${DEST}" 2>/dev/null || true
+                done
+                for variant in mac_ci mac_xl mac_tf; do
+                  VAR_PREFIX="$(dirname "${OLD_PREFIX}")/${variant}-unstable-pr-95"
+                  for root in "" "/Users/Shared" "/System/Volumes/Data"; do
+                    DEST="${root}${VAR_PREFIX}"
+                    DEST_DIR=$(dirname "${DEST}")
+                    sudo mkdir -p "${DEST_DIR}" 2>/dev/null || true
+                    sudo ln -sfn "${DEPLOY_PREFIX}" "${DEST}" 2>/dev/null || true
+                  done
+                done
+              fi
+            fi
+          fi
+
+          if [ -e "${DEPLOY_PREFIX}/opt/local/bin/python3" ]; then
+            echo "opt/local/bin/python3 resolves successfully!"
+          else
+            echo "Warning: opt/local/bin/python3 still does not resolve!"
+            ls -la "${DEPLOY_PREFIX}/opt/local/bin/python3" || true
           fi
 
           echo "=== Activating environment ==="
           source "${DEPLOY_PREFIX}/setup.sh"
 
-          echo "which python3: $(which python3)"
+          PYTHON_BIN="$(which python3)"
+          echo "which python3: ${PYTHON_BIN}"
+          if [ "${PYTHON_BIN}" != "${DEPLOY_PREFIX}/opt/local/bin/python3" ]; then
+            echo "::error::python3 resolved to ${PYTHON_BIN} instead of ${DEPLOY_PREFIX}/opt/local/bin/python3"
+            exit 1
+          fi
+
           python3 --version
           python3 -c "import sys; print('Python sys.path:', sys.path)"
 
