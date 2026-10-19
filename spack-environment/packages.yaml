@@ -392,7 +392,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.8.0'
+    - '@1.9.0'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
