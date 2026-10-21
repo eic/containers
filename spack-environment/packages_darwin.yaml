@@ -33,4 +33,4 @@ packages:
     - any_of: [build_system=autotools, '@:']
   root:
     require:
-    - ~x
+    - ~x ~opengl ~webgui

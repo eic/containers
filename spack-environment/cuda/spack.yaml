@@ -6,7 +6,10 @@ spack:
     when: platform == "darwin"
   - path: ../packages_linux.yaml
     when: platform == "linux"
-  - ../packages_root_with_opengl.yaml
+  - path: ../packages_root_with_opengl.yaml
+    when: platform == "linux"
+  - path: ../packages_root_without_opengl.yaml
+    when: platform == "darwin"
   - ../view.yaml
   - ../packages.yaml
   specs:
