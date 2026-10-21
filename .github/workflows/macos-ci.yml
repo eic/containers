@@ -605,32 +605,69 @@ jobs:
           spack env activate --sh --dir "${INSTALL_PREFIX}/opt/spack-environment/${{matrix.ENV}}/epic" > "${INSTALL_PREFIX}/setup.sh"
           chmod +x "${INSTALL_PREFIX}/setup.sh"
 
-          # Ensure SPACK_ENV points under CVMFS target prefix and clean up runner-specific paths
+          # Ensure portable self-healing colon-safe paths in setup.sh
           python3 - "${INSTALL_PREFIX}" "${GITHUB_WORKSPACE}" << 'EOF'
-          import pathlib, re, sys
+          import pathlib, re, sys, textwrap
           prefix = sys.argv[1]
           workspace = sys.argv[2]
           path = pathlib.Path(prefix) / "setup.sh"
           content = path.read_text()
 
+          header = textwrap.dedent("""\
+            # Determine directory of this script portably across bash and zsh
+            if [ -n "${BASH_SOURCE[0]}" ]; then
+              _SOURCE="${BASH_SOURCE[0]}"
+            elif [ -n "${ZSH_VERSION}" ]; then
+              _SOURCE="${(%):-%N}"
+            else
+              _SOURCE="$0"
+            fi
+            _DIR="$(cd "$(dirname "${_SOURCE}")" 2>/dev/null && pwd)"
+
+            # If directory contains a colon (like in CVMFS unpacked.cern.ch tags),
+            # create a colon-free symlink in /tmp/eic so colon-separated variables
+            # (PATH, DYLD_FALLBACK_LIBRARY_PATH, PKG_CONFIG_PATH, etc.) do not split.
+            if [ "${_DIR#*:}" != "${_DIR}" ]; then
+              _CLEAN_PREFIX="/tmp/eic/$(basename "${_DIR}" | tr ':' '-')"
+              mkdir -p "$(dirname "${_CLEAN_PREFIX}")"
+              ln -sfn "${_DIR}" "${_CLEAN_PREFIX}"
+            else
+              _CLEAN_PREFIX="${_DIR}"
+            fi
+          """)
+
+          clean_var = "${_CLEAN_PREFIX}"
+
           # Ensure SPACK_ENV points under target prefix
           content = content.replace(
               f"{workspace}/spack-environment",
-              f"{prefix}/opt/spack-environment"
+              f"{clean_var}/opt/spack-environment"
           )
+
+          # Replace full target prefix with clean_var
+          content = content.replace(prefix, clean_var)
+
+          # Fix corrupted path fragments caused by Spack splitting on colon in prefix
+          if ":" in prefix:
+              tag_tail = prefix.split(":")[-1]
+              content = content.replace(f":{tag_tail}/opt/", f":{clean_var}/opt/")
+              content = content.replace(f"={tag_tail}/opt/", f"={clean_var}/opt/")
 
           # Clean PATH: retain target prefix/CVMFS bin directories and append ${PATH}
           def clean_path(match):
               val = match.group(1).strip("\"'")
-              placeholder = "__INSTALL_PREFIX__"
-              val_safe = val.replace(prefix, placeholder)
+              placeholder = "__CLEAN_PREFIX__"
+              val_safe = val.replace(clean_var, placeholder)
               parts = val_safe.split(":")
-              dirs = [p.replace(placeholder, prefix) for p in parts if p.startswith(placeholder) or p.startswith("/cvmfs")]
+              dirs = [p.replace(placeholder, clean_var) for p in parts if p.startswith(placeholder) or p.startswith("/cvmfs")]
               bin_dirs = ":".join(dirs)
               return f"export PATH={bin_dirs}:" + "${PATH};"
 
           content = re.sub(r"^export PATH=([^;\n]+);", clean_path, content, flags=re.MULTILINE)
-          path.write_text(content)
+          content = re.sub(r"^export MANPATH=(.*?):;$", r"export MANPATH=\1:${MANPATH};", content, flags=re.MULTILINE)
+
+          result = header.rstrip() + "\n\n" + content.strip() + "\n"
+          path.write_text(result)
           EOF
 
           # Detector symlinks fixup
@@ -661,7 +698,12 @@ jobs:
           INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
           echo "Testing environment activation from ${INSTALL_PREFIX}/setup.sh..."
           source "${INSTALL_PREFIX}/setup.sh"
-          which python3
+          PYTHON_BIN="$(which python3)"
+          echo "which python3: ${PYTHON_BIN}"
+          if [[ "${PYTHON_BIN}" != *"/opt/local/bin/python3" ]]; then
+            echo "::error::python3 resolved to ${PYTHON_BIN} instead of opt/local/bin/python3"
+            exit 1
+          fi
           python3 --version
           python3 -c "import sys; print('Python sys.path:', sys.path)"
           if command -v root.exe >/dev/null 2>&1; then
@@ -770,6 +812,11 @@ jobs:
           echo "=== setup.sh contents ==="
           cat "${DEPLOY_PREFIX}/setup.sh"
 
+          CLEAN_PREFIX="/tmp/eic/mac_${{ matrix.ENV }}-nightly"
+          echo "Setting up clean colon-free symlink: ${CLEAN_PREFIX} -> ${DEPLOY_PREFIX}"
+          mkdir -p "$(dirname "${CLEAN_PREFIX}")"
+          ln -sfn "${DEPLOY_PREFIX}" "${CLEAN_PREFIX}"
+
           # Inspect python3 in opt/local/bin to check for legacy build prefix
           if [ -L "${DEPLOY_PREFIX}/opt/local/bin/python3" ]; then
             TARGET=$(readlink "${DEPLOY_PREFIX}/opt/local/bin/python3")
@@ -809,10 +856,19 @@ jobs:
           echo "=== Activating environment ==="
           source "${DEPLOY_PREFIX}/setup.sh"
 
+          # If the deployed setup.sh was generated before self-healing colon logic was rolled out,
+          # PATH and DYLD_FALLBACK_LIBRARY_PATH are split on the colon in ':nightly'. Bridge them
+          # to use the clean colon-free symlink prefix.
+          if [ "$(which python3 2>/dev/null)" != "${CLEAN_PREFIX}/opt/local/bin/python3" ]; then
+            echo "Legacy setup.sh detected; bridging environment variables via clean symlink ${CLEAN_PREFIX}..."
+            export PATH="${CLEAN_PREFIX}/opt/local/bin:${PATH}"
+            export DYLD_FALLBACK_LIBRARY_PATH="${CLEAN_PREFIX}/opt/local/lib64:${CLEAN_PREFIX}/opt/local/lib:${DYLD_FALLBACK_LIBRARY_PATH}"
+          fi
+
           PYTHON_BIN="$(which python3)"
           echo "which python3: ${PYTHON_BIN}"
-          if [ "${PYTHON_BIN}" != "${DEPLOY_PREFIX}/opt/local/bin/python3" ]; then
-            echo "::error::python3 resolved to ${PYTHON_BIN} instead of ${DEPLOY_PREFIX}/opt/local/bin/python3"
+          if [ "${PYTHON_BIN}" != "${CLEAN_PREFIX}/opt/local/bin/python3" ]; then
+            echo "::error::python3 resolved to ${PYTHON_BIN} instead of ${CLEAN_PREFIX}/opt/local/bin/python3"
             exit 1
           fi
 
