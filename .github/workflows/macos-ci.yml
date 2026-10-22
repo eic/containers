@@ -542,6 +542,7 @@ jobs:
           spack external find --scope site llvm
           INSTALL_PREFIX="${{ steps.cvmfs-dirs.outputs.install-prefix }}"
           spack config --scope site add "config:install_tree:root:'${INSTALL_PREFIX}/opt/software'"
+          spack config --scope site add "config:install_tree:padded_length:128"
           spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:{}"
           spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:default:root:'${INSTALL_PREFIX}/opt/local'"
           spack -e spack-environment/${{ matrix.ENV }} -c view:false config add "view:detectors:root:'${INSTALL_PREFIX}/opt/detector'"
@@ -666,7 +667,44 @@ jobs:
           content = re.sub(r"^export PATH=([^;\n]+);", clean_path, content, flags=re.MULTILINE)
           content = re.sub(r"^export MANPATH=(.*?):;$", r"export MANPATH=\1:${MANPATH};", content, flags=re.MULTILINE)
 
-          result = header.rstrip() + "\n\n" + content.strip() + "\n"
+          # Clean and augment DYLD_FALLBACK_LIBRARY_PATH: retain view lib directories,
+          # include lib/root for ROOT dynamic libraries/plugins, and preserve any existing value.
+          def clean_dyld_path(match):
+              val = match.group(1).strip("\"'")
+              placeholder = "__CLEAN_PREFIX__"
+              val_safe = val.replace(clean_var, placeholder)
+              parts = val_safe.split(":")
+              dirs = [p.replace(placeholder, clean_var) for p in parts if p.startswith(placeholder) or p.startswith("/cvmfs")]
+              root_dir = f"{clean_var}/opt/local/lib/root"
+              if root_dir not in dirs:
+                  dirs.append(root_dir)
+              lib_dirs = ":".join(dirs)
+              return f"export DYLD_FALLBACK_LIBRARY_PATH={lib_dirs}" + "${DYLD_FALLBACK_LIBRARY_PATH:+:${DYLD_FALLBACK_LIBRARY_PATH}};"
+
+          if "DYLD_FALLBACK_LIBRARY_PATH" in content:
+              content = re.sub(r"^export DYLD_FALLBACK_LIBRARY_PATH=([^;\n]+);", clean_dyld_path, content, flags=re.MULTILINE)
+          else:
+              content += f"\nexport DYLD_FALLBACK_LIBRARY_PATH={clean_var}/opt/local/lib64:{clean_var}/opt/local/lib:{clean_var}/opt/local/lib/root" + "${DYLD_FALLBACK_LIBRARY_PATH:+:${DYLD_FALLBACK_LIBRARY_PATH}};\n"
+
+          content = re.sub(r"^export PKG_CONFIG_PATH=([^;\n]+);", r"export PKG_CONFIG_PATH=\1${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}};", content, flags=re.MULTILINE)
+          content = re.sub(r"^export CMAKE_PREFIX_PATH=([^;\n]+);", r"export CMAKE_PREFIX_PATH=\1${CMAKE_PREFIX_PATH:+:${CMAKE_PREFIX_PATH}};", content, flags=re.MULTILINE)
+
+          footer = (
+              "# ROOT environment configuration\n"
+              f'if [ -d "{clean_var}/opt/local/lib/root" ]; then\n'
+              f'  export ROOTSYS="{clean_var}/opt/local";\n'
+              f'  export ROOT_LIBRARY_PATH="{clean_var}/opt/local/lib/root";\n'
+              f'  export ROOT_INCLUDE_PATH="{clean_var}/opt/local/include";\n'
+              '  export CLING_STANDARD_PCH="none";\n'
+              '  export CPPYY_API_PATH="none";\n'
+              f'  export PYTHONPATH="{clean_var}/opt/local/lib/root"' + "${PYTHONPATH:+:${PYTHONPATH}};\n"
+              '  if ! command -v root > /dev/null 2>&1 && command -v root.exe > /dev/null 2>&1 ; then\n'
+              '    alias root=root.exe\n'
+              '  fi\n'
+              'fi\n'
+          )
+
+          result = header.rstrip() + "\n\n" + content.strip() + "\n\n" + footer.strip() + "\n"
           path.write_text(result)
           EOF
 
@@ -862,7 +900,12 @@ jobs:
           if [ "$(which python3 2>/dev/null)" != "${CLEAN_PREFIX}/opt/local/bin/python3" ]; then
             echo "Legacy setup.sh detected; bridging environment variables via clean symlink ${CLEAN_PREFIX}..."
             export PATH="${CLEAN_PREFIX}/opt/local/bin:${PATH}"
-            export DYLD_FALLBACK_LIBRARY_PATH="${CLEAN_PREFIX}/opt/local/lib64:${CLEAN_PREFIX}/opt/local/lib:${DYLD_FALLBACK_LIBRARY_PATH}"
+            export DYLD_FALLBACK_LIBRARY_PATH="${CLEAN_PREFIX}/opt/local/lib64:${CLEAN_PREFIX}/opt/local/lib:${CLEAN_PREFIX}/opt/local/lib/root:${DYLD_FALLBACK_LIBRARY_PATH}"
+            export ROOTSYS="${CLEAN_PREFIX}/opt/local"
+            export ROOT_LIBRARY_PATH="${CLEAN_PREFIX}/opt/local/lib/root"
+            export ROOT_INCLUDE_PATH="${CLEAN_PREFIX}/opt/local/include"
+            export CLING_STANDARD_PCH='none'
+            export CPPYY_API_PATH='none'
           fi
 
           PYTHON_BIN="$(which python3)"
