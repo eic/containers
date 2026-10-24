@@ -19,6 +19,7 @@ c322aa993ae106492bdb28333b56c5682a704027
 9007ffd30a17fdb978b63fb55d7bca481031ca47
 39191607781ae06888df8cc178f20cd762a0e806
 27281f83a0255d09167c5e047c16cc5229aa77c4
+7415ba8e91ec850dad27f91df74ae6c6b18ff1a0
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -35,3 +36,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 9007ffd30a17fdb978b63fb55d7bca481031ca47: celeritas: new version 0.7
 ## 39191607781ae06888df8cc178f20cd762a0e806: g4adept: add v0.3.5, v0.4.1
 ## 27281f83a0255d09167c5e047c16cc5229aa77c4: py-certifi: add v2026.10.19
+## 7415ba8e91ec850dad27f91df74ae6c6b18ff1a0: ca-certificates-mozilla: add v2026-10-20, deprecate older versions
