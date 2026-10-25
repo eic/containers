@@ -20,6 +20,7 @@ c322aa993ae106492bdb28333b56c5682a704027
 39191607781ae06888df8cc178f20cd762a0e806
 27281f83a0255d09167c5e047c16cc5229aa77c4
 7415ba8e91ec850dad27f91df74ae6c6b18ff1a0
+80fbeb0fc63775b3ea766acda51a9b779e8a008a
 26c549b73602f7493cc7bcc142094cbfc7dbee93
 ---
 ## Optional hash table with comma-separated file list
@@ -38,4 +39,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 39191607781ae06888df8cc178f20cd762a0e806: g4adept: add v0.3.5, v0.4.1
 ## 27281f83a0255d09167c5e047c16cc5229aa77c4: py-certifi: add v2026.10.19
 ## 7415ba8e91ec850dad27f91df74ae6c6b18ff1a0: ca-certificates-mozilla: add v2026-10-20, deprecate older versions
+## 80fbeb0fc63775b3ea766acda51a9b779e8a008a: py-pip: add v26.2.1
 ## 26c549b73602f7493cc7bcc142094cbfc7dbee93: py-pip: add v26.2.2
