@@ -25,7 +25,6 @@ if test -z "$DETECTOR_PATH" -a -z "$DETECTOR_CONFIG" ; then
     fi
     thisepic=/opt/detector/epic-${version}/bin/thisepic.sh
     if test -f "$thisepic" ; then
-      # shellcheck source=/dev/null  # path depends on the detected version
       _sourceWithoutArgs "$thisepic"
     fi
   fi
