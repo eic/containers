@@ -9,6 +9,7 @@ file=/etc/jug_info
 _sourceWithoutArgs() {
     local fileToSource="$1"
     shift
+    # shellcheck source=/dev/null
     . "$fileToSource"
 }
 if test -z "$DETECTOR_PATH" -a -z "$DETECTOR_CONFIG" ; then
