@@ -27,10 +27,6 @@ permissions:
   packages: write
 
 env:
-  ## CUDA version and container operating system
-  CUDA_VERSION: 12.8.2
-  CUDA_OS: ubuntu24.04
-
   ## Default versions are specified in packages.yaml but can be overridden
   ## note: nightly builds will always use the master/main branch
   EDM4EIC_VERSION: ${{ inputs.EDM4EIC_VERSION }}
@@ -59,16 +55,12 @@ jobs:
     name: Turn env into outputs
     runs-on: ubuntu-latest
     outputs:
-      CUDA_VERSION: ${{ steps.env.outputs.CUDA_VERSION }}
-      CUDA_OS: ${{ steps.env.outputs.CUDA_OS }}
       BUILDWEEK: ${{ steps.env.outputs.BUILDWEEK }}
       JOBS: ${{ steps.env.outputs.JOBS }}
     steps:
       - name: Turn env into outputs
         id: env
         run: |
-          echo "CUDA_VERSION=${{ env.CUDA_VERSION }}" >> $GITHUB_OUTPUT
-          echo "CUDA_OS=${{ env.CUDA_OS }}" >> $GITHUB_OUTPUT
           echo "BUILDWEEK=$(date +%Yw%V)" >> $GITHUB_OUTPUT
           echo "JOBS=${{ env.JOBS }}" >> $GITHUB_OUTPUT
 
@@ -109,6 +101,7 @@ jobs:
 
   base:
     name: Build cuda base images
+    ## BASE_IMAGE is derived by scripts/build-base.sh from cuda.sh
     needs: [env]
     uses: ./.github/workflows/build-base.yml
     secrets: inherit
@@ -119,14 +112,12 @@ jobs:
         {
           "include": [
             {
-              "BASE_IMAGE": "nvidia/cuda:${{ needs.env.outputs.CUDA_VERSION }}-devel-${{ needs.env.outputs.CUDA_OS }}",
               "BUILD_IMAGE": "cuda_devel",
               "PLATFORM": "linux/amd64",
               "runner": "ubuntu-latest",
               "arch": "amd64"
             },
             {
-              "BASE_IMAGE": "nvidia/cuda:${{ needs.env.outputs.CUDA_VERSION }}-runtime-${{ needs.env.outputs.CUDA_OS }}",
               "BUILD_IMAGE": "cuda_runtime",
               "PLATFORM": "linux/amd64",
               "runner": "ubuntu-latest",

@@ -183,7 +183,7 @@ directly, Dockerfile `ARG` defaults apply instead.
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `BASE_IMAGE` | Base Debian image passed by script | `debian:trixie-slim` for `debian_stable_base` (derived from `--image`) |
+| `BASE_IMAGE` | Base image passed by script | Derived from `--image`: `debian:trixie-slim` for `debian_stable_base`; `nvidia/cuda:${CUDA_VERSION}-{devel,runtime}-${CUDA_OS}` for `cuda_devel`/`cuda_runtime`, with `CUDA_VERSION`/`CUDA_OS` from `cuda.sh` (overridable via environment) |
 | `SPACK_ORGREPO` | Spack GitHub org/repo | `spack/spack` |
 | `SPACK_VERSION` | Spack version/branch | (from `spack.sh`) |
 | `SPACK_SHA` | Specific commit SHA | (resolved from version) |

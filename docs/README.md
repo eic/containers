@@ -57,7 +57,8 @@ containers/
 ├── spack.sh               # Spack version configuration
 ├── spack-packages.sh      # Spack-packages version and cherry-picks
 ├── eic-spack.sh           # EIC-spack repository configuration
-└── key4hep-spack.sh       # Key4HEP-spack repository configuration
+├── key4hep-spack.sh       # Key4HEP-spack repository configuration
+└── cuda.sh                # CUDA version for nvidia/cuda base images
 ```
 
 ## Support

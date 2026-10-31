@@ -49,10 +49,6 @@ PLATFORM="${PLATFORM:-linux/amd64}"
 JOBS="${JOBS:-$(getconf _NPROCESSORS_ONLN)}"
 LOCAL_TAG="${LOCAL_TAG:-local}"
 METADATA_FILE="${METADATA_FILE:-/tmp/build-metadata.json}"
-## CUDA defaults (used when building cuda_devel or cuda_runtime)
-## Keep in sync with CUDA_VERSION/CUDA_OS in .github/workflows/build-push.yml and .gitlab-ci.yml
-CUDA_VERSION="${CUDA_VERSION:-12.8.2}"
-CUDA_OS="${CUDA_OS:-ubuntu24.04}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -71,6 +67,8 @@ source "${REPO_DIR}/spack.sh"
 source "${REPO_DIR}/spack-packages.sh"
 source "${REPO_DIR}/key4hep-spack.sh"
 source "${REPO_DIR}/eic-spack.sh"
+## CUDA_VERSION and CUDA_OS (used when building cuda_devel or cuda_runtime)
+source "${REPO_DIR}/cuda.sh"
 
 ## Convert an arbitrary git ref/branch name to a valid OCI tag component.
 ## Mirrors GitLab's CI_COMMIT_REF_SLUG: lowercase, non-alnum runs → '-',
