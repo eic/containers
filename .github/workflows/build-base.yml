@@ -92,8 +92,9 @@ jobs:
           echo "${IMAGE}@${DIGEST}" > /tmp/digests/${{ matrix.BUILD_IMAGE }}-${{ matrix.arch }}.digest
       - name: Check image size
         run: |
-          # Caps are defined once in image-size-limits.sh; see that file to change one.
-          . ./image-size-limits.sh
+          # Caps are defined once in image-size-limits.env; see that file to change one.
+          . ./scripts/load-vars.sh
+          load_vars image-size-limits.env
           FULLNAME="${{ matrix.BUILD_IMAGE }}"
           LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
           LIMIT="${!LIMIT_VAR}"

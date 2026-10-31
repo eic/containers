@@ -54,12 +54,15 @@ containers/
 │   ├── packages.yaml      # Package versions and variants
 │   ├── ci/                # CI environment specs
 │   └── xl/                # Full (XL) environment specs
-├── spack.sh               # Spack version configuration
-├── spack-packages.sh      # Spack-packages version and cherry-picks
-├── eic-spack.sh           # EIC-spack repository configuration
-├── key4hep-spack.sh       # Key4HEP-spack repository configuration
-├── debian.sh              # Debian release for debian base image
-└── cuda.sh                # CUDA version for nvidia/cuda base images
+├── spack.env              # Spack version configuration
+├── spack.cherrypicks      # Spack cherry-picks
+├── spack-packages.env     # Spack-packages version
+├── spack-packages.cherrypicks # Spack-packages cherry-picks
+├── eic-spack.env          # EIC-spack repository configuration
+├── key4hep-spack.env      # Key4HEP-spack repository configuration
+├── debian.env             # Debian release for debian base image
+├── cuda.env               # CUDA version for nvidia/cuda base images
+└── image-size-limits.env  # Compressed image size caps
 ```
 
 ## Support

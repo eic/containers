@@ -66,7 +66,7 @@ jobs:
 
   base-debian:
     name: Build debian base images
-    ## BASE_IMAGE is derived by scripts/build-base.sh from debian.sh
+    ## BASE_IMAGE is derived by scripts/build-base.sh from debian.env
     needs: env
     uses: ./.github/workflows/build-base.yml
     secrets: inherit
@@ -99,7 +99,7 @@ jobs:
 
   base:
     name: Build cuda base images
-    ## BASE_IMAGE is derived by scripts/build-base.sh from cuda.sh
+    ## BASE_IMAGE is derived by scripts/build-base.sh from cuda.env
     needs: [env]
     uses: ./.github/workflows/build-base.yml
     secrets: inherit

@@ -5,7 +5,7 @@ variables:
   DOCKER_IMAGE: docker.io/docker:28.3.3
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
-  ## CUDA version and container operating system are set in cuda.sh
+  ## CUDA version and container operating system are set in cuda.env
 
   ## Default versions are specified in packages.yaml but can be overridden
   EDM4EIC_VERSION: ""
@@ -26,8 +26,8 @@ variables:
   ## Number of jobs to start during container builds
   JOBS: 32
 
-  ## Compressed image size caps (GiB) live in image-size-limits.sh, which the
-  ## base and eic jobs source below.  They are shared with the GitHub Actions
+  ## Compressed image size caps (GiB) live in image-size-limits.env, which the
+  ## base and eic jobs load below.  They are shared with the GitHub Actions
   ## workflows rather than duplicated here.
 
   ## is this nightly or not?
@@ -168,7 +168,8 @@ version:
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
       echo "DH_PUSH=$DH_PUSH" >> build.env
       echo "GH_PUSH=$GH_PUSH" >> build.env
-      . ./cuda.sh
+      . ./scripts/load-vars.sh
+      load_vars --defaults cuda.env
       echo "CUDA_VERSION=$CUDA_VERSION" >> build.env
       echo "CUDA_OS=$CUDA_OS" >> build.env
       cat build.env
@@ -316,7 +317,7 @@ base:
 #      - BASE_IMAGE: debian:testing-slim
 #        BUILD_IMAGE: debian_testing_base
 #        PLATFORM: linux/amd64,linux/arm64/v8
-      ## BASE_IMAGE for debian_stable_base is derived by scripts/build-base.sh from debian.sh
+      ## BASE_IMAGE for debian_stable_base is derived by scripts/build-base.sh from debian.env
       - BUILD_IMAGE: debian_stable_base
         PLATFORM: linux/amd64
 #      - BASE_IMAGE: ubuntu:22.04
@@ -325,7 +326,7 @@ base:
 #      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
 #        BUILD_IMAGE: oneapi_base
 #        PLATFORM: linux/amd64
-      ## BASE_IMAGE for cuda_* is derived by scripts/build-base.sh from cuda.sh
+      ## BASE_IMAGE for cuda_* is derived by scripts/build-base.sh from cuda.env
       - BUILD_IMAGE: cuda_devel
         PLATFORM: linux/amd64
       - BUILD_IMAGE: cuda_runtime
@@ -341,8 +342,9 @@ base:
     - apk add git bash jq
     - bash scripts/build-base.sh
     - |
-      # Caps are defined once in image-size-limits.sh; see that file to change one.
-      . ./image-size-limits.sh
+      # Caps are defined once in image-size-limits.env; see that file to change one.
+      . ./scripts/load-vars.sh
+      load_vars --export image-size-limits.env
       LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${BUILD_IMAGE}" | tr '[:lower:]' '[:upper:]')_GIB"
       LIMIT=$(printenv "${LIMIT_VAR}" || true)
       if [ -n "${LIMIT}" ]; then
@@ -451,8 +453,9 @@ eic:
     - apk add git bash coreutils jq
     - bash scripts/build-eic.sh
     - |
-      # Caps are defined once in image-size-limits.sh; see that file to change one.
-      . ./image-size-limits.sh
+      # Caps are defined once in image-size-limits.env; see that file to change one.
+      . ./scripts/load-vars.sh
+      load_vars --export image-size-limits.env
       FULLNAME="${BUILD_IMAGE}${ENV}"
       LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
       LIMIT=$(printenv "${LIMIT_VAR}" || true)

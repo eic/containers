@@ -62,15 +62,20 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-## Source version files
-source "${REPO_DIR}/spack.sh"
-source "${REPO_DIR}/spack-packages.sh"
-source "${REPO_DIR}/key4hep-spack.sh"
-source "${REPO_DIR}/eic-spack.sh"
-## DEBIAN_VERSION (used when building debian_stable_base)
-source "${REPO_DIR}/debian.sh"
-## CUDA_VERSION and CUDA_OS (used when building cuda_devel or cuda_runtime)
-source "${REPO_DIR}/cuda.sh"
+## Load version files (data only, parsed without executing them)
+# shellcheck source=scripts/load-vars.sh
+source "${REPO_DIR}/scripts/load-vars.sh"
+load_vars "${REPO_DIR}/spack.env"
+load_list SPACK_CHERRYPICKS "${REPO_DIR}/spack.cherrypicks"
+load_vars "${REPO_DIR}/spack-packages.env"
+load_list SPACKPACKAGES_CHERRYPICKS "${REPO_DIR}/spack-packages.cherrypicks"
+load_vars "${REPO_DIR}/key4hep-spack.env"
+load_vars "${REPO_DIR}/eic-spack.env"
+## DEBIAN_VERSION (used when building debian_stable_base); environment wins
+load_vars --defaults "${REPO_DIR}/debian.env"
+## CUDA_VERSION and CUDA_OS (used when building cuda_devel or cuda_runtime);
+## environment wins
+load_vars --defaults "${REPO_DIR}/cuda.env"
 
 ## Convert an arbitrary git ref/branch name to a valid OCI tag component.
 ## Mirrors GitLab's CI_COMMIT_REF_SLUG: lowercase, non-alnum runs → '-',

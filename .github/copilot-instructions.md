@@ -43,8 +43,8 @@ When modifying files, follow these patterns:
 - Maintain both `prefer` and `require` sections in `packages:all`
 - Use `any_of: [+variant, '@:']` pattern for optional variants
 
-**`spack-packages.sh`**
-- Add cherry-pick commit hashes with descriptive comment: `## [hash]: [description]`
+**`spack-packages.cherrypicks`** (and `spack.cherrypicks`)
+- One line per cherry-pick: `<40-hex sha>  # <description>`; never sourced, parsed by `scripts/load-vars.sh`
 
 **Dockerfiles**
 - Use BuildKit syntax: `#syntax=docker/dockerfile:1.10`
@@ -55,7 +55,7 @@ When modifying files, follow these patterns:
 ### Version Updates
 
 When updating package versions:
-1. Check if cherry-pick needed in `spack-packages.sh`
+1. Check if cherry-pick needed in `spack-packages.cherrypicks`
 2. Update version in `spack-environment/packages.yaml`
 3. Update every `spack-environment/<env>/epic/spack.yaml` that declares the
    package (there are nine environments, not just `xl` and `cuda`), and keep

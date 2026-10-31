@@ -1,0 +1,11 @@
+## Cherry-picks applied on top of SPACK_VERSION (see spack.env).
+## The Dockerfile applies them in upstream topological order.
+## Ref: https://github.com/spack/spack/commit/<sha>
+##
+## One per line:  <40-hex sha> [<path>,<path>...]  # <description>
+## With a path list, only those files of the commit are applied (git show |
+## patch); without, the whole commit is cherry-picked. No quoting or
+## expansion: parsed by load_list in scripts/load-vars.sh, never sourced.
+292b0dcaba3b2a5e3f9668d205d39fee2c715721  # fix: write created time field with OCI buildcache config
+678e506a95b319c573ba7e84703b06d7275ab80e  # fix: don't map prefix to view root for pkgs excluded from view
+0971885764f8d75ff838b4ab45f692a762888821  # lock.py: fall back to read-only open on EROFS
