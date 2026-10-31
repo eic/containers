@@ -569,8 +569,8 @@ user_spack_environment:
     HTCONDOR_REQUEST_MEMORY: 8GB
     HTCONDOR_REQUEST_DISK: 40GB
   rules:
-    # Only eic_ci container is built for external trigger
-    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    # Only eic_ci container is built for epic or EICrecon trigger
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
       when: never
     - when: always
   needs:
