@@ -67,6 +67,8 @@ All images support both `linux/amd64` and `linux/arm64` architectures through pa
 ├── spack-packages.sh           # Spack-packages version and cherry-picks
 ├── eic-spack.sh                # EIC-spack repository configuration
 ├── key4hep-spack.sh            # Key4HEP-spack repository configuration
+├── debian.sh                   # Debian release of the debian base image
+├── cuda.sh                     # CUDA version and OS of nvidia/cuda base images
 └── docs/                       # Documentation (Docsify site)
 ```
 

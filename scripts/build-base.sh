@@ -49,9 +49,6 @@ PLATFORM="${PLATFORM:-linux/amd64}"
 JOBS="${JOBS:-$(getconf _NPROCESSORS_ONLN)}"
 LOCAL_TAG="${LOCAL_TAG:-local}"
 METADATA_FILE="${METADATA_FILE:-/tmp/build-metadata.json}"
-## CUDA defaults (used when building cuda_devel or cuda_runtime)
-CUDA_VERSION="${CUDA_VERSION:-12.5.1}"
-CUDA_OS="${CUDA_OS:-ubuntu24.04}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -70,6 +67,10 @@ source "${REPO_DIR}/spack.sh"
 source "${REPO_DIR}/spack-packages.sh"
 source "${REPO_DIR}/key4hep-spack.sh"
 source "${REPO_DIR}/eic-spack.sh"
+## DEBIAN_VERSION (used when building debian_stable_base)
+source "${REPO_DIR}/debian.sh"
+## CUDA_VERSION and CUDA_OS (used when building cuda_devel or cuda_runtime)
+source "${REPO_DIR}/cuda.sh"
 
 ## Convert an arbitrary git ref/branch name to a valid OCI tag component.
 ## Mirrors GitLab's CI_COMMIT_REF_SLUG: lowercase, non-alnum runs → '-',
@@ -102,7 +103,7 @@ fi
 ## Derive BASE_IMAGE from BUILD_IMAGE if not provided
 if [ -z "${BASE_IMAGE}" ]; then
   case "${BUILD_IMAGE}" in
-    debian_stable_base) BASE_IMAGE="debian:trixie-slim" ;;
+    debian_stable_base) BASE_IMAGE="debian:${DEBIAN_VERSION}-slim" ;;
     cuda_devel)         BASE_IMAGE="nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_OS}" ;;
     cuda_runtime)       BASE_IMAGE="nvidia/cuda:${CUDA_VERSION}-runtime-${CUDA_OS}" ;;
     *) echo "Unknown BUILD_IMAGE '${BUILD_IMAGE}'; please specify --base-image" >&2; exit 1 ;;

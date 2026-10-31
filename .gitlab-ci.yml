@@ -5,9 +5,7 @@ variables:
   DOCKER_IMAGE: docker.io/docker:28.3.3
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
-  ## CUDA version and container operating system
-  CUDA_VERSION: 12.8.2
-  CUDA_OS: ubuntu24.04
+  ## CUDA version and container operating system are set in cuda.sh
 
   ## Default versions are specified in packages.yaml but can be overridden
   EDM4EIC_VERSION: ""
@@ -109,6 +107,8 @@ nvidia-smi:
   image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
   tags:
     - gpu
+  needs:
+    - version
   variables:
     NVIDIA_DISABLE_REQUIRE: "true"
   script:
@@ -168,6 +168,9 @@ version:
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
       echo "DH_PUSH=$DH_PUSH" >> build.env
       echo "GH_PUSH=$GH_PUSH" >> build.env
+      . ./cuda.sh
+      echo "CUDA_VERSION=$CUDA_VERSION" >> build.env
+      echo "CUDA_OS=$CUDA_OS" >> build.env
       cat build.env
   artifacts:
     reports:
@@ -313,8 +316,8 @@ base:
 #      - BASE_IMAGE: debian:testing-slim
 #        BUILD_IMAGE: debian_testing_base
 #        PLATFORM: linux/amd64,linux/arm64/v8
-      - BASE_IMAGE: debian:trixie-slim
-        BUILD_IMAGE: debian_stable_base
+      ## BASE_IMAGE for debian_stable_base is derived by scripts/build-base.sh from debian.sh
+      - BUILD_IMAGE: debian_stable_base
         PLATFORM: linux/amd64
 #      - BASE_IMAGE: ubuntu:22.04
 #        BUILD_IMAGE: ubuntu_base
@@ -322,11 +325,10 @@ base:
 #      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
 #        BUILD_IMAGE: oneapi_base
 #        PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_OS}
-        BUILD_IMAGE: cuda_devel
+      ## BASE_IMAGE for cuda_* is derived by scripts/build-base.sh from cuda.sh
+      - BUILD_IMAGE: cuda_devel
         PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-runtime-${CUDA_OS}
-        BUILD_IMAGE: cuda_runtime
+      - BUILD_IMAGE: cuda_runtime
         PLATFORM: linux/amd64
   extends: .build
   stage: base
