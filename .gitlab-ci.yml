@@ -24,6 +24,9 @@ variables:
   GH_REGISTRY: ghcr.io
   GH_REGISTRY_USER: eic
   GH_PUSH: 1
+  ## Images whose internal tag is also pushed to the GitHub registry, for jobs
+  ## on runners that cannot reach the local registry (e.g. OSPool osg-gpu)
+  GH_INTERNAL_IMAGES: "eic_dev_cuda"
 
   ## Number of jobs to start during container builds
   JOBS: 32
@@ -104,13 +107,24 @@ workflow:
 ## caching strategy for dispatch to multiple nodes and to avoid
 ##  --> try this strategy: https://medium.com/titansoft-engineering/docker-build-cache-sharing-on-multi-hosts-with-buildkit-and-buildx-eb8f7005918e
 
+## OSPool GPU runner (Jacamar HTCondor executor, apptainer, no docker).
+## Jacamar requires CI_JOB_JWT, which GitLab 17+ only provides on request.
+## The executor takes the image from HTCONDOR_IMAGE, not from image:.
+.osg-gpu:
+  tags:
+    - osg-gpu
+  id_tokens:
+    CI_JOB_JWT:
+      aud: https://eicweb.phy.anl.gov
+
 nvidia-smi:
+  extends: .osg-gpu
   stage: config
   image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
-  tags:
-    - gpu
   variables:
-    NVIDIA_DISABLE_REQUIRE: "true"
+    HTCONDOR_IMAGE: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
+    HTCONDOR_REQUEST_MEMORY: 2GB
+    HTCONDOR_REQUEST_DISK: 4GB
   script:
     - |
       nvidia-smi
@@ -496,6 +510,14 @@ eic-manifest:
         IMAGE_REPO="${CI_REGISTRY_PREFIX}/${IMAGE_NAME}"
         DIGEST=$(jq -r '."containerimage.digest"' "${metadata_file}")
         docker buildx imagetools create --prefer-index=false --tag "${IMAGE_REPO}:${INTERNAL_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+        ## remote registry login in .docker requires EXPORT_TAG
+        if [ -n "${EXPORT_TAG}" ] && [ -n "${GH_PUSH}" ]; then
+          case " ${GH_INTERNAL_IMAGES} " in
+            *" ${IMAGE_NAME} "*)
+              docker buildx imagetools create --prefer-index=false --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${INTERNAL_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+              ;;
+          esac
+        fi
         if [ -n "${EXPORT_TAG}" ]; then
           if [ "${BUILD_TYPE}" = "default" ]; then
             [ -n "${CI_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
@@ -538,19 +560,24 @@ user_spack_environment:
     - ls $HOME/spack/
 
 .cuda:
+  extends: .osg-gpu
   stage: benchmarks
-  tags:
-    - gpu
+  ## the local registry is not reachable from OSPool, so use the internal tag
+  ## pushed to the GitHub registry (see GH_INTERNAL_IMAGES in eic-manifest)
+  variables:
+    HTCONDOR_IMAGE: ${GH_REGISTRY}/${GH_REGISTRY_USER}/eic_dev_cuda:${INTERNAL_TAG}-default
+    HTCONDOR_REQUEST_MEMORY: 8GB
+    HTCONDOR_REQUEST_DISK: 40GB
   rules:
-    # Only eic_ci container is built for external trigger
-    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    # Only eic_ci container is built for epic or EICrecon trigger
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
       when: never
     - when: always
   needs:
     - job: version
     - job: eic-manifest
   image:
-    name: ${CI_REGISTRY_IMAGE}/eic_dev_cuda:${INTERNAL_TAG}-default
+    name: ${GH_REGISTRY}/${GH_REGISTRY_USER}/eic_dev_cuda:${INTERNAL_TAG}-default
 
 cuda:torch:
   extends: .cuda
@@ -722,13 +749,6 @@ df:
     - docker system prune --all --force --filter=until=24h
   allow_failure: true
 
-prune:gpu:
-  extends: .prune
-  tags:
-    - gpu
-  variables:
-    NVIDIA_DISABLE_REQUIRE: "true"
-    SKIP_BINFMT: "true"
 
 prune:docker-new:
   extends: .prune
@@ -776,13 +796,6 @@ clean_internal_tag:
       done
   allow_failure: true
 
-clean_unstable_mr:gpu:
-  extends: .clean_unstable_mr
-  tags:
-    - gpu
-  variables:
-    NVIDIA_DISABLE_REQUIRE: "true"
-    SKIP_BINFMT: "true"
 
 clean_unstable_mr:docker-new:
   extends: .clean_unstable_mr
@@ -832,13 +845,6 @@ clean_unstable_mr:docker-new:
       done
   allow_failure: true
 
-clean_pipeline:gpu:
-  extends: .clean_pipeline
-  tags:
-    - gpu
-  variables:
-    NVIDIA_DISABLE_REQUIRE: "true"
-    SKIP_BINFMT: "true"
 
 clean_pipeline:docker-new:
   extends: .clean_pipeline
