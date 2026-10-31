@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pin eic-spack.sh to the head of the eic-spack develop branch, and keep a
+# Pin eic-spack.env to the head of the eic-spack develop branch, and keep a
 # single pull request (branch ${BRANCH}) up to date with that bump.
 #
 # Intended to run from .github/workflows/update-eic-spack.yml, with GH_TOKEN
@@ -9,14 +9,19 @@ set -euo pipefail
 BASE_BRANCH="${BASE_BRANCH:-master}"
 BRANCH="${BRANCH:-automation/update-eic-spack}"
 UPSTREAM_BRANCH="${UPSTREAM_BRANCH:-develop}"
-PIN_FILE="eic-spack.sh"
+PIN_FILE="eic-spack.env"
 MAX_LISTED=100
 
-# shellcheck source=/dev/null
-source "${PIN_FILE}"
+# shellcheck source=scripts/load-vars.sh
+source "$(dirname "$0")/load-vars.sh"
+load_vars "${PIN_FILE}"
 OLD="${EICSPACK_VERSION}"
 REPO="${EICSPACK_ORGREPO}"
 NEW=$(gh api "repos/${REPO}/commits/${UPSTREAM_BRANCH}" --jq .sha)
+if ! [[ "${NEW}" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "Unexpected commit sha from GitHub API: '${NEW}'" >&2
+  exit 1
+fi
 echo "eic-spack pin: ${OLD} -> ${NEW}"
 
 existing_pr() {
@@ -72,7 +77,9 @@ title="build(deps): bump eic-spack to ${NEW:0:7}"
 git config user.name "github-actions[bot]"
 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 git checkout -B "${BRANCH}"
-sed -i "s/^EICSPACK_VERSION=.*/EICSPACK_VERSION=\"${NEW}\"/" "${PIN_FILE}"
+sed -i "s/^EICSPACK_VERSION=.*/EICSPACK_VERSION=${NEW}/" "${PIN_FILE}"
+load_vars "${PIN_FILE}"  # fail before committing if the edit broke the file
+[ "${EICSPACK_VERSION}" = "${NEW}" ]
 git add "${PIN_FILE}"
 git commit -m "${title}" -m "Bumps ${REPO} from ${OLD} to ${NEW}."
 

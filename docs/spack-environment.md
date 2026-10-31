@@ -137,35 +137,28 @@ spack:
 
 | File | Contents |
 |------|----------|
-| `spack.sh` | Spack core version |
-| `spack-packages.sh` | Spack-packages version |
-| `key4hep-spack.sh` | Key4HEP-spack version |
-| `eic-spack.sh` | EIC-spack version |
+| `spack.env` | Spack core version |
+| `spack-packages.env` | Spack-packages version |
+| `key4hep-spack.env` | Key4HEP-spack version |
+| `eic-spack.env` | EIC-spack version |
+
+These files are data, not shell: they are parsed by `scripts/load-vars.sh`
+(one `KEY=value` per line, no quotes or expansion) and never sourced.
 
 ### Cherry-picks
 
 Spack versions can include cherry-picks from newer commits. The commit hashes listed
 below are illustrative only — the actual cherry-picks applied may differ from what
-is shown here. Refer to `spack.sh` and `spack-packages.sh` for the current lists.
+is shown here. Refer to `spack.cherrypicks` and `spack-packages.cherrypicks` for the current lists.
 
-```bash
-# From spack.sh (illustrative — see spack.sh for actual commits)
-SPACK_VERSION="v1.1.1"
-SPACK_CHERRYPICKS=$(cat <<- EOF
-09f75ee426a2e05e0543570821582480ff823ba5
-a462612b64e97fa7dfe461c32c58553fd6ec63c5
-# ... (additional commits may be present)
-EOF
-)
+```
+# spack.cherrypicks (illustrative)
+09f75ee426a2e05e0543570821582480ff823ba5  # <description>
+a462612b64e97fa7dfe461c32c58553fd6ec63c5  # <description>
 
-# From spack-packages.sh (illustrative — see spack-packages.sh for actual commits)
-SPACKPACKAGES_VERSION="v2025.11.0"
-SPACKPACKAGES_CHERRYPICKS=$(cat <<- EOF
-a115a811bdfce4db5298a9ba9b7903ccfb0de101
-22dadd619053ff0872903549db616200bda082f0
-# ... (additional commits may be present)
-EOF
-)
+# spack-packages.cherrypicks (illustrative; optional path list restricts the pick)
+a115a811bdfce4db5298a9ba9b7903ccfb0de101  # <description>
+22dadd619053ff0872903549db616200bda082f0 repos/spack_repo/builtin/packages/foo/package.py  # <description>
 ```
 
 ## Package Selection Flow
@@ -264,7 +257,7 @@ spack:
    ```
 
 2. If package definition needs updating (from newer Spack):
-   - Add cherry-pick to `spack-packages.sh`
+   - Add cherry-pick to `spack-packages.cherrypicks`
 
 ### Adding a New Package
 

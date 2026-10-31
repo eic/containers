@@ -1,0 +1,19 @@
+## Cherry-picks applied on top of SPACKPACKAGES_VERSION (see
+## spack-packages.env).
+## The Dockerfile applies them in upstream topological order.
+## Ref: https://github.com/spack/spack-packages/commit/<sha>
+##
+## One per line:  <40-hex sha> [<path>,<path>...]  # <description>
+## With a path list, only those files of the commit are applied (git show |
+## patch); without, the whole commit is cherry-picked. No quoting or
+## expansion: parsed by load_list in scripts/load-vars.sh, never sourced.
+acac89d6bb7079412e711a50a3f06681132a2723  # cuda: append --allow-unsupported-compiler to CUDAFLAGS for dependent_spec
+d4fb37cedfb7552a753bdc9c0c4792082f4b46e8  # py-tensorflow: add libclang variant
+fa11df3be41f58bac19b73346422e06b103ee5b5  # vecgeom: new versions 2.1.1, 2.2; celeritas: vecgeom@1.2:1 for @:0.6
+c322aa993ae106492bdb28333b56c5682a704027  # celeritas: depends_on covfie ~cuda, vecgeom ~cuda (context for celeritas 0.7)
+9007ffd30a17fdb978b63fb55d7bca481031ca47  # celeritas: new version 0.7
+39191607781ae06888df8cc178f20cd762a0e806  # g4adept: add v0.3.5, v0.4.1
+27281f83a0255d09167c5e047c16cc5229aa77c4  # py-certifi: add v2026.10.19
+7415ba8e91ec850dad27f91df74ae6c6b18ff1a0  # ca-certificates-mozilla: add v2026-10-20, deprecate older versions
+80fbeb0fc63775b3ea766acda51a9b779e8a008a  # py-pip: add v26.2.1
+26c549b73602f7493cc7bcc142094cbfc7dbee93  # py-pip: add v26.2.2

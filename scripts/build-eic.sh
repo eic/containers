@@ -82,8 +82,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-## Source version files (only spack-packages version is needed for mirrors.yaml)
-source "${REPO_DIR}/spack-packages.sh"
+## Load version files (only spack-packages version is needed for mirrors.yaml)
+# shellcheck source=scripts/load-vars.sh
+source "${REPO_DIR}/scripts/load-vars.sh"
+load_vars "${REPO_DIR}/spack-packages.env"
 
 ## Convert an arbitrary git ref/branch name to a valid OCI tag component.
 ## Mirrors GitLab's CI_COMMIT_REF_SLUG: lowercase, non-alnum runs → '-',

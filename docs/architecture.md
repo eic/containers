@@ -147,10 +147,10 @@ Package versions are controlled through several configuration files:
 
 | File | Purpose |
 |------|---------|
-| `spack.sh` | Spack core version and cherry-picks |
-| `spack-packages.sh` | Spack-packages version and cherry-picks |
-| `key4hep-spack.sh` | Key4HEP-spack version |
-| `eic-spack.sh` | EIC-spack version |
-| `debian.sh` | Debian release of the `debian` base image |
-| `cuda.sh` | CUDA version and OS of the `nvidia/cuda` base images |
+| `spack.env`, `spack.cherrypicks` | Spack core version and cherry-picks |
+| `spack-packages.env`, `spack-packages.cherrypicks` | Spack-packages version and cherry-picks |
+| `key4hep-spack.env` | Key4HEP-spack version |
+| `eic-spack.env` | EIC-spack version |
+| `debian.env` | Debian release of the `debian` base image |
+| `cuda.env` | CUDA version and OS of the `nvidia/cuda` base images |
 | `spack-environment/packages.yaml` | Package version preferences and variants |

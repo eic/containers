@@ -48,11 +48,32 @@ env:
   INTERNAL_TAG: pipeline-${{ github.run_id }}
 
 jobs:
+  version-files:
+    ## Fail fast, before any image build, if a version file does not parse.
+    ## Runs under POSIX sh, like the GitLab alpine jobs.
+    name: Check version files
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v7
+      - name: Load *.env and *.cherrypicks with scripts/load-vars.sh
+        shell: sh -e {0}
+        run: |
+          . ./scripts/load-vars.sh
+          for f in *.env; do
+            load_vars "$f"
+            echo "ok: $f"
+          done
+          for f in *.cherrypicks; do
+            load_list CHERRYPICKS "$f"
+            echo "ok: $f ($(printf '%s\n' "$CHERRYPICKS" | grep -c .) cherry-picks)"
+          done
+
   env:
     ## The env context is not available in matrix, only in steps,
     ## so this job is merely to transfer env to job outputs which
     ## can be used in matrix.
     name: Turn env into outputs
+    needs: version-files
     runs-on: ubuntu-latest
     outputs:
       BUILDWEEK: ${{ steps.env.outputs.BUILDWEEK }}
@@ -66,7 +87,7 @@ jobs:
 
   base-debian:
     name: Build debian base images
-    ## BASE_IMAGE is derived by scripts/build-base.sh from debian.sh
+    ## BASE_IMAGE is derived by scripts/build-base.sh from debian.env
     needs: env
     uses: ./.github/workflows/build-base.yml
     secrets: inherit
@@ -99,7 +120,7 @@ jobs:
 
   base:
     name: Build cuda base images
-    ## BASE_IMAGE is derived by scripts/build-base.sh from cuda.sh
+    ## BASE_IMAGE is derived by scripts/build-base.sh from cuda.env
     needs: [env]
     uses: ./.github/workflows/build-base.yml
     secrets: inherit

@@ -192,9 +192,18 @@ git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} checkout ${SPACK_SHA:-${SPACK_VERSION}}
 if [ -n "${SPACK_CHERRYPICKS}" ] ; then
   SPACK_CHERRYPICKS="${SPACK_CHERRYPICKS// /$'\n'}"
-  SPACK_CHERRYPICKS_FILES="${SPACK_CHERRYPICKS_FILES// /$'\n'}"
   SPACK_CHERRYPICKS=$(git -C ${SPACK_ROOT} rev-list --topo-order ${SPACK_CHERRYPICKS} | grep -m $(echo "${SPACK_CHERRYPICKS}" | wc -l)  "${SPACK_CHERRYPICKS}" | tac)
-  eval "declare -A SPACK_CHERRYPICKS_FILES_ARRAY=(${SPACK_CHERRYPICKS_FILES})"
+  ## SPACK_CHERRYPICKS_FILES: '<sha>=<path>,<path>' entries, newline- or
+  ## space-separated. Parsed and validated, never eval'd.
+  declare -A SPACK_CHERRYPICKS_FILES_ARRAY=()
+  while IFS='=' read -r hash files ; do
+    [ -z "${hash}" ] && continue
+    if ! [[ "${hash}" =~ ^[0-9a-f]{40}$ && "${files}" =~ ^[A-Za-z0-9._/+][A-Za-z0-9._/,+-]*$ ]] ; then
+      echo "Invalid SPACK_CHERRYPICKS_FILES entry: ${hash}=${files}" >&2
+      exit 1
+    fi
+    SPACK_CHERRYPICKS_FILES_ARRAY[${hash}]="${files}"
+  done <<< "${SPACK_CHERRYPICKS_FILES// /$'\n'}"
   for hash in ${SPACK_CHERRYPICKS} ; do
     if git -C ${SPACK_ROOT} merge-base --is-ancestor "${hash}" HEAD ; then
       echo "Skipping already applied ${hash}"
@@ -234,9 +243,18 @@ git clone --filter=tree:0 https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPAC
 git -C ${SPACKPACKAGES_ROOT} checkout ${SPACKPACKAGES_SHA:-${SPACKPACKAGES_VERSION}}
 if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
   SPACKPACKAGES_CHERRYPICKS="${SPACKPACKAGES_CHERRYPICKS// /$'\n'}"
-  SPACKPACKAGES_CHERRYPICKS_FILES="${SPACKPACKAGES_CHERRYPICKS_FILES// /$'\n'}"
   SPACKPACKAGES_CHERRYPICKS=$(git -C ${SPACKPACKAGES_ROOT} rev-list --topo-order ${SPACKPACKAGES_CHERRYPICKS} | grep -m $(echo "${SPACKPACKAGES_CHERRYPICKS}" | wc -l)  "${SPACKPACKAGES_CHERRYPICKS}" | tac)
-  eval "declare -A SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY=(${SPACKPACKAGES_CHERRYPICKS_FILES})"
+  ## SPACKPACKAGES_CHERRYPICKS_FILES: '<sha>=<path>,<path>' entries, newline- or
+  ## space-separated. Parsed and validated, never eval'd.
+  declare -A SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY=()
+  while IFS='=' read -r hash files ; do
+    [ -z "${hash}" ] && continue
+    if ! [[ "${hash}" =~ ^[0-9a-f]{40}$ && "${files}" =~ ^[A-Za-z0-9._/+][A-Za-z0-9._/,+-]*$ ]] ; then
+      echo "Invalid SPACKPACKAGES_CHERRYPICKS_FILES entry: ${hash}=${files}" >&2
+      exit 1
+    fi
+    SPACKPACKAGES_CHERRYPICKS_FILES_ARRAY[${hash}]="${files}"
+  done <<< "${SPACKPACKAGES_CHERRYPICKS_FILES// /$'\n'}"
   for hash in ${SPACKPACKAGES_CHERRYPICKS} ; do
     if git -C ${SPACKPACKAGES_ROOT} merge-base --is-ancestor "${hash}" HEAD ; then
       echo "Skipping already applied ${hash}"

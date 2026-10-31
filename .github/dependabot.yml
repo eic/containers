@@ -15,7 +15,7 @@ updates:
   # other FROM is parameterised (FROM ${BASE_IMAGE}, FROM ${DOCKER_REGISTRY}...)
   # and the images those resolve to are set in shell files or CI configuration,
   # which Dependabot's docker ecosystem does not read. So debian via
-  # DEBIAN_VERSION in debian.sh, nvidia/cuda via CUDA_VERSION/CUDA_OS in cuda.sh,
+  # DEBIAN_VERSION in debian.env, nvidia/cuda via CUDA_VERSION/CUDA_OS in cuda.env,
   # and the docker and singularity images in .gitlab-ci.yml still have to be
   # bumped by hand.
   - package-ecosystem: "docker"

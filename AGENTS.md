@@ -63,12 +63,15 @@ All images support both `linux/amd64` and `linux/arm64` architectures through pa
 │   ├── packages.yaml           # Package versions, variants, and preferences
 │   ├── <env>/spack.yaml        # Default spec list for that environment
 │   └── <env>/epic/spack.yaml   # Custom-version overlay (epic, eicrecon, ...)
-├── spack.sh                    # Spack core version and cherry-picks
-├── spack-packages.sh           # Spack-packages version and cherry-picks
-├── eic-spack.sh                # EIC-spack repository configuration
-├── key4hep-spack.sh            # Key4HEP-spack repository configuration
-├── debian.sh                   # Debian release of the debian base image
-├── cuda.sh                     # CUDA version and OS of nvidia/cuda base images
+├── spack.env                   # Spack core version
+├── spack.cherrypicks           # Spack core cherry-picks
+├── spack-packages.env          # Spack-packages version
+├── spack-packages.cherrypicks  # Spack-packages cherry-picks
+├── eic-spack.env               # EIC-spack repository configuration
+├── key4hep-spack.env           # Key4HEP-spack repository configuration
+├── debian.env                  # Debian release of the debian base image
+├── cuda.env                    # CUDA version and OS of nvidia/cuda base images
+├── image-size-limits.env       # Compressed image size caps (GiB)
 └── docs/                       # Documentation (Docsify site)
 ```
 
@@ -84,19 +87,37 @@ Spack package definitions come from multiple repositories with **priority orderi
 ### Version Management
 
 - **Default versions** are specified in `spack-environment/packages.yaml`
-- **Spack core version** is set in `spack.sh`
-- **Cherry-picks** from upstream Spack commits are listed in `spack.sh` and `spack-packages.sh`
+- **Spack core version** is set in `spack.env`
+- **Cherry-picks** from upstream Spack commits are listed in `spack.cherrypicks` and `spack-packages.cherrypicks`
+
+### Version Files Are Data, Not Shell
+
+The `*.env` and `*.cherrypicks` files are never sourced. They are parsed by
+`load_vars` / `load_list` in `scripts/load-vars.sh` (POSIX sh), which reject
+anything outside a strict grammar:
+
+- `*.env`: one `KEY=value` per line; `#` comment lines and blank lines allowed.
+  No quotes, spaces, `$`, backticks or trailing comments. Value characters:
+  `A-Z a-z 0-9 . _ / : @ + , -`.
+- `*.cherrypicks`: one `<40-hex sha> [<path>,<path>...]  # <description>` per line.
+
+Load with `load_vars --defaults` where environment values must take precedence
+(`debian.env`, `cuda.env`), and with `--export` where children read them back
+(`image-size-limits.env` in GitLab CI). Tests: `scripts/test-load-vars.sh`.
 
 ### Adding Package Cherry-Picks
 
-When adding cherry-picks to `spack-packages.sh`:
-1. Add the commit hash to the `SPACKPACKAGES_CHERRYPICKS` list
-2. Add a descriptive comment line with format: `## [hash]: [description]`
+When adding cherry-picks to `spack-packages.cherrypicks` (or `spack.cherrypicks`),
+add one line with the full 40-character hash and a description:
 
-Example:
-```bash
-## 1234567: Add xrootd@5.6.9 version
-1234567abcdef1234567abcdef1234567abcdef
+```
+1234567abcdef1234567abcdef1234567abcdef0  # xrootd: add v5.6.9
+```
+
+To apply only some files of a commit, list them comma-separated after the hash:
+
+```
+1234567abcdef1234567abcdef1234567abcdef0 repos/spack_repo/builtin/packages/xrootd/package.py  # xrootd: add v5.6.9
 ```
 
 ### Package Version Constraints
@@ -198,7 +219,7 @@ The GitLab CI configuration (`.gitlab-ci.yml`) runs similar build jobs but in th
 - Use `set -e` to exit on errors
 - Use `set -x` for debugging when needed
 - Prefer **heredoc** in Dockerfile RUN commands for readability
-- Use **read -r -d '' VAR <<- \---** pattern for multi-line variables in bash
+- Do not `source` data files; put data in `*.env` / `*.cherrypicks` and read it with `scripts/load-vars.sh`
 
 ### YAML Configuration
 
@@ -214,7 +235,7 @@ The GitLab CI configuration (`.gitlab-ci.yml`) runs similar build jobs but in th
 - The `# EDM4EIC_VERSION`, `# EICRECON_VERSION` and `# EPIC_VERSION` trailing
   marker comments are load-bearing: `containers/eic/Dockerfile` keys its `sed`
   version overrides on them. Do not reword or drop them.
-- Update version files (`*.sh`) for Spack repository changes
+- Update version files (`*.env`, `*.cherrypicks`) for Spack repository changes
 - Document version updates in commit messages
 
 ## Security Considerations
@@ -256,7 +277,7 @@ When modifying `spack-environment/packages.yaml`:
 - Modify `spack-environment/packages.yaml` with new version requirement
 
 **Scenario 2**: Package updated in upstream Spack before our Spack version upgrade
-- Add cherry-pick to `spack-packages.sh` with commit hash and comment
+- Add cherry-pick to `spack-packages.cherrypicks` with commit hash and comment
 - Modify `spack-environment/packages.yaml` with new version requirement
 
 ### Adding a New Package

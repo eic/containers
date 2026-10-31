@@ -183,14 +183,15 @@ directly, Dockerfile `ARG` defaults apply instead.
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `BASE_IMAGE` | Base image passed by script | Derived from `--image`: `debian:${DEBIAN_VERSION}-slim` for `debian_stable_base`, with `DEBIAN_VERSION` from `debian.sh`; `nvidia/cuda:${CUDA_VERSION}-{devel,runtime}-${CUDA_OS}` for `cuda_devel`/`cuda_runtime`, with `CUDA_VERSION`/`CUDA_OS` from `cuda.sh` (overridable via environment) |
+| `BASE_IMAGE` | Base image passed by script | Derived from `--image`: `debian:${DEBIAN_VERSION}-slim` for `debian_stable_base`, with `DEBIAN_VERSION` from `debian.env`; `nvidia/cuda:${CUDA_VERSION}-{devel,runtime}-${CUDA_OS}` for `cuda_devel`/`cuda_runtime`, with `CUDA_VERSION`/`CUDA_OS` from `cuda.env` (overridable via environment) |
 | `SPACK_ORGREPO` | Spack GitHub org/repo | `spack/spack` |
-| `SPACK_VERSION` | Spack version/branch | (from `spack.sh`) |
+| `SPACK_VERSION` | Spack version/branch | (from `spack.env`) |
 | `SPACK_SHA` | Specific commit SHA | (resolved from version) |
-| `SPACK_CHERRYPICKS` | Newline-separated cherry-pick SHAs | (from `spack.sh`) |
-| `SPACKPACKAGES_*` | Similar args for spack-packages | (from `spack-packages.sh`) |
-| `KEY4HEPSPACK_*` | Similar args for key4hep-spack | (from `key4hep-spack.sh`) |
-| `EICSPACK_*` | Similar args for eic-spack | (from `eic-spack.sh`) |
+| `SPACK_CHERRYPICKS` | Newline-separated cherry-pick SHAs | (from `spack.cherrypicks`) |
+| `SPACK_CHERRYPICKS_FILES` | `<sha>=<path>,<path>` entries restricting a pick to those files | (from `spack.cherrypicks`) |
+| `SPACKPACKAGES_*` | Similar args for spack-packages | (from `spack-packages.env`, `spack-packages.cherrypicks`) |
+| `KEY4HEPSPACK_*` | Similar args for key4hep-spack | (from `key4hep-spack.env`) |
+| `EICSPACK_*` | Similar args for eic-spack | (from `eic-spack.env`) |
 | `jobs` | Parallel build jobs | `1` |
 
 ### EIC Image (containers/eic/Dockerfile)
