@@ -66,6 +66,7 @@ jobs:
 
   base-debian:
     name: Build debian base images
+    ## BASE_IMAGE is derived by scripts/build-base.sh from debian.sh
     needs: env
     uses: ./.github/workflows/build-base.yml
     secrets: inherit
@@ -76,21 +77,18 @@ jobs:
         {
           "include": [
             {
-              "BASE_IMAGE": "debian:trixie-slim",
               "BUILD_IMAGE": "debian_stable_base",
               "PLATFORM": "linux/amd64",
               "runner": "ubuntu-latest",
               "arch": "amd64"
             },
             {
-              "BASE_IMAGE": "debian:trixie-slim",
               "BUILD_IMAGE": "debian_stable_base",
               "PLATFORM": "linux/amd64/v3",
               "runner": "ubuntu-latest",
               "arch": "amd64_v3"
             },
             {
-              "BASE_IMAGE": "debian:trixie-slim",
               "BUILD_IMAGE": "debian_stable_base",
               "PLATFORM": "linux/arm64",
               "runner": "ubuntu-24.04-arm",

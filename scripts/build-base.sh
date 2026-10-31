@@ -67,6 +67,8 @@ source "${REPO_DIR}/spack.sh"
 source "${REPO_DIR}/spack-packages.sh"
 source "${REPO_DIR}/key4hep-spack.sh"
 source "${REPO_DIR}/eic-spack.sh"
+## DEBIAN_VERSION (used when building debian_stable_base)
+source "${REPO_DIR}/debian.sh"
 ## CUDA_VERSION and CUDA_OS (used when building cuda_devel or cuda_runtime)
 source "${REPO_DIR}/cuda.sh"
 
@@ -101,7 +103,7 @@ fi
 ## Derive BASE_IMAGE from BUILD_IMAGE if not provided
 if [ -z "${BASE_IMAGE}" ]; then
   case "${BUILD_IMAGE}" in
-    debian_stable_base) BASE_IMAGE="debian:trixie-slim" ;;
+    debian_stable_base) BASE_IMAGE="debian:${DEBIAN_VERSION}-slim" ;;
     cuda_devel)         BASE_IMAGE="nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_OS}" ;;
     cuda_runtime)       BASE_IMAGE="nvidia/cuda:${CUDA_VERSION}-runtime-${CUDA_OS}" ;;
     *) echo "Unknown BUILD_IMAGE '${BUILD_IMAGE}'; please specify --base-image" >&2; exit 1 ;;

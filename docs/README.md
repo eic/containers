@@ -58,6 +58,7 @@ containers/
 ├── spack-packages.sh      # Spack-packages version and cherry-picks
 ├── eic-spack.sh           # EIC-spack repository configuration
 ├── key4hep-spack.sh       # Key4HEP-spack repository configuration
+├── debian.sh              # Debian release for debian base image
 └── cuda.sh                # CUDA version for nvidia/cuda base images
 ```
 
