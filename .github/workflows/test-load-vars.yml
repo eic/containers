@@ -1,0 +1,34 @@
+name: test-load-vars
+
+on:
+  push:
+    branches:
+    - master
+    paths:
+    - scripts/load-vars.sh
+    - scripts/test-load-vars.sh
+    - .github/workflows/test-load-vars.yml
+  pull_request:
+    paths:
+    - scripts/load-vars.sh
+    - scripts/test-load-vars.sh
+    - .github/workflows/test-load-vars.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test load-vars.sh (${{ matrix.shell }})
+    runs-on: ubuntu-slim
+    strategy:
+      fail-fast: false
+      matrix:
+        ## load-vars.sh must stay POSIX sh: dash is the closest stand-in for
+        ## the busybox ash of the GitLab alpine jobs available on this runner.
+        shell: [bash, dash, "bash --posix"]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run scripts/test-load-vars.sh
+        run: ${{ matrix.shell }} scripts/test-load-vars.sh
