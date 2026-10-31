@@ -50,7 +50,8 @@ JOBS="${JOBS:-$(getconf _NPROCESSORS_ONLN)}"
 LOCAL_TAG="${LOCAL_TAG:-local}"
 METADATA_FILE="${METADATA_FILE:-/tmp/build-metadata.json}"
 ## CUDA defaults (used when building cuda_devel or cuda_runtime)
-CUDA_VERSION="${CUDA_VERSION:-12.5.1}"
+## Keep in sync with CUDA_VERSION/CUDA_OS in .github/workflows/build-push.yml and .gitlab-ci.yml
+CUDA_VERSION="${CUDA_VERSION:-12.8.2}"
 CUDA_OS="${CUDA_OS:-ubuntu24.04}"
 
 while [[ $# -gt 0 ]]; do
