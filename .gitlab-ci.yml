@@ -107,12 +107,20 @@ workflow:
 ## caching strategy for dispatch to multiple nodes and to avoid
 ##  --> try this strategy: https://medium.com/titansoft-engineering/docker-build-cache-sharing-on-multi-hosts-with-buildkit-and-buildx-eb8f7005918e
 
-nvidia-smi:
-  stage: config
-  image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
-  ## OSPool GPU runner (Jacamar HTCondor executor, apptainer, no docker)
+## OSPool GPU runner (Jacamar HTCondor executor, apptainer, no docker).
+## Jacamar requires CI_JOB_JWT, which GitLab 17+ only provides on request.
+## The executor takes the image from HTCONDOR_IMAGE, not from image:.
+.osg-gpu:
   tags:
     - osg-gpu
+  id_tokens:
+    CI_JOB_JWT:
+      aud: https://eicweb.phy.anl.gov
+
+nvidia-smi:
+  extends: .osg-gpu
+  stage: config
+  image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
   variables:
     HTCONDOR_IMAGE: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
     HTCONDOR_REQUEST_MEMORY: 2GB
@@ -552,13 +560,10 @@ user_spack_environment:
     - ls $HOME/spack/
 
 .cuda:
+  extends: .osg-gpu
   stage: benchmarks
-  ## OSPool GPU runner (Jacamar HTCondor executor, apptainer, no docker);
-  ## the executor takes the image from HTCONDOR_IMAGE, not from image:;
   ## the local registry is not reachable from OSPool, so use the internal tag
   ## pushed to the GitHub registry (see GH_INTERNAL_IMAGES in eic-manifest)
-  tags:
-    - osg-gpu
   variables:
     HTCONDOR_IMAGE: ${GH_REGISTRY}/${GH_REGISTRY_USER}/eic_dev_cuda:${INTERNAL_TAG}-default
     HTCONDOR_REQUEST_MEMORY: 8GB
