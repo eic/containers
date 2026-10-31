@@ -107,10 +107,13 @@ workflow:
 nvidia-smi:
   stage: config
   image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
+  ## OSPool GPU runner (Jacamar HTCondor executor, apptainer, no docker)
   tags:
-    - gpu
+    - osg-gpu
   variables:
-    NVIDIA_DISABLE_REQUIRE: "true"
+    HTCONDOR_IMAGE: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
+    HTCONDOR_REQUEST_MEMORY: 2GB
+    HTCONDOR_REQUEST_DISK: 4GB
   script:
     - |
       nvidia-smi
@@ -539,8 +542,14 @@ user_spack_environment:
 
 .cuda:
   stage: benchmarks
+  ## OSPool GPU runner (Jacamar HTCondor executor, apptainer, no docker);
+  ## the executor takes the image from HTCONDOR_IMAGE, not from image:
   tags:
-    - gpu
+    - osg-gpu
+  variables:
+    HTCONDOR_IMAGE: ${CI_REGISTRY_IMAGE}/eic_dev_cuda:${INTERNAL_TAG}-default
+    HTCONDOR_REQUEST_MEMORY: 8GB
+    HTCONDOR_REQUEST_DISK: 40GB
   rules:
     # Only eic_ci container is built for external trigger
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
@@ -722,13 +731,6 @@ df:
     - docker system prune --all --force --filter=until=24h
   allow_failure: true
 
-prune:gpu:
-  extends: .prune
-  tags:
-    - gpu
-  variables:
-    NVIDIA_DISABLE_REQUIRE: "true"
-    SKIP_BINFMT: "true"
 
 prune:docker-new:
   extends: .prune
@@ -776,13 +778,6 @@ clean_internal_tag:
       done
   allow_failure: true
 
-clean_unstable_mr:gpu:
-  extends: .clean_unstable_mr
-  tags:
-    - gpu
-  variables:
-    NVIDIA_DISABLE_REQUIRE: "true"
-    SKIP_BINFMT: "true"
 
 clean_unstable_mr:docker-new:
   extends: .clean_unstable_mr
@@ -832,13 +827,6 @@ clean_unstable_mr:docker-new:
       done
   allow_failure: true
 
-clean_pipeline:gpu:
-  extends: .clean_pipeline
-  tags:
-    - gpu
-  variables:
-    NVIDIA_DISABLE_REQUIRE: "true"
-    SKIP_BINFMT: "true"
 
 clean_pipeline:docker-new:
   extends: .clean_pipeline
