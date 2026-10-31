@@ -24,6 +24,9 @@ variables:
   GH_REGISTRY: ghcr.io
   GH_REGISTRY_USER: eic
   GH_PUSH: 1
+  ## Images whose internal tag is also pushed to the GitHub registry, for jobs
+  ## on runners that cannot reach the local registry (e.g. OSPool osg-gpu)
+  GH_INTERNAL_IMAGES: "eic_dev_cuda"
 
   ## Number of jobs to start during container builds
   JOBS: 32
@@ -499,6 +502,14 @@ eic-manifest:
         IMAGE_REPO="${CI_REGISTRY_PREFIX}/${IMAGE_NAME}"
         DIGEST=$(jq -r '."containerimage.digest"' "${metadata_file}")
         docker buildx imagetools create --prefer-index=false --tag "${IMAGE_REPO}:${INTERNAL_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+        ## remote registry login in .docker requires EXPORT_TAG
+        if [ -n "${EXPORT_TAG}" ] && [ -n "${GH_PUSH}" ]; then
+          case " ${GH_INTERNAL_IMAGES} " in
+            *" ${IMAGE_NAME} "*)
+              docker buildx imagetools create --prefer-index=false --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${INTERNAL_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+              ;;
+          esac
+        fi
         if [ -n "${EXPORT_TAG}" ]; then
           if [ "${BUILD_TYPE}" = "default" ]; then
             [ -n "${CI_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
@@ -543,11 +554,13 @@ user_spack_environment:
 .cuda:
   stage: benchmarks
   ## OSPool GPU runner (Jacamar HTCondor executor, apptainer, no docker);
-  ## the executor takes the image from HTCONDOR_IMAGE, not from image:
+  ## the executor takes the image from HTCONDOR_IMAGE, not from image:;
+  ## the local registry is not reachable from OSPool, so use the internal tag
+  ## pushed to the GitHub registry (see GH_INTERNAL_IMAGES in eic-manifest)
   tags:
     - osg-gpu
   variables:
-    HTCONDOR_IMAGE: ${CI_REGISTRY_IMAGE}/eic_dev_cuda:${INTERNAL_TAG}-default
+    HTCONDOR_IMAGE: ${GH_REGISTRY}/${GH_REGISTRY_USER}/eic_dev_cuda:${INTERNAL_TAG}-default
     HTCONDOR_REQUEST_MEMORY: 8GB
     HTCONDOR_REQUEST_DISK: 40GB
   rules:
@@ -559,7 +572,7 @@ user_spack_environment:
     - job: version
     - job: eic-manifest
   image:
-    name: ${CI_REGISTRY_IMAGE}/eic_dev_cuda:${INTERNAL_TAG}-default
+    name: ${GH_REGISTRY}/${GH_REGISTRY_USER}/eic_dev_cuda:${INTERNAL_TAG}-default
 
 cuda:torch:
   extends: .cuda
