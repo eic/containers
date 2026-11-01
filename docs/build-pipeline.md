@@ -161,6 +161,12 @@ cache-from: |
 cache-to: type=registry,ref=ghcr.io/eic/buildcache:{image}-{branch}-{arch},mode=max
 ```
 
+On GitLab CI (eicweb), the CUDA-based EIC images (`eic_cuda`, `eic_tf`,
+`eic_dev_cuda`) are built without a registry layer cache: the `eic` job sets
+`LAYER_CACHE=false` (equivalent to `scripts/build-eic.sh --no-layer-cache`)
+when `BUILDER_IMAGE` is a `cuda_*` image. They still reuse BuildKit's local
+cache in the persistent builder and the Spack buildcache.
+
 ### Build Mount Cache
 
 Uses [buildkit-cache-dance](https://github.com/reproducible-containers/buildkit-cache-dance) to persist mount caches:
