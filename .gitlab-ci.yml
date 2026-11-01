@@ -447,6 +447,14 @@ eic:
     - base-manifest
   script:
     - apk add git bash coreutils jq
+    - |
+      ## No registry layer cache for CUDA-based images: exporting their mode=max
+      ## cache took 40-90 min per build type, and most of their failures were
+      ## cache import/export errors ("unknown blob ... in history", "no active
+      ## session").  The Spack buildcache keeps the builder stages cheap anyway.
+      case "${BUILDER_IMAGE}" in
+        cuda_*) export LAYER_CACHE=false ;;
+      esac
     - bash scripts/build-eic.sh
     - |
       # Caps are defined once in image-size-limits.sh; see that file to change one.
