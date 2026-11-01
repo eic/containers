@@ -329,6 +329,12 @@ base:
         BUILD_IMAGE: cuda_runtime
         PLATFORM: linux/amd64
   extends: .build
+  rules:
+    # Skip base images other than debian_stable_base for epic or EICrecon trigger
+    # (only eic_ci is built for those; same condition as in .nightly)
+    - if: '$BUILD_IMAGE != "debian_stable_base" && $CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - when: on_success
   stage: base
   variables:
     METADATA_FILE: "build-metadata-${BUILD_IMAGE}.json"
