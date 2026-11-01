@@ -279,16 +279,18 @@ status:pending:
       when: never
     # For combined jobs (BUILD_TYPE != "nightly"), suppress nightly builds on stable branches
     # by overriding BUILD_TYPE to "default" so the job still runs for the default image
+    # (on_success, not always: when base images failed, base-manifest does not run and the
+    # pipeline-N base tags do not exist, so the build could only fail with "not found")
     - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-(alpha|beta|stable)/'
-      when: always
+      when: on_success
       variables:
         BUILD_TYPE: "default"
     - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-(alpha|beta|stable)/'
-      when: always
+      when: on_success
       variables:
         BUILD_TYPE: "default"
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'
-      when: always
+      when: on_success
       variables:
         BUILD_TYPE: "default"
     # Skip containers other than eic_ci for epic or EICrecon trigger
@@ -435,7 +437,7 @@ eic:
         PLATFORM: linux/amd64
   rules:
     - !reference ['.nightly', rules]
-    - when: always
+    - when: on_success
   extends: .build
   stage: eic
   retry: 2
