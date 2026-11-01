@@ -1,0 +1,36 @@
+# macOS-specific settings, complementing the cross-platform packages.yaml.
+# Included from the environments via
+#   - path: ../packages_darwin.yaml
+#     when: platform == "darwin"
+# See packages_linux.yaml for the Linux counterpart.
+packages:
+  doxygen:
+    require:
+    - ~graphviz
+  c:
+    prefer:
+    - apple-clang
+    require:
+    - apple-clang
+  cxx:
+    prefer:
+    - apple-clang
+    require:
+    - apple-clang
+  geant4:
+    require:
+    - ~opengl ~qt
+  gl:
+    require:
+    - apple-gl
+  glu:
+    require:
+    - apple-glu
+  libxml2:
+    prefer:
+    - build_system=autotools
+    require:
+    - any_of: [build_system=autotools, '@:']
+  root:
+    require:
+    - ~x ~opengl ~webgui
