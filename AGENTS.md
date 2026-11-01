@@ -314,6 +314,11 @@ Update in `containers/debian/Dockerfile` with version-specific logic.
 - On GitHub Actions there is **no** buildcache cleanup workflow; ghcr.io
   buildcache tags accumulate. See issue #89 and PR #90
 - Buildcaches stored in GitLab registry at `eicweb.phy.anl.gov` (project ID 290)
+- On GitLab CI, each pipeline uses its own BuildKit builder instance
+  (`BUILDER_NAME`, default `builder-${CI_PIPELINE_ID}`), so builder state and
+  cache mounts start empty; Docker layers come from the registry layer cache.
+  The `clean_builder:docker-new` job removes it, and the builders of other
+  finished (e.g. canceled) pipelines, at the end of a pipeline
 
 ## Additional Resources
 

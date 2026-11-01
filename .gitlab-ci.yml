@@ -46,6 +46,14 @@ variables:
   ## Internal tag used for the CI
   INTERNAL_TAG: "pipeline-${CI_PIPELINE_ID}"
 
+  ## BuildKit builder instance (docker-container driver) used by the build jobs.
+  ## One instance per pipeline, shared by all build jobs of that pipeline and
+  ## removed by clean_builder at the end.  Its state (layers and cache mounts:
+  ## ccache, spack sources, concretization cache) therefore starts empty in every
+  ## pipeline; layers come from the registry cache (--cache-from).  Set to
+  ## "builder" to use the former persistent instance shared across pipelines.
+  BUILDER_NAME: "builder-${CI_PIPELINE_ID}"
+
   PIPELINE_NAME: "$CI_COMMIT_TITLE"
 
   ## Variables passed from GitHub workflows
@@ -252,9 +260,16 @@ status:pending:
         done ;
       fi
     - docker context create context
-    # The docker-container cache persistence applies to builders of the same name,
-    # so do not change the name to something that has the pipeline or job id.
-    - docker buildx create context --name builder --driver docker-container --bootstrap --use
+    # The builder state lives in the container buildx_buildkit_${BUILDER_NAME}0 and
+    # volume buildx_buildkit_${BUILDER_NAME}0_state on the runner host, so all jobs
+    # using the same BUILDER_NAME share one BuildKit instance.  Concurrent jobs of a
+    # pipeline may race to create the container, hence the bootstrap retries.
+    - docker buildx create context --name "${BUILDER_NAME}" --driver docker-container --use
+    - for attempt in 1 2 3 ; do
+        docker buildx inspect --bootstrap "${BUILDER_NAME}" && break ;
+        [ "${attempt}" -lt 3 ] || exit 1 ;
+        sleep 15 ;
+      done
     - docker buildx ls
     - echo $DOCKER_HOST
   after_script:
@@ -856,6 +871,45 @@ spack-cache-cleanup:
         --target spack_cache_cleanup
         --file containers/eic/Dockerfile.spack-cache-cleanup
         .
+
+## Remove the per-pipeline BuildKit builder (see BUILDER_NAME) after all build
+## jobs and spack-cache-cleanup are done.  Canceled pipelines never reach this
+## stage, so also remove builders of other pipelines that have finished.
+clean_builder:docker-new:
+  extends: .docker
+  stage: finalize
+  tags:
+    - docker-new
+  needs:
+    - job: spack-cache-cleanup
+  when: always
+  allow_failure: true
+  script:
+    - apk add curl jq
+    - |
+      remove_builder() {
+        echo "Removing BuildKit builder $1"
+        docker rm --force "buildx_buildkit_${1}0" || true
+        docker volume rm --force "buildx_buildkit_${1}0_state" || true
+      }
+      ## This pipeline's builder (never a shared, non-per-pipeline one)
+      if [ "${BUILDER_NAME}" = "builder-${CI_PIPELINE_ID}" ]; then
+        remove_builder "${BUILDER_NAME}"
+      else
+        echo "Keeping builder ${BUILDER_NAME} (not per-pipeline)"
+      fi
+      ## Builders of other pipelines that have finished (e.g. canceled ones)
+      { docker ps --all --format '{{.Names}}' ; docker volume ls --format '{{.Name}}' ; } \
+        | sed -n -E 's/^buildx_buildkit_builder-([0-9]+)0(_state)?$/\1/p' \
+        | sort -u \
+        | while read -r pipeline_id ; do
+          [ "${pipeline_id}" = "${CI_PIPELINE_ID}" ] && continue
+          status=$(curl --silent -L "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}" | jq -r ".status")
+          echo "Builder builder-${pipeline_id}: pipeline ${status:-undetermined}"
+          case "${status}" in
+            success|failed|canceled|skipped) remove_builder "builder-${pipeline_id}" ;;
+          esac
+        done
 
 waterfall:upload:
   stage: waterfall
