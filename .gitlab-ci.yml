@@ -528,7 +528,10 @@ eic:
   needs:
     - version
     - base-manifest
-    - base-cuda-manifest
+    ## optional: base-cuda-manifest is skipped for epic/EICrecon triggers, where the .nightly
+    ## stable-branch rules can still create some eic jobs
+    - job: base-cuda-manifest
+      optional: true
 
 .eic-manifest:
   extends: .docker
@@ -583,7 +586,9 @@ eic-manifest:
     ## Only eic_ci is built for epic or EICrecon triggers
     - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
       when: never
-    - when: always
+    ## on_success (as eic-manifest on GitHub, and on master before the split): do not
+    ## tag or export any image when one of the eic builds failed
+    - when: on_success
   needs:
     - version
     - job: eic
