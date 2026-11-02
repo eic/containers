@@ -365,6 +365,7 @@ base-manifest:
   needs:
     - version
     - job: base
+      optional: true
   script:
     - apk add bash jq
     - |
