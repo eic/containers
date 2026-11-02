@@ -28,8 +28,8 @@ Options:
   --base-image IMAGE  Upstream base image (default: derived from --image)
   --platform PLATFORM Build platform, e.g. linux/amd64, linux/arm64
                       (default: \$PLATFORM or linux/amd64)
-  --jobs N            Number of parallel Spack build jobs
-                      (default: \$JOBS or \$(getconf _NPROCESSORS_ONLN))
+  --jobs N            Accepted for compatibility; no effect, since the base image
+                      does not build Spack packages (see build-eic.sh --jobs)
   --tag TAG           Local tag for the image (default: local; ignored in CI)
   -h, --help          Show this help and exit
 
@@ -186,7 +186,6 @@ build_cmd+=(--build-arg "KEY4HEPSPACK_SHA=${KEY4HEPSPACK_SHA}")
 build_cmd+=(--build-arg "EICSPACK_ORGREPO=${EICSPACK_ORGREPO}")
 build_cmd+=(--build-arg "EICSPACK_VERSION=${EICSPACK_VERSION}")
 build_cmd+=(--build-arg "EICSPACK_SHA=${EICSPACK_SHA}")
-build_cmd+=(--build-arg "jobs=${JOBS}")
 build_cmd+=(--build-arg "BUILDWEEK=${BUILDWEEK:-0}")
 
 ## Suppress provenance attestation (matches CI behaviour)

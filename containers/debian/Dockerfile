@@ -255,7 +255,10 @@ spack repo add --scope spack "${SPACKPACKAGES_ROOT}/repos/spack_repo/builtin"
 EOF
 
 ## Setup build configuration
-ARG jobs=1
+## The number of parallel build jobs is deliberately not set here: a build arg in
+## scope would enter the cache key of every later step, and the value would be
+## baked into the image.  The EIC image builds pass it per command instead
+## (spack -c config:build_jobs:N, from the JOBS build secret).
 RUN <<EOF
 set -e
 declare -A target=(
@@ -271,8 +274,7 @@ spack config --scope spack add "packages:all:target:[${target}]"
 spack config blame packages
 mkdir -p $HOME/.spack/  # workaround for Spack not creating config directory automatically in some versions (see https://github.com/spack/spack/issues/51564)
 spack config --scope user add "config:suppress_gpg_warnings:true"
-spack config --scope user add "config:build_jobs:${jobs}"
-spack config --scope user add "config:db_lock_timeout:${jobs}00"
+spack config --scope user add "config:db_lock_timeout:3600"
 spack config --scope user add "config:source_cache:/var/cache/spack"
 spack config --scope user add "config:install_tree:root:/opt/software"
 spack config --scope user add "config:ccache:true"

@@ -24,8 +24,8 @@ local builds are guaranteed to be equivalent.
 ```bash
 cd /path/to/containers
 
-# Build debian_stable_base with 8 parallel jobs
-bash scripts/build-base.sh --jobs 8
+# Build debian_stable_base
+bash scripts/build-base.sh
 ```
 
 This produces a local image tagged `debian_stable_base:local`.
@@ -33,7 +33,7 @@ This produces a local image tagged `debian_stable_base:local`.
 ### Building the EIC Image
 
 ```bash
-# Build the full XL environment
+# Build the full XL environment with 8 parallel Spack build jobs
 bash scripts/build-eic.sh --env xl --jobs 8
 ```
 
@@ -139,7 +139,7 @@ flowchart TB
 
 Both scripts live in `scripts/` and accept command-line flags. Many options can
 also be set via environment variables, but the variable names are script-specific and do
-not always exactly match the flag names (for example, `JOBS=8 bash scripts/build-base.sh`,
+not always exactly match the flag names (for example, `JOBS=8 bash scripts/build-eic.sh`,
 `LOCAL_TAG=local bash scripts/build-eic.sh`, or `LOCAL_BASE_TAG=local bash scripts/build-eic.sh`).
 
 ### `scripts/build-base.sh`
@@ -152,7 +152,7 @@ bash scripts/build-base.sh [options]
   --image IMAGE       Image to build: debian_stable_base (default), cuda_devel, cuda_runtime
   --base-image IMAGE  Upstream image (derived automatically from --image if omitted)
   --platform PLATFORM linux/amd64 (default), linux/arm64
-  --jobs N            Parallel Spack build jobs (default: nproc)
+  --jobs N            Accepted for compatibility; no effect (the base image builds no Spack packages)
   --tag TAG           Output image tag (default: local)
 ```
 
@@ -168,7 +168,8 @@ bash scripts/build-eic.sh [options]
   --builder-image IMG Builder base image name (default: debian_stable_base)
   --runtime-image IMG Runtime base image name (default: debian_stable_base)
   --platform PLATFORM linux/amd64 (default), linux/arm64
-  --jobs N            Parallel Spack build jobs (default: nproc)
+  --jobs N            Parallel Spack build jobs (default: nproc); passed as the JOBS
+                      build secret, so changing it does not invalidate the layer cache
   --base-tag TAG      Tag of the locally built base image to use (default: local); if not found
                       locally, ghcr.io/eic/:latest is used as fallback
   --tag TAG           Output image tag (default: local)
@@ -213,7 +214,7 @@ directly, Dockerfile `ARG` defaults apply instead.
 Reduce the number of parallel jobs:
 
 ```bash
-bash scripts/build-base.sh --jobs 2
+bash scripts/build-eic.sh --env xl --jobs 2
 ```
 
 ### Build Takes Too Long
