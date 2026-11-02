@@ -353,6 +353,13 @@ base:
 
 base-cuda:
   extends: .base
+  rules:
+    # Only eic_ci (on debian_stable_base) is built for epic or EICrecon trigger
+    # pipelines, i.e. external triggers (CI_PIPELINE_SOURCE=="trigger") not from
+    # eic/containers; same condition as in .nightly.
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - when: on_success
   parallel:
     matrix:
       - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_OS}
@@ -386,14 +393,23 @@ base-cuda:
         fi
       done
 
+## base (debian_stable_base) always runs, so this need is not optional.
 base-manifest:
   extends: .base-manifest
   needs:
     - version
     - job: base
 
+## Same rules as base-cuda: a need on a job that is not in the pipeline is an error (#488).
 base-cuda-manifest:
   extends: .base-manifest
+  rules:
+    # Only eic_ci (on debian_stable_base) is built for epic or EICrecon trigger
+    # pipelines, i.e. external triggers (CI_PIPELINE_SOURCE=="trigger") not from
+    # eic/containers; same condition as in .nightly.
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - when: on_success
   needs:
     - version
     - job: base-cuda
