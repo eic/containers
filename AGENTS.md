@@ -61,6 +61,8 @@ All images support both `linux/amd64` and `linux/arm64` architectures through pa
 ├── spack-environment/          # Nine environments: ci, ci_without_acts,
 │   │                           # cuda, cvmfs, dbg, jl, prod, tf, xl
 │   ├── packages.yaml           # Package versions, variants, and preferences
+│   ├── packages_linux.yaml     # Linux-only settings (included when platform == "linux")
+│   ├── packages_darwin.yaml    # macOS-only settings (included when platform == "darwin")
 │   ├── <env>/spack.yaml        # Default spec list for that environment
 │   └── <env>/epic/spack.yaml   # Custom-version overlay (epic, eicrecon, ...)
 ├── spack.sh                    # Spack core version and cherry-picks

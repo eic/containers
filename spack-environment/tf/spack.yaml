@@ -2,9 +2,24 @@ spack:
   include:
   - ../concretizer.yaml
   - ../config.yaml
-  - ../packages.yaml
+  - path: ../packages_darwin.yaml
+    when: platform == "darwin"
+  - path: ../packages_linux.yaml
+    when: platform == "linux"
   - ../view.yaml
+  - ../packages.yaml
+  definitions:
+  - when: arch.satisfies("platform=linux")
+    tensorflow: [py-tensorflow +cuda]
+  - when: arch.satisfies("platform=darwin")
+    tensorflow: []
+  - when: arch.satisfies("platform=linux")
+    linux_packages: [py-keras, py-onnxruntime, py-tf2onnx]
+  - when: arch.satisfies("platform=darwin")
+    linux_packages: []
   specs:
+  - $tensorflow
+  - $linux_packages
   - edm4hep
   - onnx
   - osg-ca-certs
@@ -25,7 +40,6 @@ spack:
   - py-jinja2-cli
   - py-jupyter-console
   - py-jupyterlab
-  - py-keras
   - py-lmfit
   - py-lxml
   - py-matplotlib
@@ -34,7 +48,6 @@ spack:
   - py-numba
   - py-numpy
   - py-onnx
-  - py-onnxruntime
   - py-pandas
   - py-particle
   - py-pip
@@ -42,8 +55,6 @@ spack:
   - py-rucio-clients
   - py-scipy
   - py-seaborn
-  - py-tensorflow +cuda
-  - py-tf2onnx
   - py-toml
   - py-uproot
   - py-vector
