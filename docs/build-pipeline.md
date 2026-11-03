@@ -225,12 +225,21 @@ Notes:
 - The EIC Dockerfile must not declare `ARG SOURCE_DATE_EPOCH`. Undeclared, the build argument only
   sets image metadata: it is not visible to `RUN` steps and does not enter their cache keys, so a
   new commit does not invalidate the layer cache.
-- EIC images do not use `rewrite-timestamp`: it re-tars every new layer at export, and the rewritten
+- EIC images do not use `rewrite-timestamp`, which BuildKit leaves off by default "due to the
+  overhead of rewriting image layers": it re-tars every new layer at export, and the rewritten
   image blobs can no longer be shared with the registry layer cache blobs. Inherited base layers are
   never rewritten.
-- Not reproducible: the `.git` directories of the Spack repositories (the index records file
-  metadata of the checkout, and the clone contains the default branch history at clone time), and
-  Python bytecode written while Spack runs.
+- Not reproducible yet:
+  - Package versions installed by apt. `apt-get` installs what the archive serves at build time,
+    so a rebuild later in the same week can get newer packages. The
+    [SOURCE_DATE_EPOCH documentation](https://reproducible-builds.org/docs/source-date-epoch/#apt-get)
+    suggests pinning the Debian and Ubuntu archives to `snapshot.debian.org` /
+    `snapshot.ubuntu.com` at `SOURCE_DATE_EPOCH`, e.g. with
+    [repro-sources-list.sh](https://github.com/reproducible-containers/repro-sources-list.sh).
+    The third-party repositories (apt.llvm.org, NVIDIA's CUDA repository) have no snapshots.
+  - The `.git` directories of the Spack repositories: the index records file metadata of the
+    checkout, and the clone contains the default branch history at clone time.
+  - Python bytecode written while Spack runs.
 
 ## Workflow Triggers
 
