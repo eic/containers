@@ -192,6 +192,9 @@ The GitLab CI configuration (`.gitlab-ci.yml`) runs similar build jobs but in th
 - Use **heredoc syntax** (`<<EOF`) for multi-line RUN commands
 - Set `ARG` before `FROM` for build-time variables
 - Always specify **TARGETPLATFORM** for multi-arch awareness
+- Do **not** declare `ARG SOURCE_DATE_EPOCH` in `containers/eic/Dockerfile`: the build scripts
+  pass the commit time, and a declared ARG would change every `RUN` cache key on each commit
+  (see Reproducibility in `docs/build-pipeline.md`)
 
 ### Shell Scripts
 
