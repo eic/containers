@@ -28,13 +28,13 @@ Options:
   --base-image IMAGE  Upstream base image (default: derived from --image)
   --platform PLATFORM Build platform, e.g. linux/amd64, linux/arm64
                       (default: \$PLATFORM or linux/amd64)
-  --jobs N            Number of parallel Spack build jobs
-                      (default: \$JOBS or \$(getconf _NPROCESSORS_ONLN))
+  --jobs N            Accepted for compatibility; no effect, since the base image
+                      does not build Spack packages (see build-eic.sh --jobs)
   --tag TAG           Local tag for the image (default: local; ignored in CI)
   -h, --help          Show this help and exit
 
 GitHub Actions mode (GITHUB_ACTIONS=true):
-  Set GH_REGISTRY, GH_REGISTRY_USER, JOBS. The script derives cache-key slugs
+  Set GH_REGISTRY, GH_REGISTRY_USER. The script derives cache-key slugs
   from GITHUB_HEAD_REF (PR source branch, when set) or GITHUB_REF_NAME
   (push/schedule branch), and from GITHUB_BASE_REF (PR target branch, empty on
   push events) or DEFAULT_BRANCH (repo default branch fallback). Writes the
@@ -46,7 +46,6 @@ EOF
 BUILD_IMAGE="${BUILD_IMAGE:-debian_stable_base}"
 BASE_IMAGE="${BASE_IMAGE:-}"
 PLATFORM="${PLATFORM:-linux/amd64}"
-JOBS="${JOBS:-$(getconf _NPROCESSORS_ONLN)}"
 LOCAL_TAG="${LOCAL_TAG:-local}"
 METADATA_FILE="${METADATA_FILE:-/tmp/build-metadata.json}"
 
@@ -56,7 +55,7 @@ while [[ $# -gt 0 ]]; do
     --image)     BUILD_IMAGE="$2";   shift 2 ;;
     --base-image) BASE_IMAGE="$2";   shift 2 ;;
     --platform)  PLATFORM="$2";     shift 2 ;;
-    --jobs)      JOBS="$2";         shift 2 ;;
+    --jobs)      shift 2 ;;  # accepted for compatibility; no effect
     --tag)       LOCAL_TAG="$2";    shift 2 ;;
     *) echo "Unknown argument: $1" >&2; echo "Try 'bash scripts/build-base.sh --help' for usage." >&2; exit 1 ;;
   esac
@@ -187,7 +186,6 @@ build_cmd+=(--build-arg "KEY4HEPSPACK_SHA=${KEY4HEPSPACK_SHA}")
 build_cmd+=(--build-arg "EICSPACK_ORGREPO=${EICSPACK_ORGREPO}")
 build_cmd+=(--build-arg "EICSPACK_VERSION=${EICSPACK_VERSION}")
 build_cmd+=(--build-arg "EICSPACK_SHA=${EICSPACK_SHA}")
-build_cmd+=(--build-arg "jobs=${JOBS}")
 build_cmd+=(--build-arg "BUILDWEEK=${BUILDWEEK:-0}")
 
 ## Suppress provenance attestation (matches CI behaviour)
