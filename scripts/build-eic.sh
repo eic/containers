@@ -83,6 +83,13 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+## JOBS ends up as `spack -c config:build_jobs:${JOBS}` in containers/eic/Dockerfile,
+## so only accept a positive integer (no empty value, whitespace or extra arguments).
+case "${JOBS}" in
+  ''|*[!0-9]*|0*)
+    echo "Invalid --jobs/JOBS value '${JOBS}': must be a positive integer." >&2
+    exit 1 ;;
+esac
 ## Exported for --secret type=env,id=JOBS below
 export JOBS
 

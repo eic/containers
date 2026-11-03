@@ -192,7 +192,6 @@ directly, Dockerfile `ARG` defaults apply instead.
 | `SPACKPACKAGES_*` | Similar args for spack-packages | (from `spack-packages.sh`) |
 | `KEY4HEPSPACK_*` | Similar args for key4hep-spack | (from `key4hep-spack.sh`) |
 | `EICSPACK_*` | Similar args for eic-spack | (from `eic-spack.sh`) |
-| `jobs` | Parallel build jobs | `1` |
 
 ### EIC Image (containers/eic/Dockerfile)
 
@@ -206,6 +205,11 @@ directly, Dockerfile `ARG` defaults apply instead.
 | `EDM4EIC_SHA` | Custom edm4eic commit | |
 | `EICRECON_SHA` | Custom eicrecon commit | |
 | `EPIC_SHA` | Custom epic commit | |
+
+The number of parallel Spack build jobs is not a build argument: `scripts/build-eic.sh --jobs N`
+(or `JOBS=N`) passes it as the optional build secret `JOBS`
+(`--secret type=env,id=JOBS,env=JOBS`), so changing it does not invalidate the layer cache.
+It must be a positive integer.
 
 ## Troubleshooting
 
