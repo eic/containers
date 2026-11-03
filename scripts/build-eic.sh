@@ -37,6 +37,9 @@ Options:
                       is not found in the local Docker daemon, ghcr.io/eic/ is used with tag
                       'latest' as fallback (ignored in CI)
   --tag TAG           Local tag for the output image (default: local; ignored in CI)
+  --no-layer-cache    Do not import or export the registry Docker layer cache
+                      (no --cache-from/--cache-to; default: \$LAYER_CACHE or true).
+                      BuildKit's local cache in the builder instance is still used.
   -h, --help          Show this help and exit
 
 When multiple build types are given (e.g. "default,nightly"), both are built sequentially
@@ -65,6 +68,7 @@ JOBS="${JOBS:-$(getconf _NPROCESSORS_ONLN)}"
 LOCAL_TAG="${LOCAL_TAG:-local}"
 LOCAL_BASE_TAG="${LOCAL_BASE_TAG:-local}"
 METADATA_FILE="${METADATA_FILE:-/tmp/build-metadata.json}"
+LAYER_CACHE="${LAYER_CACHE:-true}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -78,6 +82,7 @@ while [[ $# -gt 0 ]]; do
     --jobs)          JOBS="$2";         shift 2 ;;
     --base-tag)      LOCAL_BASE_TAG="$2"; shift 2 ;;
     --tag)           LOCAL_TAG="$2";    shift 2 ;;
+    --no-layer-cache) LAYER_CACHE="false"; shift ;;
     *) echo "Unknown argument: $1" >&2; echo "Try 'bash scripts/build-eic.sh --help' for usage." >&2; exit 1 ;;
   esac
 done
@@ -211,19 +216,22 @@ for build_type in "${BUILD_TYPES[@]}"; do
     build_cmd+=(--load)
   fi
 
-  ## Cache sources: CI registry (if in CI) plus public ghcr.io/eic (GitLab and local modes)
-  CACHE_KEY="${BUILD_IMAGE}${ENV}-${build_type}"
-  BUILDCACHE_REPOS=()
-  [ "${CI_MODE}" != "local" ] && BUILDCACHE_REPOS+=("${CI_REGISTRY_PREFIX}")
-  [ "${CI_MODE}" != "github" ] && BUILDCACHE_REPOS+=("ghcr.io/eic")
-  for REPO in "${BUILDCACHE_REPOS[@]}"; do
-    build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
-    build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
-  done
+  ## Registry layer cache (skipped entirely with --no-layer-cache / LAYER_CACHE=false)
+  if [ "${LAYER_CACHE}" != "false" ]; then
+    ## Cache sources: CI registry (if in CI) plus public ghcr.io/eic (GitLab and local modes)
+    CACHE_KEY="${BUILD_IMAGE}${ENV}-${build_type}"
+    BUILDCACHE_REPOS=()
+    [ "${CI_MODE}" != "local" ] && BUILDCACHE_REPOS+=("${CI_REGISTRY_PREFIX}")
+    [ "${CI_MODE}" != "github" ] && BUILDCACHE_REPOS+=("ghcr.io/eic")
+    for REPO in "${BUILDCACHE_REPOS[@]}"; do
+      build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
+      build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
+    done
 
-  ## Cache destination (CI only)
-  if [ "${CI_MODE}" != "local" ]; then
-    build_cmd+=(--cache-to "type=registry,ref=${CI_REGISTRY_PREFIX}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH},mode=max")
+    ## Cache destination (CI only)
+    if [ "${CI_MODE}" != "local" ]; then
+      build_cmd+=(--cache-to "type=registry,ref=${CI_REGISTRY_PREFIX}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH},mode=max")
+    fi
   fi
 
   ## Image tag (local only; CI creates tags via imagetools create after build)
