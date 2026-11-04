@@ -278,7 +278,7 @@ jobs:
 
   eic:
     name: Build EIC images
-    needs: [env, base-manifest, base-cuda-manifest, eic-ci]
+    needs: [env, base-manifest, base-cuda-manifest]
     uses: ./.github/workflows/build-eic.yml
     secrets: inherit
     with:

@@ -35,7 +35,7 @@ flowchart TB
         BM --> E0[eic-ci<br/>eic_ci amd64_v3]
         BM --> E2[eic-ci<br/>eic_ci arm64]
         E1 & E0 & E2 --> ECM[eic-ci-manifest]
-        E1 & E0 & E2 & BCM --> E3[eic<br/>eic_xl amd64, amd64_v3, arm64<br/>cuda, tf concretization]
+        BM & BCM --> E3[eic<br/>eic_xl amd64, amd64_v3, arm64<br/>cuda, tf concretization]
         E3 --> EM[eic-manifest]
 
         %% Parallel smoke test execution
@@ -164,7 +164,7 @@ sequenceDiagram
 
 The benchmarks and `user_spack_environment` need `eic-ci-manifest`; `cuda:torch` and the singularity jobs need `eic-manifest`. For epic/EICrecon trigger pipelines, only `base`, `base-manifest`, `eic-ci` and `eic-ci-manifest` run.
 
-Differences from GitHub Actions: on GitLab, `eic` does not wait for `eic-ci`, and the manifest jobs copy the single-architecture image manifest instead of creating a manifest list.
+Difference from GitHub Actions: on GitLab, the manifest jobs copy the single-architecture image manifest instead of creating a manifest list.
 
 ## Caching Strategy
 
