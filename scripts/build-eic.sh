@@ -31,7 +31,8 @@ Options:
   --runtime-image IMG Runtime base image name (default: \$RUNTIME_IMAGE or debian_stable_base)
   --target STAGE      Docker build target stage (default: \$BUILD_TARGET or final)
   --platform PLATFORM Build platform, e.g. linux/amd64 (default: \$PLATFORM or linux/amd64)
-  --jobs N            Number of parallel Spack build jobs
+  --jobs N            Number of parallel Spack build jobs, passed as the JOBS build
+                      secret so it does not affect layer caching
                       (default: \$JOBS or \$(getconf _NPROCESSORS_ONLN))
   --base-tag TAG      Tag of the locally built base image to use (default: local); if the image
                       is not found in the local Docker daemon, ghcr.io/eic/ is used with tag
@@ -81,6 +82,16 @@ while [[ $# -gt 0 ]]; do
     *) echo "Unknown argument: $1" >&2; echo "Try 'bash scripts/build-eic.sh --help' for usage." >&2; exit 1 ;;
   esac
 done
+
+## JOBS ends up as `spack -c config:build_jobs:${JOBS}` in containers/eic/Dockerfile,
+## so only accept a positive integer (no empty value, whitespace or extra arguments).
+case "${JOBS}" in
+  ''|*[!0-9]*|0*)
+    echo "Invalid --jobs/JOBS value '${JOBS}': must be a positive integer." >&2
+    exit 1 ;;
+esac
+## Exported for --secret type=env,id=JOBS below
+export JOBS
 
 ## Source version files (only spack-packages version is needed for mirrors.yaml)
 source "${REPO_DIR}/spack-packages.sh"
@@ -272,7 +283,6 @@ for build_type in "${BUILD_TYPES[@]}"; do
   build_cmd+=(--build-arg "RUNTIME_IMAGE=${RUNTIME_IMAGE}")
   build_cmd+=(--build-arg "ENV=${ENV}")
   build_cmd+=(--build-arg "SPACK_DUPLICATE_ALLOWLIST=${SPACK_DUPLICATE_ALLOWLIST}")
-  build_cmd+=(--build-arg "jobs=${JOBS}")
 
   ## Optional version overrides
   [ -n "${EDM4EIC_SHA}" ]  && build_cmd+=(--build-arg "EDM4EIC_SHA=${EDM4EIC_SHA}")
@@ -282,8 +292,9 @@ for build_type in "${BUILD_TYPES[@]}"; do
   ## Additional build contexts
   build_cmd+=(--build-context "spack-environment=spack-environment")
 
-  ## Secrets
+  ## Secrets (JOBS is a secret, not a build arg, so it does not enter cache keys)
   build_cmd+=(--secret "id=mirrors,src=${MIRRORS_YAML}")
+  build_cmd+=(--secret "type=env,id=JOBS,env=JOBS")
   if [ "${CI_MODE}" != "local" ]; then
     if [ -n "${CI_REGISTRY_USER}" ] && [ -n "${CI_REGISTRY_PASSWORD}" ]; then
       build_cmd+=(--secret "type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER")
