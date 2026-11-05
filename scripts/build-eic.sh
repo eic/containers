@@ -155,9 +155,9 @@ fi
 
 ## Resolve SHAs (network calls — skipped if version is already a SHA)
 echo "Resolving git SHAs..."
-BENCHMARK_COM_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/common_bench master)
 BENCHMARK_DET_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/detector_benchmarks master)
 BENCHMARK_PHY_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/physics_benchmarks master)
+BENCHMARK_GEN_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/generator_benchmarks main)
 
 ## Compute per-ENV duplicate allowlist (independent of build type)
 case "${ENV}" in
@@ -248,10 +248,10 @@ for build_type in "${BUILD_TYPES[@]}"; do
   build_cmd+=(--platform "${PLATFORM}")
 
   ## Build arguments
-  build_cmd+=(--build-arg "BENCHMARK_COM_SHA=${BENCHMARK_COM_SHA}")
   build_cmd+=(--build-arg "BENCHMARK_DET_SHA=${BENCHMARK_DET_SHA}")
   build_cmd+=(--build-arg "BENCHMARK_PHY_SHA=${BENCHMARK_PHY_SHA}")
-
+  build_cmd+=(--build-arg "BENCHMARK_GEN_SHA=${BENCHMARK_GEN_SHA}")
+  
   if [ "${CI_MODE}" != "local" ]; then
     build_cmd+=(--build-arg "DOCKER_REGISTRY=${CI_REGISTRY_PREFIX}/")
     build_cmd+=(--build-arg "INTERNAL_TAG=${INTERNAL_TAG}")
