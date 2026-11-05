@@ -404,18 +404,16 @@ EOF
 RUN chmod 644 ${SPACK_ROOT}/etc/spack/*.yaml ${HOME}/.spack/*.yaml
 
 ## Install benchmarks into the container
-ARG BENCHMARK_COM_SHA=""
 ARG BENCHMARK_DET_SHA=""
 ARG BENCHMARK_PHY_SHA=""
+ARG BENCHMARK_GEN_SHA=""
 RUN <<EOF
-git clone https://github.com/eic/common_bench.git /opt/benchmarks/common_bench
-git -C /opt/benchmarks/common_bench checkout ${BENCHMARK_COM_SHA:-master}
 git clone https://github.com/eic/detector_benchmarks.git /opt/benchmarks/detector_benchmarks
 git -C /opt/benchmarks/detector_benchmarks checkout ${BENCHMARK_DET_SHA:-master}
-ln -sf /opt/benchmarks/common_bench /opt/benchmarks/detector_benchmarks/.local
 git clone https://github.com/eic/physics_benchmarks.git /opt/benchmarks/physics_benchmarks
 git -C /opt/benchmarks/physics_benchmarks checkout ${BENCHMARK_PHY_SHA:-master}
-ln -sf /opt/benchmarks/common_bench /opt/benchmarks/physics_benchmarks/.local
+git clone https://github.com/eic/generator_benchmarks.git /opt/benchmarks/generator_benchmarks
+git -C /opt/benchmarks/generator_benchmarks checkout ${BENCHMARK_GEN_SHA:-main}
 EOF
 
 ## Place cvmfs catalogs
