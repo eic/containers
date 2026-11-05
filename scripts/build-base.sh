@@ -99,6 +99,36 @@ else
   CI_MODE="local"
 fi
 
+## Reproducible builds (https://reproducible-builds.org/docs/source-date-epoch/):
+## SOURCE_DATE_EPOCH sets the image config and history timestamps and, with rewrite-timestamp=true
+## on the image exporter, clamps the timestamps of files written during the build.  For the base
+## images it is the start (Monday 00:00 UTC) of the ISO week in BUILDWEEK, the input that rotates
+## their content weekly, so rebuilds with the same inputs in the same week produce the same
+## timestamps (and, where the content is reproducible, the same image digest).  The Dockerfile
+## declares ARG SOURCE_DATE_EPOCH next to ARG BUILDWEEK, so it does not add cache misses.
+## An explicit SOURCE_DATE_EPOCH in the environment takes precedence.
+iso_week_start() {
+  # Pure bash (no GNU date in the alpine CI image): seconds since the epoch of Monday 00:00 UTC
+  # of ISO week $2 of ISO year $1, via days-from-civil for January 4 (always in ISO week 1).
+  local y=$1 w=$((10#$2)) yy doy doe era yoe days dow
+  yy=$(( y - 1 ))
+  era=$(( yy / 400 )); yoe=$(( yy - era * 400 ))
+  doy=$(( (153 * (1 + 9) + 2) / 5 + 4 - 1 ))
+  doe=$(( yoe * 365 + yoe / 4 - yoe / 100 + doy ))
+  days=$(( era * 146097 + doe - 719468 ))
+  dow=$(( (days + 3) % 7 + 1 ))                     # 1970-01-01 was a Thursday
+  echo $(( (days - (dow - 1) + (w - 1) * 7) * 86400 ))
+}
+if [ -z "${SOURCE_DATE_EPOCH:-}" ] && [[ "${BUILDWEEK:-}" =~ ^([0-9]{4})w([0-9]{2})$ ]]; then
+  SOURCE_DATE_EPOCH=$(iso_week_start "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}")
+fi
+if [ -n "${SOURCE_DATE_EPOCH:-}" ] && ! [[ "${SOURCE_DATE_EPOCH}" =~ ^[0-9]+$ ]]; then
+  echo "Invalid SOURCE_DATE_EPOCH '${SOURCE_DATE_EPOCH}': must be an integer (seconds since 1970)." >&2
+  exit 1
+fi
+REWRITE_TIMESTAMP=""
+[ -n "${SOURCE_DATE_EPOCH:-}" ] && REWRITE_TIMESTAMP=",rewrite-timestamp=true"
+
 ## Derive BASE_IMAGE from BUILD_IMAGE if not provided
 if [ -z "${BASE_IMAGE}" ]; then
   case "${BUILD_IMAGE}" in
@@ -132,7 +162,7 @@ IMAGE_REPO="${CI_REGISTRY_PREFIX}/${BUILD_IMAGE}"
 ## Output mode: push-by-digest in all CI modes; load locally
 if [ "${CI_MODE}" != "local" ]; then
   ## Push by digest; CI wrapper creates final tags via imagetools create
-  build_cmd+=(--output "type=image,name=${IMAGE_REPO},push-by-digest=true,name-canonical=true,push=true")
+  build_cmd+=(--output "type=image,name=${IMAGE_REPO},push-by-digest=true,name-canonical=true,push=true${REWRITE_TIMESTAMP}")
   build_cmd+=(--metadata-file "${METADATA_FILE}")
 else
   build_cmd+=(--load)
@@ -192,6 +222,7 @@ build_cmd+=(--build-arg "EICSPACK_ORGREPO=${EICSPACK_ORGREPO}")
 build_cmd+=(--build-arg "EICSPACK_VERSION=${EICSPACK_VERSION}")
 build_cmd+=(--build-arg "EICSPACK_SHA=${EICSPACK_SHA}")
 build_cmd+=(--build-arg "BUILDWEEK=${BUILDWEEK:-0}")
+[ -n "${SOURCE_DATE_EPOCH:-}" ] && build_cmd+=(--build-arg "SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}")
 
 ## Suppress provenance attestation (matches CI behaviour)
 build_cmd+=(--provenance false)
