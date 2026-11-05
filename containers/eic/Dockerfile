@@ -69,6 +69,10 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (default configuration, $TARGETPLATFORM)"
 
+## The number of parallel build jobs comes from the optional JOBS build secret,
+## not a build arg, so that it does not enter the layer cache keys (and the same
+## cache can serve builds with different JOBS, e.g. GitHub Actions and eicweb).
+
 # Installation (default environment)
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack,sharing=locked           \
@@ -77,6 +81,7 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
+    --mount=type=secret,id=JOBS,env=JOBS,required=false \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
@@ -86,7 +91,7 @@ spack python /usr/local/bin/check-buildcache.py "${SPACK_ENV}" /tmp/rebuild.txt
 if [ -s /tmp/rebuild.txt ]; then
   missing=$(cat /tmp/rebuild.txt)
   echo "Building missing spec(s): ${missing}"
-  spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} ${missing}
+  spack ${SPACK_FLAGS} ${JOBS:+-c config:build_jobs:${JOBS}} install ${SPACK_INSTALL_FLAGS} ${missing}
 elif [ -f /tmp/rebuild.txt ]; then
   echo "All packages in default environment already exist in buildcache. Skipping build."
 else
@@ -139,9 +144,10 @@ RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
+    --mount=type=secret,id=JOBS,env=JOBS,required=false \
     <<EOF
 set -e
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
+spack ${SPACK_FLAGS} ${JOBS:+-c config:build_jobs:${JOBS}} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
@@ -205,6 +211,7 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
+    --mount=type=secret,id=JOBS,env=JOBS,required=false \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
@@ -213,7 +220,7 @@ spack python /usr/local/bin/check-buildcache.py "${SPACK_ENV}" /tmp/rebuild.txt
 if [ -s /tmp/rebuild.txt ]; then
   missing=$(cat /tmp/rebuild.txt)
   echo "Building missing spec(s): ${missing}"
-  spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} ${missing}
+  spack ${SPACK_FLAGS} ${JOBS:+-c config:build_jobs:${JOBS}} install ${SPACK_INSTALL_FLAGS} ${missing}
 elif [ -f /tmp/rebuild.txt ]; then
   echo "All packages in custom environment already exist in buildcache. Skipping build."
 else
@@ -268,10 +275,11 @@ RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
+    --mount=type=secret,id=JOBS,env=JOBS,required=false \
     <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
+spack ${SPACK_FLAGS} ${JOBS:+-c config:build_jobs:${JOBS}} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
