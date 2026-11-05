@@ -6,8 +6,8 @@ The container build pipeline is implemented as a GitHub Actions workflow. This d
 
 | Reusable workflow | Builds | Called as |
 |---|---|---|
-| `build-base.yml` | `debian_stable_base`, `cuda_devel`, `cuda_runtime` | `base-debian`, `base` |
-| `build-eic.yml` | `eic_ci`, `eic_xl` (and the concretization-only `cuda`, `tf` targets) | `eic-ci`, `eic` |
+| `build-base.yml` | `debian_stable_base`; `cuda_devel`, `cuda_runtime` | `base`; `base-cuda` |
+| `build-eic.yml` | `eic_ci`; `eic_xl` (and the concretization-only `cuda`, `tf` targets) | `eic-ci`; `eic` |
 
 Both take `matrix`, `jobs` and (for the base images) `buildweek` inputs, and both delegate the actual build to `scripts/build-base.sh` / `scripts/build-eic.sh`, which are shared with GitLab CI.
 
@@ -25,20 +25,18 @@ flowchart TB
     T1 & T2 & T3 & T4 --> W[build-push.yml]
 
     subgraph "Jobs"
-        W --> RB["build-base.yml<br/>(reusable)"]
-        RB --> B1[base amd64]
-        RB --> B0[base amd64_v3]
-        RB --> B2[base arm64]
+        W --> B1[base<br/>debian_stable_base amd64]
+        W --> B0[base<br/>debian_stable_base amd64_v3]
+        W --> B2[base<br/>debian_stable_base arm64]
+        W --> BC[base-cuda<br/>cuda_devel, cuda_runtime amd64]
         B1 & B0 & B2 --> BM[base-manifest]
-        BM --> RE["build-eic.yml<br/>(reusable)"]
-        RE --> E1[eic_ci amd64]
-        RE --> E0[eic_ci amd64_v3]
-        RE --> E2[eic_ci arm64]
-        RE --> E3[eic_xl amd64]
-        RE --> E5[eic_xl amd64_v3]
-        RE --> E4[eic_xl arm64]
-        E1 & E0 & E2 --> EM1[eic-manifest ci]
-        E3 & E5 & E4 --> EM2[eic-manifest xl]
+        BC --> BCM[base-cuda-manifest]
+        BM --> E1[eic-ci<br/>eic_ci amd64]
+        BM --> E0[eic-ci<br/>eic_ci amd64_v3]
+        BM --> E2[eic-ci<br/>eic_ci arm64]
+        E1 & E0 & E2 --> ECM[eic-ci-manifest]
+        BM & BCM --> E3[eic<br/>eic_xl amd64, amd64_v3, arm64<br/>cuda, tf concretization]
+        E3 --> EM[eic-manifest]
 
         %% Parallel smoke test execution
         E1 --> N1[npsim-gun amd64]
@@ -92,9 +90,9 @@ sequenceDiagram
 - `KEY4HEPSPACK_ORGREPO`, `KEY4HEPSPACK_VERSION`, `KEY4HEPSPACK_SHA`
 - `EICSPACK_ORGREPO`, `EICSPACK_VERSION`, `EICSPACK_SHA`
 
-### Base Manifest Job
+### Base Manifest Jobs
 
-Creates a multi-architecture manifest from the per-architecture digests.
+`base-manifest` (for `debian_stable_base`) and `base-cuda-manifest` (for `cuda_devel`, `cuda_runtime`) create a multi-architecture manifest from the per-architecture digests. They share their steps through a YAML anchor. `eic-ci` only waits for `base-manifest`.
 
 ```mermaid
 sequenceDiagram
@@ -145,9 +143,28 @@ sequenceDiagram
 **Secret Mounts:**
 - `mirrors.yaml` - Spack buildcache configuration with credentials
 
-### EIC Manifest Job
+### EIC Manifest Jobs
 
-Creates multi-architecture manifests for each environment variant.
+`eic-ci-manifest` (for `eic_ci`) and `eic-manifest` (for `eic_xl`) create multi-architecture manifests for each environment and build type (`default`, `nightly`). They share their steps through a YAML anchor, so the `eic_ci` manifests do not wait for the `eic` builds.
+
+### GitLab CI (eicweb)
+
+`.gitlab-ci.yml` uses the same job names and dependencies, for `linux/amd64` only and with the additional environments built on eicweb:
+
+| Job | Builds or tags | Needs |
+|---|---|---|
+| `base` | `debian_stable_base` | `version` |
+| `base-cuda` | `cuda_devel`, `cuda_runtime` | `version` |
+| `base-manifest` | `debian_stable_base` | `base` |
+| `base-cuda-manifest` | `cuda_devel`, `cuda_runtime` | `base-cuda` |
+| `eic-ci` | `eic_ci` | `base-manifest` |
+| `eic` | `eic_xl`, `eic_cvmfs`, `eic_dbg`, `eic_jl`, `eic_prod`, `eic_ci_without_acts`, `eic_cuda`, `eic_tf`, `eic_dev_cuda` | `base-manifest`, `base-cuda-manifest` |
+| `eic-ci-manifest` | `eic_ci` | `eic-ci` |
+| `eic-manifest` | all images built by `eic` | `eic` |
+
+The benchmarks and `user_spack_environment` need `eic-ci-manifest`; `cuda:torch` and the singularity jobs need `eic-manifest`. For epic/EICrecon trigger pipelines, only `base`, `base-manifest`, `eic-ci` and `eic-ci-manifest` run.
+
+Difference from GitHub Actions: on GitLab, the manifest jobs copy the single-architecture image manifest instead of creating a manifest list.
 
 ## Caching Strategy
 
