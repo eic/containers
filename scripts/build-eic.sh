@@ -222,11 +222,16 @@ for build_type in "${BUILD_TYPES[@]}"; do
     build_cmd+=(--load)
   fi
 
-  ## Cache sources: CI registry (if in CI) plus public ghcr.io/eic (GitLab and local modes)
+  ## Cache sources: only the CI system's own registry in CI (GitLab: eicweb; GitHub: ghcr.io),
+  ## the public ghcr.io/eic caches for local builds.  GitLab does not import the ghcr.io caches
+  ## written by GitHub Actions, so all cache records it can match come from eicweb builds.
   CACHE_KEY="${BUILD_IMAGE}${ENV}-${build_type}"
   BUILDCACHE_REPOS=()
-  [ "${CI_MODE}" != "local" ] && BUILDCACHE_REPOS+=("${CI_REGISTRY_PREFIX}")
-  [ "${CI_MODE}" != "github" ] && BUILDCACHE_REPOS+=("ghcr.io/eic")
+  if [ "${CI_MODE}" = "local" ]; then
+    BUILDCACHE_REPOS+=("ghcr.io/eic")
+  else
+    BUILDCACHE_REPOS+=("${CI_REGISTRY_PREFIX}")
+  fi
   for REPO in "${BUILDCACHE_REPOS[@]}"; do
     build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
     build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")

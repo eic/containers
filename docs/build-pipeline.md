@@ -178,6 +178,11 @@ cache-from: |
 cache-to: type=registry,ref=ghcr.io/eic/buildcache:{image}-{branch}-{arch},mode=max
 ```
 
+GitLab CI (eicweb) uses the same scheme with its own registry,
+`eicweb.phy.anl.gov:4567/containers/eic_container/buildcache:{image}-{branch}-{arch}`, as both
+cache source and destination. It does not import the ghcr.io caches written by GitHub Actions.
+Local builds (`scripts/build-*.sh` without CI) import the public ghcr.io caches only.
+
 ### Build Mount Cache
 
 Uses [buildkit-cache-dance](https://github.com/reproducible-containers/buildkit-cache-dance) to persist mount caches:
