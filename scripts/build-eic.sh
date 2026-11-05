@@ -251,7 +251,7 @@ for build_type in "${BUILD_TYPES[@]}"; do
   build_cmd+=(--build-arg "BENCHMARK_DET_SHA=${BENCHMARK_DET_SHA}")
   build_cmd+=(--build-arg "BENCHMARK_PHY_SHA=${BENCHMARK_PHY_SHA}")
   build_cmd+=(--build-arg "BENCHMARK_GEN_SHA=${BENCHMARK_GEN_SHA}")
-  
+
   if [ "${CI_MODE}" != "local" ]; then
     build_cmd+=(--build-arg "DOCKER_REGISTRY=${CI_REGISTRY_PREFIX}/")
     build_cmd+=(--build-arg "INTERNAL_TAG=${INTERNAL_TAG}")
