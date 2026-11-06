@@ -70,6 +70,7 @@ stages:
   - benchmarks
   - test
   - finalize
+  - builder-cleanup ## remove the per-pipeline BuildKit builder (after all finalize jobs)
   - waterfall
   - status-report
 
@@ -265,9 +266,14 @@ status:pending:
     - docker context create context
     # The builder state lives in the container buildx_buildkit_${BUILDER_NAME}0 and
     # volume buildx_buildkit_${BUILDER_NAME}0_state on the runner host, so all jobs
-    # using the same BUILDER_NAME share one BuildKit instance.  Concurrent jobs of a
-    # pipeline may race to create the container, hence the bootstrap retries.
+    # using the same BUILDER_NAME share one BuildKit instance.  `buildx create` only
+    # records the builder in this job container's buildx config (fresh in every job);
+    # concurrent jobs of a pipeline may race to create the BuildKit container at
+    # bootstrap, hence the bootstrap retries.  A job retried after clean_builder has
+    # removed the container re-creates it here (empty; layers come from the registry
+    # cache).
     - docker buildx create context --name "${BUILDER_NAME}" --driver docker-container --use
+        || docker buildx use "${BUILDER_NAME}"
     - for attempt in 1 2 3 ; do
         docker buildx inspect --bootstrap "${BUILDER_NAME}" && break ;
         [ "${attempt}" -lt 3 ] || exit 1 ;
@@ -956,20 +962,22 @@ spack-cache-cleanup:
         --file containers/eic/Dockerfile.spack-cache-cleanup
         .
 
-## Remove the per-pipeline BuildKit builder (see BUILDER_NAME) after all build
-## jobs and spack-cache-cleanup are done.  Canceled pipelines never reach this
-## stage, so also remove builders of other pipelines that have finished.
+## Remove the per-pipeline BuildKit builder (see BUILDER_NAME).  This job is in its own
+## builder-cleanup stage without needs, so it only starts after every job of all earlier
+## stages, including spack-cache-cleanup in finalize, has finished.
+## Canceled pipelines never reach this stage, and a job retried after this job ran
+## re-creates the builder (see .build), which this job does not remove again; so also
+## remove the builders of other pipelines once those pipelines have finished.  A
+## pipeline with a retried job is running again, so its builder is kept until then.
 clean_builder:docker-new:
   extends: .docker
-  stage: finalize
+  stage: builder-cleanup
   tags:
     - docker-new
-  needs:
-    - job: spack-cache-cleanup
   when: always
   allow_failure: true
   script:
-    - apk add curl jq
+    - apk add --no-cache curl jq
     - |
       remove_builder() {
         echo "Removing BuildKit builder $1"
