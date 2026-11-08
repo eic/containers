@@ -625,7 +625,9 @@ user_spack_environment:
     # Skip for epic or EICrecon trigger
     - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
       when: never
-    - when: always
+    # on_success, not always: without a successful eic-manifest the image below
+    # (eic_ci:pipeline-N-default) does not exist, so the job could only fail with "not found"
+    - when: on_success
   needs:
     - job: version
     - job: eic-ci-manifest
@@ -650,7 +652,9 @@ user_spack_environment:
     # Only eic_ci container is built for external trigger
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
       when: never
-    - when: always
+    # on_success, not always: without a successful eic-manifest the image below
+    # (eic_dev_cuda:pipeline-N-default) does not exist
+    - when: on_success
   needs:
     - job: version
     - job: eic-manifest
