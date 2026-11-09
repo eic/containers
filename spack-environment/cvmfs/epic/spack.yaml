@@ -3,9 +3,13 @@ spack:
   - ../spack.lock
   - ../../concretizer.yaml
   - ../../config.yaml
-  - ../../packages.yaml
+  - path: ../../packages_darwin.yaml
+    when: platform == "darwin"
+  - path: ../../packages_linux.yaml
+    when: platform == "linux"
   - ../../packages_cvmfs_geant4data.yaml
   - ../../view.yaml
+  - ../../packages.yaml
   specs:
   - algorithms
   - edm4eic
