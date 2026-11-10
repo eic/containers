@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 piped_args=()
-if [ -p /dev/stdin ]; then
+## Piped input is a script to run — unless a command is given, which keeps
+## its stdin (an MCP client talks to `eic-mcp run` over that pipe).
+if [ $# -eq 0 ] && [ -p /dev/stdin ]; then
   # If we want to read the input line by line
   while IFS= read line; do
     piped_args+=("${line}")
