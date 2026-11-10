@@ -34,7 +34,7 @@ packages:
   acts:
     require:
     - '@47.7.0'
-    - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
+    - cxxstd=23 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
       when: '^dd4hep %gcc'
@@ -70,7 +70,7 @@ packages:
     - +atomic +chrono +context +date_time +exception +fiber +filesystem +graph
     - +iostreams +locale +log +math +program_options +python +random +regex
     - +serialization +system +test +thread +timer +wave
-    - cxxstd=20
+    - cxxstd=23
   c:
     prefer:
     - gcc
@@ -101,7 +101,7 @@ packages:
   clhep:
     require:
     - '@2.4.7.2'
-    - cxxstd=20
+    - cxxstd=23
   cli11:
     require:
     - '@2.4.2:'
@@ -134,6 +134,7 @@ packages:
   dd4hep:
     require:
     - '@1.38'
+    - cxxstd=23
     - +ddg4 +ddcad +edm4hep +g4hepem +hepmc3 +xercesc
     - any_of: [+ddeve +utilityapps, -ddeve -utilityapps] # FIXME ^root +x +opengl when +utilityapps
   doxygen:
@@ -151,11 +152,12 @@ packages:
   edm4eic:
     require:
     - '@8.11.0' # EDM4EIC_VERSION
+    # edm4eic Spack recipe only supports up to cxxstd=20 at this point
     - cxxstd=20
   edm4hep:
     require:
     - '@1.1'
-    - cxxstd=20
+    - cxxstd=23
   egl:
     buildable: False
     externals:
@@ -208,7 +210,7 @@ packages:
   fmt:
     require:
     - '@11.2.0:11'
-    - +shared cxxstd=20
+    - +shared cxxstd=23
   fortran:
     prefer:
     - gcc
@@ -256,7 +258,7 @@ packages:
   geant4:
     require:
     - '@11.4.1.east'
-    - cxxstd=20 -vecgeom +threads -vtk
+    - cxxstd=23 -vecgeom +threads -vtk
     - any_of: [+opengl +qt +x11, -opengl -qt -x11]
   geant4-data:
     require:
@@ -458,7 +460,7 @@ packages:
   podio:
     require:
     - '@1.8'
-    - cxxstd=20
+    - cxxstd=23
     - +arrow +datasource +parquet +rntuple
     package_attributes:
       run_tests: true
@@ -671,7 +673,7 @@ packages:
   root:
     require:
     - '@6.40.04'
-    - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
+    - cxxstd=23 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
   rucio-eic-mcp-server:
     require:
@@ -679,6 +681,7 @@ packages:
   sherpa:
     require:
     - '@3.0.3'
+    # sherpa Spack recipe only supports up to cxxstd=20 at this point
     - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root ~internal_pdfs +ipo +lhapdf +lhole +mpi +openloops +pythia +python ~recola +rivet +root ~ufo
   simphony:
     require:
@@ -743,10 +746,11 @@ packages:
     - '@2'
   xerces-c:
     require:
-    - cxxstd=20
+    - cxxstd=23
   xrootd:
     require:
     - '@5.7.0:'
+    # xrootd Spack recipe only supports up to cxxstd=20 at this point
     - cxxstd=20 -davix +python +scitokens-cpp
   xrootd-mcp-server:
     require:
