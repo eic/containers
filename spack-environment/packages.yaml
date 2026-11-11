@@ -92,6 +92,7 @@ packages:
   celeritas:
     require:
     - '@0.7:'
+    - cxxstd=23
     - +covfie +geant4 +hepmc3  +vecgeom
     - one_of: [~cuda +root, +cuda +ipo ~root]
   cernlib:
@@ -152,8 +153,7 @@ packages:
   edm4eic:
     require:
     - '@8.11.0' # EDM4EIC_VERSION
-    # edm4eic Spack recipe only supports up to cxxstd=20 at this point
-    - cxxstd=20
+    - cxxstd=23
   edm4hep:
     require:
     - '@1.1'
@@ -744,6 +744,7 @@ packages:
   vecgeom:
     require:
     - '@2'
+    - cxxstd=23
   xerces-c:
     require:
     - cxxstd=23

@@ -62,7 +62,7 @@ packages:
   root:
     require:
     - '@6.40.04'
-    - cxxstd=23 +fftw +fortran +gdml +http +python +root7 +tmva
+    - cxxstd=23 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
 ```
 
