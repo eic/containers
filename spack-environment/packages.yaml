@@ -750,9 +750,8 @@ packages:
     - cxxstd=23
   xrootd:
     require:
-    - '@5.7.0:'
-    # xrootd Spack recipe only supports up to cxxstd=20 at this point
-    - cxxstd=20 -davix +python +scitokens-cpp
+    - '@6:'
+    - cxxstd=23 -davix +python +scitokens-cpp
   xrootd-mcp-server:
     require:
     - '@0.2.2:'

@@ -26,6 +26,7 @@ cdde9c041f9c64ef893077a7637d3a297736d8dc
 b3bdf0943883cbeba1f3c5babea834fd113007bc
 8d5fa81819ae39f15ca044a0196431e2a26dce3f
 98d17e1985a67eea97af58498bbad42642351d0c
+a16a9da0b03b4050b9a938c6a5909ffc9add4081
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -50,3 +51,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## b3bdf0943883cbeba1f3c5babea834fd113007bc: cli11: new version 2.72, restore precompiled to true, remove redundant install
 ## 8d5fa81819ae39f15ca044a0196431e2a26dce3f: celeritas: add new variants, refactor packages, patch rocm
 ## 98d17e1985a67eea97af58498bbad42642351d0c: celeritas: add C++23 support and CUDA version conflicts
+## a16a9da0b03b4050b9a938c6a5909ffc9add4081: xrootd: allow cxxstd=23 for v6
