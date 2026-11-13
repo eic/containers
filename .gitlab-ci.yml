@@ -268,16 +268,20 @@ status:pending:
     # volume buildx_buildkit_${BUILDER_NAME}0_state on the runner host, so all jobs
     # using the same BUILDER_NAME share one BuildKit instance.  `buildx create` only
     # records the builder in this job container's buildx config (fresh in every job);
-    # concurrent jobs of a pipeline may race to create the BuildKit container at
-    # bootstrap, hence the bootstrap retries.  A job retried after clean_builder has
-    # removed the container re-creates it here (empty; layers come from the registry
-    # cache).
-    - docker buildx create context --name "${BUILDER_NAME}" --driver docker-container --use
-        || docker buildx use "${BUILDER_NAME}"
-    - for attempt in 1 2 3 ; do
-        docker buildx inspect --bootstrap "${BUILDER_NAME}" && break ;
-        [ "${attempt}" -lt 3 ] || exit 1 ;
-        sleep 15 ;
+    # concurrent jobs of a pipeline (e.g. base and base-cuda) race to create the
+    # BuildKit container.  `buildx create` itself connects to an existing running
+    # container to list workers; if another job has just started it and buildkitd is
+    # not yet listening, `buildx create` fails and drops the builder from this job's
+    # config (so `buildx use` cannot recover).  Hence both create and bootstrap are
+    # retried; on a retry after a successful create, `create` fails on the existing
+    # name and `use` selects it.  A job retried after clean_builder has removed the
+    # container re-creates it here (empty; layers come from the registry cache).
+    - for attempt in 1 2 3 4 5 ; do
+        { docker buildx create context --name "${BUILDER_NAME}" --driver docker-container --use
+          || docker buildx use "${BUILDER_NAME}" ; }
+        && docker buildx inspect --bootstrap "${BUILDER_NAME}" && break ;
+        [ "${attempt}" -lt 5 ] || exit 1 ;
+        sleep 10 ;
       done
     - docker buildx ls
     - echo $DOCKER_HOST
@@ -1000,7 +1004,9 @@ clean_builder:docker-new:
         | sort -u \
         | while read -r pipeline_id ; do
           [ "${pipeline_id}" = "${CI_PIPELINE_ID}" ] && continue
-          status=$(curl --silent -L "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}" | jq -r ".status")
+          ## A failed, slow or non-JSON API response leaves the status empty (builder
+          ## kept) instead of aborting the loop over the remaining builders
+          status=$(curl --silent --fail --max-time 30 -L "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}" | jq -r ".status" 2>/dev/null || true)
           echo "Builder builder-${pipeline_id}: pipeline ${status:-undetermined}"
           case "${status}" in
             success|failed|canceled|skipped) remove_builder "builder-${pipeline_id}" ;;
