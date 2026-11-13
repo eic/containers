@@ -457,7 +457,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@1.8'
+    - '@1.9'
     - cxxstd=20
     - +arrow +datasource +parquet +rntuple
     package_attributes:
