@@ -790,13 +790,18 @@ benchmarks:physics:nightly:
     project: EIC/benchmarks/physics_benchmarks
     strategy: depend
 
+## generator_benchmarks only run in eic_xl, which eic-manifest tags (not run for epic/EICrecon triggers).
 benchmarks:generator:default:
   extends: .benchmarks:default
   rules:
-   - if: '$CI_PIPELINE_SOURCE != "schedule"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
-    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+  needs:
+    - job: version
+    - job: eic-manifest
   trigger:
     project: EIC/benchmarks/generator_benchmarks
     strategy: depend
@@ -804,11 +809,15 @@ benchmarks:generator:default:
 benchmarks:generator:nightly:
   extends: .benchmarks:nightly
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
     - !reference ['.nightly', rules]
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
   variables:
-    BENCHMARKS_CONTAINER: eic_ci
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+  needs:
+    - job: version
+    - job: eic-manifest
   trigger:
     project: EIC/benchmarks/generator_benchmarks
     strategy: depend
