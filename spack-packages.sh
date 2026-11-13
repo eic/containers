@@ -27,6 +27,8 @@ b3bdf0943883cbeba1f3c5babea834fd113007bc
 8d5fa81819ae39f15ca044a0196431e2a26dce3f
 98d17e1985a67eea97af58498bbad42642351d0c
 a16a9da0b03b4050b9a938c6a5909ffc9add4081
+ef2f12ccc380be69b8533ae69a8d5a625ca72675
+540660f7c365ef3a568c7d6766da4992a211cfcb
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -52,3 +54,5 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 8d5fa81819ae39f15ca044a0196431e2a26dce3f: celeritas: add new variants, refactor packages, patch rocm
 ## 98d17e1985a67eea97af58498bbad42642351d0c: celeritas: add C++23 support and CUDA version conflicts
 ## a16a9da0b03b4050b9a938c6a5909ffc9add4081: xrootd: allow cxxstd=23 for v6
+## ef2f12ccc380be69b8533ae69a8d5a625ca72675: sherpa: add v3.0.4, v3.0.5; limit swig
+## 540660f7c365ef3a568c7d6766da4992a211cfcb: sherpa: support cxxstd=23; require mpi +fortran; conflicts %flang
