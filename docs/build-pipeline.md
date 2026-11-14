@@ -201,6 +201,46 @@ Pre-built binaries are stored in OCI registries:
 - **Read-only**: `oci://ghcr.io/eic/spack-{version}` - Public buildcache
 - **Write**: Configured via secret `mirrors.yaml` mount during builds
 
+## Reproducibility
+
+The builds follow [reproducible-builds.org](https://reproducible-builds.org/docs/) where this is
+cheap, so that identical inputs give identical images as far as possible:
+
+| What | Base images (`containers/debian/Dockerfile`) | EIC images (`containers/eic/Dockerfile`) |
+|---|---|---|
+| [`SOURCE_DATE_EPOCH`](https://reproducible-builds.org/docs/source-date-epoch/) | Monday 00:00 UTC of the `BUILDWEEK` ISO week | commit time of this repository |
+| Image config and history timestamps | `SOURCE_DATE_EPOCH` | `SOURCE_DATE_EPOCH` |
+| File timestamps in new layers | clamped to `SOURCE_DATE_EPOCH` (`rewrite-timestamp=true`) | not rewritten |
+| Cherry-pick commits in the Spack repositories | fixed author and committer dates, so reproducible hashes | n/a |
+| apt/dpkg logs, ldconfig and debconf caches | removed in each apt step | n/a |
+
+Both values can be overridden by setting `SOURCE_DATE_EPOCH` in the environment of
+`scripts/build-base.sh` or `scripts/build-eic.sh`.
+
+Notes:
+- `BUILDWEEK` is `date +%Gw%V`, the ISO week-numbering year with the ISO week, so the last days
+  of December and the first days of January map to the correct week.
+- The base Dockerfile declares `ARG SOURCE_DATE_EPOCH` right after `ARG BUILDWEEK`. The value is
+  derived from `BUILDWEEK`, so it only changes cache keys when `BUILDWEEK` does.
+- The EIC Dockerfile must not declare `ARG SOURCE_DATE_EPOCH`. Undeclared, the build argument only
+  sets image metadata: it is not visible to `RUN` steps and does not enter their cache keys, so a
+  new commit does not invalidate the layer cache.
+- EIC images do not use `rewrite-timestamp`, which BuildKit leaves off by default "due to the
+  overhead of rewriting image layers": it re-tars every new layer at export, and the rewritten
+  image blobs can no longer be shared with the registry layer cache blobs. Inherited base layers are
+  never rewritten.
+- Not reproducible yet:
+  - Package versions installed by apt. `apt-get` installs what the archive serves at build time,
+    so a rebuild later in the same week can get newer packages. The
+    [SOURCE_DATE_EPOCH documentation](https://reproducible-builds.org/docs/source-date-epoch/#apt-get)
+    suggests pinning the Debian and Ubuntu archives to `snapshot.debian.org` /
+    `snapshot.ubuntu.com` at `SOURCE_DATE_EPOCH`, e.g. with
+    [repro-sources-list.sh](https://github.com/reproducible-containers/repro-sources-list.sh).
+    The third-party repositories (apt.llvm.org, NVIDIA's CUDA repository) have no snapshots.
+  - The `.git` directories of the Spack repositories: the index records file metadata of the
+    checkout, and the clone contains the default branch history at clone time.
+  - Python bytecode written while Spack runs.
+
 ## Workflow Triggers
 
 | Trigger | Behavior |
