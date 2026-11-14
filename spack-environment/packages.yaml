@@ -53,7 +53,7 @@ packages:
     - +root +zlib
   algorithms:
     require:
-    - '@2.0.0'
+    - '@2.2.0'
   arrow:
     require:
     - '@22:'
