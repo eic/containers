@@ -23,6 +23,7 @@ c322aa993ae106492bdb28333b56c5682a704027
 cdde9c041f9c64ef893077a7637d3a297736d8dc
 80fbeb0fc63775b3ea766acda51a9b779e8a008a
 26c549b73602f7493cc7bcc142094cbfc7dbee93
+f2cd288e571100d84cc162270b4a8655bfda512c
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -43,3 +44,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## cdde9c041f9c64ef893077a7637d3a297736d8dc: acts: add v47.0.0 through v48.3.0
 ## 80fbeb0fc63775b3ea766acda51a9b779e8a008a: py-pip: add v26.2.1
 ## 26c549b73602f7493cc7bcc142094cbfc7dbee93: py-pip: add v26.2.2
+## f2cd288e571100d84cc162270b4a8655bfda512c: podio: Add v1.9
