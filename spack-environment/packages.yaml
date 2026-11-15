@@ -750,7 +750,7 @@ packages:
   xrootd:
     require:
     - '@6:'
-    - cxxstd=23 -davix +python +scitokens-cpp
+    - cxxstd=23 +python +scitokens-cpp
   xrootd-mcp-server:
     require:
     - '@0.2.2:'
