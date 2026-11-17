@@ -13,13 +13,16 @@ read -r -d '' SPACK_CHERRYPICKS <<- \
 292b0dcaba3b2a5e3f9668d205d39fee2c715721
 678e506a95b319c573ba7e84703b06d7275ab80e
 0971885764f8d75ff838b4ab45f692a762888821
+0843dbce8d0182ba33e0d7ccf594260e6549adc4
 ---
 ## Optional hash table with comma-separated file list
 read -r -d '' SPACK_CHERRYPICKS_FILES <<- \
 --- || true
+[0843dbce8d0182ba33e0d7ccf594260e6549adc4]=lib/spack/spack/solver/asp.py,lib/spack/spack/solver/concretize.lp
 ---
 ## Ref: https://github.com/spack/spack/commit/[hash]
 ## [hash]: [description]
 ## 292b0dcaba3b2a5e3f9668d205d39fee2c715721: fix: write created time field with OCI buildcache config
 ## 678e506a95b319c573ba7e84703b06d7275ab80e: fix: don't map prefix to view root for pkgs excluded from view
 ## 0971885764f8d75ff838b4ab45f692a762888821: lock.py: fall back to read-only open on EROFS
+## 0843dbce8d0182ba33e0d7ccf594260e6549adc4: externals: use variant values allowed by the external version
