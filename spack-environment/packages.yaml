@@ -87,7 +87,8 @@ packages:
     - +fc+ft+X+pdf+gobject build_system=meson
   catch2:
     require:
-    - '@3.4.0:'
+    - '@3.5.0:'
+    - cxxstd=23
     - -ipo
   celeritas:
     require:
