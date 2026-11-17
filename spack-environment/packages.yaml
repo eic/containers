@@ -716,6 +716,7 @@ packages:
   spdlog:
     require:
     - '@1.15.2:'
+    - cxxstd=20
   stow:
     require:
     - '@2.3.1:'
