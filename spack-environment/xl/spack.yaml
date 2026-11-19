@@ -144,6 +144,7 @@ spack:
   - strace
   - uproot-mcp-server
   - valgrind
+  - vc
   - xeyes
   - xrootd
   - xrootd-mcp-server
