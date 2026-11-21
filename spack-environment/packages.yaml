@@ -339,6 +339,9 @@ packages:
   k4fwcore:
     require:
     - '@1.5'
+  kfparticle:
+    require:
+    - '@1.1-alice10'
   lager:
     require:
     - '@3.7'

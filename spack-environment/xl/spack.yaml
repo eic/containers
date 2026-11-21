@@ -57,6 +57,7 @@ spack:
   - iwyu
   - jana2
   - just
+  - kfparticle
   - lager
   - lcov
   - lhapdf

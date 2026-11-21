@@ -25,6 +25,7 @@ cdde9c041f9c64ef893077a7637d3a297736d8dc
 26c549b73602f7493cc7bcc142094cbfc7dbee93
 f2cd288e571100d84cc162270b4a8655bfda512c
 3559ba1cb267e9d8f184f668d107b2a4a0e56c06
+37320baaa07a886da195c67ef1c3029b2b24e0c7
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -47,3 +48,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 26c549b73602f7493cc7bcc142094cbfc7dbee93: py-pip: add v26.2.2
 ## f2cd288e571100d84cc162270b4a8655bfda512c: podio: Add v1.9
 ## 3559ba1cb267e9d8f184f668d107b2a4a0e56c06: osg-ca-certs: add v1.148.igtf.1.148
+## 37320baaa07a886da195c67ef1c3029b2b24e0c7: kfparticle: new package
