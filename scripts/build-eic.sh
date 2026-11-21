@@ -325,8 +325,12 @@ for build_type in "${BUILD_TYPES[@]}"; do
   fi
 
   ## Tag with architecture-specific tag for parallel benchmark execution
-  ## (CI only, and only for final stage builds that produce runnable images)
-  if [ "${CI_MODE}" != "local" ] && [ "${BUILD_TARGET}" = "final" ]; then
+  ## (GitHub Actions only, where capybara-cross-arch.yml pulls it, and only for final
+  ## stage builds that produce runnable images). Not on GitLab CI: nothing there uses
+  ## it, and imagetools create wraps it in a one-entry OCI index (no --prefer-index=false),
+  ## for which the GitLab registry reports no created_at or size, so cleanup policies
+  ## never expire it.
+  if [ "${CI_MODE}" = "github" ] && [ "${BUILD_TARGET}" = "final" ]; then
     metadata_file="${METADATA_FILE%.json}-${build_type}.json"
     if [ -f "${metadata_file}" ]; then
       DIGEST=$(jq -r '."containerimage.digest" // empty' "${metadata_file}")
