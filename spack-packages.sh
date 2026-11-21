@@ -7,7 +7,7 @@ SPACKPACKAGES_ORGREPO="spack/spack-packages"
 ## Note: nightly builds will use e.g. develop
 ## Note: when changing this, also make new buildcache public
 ## (default is only visible with internal authentication)
-SPACKPACKAGES_VERSION="v2026.10.0"
+SPACKPACKAGES_VERSION="v2026.10.1"
 
 ## Space-separated list of spack-packages cherry-picks
 read -r -d '' SPACKPACKAGES_CHERRYPICKS <<- \
@@ -18,11 +18,7 @@ fa11df3be41f58bac19b73346422e06b103ee5b5
 c322aa993ae106492bdb28333b56c5682a704027
 9007ffd30a17fdb978b63fb55d7bca481031ca47
 39191607781ae06888df8cc178f20cd762a0e806
-27281f83a0255d09167c5e047c16cc5229aa77c4
-7415ba8e91ec850dad27f91df74ae6c6b18ff1a0
 cdde9c041f9c64ef893077a7637d3a297736d8dc
-80fbeb0fc63775b3ea766acda51a9b779e8a008a
-26c549b73602f7493cc7bcc142094cbfc7dbee93
 f2cd288e571100d84cc162270b4a8655bfda512c
 3559ba1cb267e9d8f184f668d107b2a4a0e56c06
 ---
@@ -40,10 +36,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## c322aa993ae106492bdb28333b56c5682a704027: celeritas: depends_on covfie ~cuda, vecgeom ~cuda (context for celeritas 0.7)
 ## 9007ffd30a17fdb978b63fb55d7bca481031ca47: celeritas: new version 0.7
 ## 39191607781ae06888df8cc178f20cd762a0e806: g4adept: add v0.3.5, v0.4.1
-## 27281f83a0255d09167c5e047c16cc5229aa77c4: py-certifi: add v2026.10.19
-## 7415ba8e91ec850dad27f91df74ae6c6b18ff1a0: ca-certificates-mozilla: add v2026-10-20, deprecate older versions
 ## cdde9c041f9c64ef893077a7637d3a297736d8dc: acts: add v47.0.0 through v48.3.0
-## 80fbeb0fc63775b3ea766acda51a9b779e8a008a: py-pip: add v26.2.1
-## 26c549b73602f7493cc7bcc142094cbfc7dbee93: py-pip: add v26.2.2
 ## f2cd288e571100d84cc162270b4a8655bfda512c: podio: Add v1.9
 ## 3559ba1cb267e9d8f184f668d107b2a4a0e56c06: osg-ca-certs: add v1.148.igtf.1.148
