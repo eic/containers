@@ -5,9 +5,7 @@ variables:
   DOCKER_IMAGE: docker.io/docker:28.3.3
   SINGULARITY_IMAGE: quay.io/singularity/singularity:v3.11.5
 
-  ## CUDA version and container operating system
-  CUDA_VERSION: 12.8.2
-  CUDA_OS: ubuntu24.04
+  ## CUDA version and container operating system are set in cuda.sh
 
   ## Default versions are specified in packages.yaml but can be overridden
   EDM4EIC_VERSION: ""
@@ -28,17 +26,9 @@ variables:
   ## Number of jobs to start during container builds
   JOBS: 32
 
-  ## Compressed image size caps (GiB).  Fail the build if a final image exceeds
-  ## these limits to catch regressions early (e.g. accidental Spack-built LLVM).
-  ## To update: measure the current master-tag compressed image sizes using
-  ## registry or CI tooling, add ~15% headroom, round up, and update here and
-  ## in .github/workflows/build-push.yml env.
-  SIZE_LIMIT_DEBIAN_STABLE_BASE_GIB: "0.9"
-  SIZE_LIMIT_EIC_CI_GIB: "3.1"
-  SIZE_LIMIT_EIC_XL_GIB: "4.7"
-  SIZE_LIMIT_EIC_TF_GIB: "6.1"
-  SIZE_LIMIT_EIC_CUDA_GIB: "8.1"
-  SIZE_LIMIT_EIC_DEV_CUDA_GIB: "10.9"
+  ## Compressed image size caps (GiB) live in image-size-limits.sh, which the
+  ## base and eic jobs source below.  They are shared with the GitHub Actions
+  ## workflows rather than duplicated here.
 
   ## is this nightly or not?
   NIGHTLY: ""
@@ -53,6 +43,14 @@ variables:
 
   ## Internal tag used for the CI
   INTERNAL_TAG: "pipeline-${CI_PIPELINE_ID}"
+
+  ## BuildKit builder instance (docker-container driver) used by the build jobs.
+  ## One instance per pipeline, shared by all build jobs of that pipeline and
+  ## removed by clean_builder at the end.  Its state (layers and cache mounts:
+  ## ccache, spack sources, concretization cache) therefore starts empty in every
+  ## pipeline; layers come from the registry cache (--cache-from).  Set to
+  ## "builder" to use the former persistent instance shared across pipelines.
+  BUILDER_NAME: "builder-${CI_PIPELINE_ID}"
 
   PIPELINE_NAME: "$CI_COMMIT_TITLE"
 
@@ -72,6 +70,7 @@ stages:
   - benchmarks
   - test
   - finalize
+  - builder-cleanup ## remove the per-pipeline BuildKit builder (after all finalize jobs)
   - waterfall
   - status-report
 
@@ -117,6 +116,8 @@ nvidia-smi:
   image: nvidia/cuda:${CUDA_VERSION}-base-${CUDA_OS}
   tags:
     - gpu
+  needs:
+    - version
   variables:
     NVIDIA_DISABLE_REQUIRE: "true"
   script:
@@ -140,15 +141,14 @@ version:
         NIGHTLY_TAG="${VERSION}-nightly"
         EXPORT_TAG="${VERSION}"
         DH_PUSH=""
-      elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ]; then
-        if [[ "${GITHUB_REPOSITORY}" == "eic/containers" ]] ; then
-          VERSION="unstable-mr-${GITHUB_PR}"
-          NIGHTLY_TAG="${VERSION}-nightly"
-          EXPORT_TAG="${VERSION}"
-        else
-          VERSION="${CI_COMMIT_BRANCH}"
-          GH_PUSH=""
-        fi
+      elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ] && [[ "${GITHUB_REPOSITORY}" == "eic/containers" ]] && [ -n "${GITHUB_PR}" ]; then
+        VERSION="unstable-mr-${GITHUB_PR}"
+        NIGHTLY_TAG="${VERSION}-nightly"
+        EXPORT_TAG="${VERSION}"
+        DH_PUSH=""
+      elif [ "x${CI_PIPELINE_SOURCE}" = "xtrigger" ] && [[ "${GITHUB_REPOSITORY}" != "eic/containers" ]]; then
+        VERSION="${CI_COMMIT_BRANCH}"
+        GH_PUSH=""
         DH_PUSH=""
       elif [[ "$CI_COMMIT_TAG" =~ ^v[0-9.]+\.[0-9]+\.[0-9]+ ]]; then
         VERSION="${CI_COMMIT_TAG:1}"
@@ -158,10 +158,10 @@ version:
           grep -- "- epic@${GEOM_VERSION}" "${ENV_FILE}" >/dev/null \
             || ( echo "Unable to locate epic release package for ${GEOM_VERSION} in ${ENV_FILE}"; exit 1; )
         done
-      elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-\(alpha\|beta\|stable\) ]]; then
+      elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-alpha ]] || [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-beta ]] || [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-stable ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
         EXPORT_TAG="${VERSION}"
-      elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-[a-z]+-\(alpha\|beta\|stable\) ]]; then
+      elif [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-[a-z]+-alpha ]] || [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-[a-z]+-beta ]] || [[ "$CI_COMMIT_BRANCH" =~ ^v[0-9.]+\.[0-9]+-[a-z]+-stable ]]; then
         VERSION="${CI_COMMIT_BRANCH:1}"
         EXPORT_TAG="${VERSION}"
       elif [[ "$CI_COMMIT_BRANCH" =~ ^master$ ]]; then
@@ -177,6 +177,9 @@ version:
       echo "EXPORT_TAG=$EXPORT_TAG" >> build.env
       echo "DH_PUSH=$DH_PUSH" >> build.env
       echo "GH_PUSH=$GH_PUSH" >> build.env
+      . ./cuda.sh
+      echo "CUDA_VERSION=$CUDA_VERSION" >> build.env
+      echo "CUDA_OS=$CUDA_OS" >> build.env
       cat build.env
   artifacts:
     reports:
@@ -261,9 +264,25 @@ status:pending:
         done ;
       fi
     - docker context create context
-    # The docker-container cache persistence applies to builders of the same name,
-    # so do not change the name to something that has the pipeline or job id.
-    - docker buildx create context --name builder --driver docker-container --bootstrap --use
+    # The builder state lives in the container buildx_buildkit_${BUILDER_NAME}0 and
+    # volume buildx_buildkit_${BUILDER_NAME}0_state on the runner host, so all jobs
+    # using the same BUILDER_NAME share one BuildKit instance.  `buildx create` only
+    # records the builder in this job container's buildx config (fresh in every job);
+    # concurrent jobs of a pipeline (e.g. base and base-cuda) race to create the
+    # BuildKit container.  `buildx create` itself connects to an existing running
+    # container to list workers; if another job has just started it and buildkitd is
+    # not yet listening, `buildx create` fails and drops the builder from this job's
+    # config (so `buildx use` cannot recover).  Hence both create and bootstrap are
+    # retried; on a retry after a successful create, `create` fails on the existing
+    # name and `use` selects it.  A job retried after clean_builder has removed the
+    # container re-creates it here (empty; layers come from the registry cache).
+    - for attempt in 1 2 3 4 5 ; do
+        { docker buildx create context --name "${BUILDER_NAME}" --driver docker-container --use
+          || docker buildx use "${BUILDER_NAME}" ; }
+        && docker buildx inspect --bootstrap "${BUILDER_NAME}" && break ;
+        [ "${attempt}" -lt 5 ] || exit 1 ;
+        sleep 10 ;
+      done
     - docker buildx ls
     - echo $DOCKER_HOST
   after_script:
@@ -288,16 +307,18 @@ status:pending:
       when: never
     # For combined jobs (BUILD_TYPE != "nightly"), suppress nightly builds on stable branches
     # by overriding BUILD_TYPE to "default" so the job still runs for the default image
+    # (on_success, not always: when base images failed, base-manifest does not run and the
+    # pipeline-N base tags do not exist, so the build could only fail with "not found")
     - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-(alpha|beta|stable)/'
-      when: always
+      when: on_success
       variables:
         BUILD_TYPE: "default"
     - if: '$CI_COMMIT_BRANCH =~ /^v[0-9]+\.[0-9]+-[a-z]+-(alpha|beta|stable)/'
-      when: always
+      when: on_success
       variables:
         BUILD_TYPE: "default"
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'
-      when: always
+      when: on_success
       variables:
         BUILD_TYPE: "default"
     # Skip containers other than eic_ci for epic or EICrecon trigger
@@ -316,27 +337,9 @@ status:pending:
 ## TODO
 ## oneapi_runtime + eic_xl --> oneapi_prod
 
-base:
-  parallel:
-    matrix:
-#      - BASE_IMAGE: debian:testing-slim
-#        BUILD_IMAGE: debian_testing_base
-#        PLATFORM: linux/amd64,linux/arm64/v8
-      - BASE_IMAGE: debian:trixie-slim
-        BUILD_IMAGE: debian_stable_base
-        PLATFORM: linux/amd64
-#      - BASE_IMAGE: ubuntu:22.04
-#        BUILD_IMAGE: ubuntu_base
-#        PLATFORM: linux/amd64,linux/arm64/v8
-#      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
-#        BUILD_IMAGE: oneapi_base
-#        PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_OS}
-        BUILD_IMAGE: cuda_devel
-        PLATFORM: linux/amd64
-      - BASE_IMAGE: nvidia/cuda:${CUDA_VERSION}-runtime-${CUDA_OS}
-        BUILD_IMAGE: cuda_runtime
-        PLATFORM: linux/amd64
+## Debian and CUDA base images are separate jobs so that the critical path
+## (debian_stable_base --> eic_ci --> benchmarks) does not wait for the CUDA bases.
+.base:
   extends: .build
   stage: base
   variables:
@@ -348,6 +351,8 @@ base:
     - apk add git bash jq
     - bash scripts/build-base.sh
     - |
+      # Caps are defined once in image-size-limits.sh; see that file to change one.
+      . ./image-size-limits.sh
       LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${BUILD_IMAGE}" | tr '[:lower:]' '[:upper:]')_GIB"
       LIMIT=$(printenv "${LIMIT_VAR}" || true)
       if [ -n "${LIMIT}" ]; then
@@ -359,29 +364,127 @@ base:
         echo "No size limit configured for ${BUILD_IMAGE}, skipping check."
       fi
 
-base-manifest:
+base:
+  extends: .base
+  parallel:
+    matrix:
+#      - BASE_IMAGE: debian:testing-slim
+#        BUILD_IMAGE: debian_testing_base
+#        PLATFORM: linux/amd64,linux/arm64/v8
+      ## BASE_IMAGE for debian_stable_base is derived by scripts/build-base.sh from debian.sh
+      - BUILD_IMAGE: debian_stable_base
+        PLATFORM: linux/amd64
+#      - BASE_IMAGE: ubuntu:22.04
+#        BUILD_IMAGE: ubuntu_base
+#        PLATFORM: linux/amd64,linux/arm64/v8
+#      - BASE_IMAGE: intel/oneapi-hpckit:2022.3.0-devel-ubuntu20.04
+#        BUILD_IMAGE: oneapi_base
+#        PLATFORM: linux/amd64
+
+base-cuda:
+  extends: .base
+  rules:
+    # Only eic_ci (on debian_stable_base) is built for epic or EICrecon trigger
+    # pipelines, i.e. external triggers (CI_PIPELINE_SOURCE=="trigger") not from
+    # eic/containers; same condition as in .nightly.
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - when: on_success
+  parallel:
+    matrix:
+      ## BASE_IMAGE for cuda_* is derived by scripts/build-base.sh from cuda.sh
+      - BUILD_IMAGE: cuda_devel
+        PLATFORM: linux/amd64
+      - BUILD_IMAGE: cuda_runtime
+        PLATFORM: linux/amd64
+
+.base-manifest:
   extends: .docker
   stage: base-manifest
-  needs:
-    - version
-    - job: base
   script:
     - apk add bash jq
     - |
+      ## --prefer-index=false: copy the single-arch image manifest as-is instead of
+      ## wrapping it in a one-entry OCI index (the buildx default). GitLab derives a
+      ## tag's created_at (shown as "Published" and used by cleanup policies) from the
+      ## image config blob, which an index does not reference; see #428 and the
+      ## eicweb registry where every tag since #227 has created_at: null.
       for metadata_file in build-metadata-*.json; do
         BUILD_IMAGE="${metadata_file#build-metadata-}"; BUILD_IMAGE="${BUILD_IMAGE%.json}"
         CI_REGISTRY_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
         IMAGE_REPO="${CI_REGISTRY_PREFIX}/${BUILD_IMAGE}"
         DIGEST=$(jq -r '."containerimage.digest"' "${metadata_file}")
-        docker buildx imagetools create --tag "${IMAGE_REPO}:${INTERNAL_TAG}" "${IMAGE_REPO}@${DIGEST}"
+        docker buildx imagetools create --prefer-index=false --tag "${IMAGE_REPO}:${INTERNAL_TAG}" "${IMAGE_REPO}@${DIGEST}"
         if [ -n "${EXPORT_TAG}" ]; then
-          [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-          [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-          [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${CI_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${DH_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${GH_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${BUILD_IMAGE}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
         fi
       done
 
-eic:
+## base (debian_stable_base) always runs, so this need is not optional.
+base-manifest:
+  extends: .base-manifest
+  needs:
+    - version
+    - job: base
+
+## Same rules as base-cuda: a need on a job that is not in the pipeline is an error (#488).
+base-cuda-manifest:
+  extends: .base-manifest
+  rules:
+    # Only eic_ci (on debian_stable_base) is built for epic or EICrecon trigger
+    # pipelines, i.e. external triggers (CI_PIPELINE_SOURCE=="trigger") not from
+    # eic/containers; same condition as in .nightly.
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - when: on_success
+  needs:
+    - version
+    - job: base-cuda
+
+.eic:
+  rules:
+    - !reference ['.nightly', rules]
+    - when: on_success
+  extends: .build
+  stage: eic
+  retry: 2
+  variables:
+    ## scripts/build-eic.sh appends -<build_type>.json per loop iteration; drop ${BUILD_TYPE} from here
+    METADATA_FILE: "build-metadata-${BUILD_IMAGE}${ENV}.json"
+  script:
+    - apk add git bash coreutils jq
+    - bash scripts/build-eic.sh
+    - |
+      # Caps are defined once in image-size-limits.sh; see that file to change one.
+      . ./image-size-limits.sh
+      FULLNAME="${BUILD_IMAGE}${ENV}"
+      LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
+      LIMIT=$(printenv "${LIMIT_VAR}" || true)
+      if [ -n "${LIMIT}" ]; then
+        found=0
+        for metadata_file in "${METADATA_FILE%.json}"-*.json; do
+          [ -f "${metadata_file}" ] || continue
+          found=1
+          DIGEST=$(jq -r '."containerimage.digest"' "${metadata_file}")
+          scripts/check_image_size \
+            "${CI_REGISTRY}/${CI_PROJECT_PATH}/${FULLNAME}@${DIGEST}" \
+            "${LIMIT}"
+        done
+        if [ "${found}" -eq 0 ]; then
+          echo "ERROR: No metadata files found for ${FULLNAME} (expected ${METADATA_FILE%.json}-*.json)."
+          exit 1
+        fi
+      else
+        echo "No size limit configured for ${FULLNAME}, skipping check."
+      fi
+
+
+## Critical path to the benchmarks: only the eic_ci image is built here, so that
+## the benchmarks can start while the remaining images below are still building.
+eic-ci:
+  extends: .eic
   parallel:
     matrix:
       ## Build both default and nightly sequentially in one job to reuse the shared
@@ -389,6 +492,22 @@ eic:
       - BUILD_IMAGE: eic_
         ENV:
         - ci
+        BUILD_TYPE: "default,nightly"
+        BUILDER_IMAGE: debian_stable_base
+        RUNTIME_IMAGE: debian_stable_base
+        PLATFORM: linux/amd64
+  needs:
+    - version
+    - base-manifest
+
+eic:
+  extends: .eic
+  parallel:
+    matrix:
+      ## Build both default and nightly sequentially in one job to reuse the shared
+      ## base Docker stages (default concretization+installation) from BuildKit's layer cache.
+      - BUILD_IMAGE: eic_
+        ENV:
         - cvmfs
         - xl
         BUILD_TYPE: "default,nightly"
@@ -435,53 +554,27 @@ eic:
         BUILDER_IMAGE: cuda_devel
         RUNTIME_IMAGE: cuda_devel
         PLATFORM: linux/amd64
-  rules:
-    - !reference ['.nightly', rules]
-    - when: always
-  extends: .build
-  stage: eic
-  variables:
-    ## scripts/build-eic.sh appends -<build_type>.json per loop iteration; drop ${BUILD_TYPE} from here
-    METADATA_FILE: "build-metadata-${BUILD_IMAGE}${ENV}.json"
   needs:
     - version
     - base-manifest
-  script:
-    - apk add git bash coreutils jq
-    - bash scripts/build-eic.sh
-    - |
-      FULLNAME="${BUILD_IMAGE}${ENV}"
-      LIMIT_VAR="SIZE_LIMIT_$(printf '%s' "${FULLNAME}" | tr '[:lower:]' '[:upper:]')_GIB"
-      LIMIT=$(printenv "${LIMIT_VAR}" || true)
-      if [ -n "${LIMIT}" ]; then
-        found=0
-        for metadata_file in "${METADATA_FILE%.json}"-*.json; do
-          [ -f "${metadata_file}" ] || continue
-          found=1
-          DIGEST=$(jq -r '."containerimage.digest"' "${metadata_file}")
-          scripts/check_image_size \
-            "${CI_REGISTRY}/${CI_PROJECT_PATH}/${FULLNAME}@${DIGEST}" \
-            "${LIMIT}"
-        done
-        if [ "${found}" -eq 0 ]; then
-          echo "ERROR: No metadata files found for ${FULLNAME} (expected ${METADATA_FILE%.json}-*.json)."
-          exit 1
-        fi
-      else
-        echo "No size limit configured for ${FULLNAME}, skipping check."
-      fi
+    ## optional: base-cuda-manifest is skipped for epic/EICrecon triggers, where the .nightly
+    ## stable-branch rules can still create some eic jobs
+    - job: base-cuda-manifest
+      optional: true
 
-eic-manifest:
+.eic-manifest:
   extends: .docker
   stage: eic-manifest
-  needs:
-    - version
-    - job: eic
-      optional: true
   script:
     - apk add bash jq
     - |
+      ## --prefer-index=false: copy the single-arch image manifest as-is instead of
+      ## wrapping it in a one-entry OCI index (the buildx default). GitLab derives a
+      ## tag's created_at (shown as "Published" and used by cleanup policies) from the
+      ## image config blob, which an index does not reference; see #428 and the
+      ## eicweb registry where every tag since #227 has created_at: null.
       for metadata_file in build-metadata-*.json; do
+        [ -f "${metadata_file}" ] || continue
         ## Parse filename: build-metadata-<IMAGE_NAME>-<BUILD_TYPE>.json
         base="${metadata_file#build-metadata-}"; base="${base%.json}"
         BUILD_TYPE="${base##*-}"
@@ -489,24 +582,46 @@ eic-manifest:
         CI_REGISTRY_PREFIX="${CI_REGISTRY}/${CI_PROJECT_PATH}"
         IMAGE_REPO="${CI_REGISTRY_PREFIX}/${IMAGE_NAME}"
         DIGEST=$(jq -r '."containerimage.digest"' "${metadata_file}")
-        docker buildx imagetools create --tag "${IMAGE_REPO}:${INTERNAL_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+        docker buildx imagetools create --prefer-index=false --tag "${IMAGE_REPO}:${INTERNAL_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
         if [ -n "${EXPORT_TAG}" ]; then
           if [ "${BUILD_TYPE}" = "default" ]; then
-            [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-            [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
-            [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${CI_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${IMAGE_REPO}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${DH_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${GH_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}" "${IMAGE_REPO}@${DIGEST}"
           else
-            [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
-            [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
-            [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${CI_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${IMAGE_REPO}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${DH_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
+            [ -n "${GH_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${EXPORT_TAG}-${BUILD_TYPE}" "${IMAGE_REPO}@${DIGEST}"
           fi
         fi
         if [ "${BUILD_TYPE}" = "nightly" ] && [ -n "${NIGHTLY}" ]; then
-          [ -n "${CI_PUSH}" ] && docker buildx imagetools create --tag "${IMAGE_REPO}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
-          [ -n "${DH_PUSH}" ] && docker buildx imagetools create --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
-          [ -n "${GH_PUSH}" ] && docker buildx imagetools create --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${CI_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${IMAGE_REPO}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${DH_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${DH_REGISTRY}/${DH_REGISTRY_USER}/${IMAGE_NAME}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
+          [ -n "${GH_PUSH}" ] && docker buildx imagetools create --prefer-index=false --tag "${GH_REGISTRY}/${GH_REGISTRY_USER}/${IMAGE_NAME}:${NIGHTLY_TAG}" "${IMAGE_REPO}@${DIGEST}"
         fi
       done
+
+## Manifests for eic_ci only; the benchmarks depend on this job and not on eic-manifest.
+eic-ci-manifest:
+  extends: .eic-manifest
+  needs:
+    - version
+    - job: eic-ci
+
+## Manifests for all other images.
+eic-manifest:
+  extends: .eic-manifest
+  rules:
+    ## Only eic_ci is built for epic or EICrecon triggers
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    ## on_success (as eic-manifest on GitHub, and on master before the split): do not
+    ## tag or export any image when one of the eic builds failed
+    - when: on_success
+  needs:
+    - version
+    - job: eic
+      optional: true
 
 user_spack_environment:
   stage: benchmarks
@@ -514,10 +629,12 @@ user_spack_environment:
     # Skip for epic or EICrecon trigger
     - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
       when: never
-    - when: always
+    # on_success, not always: without a successful eic-manifest the image below
+    # (eic_ci:pipeline-N-default) does not exist, so the job could only fail with "not found"
+    - when: on_success
   needs:
     - job: version
-    - job: eic-manifest
+    - job: eic-ci-manifest
   image:
     name: ${CI_REGISTRY_IMAGE}/eic_ci:${INTERNAL_TAG}-default
   script:
@@ -539,7 +656,9 @@ user_spack_environment:
     # Only eic_ci container is built for external trigger
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
       when: never
-    - when: always
+    # on_success, not always: without a successful eic-manifest the image below
+    # (eic_dev_cuda:pipeline-N-default) does not exist
+    - when: on_success
   needs:
     - job: version
     - job: eic-manifest
@@ -608,7 +727,7 @@ eic_xl:singularity:nightly:
     BUILD_TYPE: default
   needs:
     - job: version
-    - job: eic-manifest
+    - job: eic-ci-manifest
 
 .benchmarks:nightly:
   extends: .benchmarks
@@ -616,7 +735,7 @@ eic_xl:singularity:nightly:
     BUILD_TYPE: nightly
   needs:
     - job: version
-    - job: eic-manifest
+    - job: eic-ci-manifest
 
 benchmarks:geoviewer:default:
   extends: .benchmarks:default
@@ -652,7 +771,7 @@ benchmarks:detector:nightly:
     project: EIC/benchmarks/detector_benchmarks
     strategy: depend
 
-benchmarks:phyiscs:default:
+benchmarks:physics:default:
   extends: .benchmarks:default
   rules:
    - if: '$CI_PIPELINE_SOURCE != "schedule"'
@@ -673,6 +792,38 @@ benchmarks:physics:nightly:
     BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
   trigger:
     project: EIC/benchmarks/physics_benchmarks
+    strategy: depend
+
+## generator_benchmarks only run in eic_xl, which eic-manifest tags (not run for epic/EICrecon triggers).
+benchmarks:generator:default:
+  extends: .benchmarks:default
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
+  variables:
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-default"
+  needs:
+    - job: version
+    - job: eic-manifest
+  trigger:
+    project: EIC/benchmarks/generator_benchmarks
+    strategy: depend
+
+benchmarks:generator:nightly:
+  extends: .benchmarks:nightly
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $GITHUB_REPOSITORY != "eic/containers"'
+      when: never
+    - !reference ['.nightly', rules]
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
+  variables:
+    BENCHMARKS_TAG: "${INTERNAL_TAG}-nightly"
+  needs:
+    - job: version
+    - job: eic-manifest
+  trigger:
+    project: EIC/benchmarks/generator_benchmarks
     strategy: depend
 
 df:
@@ -850,6 +1001,49 @@ spack-cache-cleanup:
         --target spack_cache_cleanup
         --file containers/eic/Dockerfile.spack-cache-cleanup
         .
+
+## Remove the per-pipeline BuildKit builder (see BUILDER_NAME).  This job is in its own
+## builder-cleanup stage without needs, so it only starts after every job of all earlier
+## stages, including spack-cache-cleanup in finalize, has finished.
+## Canceled pipelines never reach this stage, and a job retried after this job ran
+## re-creates the builder (see .build), which this job does not remove again; so also
+## remove the builders of other pipelines once those pipelines have finished.  A
+## pipeline with a retried job is running again, so its builder is kept until then.
+clean_builder:docker-new:
+  extends: .docker
+  stage: builder-cleanup
+  tags:
+    - docker-new
+  when: always
+  allow_failure: true
+  script:
+    - apk add --no-cache curl jq
+    - |
+      remove_builder() {
+        echo "Removing BuildKit builder $1"
+        docker rm --force "buildx_buildkit_${1}0" || true
+        docker volume rm --force "buildx_buildkit_${1}0_state" || true
+      }
+      ## This pipeline's builder (never a shared, non-per-pipeline one)
+      if [ "${BUILDER_NAME}" = "builder-${CI_PIPELINE_ID}" ]; then
+        remove_builder "${BUILDER_NAME}"
+      else
+        echo "Keeping builder ${BUILDER_NAME} (not per-pipeline)"
+      fi
+      ## Builders of other pipelines that have finished (e.g. canceled ones)
+      { docker ps --all --format '{{.Names}}' ; docker volume ls --format '{{.Name}}' ; } \
+        | sed -n -E 's/^buildx_buildkit_builder-([0-9]+)0(_state)?$/\1/p' \
+        | sort -u \
+        | while read -r pipeline_id ; do
+          [ "${pipeline_id}" = "${CI_PIPELINE_ID}" ] && continue
+          ## A failed, slow or non-JSON API response leaves the status empty (builder
+          ## kept) instead of aborting the loop over the remaining builders
+          status=$(curl --silent --fail --max-time 30 -L "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${pipeline_id}" | jq -r ".status" 2>/dev/null || true)
+          echo "Builder builder-${pipeline_id}: pipeline ${status:-undetermined}"
+          case "${status}" in
+            success|failed|canceled|skipped) remove_builder "builder-${pipeline_id}" ;;
+          esac
+        done
 
 waterfall:upload:
   stage: waterfall

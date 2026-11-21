@@ -67,6 +67,8 @@ All images support both `linux/amd64` and `linux/arm64` architectures through pa
 ├── spack-packages.sh           # Spack-packages version and cherry-picks
 ├── eic-spack.sh                # EIC-spack repository configuration
 ├── key4hep-spack.sh            # Key4HEP-spack repository configuration
+├── debian.sh                   # Debian release of the debian base image
+├── cuda.sh                     # CUDA version and OS of nvidia/cuda base images
 └── docs/                       # Documentation (Docsify site)
 ```
 
@@ -157,12 +159,12 @@ The GitHub Actions workflow (`build-push.yml`) runs on:
 - **Pull Request**: Against `master` branch
 - **Manual**: Via workflow_dispatch
 
-Job flow:
+Job flow (the GitLab CI pipeline uses the same job names; see `docs/build-pipeline.md`):
 1. `env` - Set environment outputs
-2. `base` (parallel per-arch) - Build `debian_stable_base`
-3. `base-manifest` - Create multi-arch manifest
-4. `eic` (parallel per-env and per-arch) - Build `eic_ci` and `eic_xl`
-5. `eic-manifest` - Create multi-arch manifests
+2. `base` (parallel per-arch) - Build `debian_stable_base`; `base-cuda` - Build `cuda_devel`, `cuda_runtime`
+3. `base-manifest`, `base-cuda-manifest` - Create multi-arch manifests
+4. `eic-ci` (parallel per-arch) - Build `eic_ci`; `eic` (in parallel with `eic-ci`) - Build `eic_xl` (and concretize `cuda`, `tf`)
+5. `eic-ci-manifest`, `eic-manifest` - Create multi-arch manifests
 
 #### GitLab CI Workflow (EICweb)
 
@@ -314,6 +316,11 @@ Update in `containers/debian/Dockerfile` with version-specific logic.
 - On GitHub Actions there is **no** buildcache cleanup workflow; ghcr.io
   buildcache tags accumulate. See issue #89 and PR #90
 - Buildcaches stored in GitLab registry at `eicweb.phy.anl.gov` (project ID 290)
+- On GitLab CI, each pipeline uses its own BuildKit builder instance
+  (`BUILDER_NAME`, default `builder-${CI_PIPELINE_ID}`), so builder state and
+  cache mounts start empty; Docker layers come from the registry layer cache.
+  The `clean_builder:docker-new` job removes it, and the builders of other
+  finished (e.g. canceled) pipelines, at the end of a pipeline
 
 ## Additional Resources
 

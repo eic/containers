@@ -1,10 +1,15 @@
 #!/bin/bash
 
-if [ ! -z ${EIC_SHELL_PREFIX} ]; then
-  if [  "$LD_LIBRARY_PATH" != *"${EIC_SHELL_PREFIX}/lib"* ]; then
-    export LD_LIBRARY_PATH=$EIC_SHELL_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-    export PATH=$EIC_SHELL_PREFIX/bin${PATH:+:$PATH}
-  fi
+## Prepend the eic-shell prefix to PATH and LD_LIBRARY_PATH, but only once.
+if [ -n "${EIC_SHELL_PREFIX}" ]; then
+  case ":${LD_LIBRARY_PATH}:" in
+    *":${EIC_SHELL_PREFIX}/lib:"*) ;;
+    *) export LD_LIBRARY_PATH="${EIC_SHELL_PREFIX}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" ;;
+  esac
+  case ":${PATH}:" in
+    *":${EIC_SHELL_PREFIX}/bin:"*) ;;
+    *) export PATH="${EIC_SHELL_PREFIX}/bin${PATH:+:${PATH}}" ;;
+  esac
 fi
 
 ## Disabled, as this causes issue with singularity which calls the script

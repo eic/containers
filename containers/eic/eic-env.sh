@@ -2,12 +2,14 @@
 
 for i in /etc/profile.d/*.sh; do
   if [ -r "$i" ]; then
+    # shellcheck source=/dev/null  # sourced at runtime, not resolvable statically
     . "$i"
   fi
 done
 
 ## default PS1 preamble in case we can't find better info
-PS1_PREAMBLE='eic-shell> '
+## note: must match the name used below; PS1 is built from ${ps1_preamble}
+ps1_preamble='eic-shell> '
 ## try to guess who we are
 ## note: we use sigils for the following cases:
 ## - no sigil for nightly builds (jug_xl> )
@@ -69,8 +71,14 @@ MYSHELL=$(ps -p $$ | awk '{print($4);}' | tail -n1)
 ## the singularity startup runs in plain sh which requires the
 ## if statement
 if [ "$MYSHELL" = "bash" ]; then
+  # `export -f` is a bashism and undefined in POSIX sh, which is exactly why
+  # it is guarded by the test above.  shellcheck judges the whole file by its
+  # #!/bin/sh shebang and cannot see that guard, so silence SC3045 here only.
+  # shellcheck disable=SC3045
   export -f ls
+  # shellcheck disable=SC3045
   export -f less
+  # shellcheck disable=SC3045
   export -f grep
 fi
 unset MYSHELL

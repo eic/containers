@@ -31,7 +31,8 @@ Options:
   --runtime-image IMG Runtime base image name (default: \$RUNTIME_IMAGE or debian_stable_base)
   --target STAGE      Docker build target stage (default: \$BUILD_TARGET or final)
   --platform PLATFORM Build platform, e.g. linux/amd64 (default: \$PLATFORM or linux/amd64)
-  --jobs N            Number of parallel Spack build jobs
+  --jobs N            Number of parallel Spack build jobs, passed as the JOBS build
+                      secret so it does not affect layer caching
                       (default: \$JOBS or \$(getconf _NPROCESSORS_ONLN))
   --base-tag TAG      Tag of the locally built base image to use (default: local); if the image
                       is not found in the local Docker daemon, ghcr.io/eic/ is used with tag
@@ -81,6 +82,16 @@ while [[ $# -gt 0 ]]; do
     *) echo "Unknown argument: $1" >&2; echo "Try 'bash scripts/build-eic.sh --help' for usage." >&2; exit 1 ;;
   esac
 done
+
+## JOBS ends up as `spack -c config:build_jobs:${JOBS}` in containers/eic/Dockerfile,
+## so only accept a positive integer (no empty value, whitespace or extra arguments).
+case "${JOBS}" in
+  ''|*[!0-9]*|0*)
+    echo "Invalid --jobs/JOBS value '${JOBS}': must be a positive integer." >&2
+    exit 1 ;;
+esac
+## Exported for --secret type=env,id=JOBS below
+export JOBS
 
 ## Source version files (only spack-packages version is needed for mirrors.yaml)
 source "${REPO_DIR}/spack-packages.sh"
@@ -144,12 +155,9 @@ fi
 
 ## Resolve SHAs (network calls — skipped if version is already a SHA)
 echo "Resolving git SHAs..."
-BENCHMARK_COM_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/common_bench master)
 BENCHMARK_DET_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/detector_benchmarks master)
 BENCHMARK_PHY_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/physics_benchmarks master)
-CAMPAIGNS_HEPMC3_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/simulation_campaign_hepmc3 main)
-CAMPAIGNS_CONDOR_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/job_submission_condor main)
-CAMPAIGNS_SLURM_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/job_submission_slurm main)
+BENCHMARK_GEN_SHA=$(sh "${REPO_DIR}/scripts/resolve_git_ref" eic/generator_benchmarks main)
 
 ## Compute per-ENV duplicate allowlist (independent of build type)
 case "${ENV}" in
@@ -214,11 +222,16 @@ for build_type in "${BUILD_TYPES[@]}"; do
     build_cmd+=(--load)
   fi
 
-  ## Cache sources: CI registry (if in CI) plus public ghcr.io/eic (GitLab and local modes)
+  ## Cache sources: only the CI system's own registry in CI (GitLab: eicweb; GitHub: ghcr.io),
+  ## the public ghcr.io/eic caches for local builds.  GitLab does not import the ghcr.io caches
+  ## written by GitHub Actions, so all cache records it can match come from eicweb builds.
   CACHE_KEY="${BUILD_IMAGE}${ENV}-${build_type}"
   BUILDCACHE_REPOS=()
-  [ "${CI_MODE}" != "local" ] && BUILDCACHE_REPOS+=("${CI_REGISTRY_PREFIX}")
-  [ "${CI_MODE}" != "github" ] && BUILDCACHE_REPOS+=("ghcr.io/eic")
+  if [ "${CI_MODE}" = "local" ]; then
+    BUILDCACHE_REPOS+=("ghcr.io/eic")
+  else
+    BUILDCACHE_REPOS+=("${CI_REGISTRY_PREFIX}")
+  fi
   for REPO in "${BUILDCACHE_REPOS[@]}"; do
     build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_COMMIT_REF_SLUG:-master}-${ARCH}")
     build_cmd+=(--cache-from "type=registry,ref=${REPO}/buildcache:${CACHE_KEY}-${CI_DEFAULT_BRANCH_SLUG:-master}-${ARCH}")
@@ -240,12 +253,9 @@ for build_type in "${BUILD_TYPES[@]}"; do
   build_cmd+=(--platform "${PLATFORM}")
 
   ## Build arguments
-  build_cmd+=(--build-arg "BENCHMARK_COM_SHA=${BENCHMARK_COM_SHA}")
   build_cmd+=(--build-arg "BENCHMARK_DET_SHA=${BENCHMARK_DET_SHA}")
   build_cmd+=(--build-arg "BENCHMARK_PHY_SHA=${BENCHMARK_PHY_SHA}")
-  build_cmd+=(--build-arg "CAMPAIGNS_HEPMC3_SHA=${CAMPAIGNS_HEPMC3_SHA}")
-  build_cmd+=(--build-arg "CAMPAIGNS_CONDOR_SHA=${CAMPAIGNS_CONDOR_SHA}")
-  build_cmd+=(--build-arg "CAMPAIGNS_SLURM_SHA=${CAMPAIGNS_SLURM_SHA}")
+  build_cmd+=(--build-arg "BENCHMARK_GEN_SHA=${BENCHMARK_GEN_SHA}")
 
   if [ "${CI_MODE}" != "local" ]; then
     build_cmd+=(--build-arg "DOCKER_REGISTRY=${CI_REGISTRY_PREFIX}/")
@@ -278,7 +288,6 @@ for build_type in "${BUILD_TYPES[@]}"; do
   build_cmd+=(--build-arg "RUNTIME_IMAGE=${RUNTIME_IMAGE}")
   build_cmd+=(--build-arg "ENV=${ENV}")
   build_cmd+=(--build-arg "SPACK_DUPLICATE_ALLOWLIST=${SPACK_DUPLICATE_ALLOWLIST}")
-  build_cmd+=(--build-arg "jobs=${JOBS}")
 
   ## Optional version overrides
   [ -n "${EDM4EIC_SHA}" ]  && build_cmd+=(--build-arg "EDM4EIC_SHA=${EDM4EIC_SHA}")
@@ -288,8 +297,9 @@ for build_type in "${BUILD_TYPES[@]}"; do
   ## Additional build contexts
   build_cmd+=(--build-context "spack-environment=spack-environment")
 
-  ## Secrets
+  ## Secrets (JOBS is a secret, not a build arg, so it does not enter cache keys)
   build_cmd+=(--secret "id=mirrors,src=${MIRRORS_YAML}")
+  build_cmd+=(--secret "type=env,id=JOBS,env=JOBS")
   if [ "${CI_MODE}" != "local" ]; then
     if [ -n "${CI_REGISTRY_USER}" ] && [ -n "${CI_REGISTRY_PASSWORD}" ]; then
       build_cmd+=(--secret "type=env,id=CI_REGISTRY_USER,env=CI_REGISTRY_USER")
@@ -315,8 +325,12 @@ for build_type in "${BUILD_TYPES[@]}"; do
   fi
 
   ## Tag with architecture-specific tag for parallel benchmark execution
-  ## (CI only, and only for final stage builds that produce runnable images)
-  if [ "${CI_MODE}" != "local" ] && [ "${BUILD_TARGET}" = "final" ]; then
+  ## (GitHub Actions only, where capybara-cross-arch.yml pulls it, and only for final
+  ## stage builds that produce runnable images). Not on GitLab CI: nothing there uses
+  ## it, and imagetools create wraps it in a one-entry OCI index (no --prefer-index=false),
+  ## for which the GitLab registry reports no created_at or size, so cleanup policies
+  ## never expire it.
+  if [ "${CI_MODE}" = "github" ] && [ "${BUILD_TARGET}" = "final" ]; then
     metadata_file="${METADATA_FILE%.json}-${build_type}.json"
     if [ -f "${metadata_file}" ]; then
       DIGEST=$(jq -r '."containerimage.digest" // empty' "${metadata_file}")

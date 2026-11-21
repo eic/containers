@@ -42,6 +42,7 @@ LABEL org.opencontainers.image.title="Electron-Ion Collider build concretization
 
 ## Copy our default environment
 COPY --from=spack-environment . /opt/spack-environment/
+COPY check-buildcache.py /usr/local/bin/check-buildcache.py
 ARG ENV=xl
 ENV SPACK_ENV=/opt/spack-environment/${ENV}
 ARG SPACK_FLAGS="--backtrace"
@@ -68,6 +69,10 @@ ARG TARGETPLATFORM
 # Open Container Initiative labels
 LABEL org.opencontainers.image.title="Electron-Ion Collider build installation image (default configuration, $TARGETPLATFORM)"
 
+## The number of parallel build jobs comes from the optional JOBS build secret,
+## not a build arg, so that it does not enter the layer cache keys (and the same
+## cache can serve builds with different JOBS, e.g. GitHub Actions and eicweb).
+
 # Installation (default environment)
 RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=cache,target=/var/cache/spack,sharing=locked           \
@@ -76,10 +81,23 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
+    --mount=type=secret,id=JOBS,env=JOBS,required=false \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+spack env activate --without-view --dir ${SPACK_ENV}
+rm -f /tmp/rebuild.txt
+spack python /usr/local/bin/check-buildcache.py "${SPACK_ENV}" /tmp/rebuild.txt
+if [ -s /tmp/rebuild.txt ]; then
+  missing=$(cat /tmp/rebuild.txt)
+  echo "Building missing spec(s): ${missing}"
+  spack ${SPACK_FLAGS} ${JOBS:+-c config:build_jobs:${JOBS}} install ${SPACK_INSTALL_FLAGS} ${missing}
+elif [ -f /tmp/rebuild.txt ]; then
+  echo "All packages in default environment already exist in buildcache. Skipping build."
+else
+  echo "Error: check-buildcache failed" >&2
+  exit 1
+fi
 spack clean --downloads --stage
 ccache --show-stats
 ccache --zero-stats
@@ -126,9 +144,10 @@ RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
+    --mount=type=secret,id=JOBS,env=JOBS,required=false \
     <<EOF
 set -e
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
+spack ${SPACK_FLAGS} ${JOBS:+-c config:build_jobs:${JOBS}} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
@@ -192,10 +211,22 @@ RUN --mount=type=cache,target=/ccache,id=ccache-${TARGETPLATFORM}              \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
+    --mount=type=secret,id=JOBS,env=JOBS,required=false \
     <<EOF
 set -e
 export CCACHE_DIR=/ccache
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS}
+rm -f /tmp/rebuild.txt
+spack python /usr/local/bin/check-buildcache.py "${SPACK_ENV}" /tmp/rebuild.txt
+if [ -s /tmp/rebuild.txt ]; then
+  missing=$(cat /tmp/rebuild.txt)
+  echo "Building missing spec(s): ${missing}"
+  spack ${SPACK_FLAGS} ${JOBS:+-c config:build_jobs:${JOBS}} install ${SPACK_INSTALL_FLAGS} ${missing}
+elif [ -f /tmp/rebuild.txt ]; then
+  echo "All packages in custom environment already exist in buildcache. Skipping build."
+else
+  echo "Error: check-buildcache failed" >&2
+  exit 1
+fi
 spack clean --downloads --stage
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 ccache --show-stats
@@ -244,10 +275,11 @@ RUN --mount=type=cache,target=/var/cache/spack,sharing=locked           \
     --mount=type=secret,id=CI_REGISTRY_PASSWORD,env=CI_REGISTRY_PASSWORD,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_USER,env=GITHUB_REGISTRY_USER,required=false \
     --mount=type=secret,id=GITHUB_REGISTRY_TOKEN,env=GITHUB_REGISTRY_TOKEN,required=false \
+    --mount=type=secret,id=JOBS,env=JOBS,required=false \
     <<EOF
 set -e
 spack env activate --dir ${SPACK_ENV}
-spack ${SPACK_FLAGS} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
+spack ${SPACK_FLAGS} ${JOBS:+-c config:build_jobs:${JOBS}} install ${SPACK_INSTALL_FLAGS} --use-buildcache only
 spack gc --yes-to-all go go-bootstrap rust rust-bootstrap py-setuptools-rust py-maturin
 EOF
 
@@ -372,41 +404,24 @@ EOF
 RUN chmod 644 ${SPACK_ROOT}/etc/spack/*.yaml ${HOME}/.spack/*.yaml
 
 ## Install benchmarks into the container
-ARG BENCHMARK_COM_SHA=""
 ARG BENCHMARK_DET_SHA=""
 ARG BENCHMARK_PHY_SHA=""
+ARG BENCHMARK_GEN_SHA=""
 RUN <<EOF
-git clone https://github.com/eic/common_bench.git /opt/benchmarks/common_bench
-git -C /opt/benchmarks/common_bench checkout ${BENCHMARK_COM_SHA:-master}
 git clone https://github.com/eic/detector_benchmarks.git /opt/benchmarks/detector_benchmarks
 git -C /opt/benchmarks/detector_benchmarks checkout ${BENCHMARK_DET_SHA:-master}
-ln -sf /opt/benchmarks/common_bench /opt/benchmarks/detector_benchmarks/.local
 git clone https://github.com/eic/physics_benchmarks.git /opt/benchmarks/physics_benchmarks
 git -C /opt/benchmarks/physics_benchmarks checkout ${BENCHMARK_PHY_SHA:-master}
-ln -sf /opt/benchmarks/common_bench /opt/benchmarks/physics_benchmarks/.local
-EOF
-
-## Install campaigns into the container
-ARG CAMPAIGNS_HEPMC3_SHA=""
-ARG CAMPAIGNS_CONDOR_SHA=""
-ARG CAMPAIGNS_SLURM_SHA=""
-RUN <<EOF
-git clone https://github.com/eic/simulation_campaign_hepmc3.git /opt/campaigns/hepmc3
-git -C /opt/campaigns/hepmc3 checkout ${CAMPAIGNS_HEPMC3_SHA:-main}
-git clone https://github.com/eic/job_submission_condor.git /opt/campaigns/condor
-git -C /opt/campaigns/condor checkout ${CAMPAIGNS_CONDOR_SHA:-main}
-git clone https://github.com/eic/job_submission_slurm.git /opt/campaigns/slurm
-git -C /opt/campaigns/slurm checkout ${CAMPAIGNS_SLURM_SHA:-main}
+git clone https://github.com/eic/generator_benchmarks.git /opt/benchmarks/generator_benchmarks
+git -C /opt/benchmarks/generator_benchmarks checkout ${BENCHMARK_GEN_SHA:-main}
 EOF
 
 ## Place cvmfs catalogs
 RUN <<EOF
 set -e
-# Benchmark and campaign git repos each change independently
+# Benchmark git repos each change independently
 touch /opt/benchmarks/.cvmfscatalog
 find /opt/benchmarks -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
-touch /opt/campaigns/.cvmfscatalog
-find /opt/campaigns -mindepth 1 -maxdepth 1 -type d -exec touch {}/.cvmfscatalog \;
 EOF
 
 ## make sure we have the entrypoints setup correctly

@@ -33,7 +33,7 @@ packages:
     - cxxstd=17
   acts:
     require:
-    - '@46.8.1'
+    - '@47.7.0'
     - cxxstd=20 +dd4hep +edm4hep +examples +fatras +geant4 +json +onnx +podio +python +svg +root +pr4496 +pr4502 +pr4620
     # ACTS requires same compiler as DD4hep since compiler options are reused
     - spec: '%gcc'
@@ -42,8 +42,8 @@ packages:
       when: '^dd4hep %clang'
   actsvg:
     require:
-    - '@0.4.56'
-    - ~examples  # +examples is fixed in actsvg@0.4.57
+    - '@0.4.57'
+    - +examples
   acts-dd4hep:
     require:
     - '@1.0.1'
@@ -91,7 +91,7 @@ packages:
     - -ipo
   celeritas:
     require:
-    - '@0.6.3:'
+    - '@0.7:'
     - +covfie +geant4 +hepmc3  +vecgeom
     - one_of: [~cuda +root, +cuda +ipo ~root]
   cernlib:
@@ -163,12 +163,18 @@ packages:
     externals:
     - spec: egl@1.5.0
       prefix: /usr
+  eic-mcp:
+    require:
+    - '@0.2.0:'
   eic-opticks:
     require:
     - '@0.3.0'
   eic-smear:
     require:
-    - '@1.2.2'
+    - '@1.2.3'
+  eiccontent:
+    require:
+    - '@3.2.0'
   eicrecon:
     require:
     - '@git.331b8e2984e6fd50581f62768176e3702e5cb8e8=1.40.0' # EICRECON_VERSION
@@ -215,7 +221,7 @@ packages:
     - build_system=autotools
   g4adept:
     require:
-    - '@0.3.0'
+    - '@0.4.1'
     - +covfie
   g4occt:
     require:
@@ -312,7 +318,7 @@ packages:
     - '@1.0.10'
   irt2:
     require:
-    - '@2.2.1'
+    - '@2.2.3'
   iwyu:
     require:
     - '@0.23:0.24'  # pinned to avoid depending on newer llvm than system
@@ -388,7 +394,7 @@ packages:
     - '@0.0.3'
   npsim:
     require:
-    - '@1.8.0'
+    - '@1.9.0'
     - +http
     - any_of: [+geocad, -geocad]
   ollama:
@@ -407,6 +413,9 @@ packages:
     require:
     - '@8:'
     - +application_framework -vtk
+  opencode:
+    require:
+    - '@1.18.3:'
   opengl:
     buildable: False
     externals:
@@ -429,7 +438,7 @@ packages:
     - '@9.0.0'
   osg-ca-certs:
     require:
-    - '@1.141.igtf.1.141'
+    - '@1.148.igtf.1.148:'
   pandorasdk:
     require:
     - '@5:'
@@ -450,7 +459,7 @@ packages:
     - '@1.0.0'
   podio:
     require:
-    - '@1.8'
+    - '@1.9'
     - cxxstd=20
     - +arrow +datasource +parquet +rntuple
     package_attributes:
@@ -499,7 +508,7 @@ packages:
     - '@2025.2.0:'
   py-epic-capybara:
     require:
-    - '@git.30735bc79b3d78afae1744775f863bb194527fe2'
+    - '@git.4b6b41ccb2ff483849cd2a6692b55184ff8a53d6'
   py-flatbuffers:
     require:
     - '@25.9.23:'
@@ -547,6 +556,9 @@ packages:
   py-matplotlib:
     require:
     - '@3.10'  # avoid FT_Render_Glyph errors possibly due to https://github.com/matplotlib/matplotlib/pull/30059
+  py-mcp:
+    require:
+    - '@1.28:'  # no +cli: its click pin conflicts with flask's
   py-mplhep:
     require:
     - '@0.4.0:'
@@ -621,6 +633,10 @@ packages:
     require:
     - '@0.10.2:'
   py-torch:
+    prefer:
+    - ~cuda
+    - when: '+cuda'
+      spec: cuda_arch=75
     require:
     - '@2.10.0:2'
     - -mkldnn
@@ -659,9 +675,12 @@ packages:
     - '@6.40.04'
     - cxxstd=20 +fftw +fortran +gdml +http -ipo +mlp +python +root7 +tmva +tmva-sofie +x +xrootd +ssl
     - any_of: [+opengl +webgui, -opengl -webgui]
+  rucio-eic-mcp-server:
+    require:
+    - '@0.2.0:'
   sherpa:
     require:
-    - '@3.0.1'
+    - '@3.0.3'
     - cxxstd=20 +analysis ~blackhat ~cms +gzip +hepmc3 +hepmc3root ~internal_pdfs +ipo +lhapdf +lhole +mpi +openloops +pythia +python ~recola +rivet +root ~ufo
   simphony:
     require:
@@ -704,7 +723,7 @@ packages:
     - -mpers
   swig:
     require:
-    - '@4.1:'  # constrain to avoid duplicates in eic_tf
+    - '@4.1:4.4'  # constrain to avoid duplicates in eic_tf; sherpa python bindings fail with swig@4.5
   tbb:
     require:
     - 'intel-tbb'
@@ -714,7 +733,10 @@ packages:
     - -xnnpack
   timeframebuilder:
     require:
-    - '@0.9.1:'
+    - '@0.9.2'
+  uproot-mcp-server:
+    require:
+    - '@0.2.0:'
   valgrind:
     require:
     - '@3.20.0:'
@@ -728,9 +750,15 @@ packages:
     require:
     - '@5.7.0:'
     - cxxstd=20 -davix +python +scitokens-cpp
+  xrootd-mcp-server:
+    require:
+    - '@0.2.2:'
   yoda:
     require:
     - '@2.1.0:'
+  zenodo-mcp-server:
+    require:
+    - '@0.1.0:'
   zlib-api:
     require:
     - zlib-ng

@@ -29,7 +29,9 @@ spack:
   - dusk
   - east
   - edm4hep
+  - eic-mcp
   - eic-smear
+  - eiccontent
   - eicsimubeameffects
   - eigen
   - emacs
@@ -69,8 +71,10 @@ spack:
   - nopayloadclient
   - npsim
   - ollama
+  - online-distribution
   - onnx
   - opencascade
+  - opencode
   - osg-ca-certs
   - pandorasdk
   - pelican
@@ -130,6 +134,7 @@ spack:
   - py-yapf
   - rivet
   - root
+  - rucio-eic-mcp-server
   - timeframebuilder
   - sherpa
   - simsipm
@@ -138,6 +143,7 @@ spack:
   - spdlog
   - stow
   - strace
+  - uproot-mcp-server
   - valgrind
   - xeyes
   - xrootd
