@@ -30,6 +30,7 @@ a16a9da0b03b4050b9a938c6a5909ffc9add4081
 ef2f12ccc380be69b8533ae69a8d5a625ca72675
 540660f7c365ef3a568c7d6766da4992a211cfcb
 f2cd288e571100d84cc162270b4a8655bfda512c
+3559ba1cb267e9d8f184f668d107b2a4a0e56c06
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -58,3 +59,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## ef2f12ccc380be69b8533ae69a8d5a625ca72675: sherpa: add v3.0.4, v3.0.5; limit swig
 ## 540660f7c365ef3a568c7d6766da4992a211cfcb: sherpa: support cxxstd=23; require mpi +fortran; conflicts %flang
 ## f2cd288e571100d84cc162270b4a8655bfda512c: podio: Add v1.9
+## 3559ba1cb267e9d8f184f668d107b2a4a0e56c06: osg-ca-certs: add v1.148.igtf.1.148
