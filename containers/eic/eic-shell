@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-piped_args=()
-if [ -p /dev/stdin ]; then
-  # If we want to read the input line by line
-  while IFS= read -r line; do
-    piped_args+=("${line}")
-  done
-fi
-
 ## Properly setup environment
 # shellcheck source=/dev/null
 . "${EIC_ENV_SH:-/etc/eic-env.sh}"
@@ -16,19 +8,26 @@ if [ "${1:-}" = "--" ]; then
   shift
 fi
 
-### Fire off bash
-if [ "${#piped_args[@]}" != "0" ]; then
-  if [ $# -eq 0 ]; then
-    printf "%s\n" "${piped_args[@]}" | bash -s -- --norc --noprofile
-  elif [ $# -eq 1 ]; then
-    printf "%s\n" "${piped_args[@]}" | bash -c "$1"
+### Fire off requested command directly (inheriting original stdin)
+if [ $# -gt 0 ]; then
+  if [ $# -eq 1 ]; then
+    exec bash -c "$1"
   else
-    printf "%s\n" "${piped_args[@]}" | "$@"
+    exec "$@"
   fi
-elif [ $# -eq 0 ]; then
-  exec bash --norc --noprofile
-elif [ $# -eq 1 ]; then
-  exec bash -c "$1"
+fi
+
+### No command specified: interactive shell or piped script
+piped_args=()
+if [ -p /dev/stdin ]; then
+  # If we want to read the input line by line
+  while IFS= read -r line || [ -n "$line" ]; do
+    piped_args+=("${line}")
+  done
+fi
+
+if [ "${#piped_args[@]}" != "0" ]; then
+  printf "%s\n" "${piped_args[@]}" | bash -s -- --norc --noprofile
 else
-  exec "$@"
+  exec bash --norc --noprofile
 fi

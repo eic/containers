@@ -115,6 +115,25 @@ run_test_output_contains() {
   fi
 }
 
+run_test_pipe_binary() {
+  local desc="$1"
+  shift
+  printf "Test %2d: %-60s " "$((PASSED + FAILED + 1))" "$desc"
+
+  local exit_code=0
+  "$@" >/dev/null 2>&1 || exit_code=$?
+
+  if [ "$exit_code" -eq 0 ]; then
+    echo "[PASS]"
+    PASSED=$((PASSED + 1))
+    return 0
+  else
+    echo "[FAIL] (exit code: $exit_code)"
+    FAILED=$((FAILED + 1))
+    return 1
+  fi
+}
+
 echo "=================================================="
 echo "Testing eic-shell: $EIC_SHELL"
 echo "=================================================="
@@ -187,15 +206,27 @@ run_test_output_match "piped data test" "Pipe stdin to a command (cat)" \
 run_test_output_match "piped data test" "Pipe stdin to a command with -- (cat)" \
   bash -c "echo 'piped data test' | '$EIC_SHELL' -- cat"
 
-# 18. Piped stdin to interactive shell
+# 18. Piped stdin without trailing newline to a command (cat)
+run_test_output_match "no trailing newline" "Pipe stdin without trailing newline to command (cat)" \
+  bash -c "printf 'no trailing newline' | '$EIC_SHELL' cat"
+
+# 19. Piped binary stdin with embedded NUL to a command (cat)
+run_test_pipe_binary "Pipe binary stdin with embedded NUL to command (cat)" \
+  bash -c "printf 'binary\x00data' | '$EIC_SHELL' cat"
+
+# 20. Piped stdin to interactive shell
 run_test_output_match "interactive pipe test" "Pipe commands on stdin to interactive shell" \
   bash -c "echo 'echo interactive pipe test' | '$EIC_SHELL'"
 
-# 19. Piped stdin to interactive shell with --
+# 21. Piped stdin to interactive shell with --
 run_test_output_match "interactive pipe test" "Pipe commands on stdin to interactive shell with --" \
   bash -c "echo 'echo interactive pipe test' | '$EIC_SHELL' --"
 
-# 20. Environment setup verification (/etc/eic-env.sh sourced)
+# 22. Piped stdin without trailing newline to interactive shell
+run_test_output_match "interactive pipe without newline" "Pipe script without trailing newline to interactive shell" \
+  bash -c "printf 'echo interactive pipe without newline' | '$EIC_SHELL'"
+
+# 23. Environment setup verification (/etc/eic-env.sh sourced)
 run_test "Environment setup sourced" \
   "$EIC_SHELL" bash -c 'test -n "${EIC_ENV_LOADED:-}" || test -f /etc/eic-env.sh'
 
