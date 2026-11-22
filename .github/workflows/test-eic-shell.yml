@@ -1,0 +1,29 @@
+name: Test eic-shell
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'containers/eic/eic-shell'
+      - 'tests/**'
+      - '.github/workflows/test-eic-shell.yml'
+  pull_request:
+    paths:
+      - 'containers/eic/eic-shell'
+      - 'tests/**'
+      - '.github/workflows/test-eic-shell.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test in-container eic-shell
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Run test suite
+        run: |
+          chmod +x tests/test_eic_shell.sh containers/eic/eic-shell
+          tests/test_eic_shell.sh

@@ -10,7 +10,7 @@ fi
 
 ## Properly setup environment
 # shellcheck source=/dev/null
-. /etc/eic-env.sh
+. "${EIC_ENV_SH:-/etc/eic-env.sh}"
 
 if [ "${1:-}" = "--" ]; then
   shift
