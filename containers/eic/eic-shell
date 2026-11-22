@@ -3,20 +3,32 @@
 piped_args=()
 if [ -p /dev/stdin ]; then
   # If we want to read the input line by line
-  while IFS= read line; do
+  while IFS= read -r line; do
     piped_args+=("${line}")
   done
 fi
 
 ## Properly setup environment
+# shellcheck source=/dev/null
 . /etc/eic-env.sh
 
+if [ "${1:-}" = "--" ]; then
+  shift
+fi
 
 ### Fire off bash
 if [ "${#piped_args[@]}" != "0" ]; then
-  printf "%s\n" "${piped_args[@]}" | bash -s -- --norc --noprofile
-elif [ $# -gt 0 ]; then
-  exec bash -c "$@"
-else
+  if [ $# -eq 0 ]; then
+    printf "%s\n" "${piped_args[@]}" | bash -s -- --norc --noprofile
+  elif [ $# -eq 1 ]; then
+    printf "%s\n" "${piped_args[@]}" | bash -c "$1"
+  else
+    printf "%s\n" "${piped_args[@]}" | "$@"
+  fi
+elif [ $# -eq 0 ]; then
   exec bash --norc --noprofile
+elif [ $# -eq 1 ]; then
+  exec bash -c "$1"
+else
+  exec "$@"
 fi
