@@ -575,6 +575,8 @@ packages:
   py-onnxruntime:
     require:
     - '@1.22.2:'
+    package_attributes:
+      git: 'https://github.com/eic/onnxruntime.git'
   py-openpyxl:
     require:
     - '@3.1.5:'
