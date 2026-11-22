@@ -107,7 +107,7 @@ packages:
     - '@2.4.2:'
   cmake:
     require:
-    - '@3.30:'
+    - '@4.4:'
   cnpy:
     require:
     - '@master'
