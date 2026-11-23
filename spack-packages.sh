@@ -23,6 +23,7 @@ f2cd288e571100d84cc162270b4a8655bfda512c
 3559ba1cb267e9d8f184f668d107b2a4a0e56c06
 7a947be73425bc15f0912725438900b833ffae08
 71e1c15a2c0bbc0782543f7054db00c3683f8837
+e1b25efbd1bd97ca796307e1e2c3aad3241f04f4
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -43,3 +44,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 3559ba1cb267e9d8f184f668d107b2a4a0e56c06: osg-ca-certs: add v1.148.igtf.1.148
 ## 7a947be73425bc15f0912725438900b833ffae08: yasm: patch for CMake 4.0 support
 ## 71e1c15a2c0bbc0782543f7054db00c3683f8837: pcre: only build tests when requested
+## e1b25efbd1bd97ca796307e1e2c3aad3241f04f4: pcre: pcre: patch to support CMake 4
