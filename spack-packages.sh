@@ -19,8 +19,6 @@ c322aa993ae106492bdb28333b56c5682a704027
 9007ffd30a17fdb978b63fb55d7bca481031ca47
 39191607781ae06888df8cc178f20cd762a0e806
 cdde9c041f9c64ef893077a7637d3a297736d8dc
-80fbeb0fc63775b3ea766acda51a9b779e8a008a
-26c549b73602f7493cc7bcc142094cbfc7dbee93
 b3bdf0943883cbeba1f3c5babea834fd113007bc
 8d5fa81819ae39f15ca044a0196431e2a26dce3f
 98d17e1985a67eea97af58498bbad42642351d0c
@@ -49,8 +47,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 9007ffd30a17fdb978b63fb55d7bca481031ca47: celeritas: new version 0.7
 ## 39191607781ae06888df8cc178f20cd762a0e806: g4adept: add v0.3.5, v0.4.1
 ## cdde9c041f9c64ef893077a7637d3a297736d8dc: acts: add v47.0.0 through v48.3.0
-## 80fbeb0fc63775b3ea766acda51a9b779e8a008a: py-pip: add v26.2.1
-## 26c549b73602f7493cc7bcc142094cbfc7dbee93: py-pip: add v26.2.2
 ## b3bdf0943883cbeba1f3c5babea834fd113007bc: cli11: new version 2.72, restore precompiled to true, remove redundant install
 ## 8d5fa81819ae39f15ca044a0196431e2a26dce3f: celeritas: add new variants, refactor packages, patch rocm
 ## 98d17e1985a67eea97af58498bbad42642351d0c: celeritas: add C++23 support and CUDA version conflicts
