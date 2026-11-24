@@ -71,7 +71,6 @@ spack:
   - nopayloadclient
   - npsim
   - ollama
-  - online-distribution
   - onnx
   - opencascade
   - opencode
