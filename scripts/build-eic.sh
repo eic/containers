@@ -93,6 +93,22 @@ esac
 ## Exported for --secret type=env,id=JOBS below
 export JOBS
 
+## Reproducible builds (https://reproducible-builds.org/docs/source-date-epoch/): use the commit
+## time of this repository as SOURCE_DATE_EPOCH for the image config and history timestamps.
+## containers/eic/Dockerfile must NOT declare ARG SOURCE_DATE_EPOCH: undeclared, the build arg
+## is not visible to RUN steps and does not enter their cache keys, so a new commit does not
+## invalidate the layer cache.  The file timestamps are not rewritten (no rewrite-timestamp):
+## that would re-tar every new layer at export, and the rewritten image blobs could no longer
+## be shared with the registry layer cache blobs, doubling their storage.
+## An explicit SOURCE_DATE_EPOCH in the environment takes precedence.
+if [ -z "${SOURCE_DATE_EPOCH:-}" ]; then
+  SOURCE_DATE_EPOCH=$(git -C "${REPO_DIR}" log -1 --format=%ct 2>/dev/null || true)
+fi
+if [ -n "${SOURCE_DATE_EPOCH:-}" ] && ! [[ "${SOURCE_DATE_EPOCH}" =~ ^[0-9]+$ ]]; then
+  echo "Invalid SOURCE_DATE_EPOCH '${SOURCE_DATE_EPOCH}': must be an integer (seconds since 1970)." >&2
+  exit 1
+fi
+
 ## Source version files (only spack-packages version is needed for mirrors.yaml)
 source "${REPO_DIR}/spack-packages.sh"
 
@@ -288,6 +304,7 @@ for build_type in "${BUILD_TYPES[@]}"; do
   build_cmd+=(--build-arg "RUNTIME_IMAGE=${RUNTIME_IMAGE}")
   build_cmd+=(--build-arg "ENV=${ENV}")
   build_cmd+=(--build-arg "SPACK_DUPLICATE_ALLOWLIST=${SPACK_DUPLICATE_ALLOWLIST}")
+  [ -n "${SOURCE_DATE_EPOCH:-}" ] && build_cmd+=(--build-arg "SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}")
 
   ## Optional version overrides
   [ -n "${EDM4EIC_SHA}" ]  && build_cmd+=(--build-arg "EDM4EIC_SHA=${EDM4EIC_SHA}")

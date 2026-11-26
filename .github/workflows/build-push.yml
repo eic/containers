@@ -61,7 +61,7 @@ jobs:
       - name: Turn env into outputs
         id: env
         run: |
-          echo "BUILDWEEK=$(date +%Yw%V)" >> $GITHUB_OUTPUT
+          echo "BUILDWEEK=$(date +%Gw%V)" >> $GITHUB_OUTPUT  # ISO year (%G) with ISO week (%V)
           echo "JOBS=${{ env.JOBS }}" >> $GITHUB_OUTPUT
 
   base:

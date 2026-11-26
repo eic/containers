@@ -347,7 +347,7 @@ status:pending:
   needs:
     - version
   script:
-    - export BUILDWEEK=$(date +%Yw%V)
+    - export BUILDWEEK=$(date +%Gw%V)  # ISO year (%G) with ISO week (%V)
     - apk add git bash jq
     - bash scripts/build-base.sh
     - |

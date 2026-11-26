@@ -77,6 +77,8 @@ yq                # edits Spack config before install
 EOF_APT_PACKAGES
 apt-get -yqq autoremove
 localedef -i en_US -f UTF-8 en_US.UTF-8
+# Remove logs and caches that differ between otherwise identical builds (reproducibility)
+rm -rf /var/log/apt/* /var/log/dpkg.log /var/log/alternatives.log /var/cache/ldconfig/aux-cache /var/cache/debconf/*-old
 EOF
 
 # Override SHA-1 second pre-image resistance deadline
@@ -93,6 +95,11 @@ EOF
 ## pick up compiler package updates that would otherwise be hidden by the
 ## persistent registry layer cache.
 ARG BUILDWEEK=0
+## SOURCE_DATE_EPOCH (https://reproducible-builds.org/docs/source-date-epoch/) is set by
+## scripts/build-base.sh to the start of the BUILDWEEK week, so declaring it here only changes
+## cache keys when BUILDWEEK does.  It sets the image timestamps (and, with rewrite-timestamp,
+## the file timestamps), the git commit dates below, and is honoured by tools in RUN steps.
+ARG SOURCE_DATE_EPOCH
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked <<EOF
 . /etc/os-release
@@ -149,6 +156,8 @@ update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 100
 # Check versions
 gcc --version
 clang --version
+# Remove logs and caches that differ between otherwise identical builds (reproducibility)
+rm -rf /var/log/apt/* /var/log/dpkg.log /var/log/alternatives.log /var/cache/ldconfig/aux-cache /var/cache/debconf/*-old
 EOF
 
 ## Install some extra spack dependencies
@@ -164,6 +173,8 @@ python3           # Spack prerequisite
 python3-dev       # Python extension builds during bootstrap
 python-is-python3 # repo scripts expect `python`
 EOF_APT_PACKAGES
+# Remove logs and caches that differ between otherwise identical builds (reproducibility)
+rm -rf /var/log/apt/* /var/log/dpkg.log /var/log/alternatives.log /var/cache/ldconfig/aux-cache /var/cache/debconf/*-old
 EOF
 
 ## Setup git
@@ -188,6 +199,10 @@ ARG SPACK_CHERRYPICKS_FILES=""
 # so we git clone the default branch and checkout the specific commit
 RUN <<EOF
 set -e
+# Fixed commit dates for the cherry-pick commits, so their hashes are reproducible
+if [ -n "${SOURCE_DATE_EPOCH:-}" ] ; then
+  export GIT_COMMITTER_DATE="@${SOURCE_DATE_EPOCH}" GIT_AUTHOR_DATE="@${SOURCE_DATE_EPOCH}"
+fi
 git clone --filter=tree:0 https://github.com/${SPACK_ORGREPO}.git ${SPACK_ROOT}
 git -C ${SPACK_ROOT} checkout ${SPACK_SHA:-${SPACK_VERSION}}
 if [ -n "${SPACK_CHERRYPICKS}" ] ; then
@@ -230,6 +245,10 @@ ARG SPACKPACKAGES_CHERRYPICKS_FILES=""
 # so we git clone the default branch and checkout the specific commit
 RUN <<EOF
 set -e
+# Fixed commit dates for the cherry-pick commits, so their hashes are reproducible
+if [ -n "${SOURCE_DATE_EPOCH:-}" ] ; then
+  export GIT_COMMITTER_DATE="@${SOURCE_DATE_EPOCH}" GIT_AUTHOR_DATE="@${SOURCE_DATE_EPOCH}"
+fi
 git clone --filter=tree:0 https://github.com/${SPACKPACKAGES_ORGREPO}.git ${SPACKPACKAGES_ROOT}
 git -C ${SPACKPACKAGES_ROOT} checkout ${SPACKPACKAGES_SHA:-${SPACKPACKAGES_VERSION}}
 if [ -n "${SPACKPACKAGES_CHERRYPICKS}" ] ; then
