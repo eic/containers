@@ -24,6 +24,7 @@ f2cd288e571100d84cc162270b4a8655bfda512c
 7a947be73425bc15f0912725438900b833ffae08
 71e1c15a2c0bbc0782543f7054db00c3683f8837
 e1b25efbd1bd97ca796307e1e2c3aad3241f04f4
+da07d94984c78b85bd16e3d40b6f1dccf2cba228
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -45,3 +46,4 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 7a947be73425bc15f0912725438900b833ffae08: yasm: patch for CMake 4.0 support
 ## 71e1c15a2c0bbc0782543f7054db00c3683f8837: pcre: only build tests when requested
 ## e1b25efbd1bd97ca796307e1e2c3aad3241f04f4: pcre: pcre: patch to support CMake 4
+## da07d94984c78b85bd16e3d40b6f1dccf2cba228: rivet: add 4.1.3, 4.1.5
