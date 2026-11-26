@@ -154,3 +154,4 @@ Package versions are controlled through several configuration files:
 | `debian.sh` | Debian release of the `debian` base image |
 | `cuda.sh` | CUDA version and OS of the `nvidia/cuda` base images |
 | `spack-environment/packages.yaml` | Package version preferences and variants |
+| `spack-environment/packages_linux.yaml`, `spack-environment/packages_darwin.yaml` | Platform-specific settings (compiler, GL, X11), included per platform |
