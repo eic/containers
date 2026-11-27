@@ -19,6 +19,12 @@ c322aa993ae106492bdb28333b56c5682a704027
 9007ffd30a17fdb978b63fb55d7bca481031ca47
 39191607781ae06888df8cc178f20cd762a0e806
 cdde9c041f9c64ef893077a7637d3a297736d8dc
+b3bdf0943883cbeba1f3c5babea834fd113007bc
+8d5fa81819ae39f15ca044a0196431e2a26dce3f
+98d17e1985a67eea97af58498bbad42642351d0c
+a16a9da0b03b4050b9a938c6a5909ffc9add4081
+ef2f12ccc380be69b8533ae69a8d5a625ca72675
+540660f7c365ef3a568c7d6766da4992a211cfcb
 f2cd288e571100d84cc162270b4a8655bfda512c
 3559ba1cb267e9d8f184f668d107b2a4a0e56c06
 7a947be73425bc15f0912725438900b833ffae08
@@ -30,6 +36,7 @@ e1b25efbd1bd97ca796307e1e2c3aad3241f04f4
 ## For all other commits, the cherry-pick will be applied without restriction (default).
 read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 --- || true
+[8d5fa81819ae39f15ca044a0196431e2a26dce3f]=repos/spack_repo/builtin/packages/celeritas/package.py
 ---
 ## Ref: https://github.com/spack/spack-packages/commit/[hash]
 ## [hash]: [description]
@@ -40,6 +47,12 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 9007ffd30a17fdb978b63fb55d7bca481031ca47: celeritas: new version 0.7
 ## 39191607781ae06888df8cc178f20cd762a0e806: g4adept: add v0.3.5, v0.4.1
 ## cdde9c041f9c64ef893077a7637d3a297736d8dc: acts: add v47.0.0 through v48.3.0
+## b3bdf0943883cbeba1f3c5babea834fd113007bc: cli11: new version 2.72, restore precompiled to true, remove redundant install
+## 8d5fa81819ae39f15ca044a0196431e2a26dce3f: celeritas: add new variants, refactor packages, patch rocm
+## 98d17e1985a67eea97af58498bbad42642351d0c: celeritas: add C++23 support and CUDA version conflicts
+## a16a9da0b03b4050b9a938c6a5909ffc9add4081: xrootd: allow cxxstd=23 for v6
+## ef2f12ccc380be69b8533ae69a8d5a625ca72675: sherpa: add v3.0.4, v3.0.5; limit swig
+## 540660f7c365ef3a568c7d6766da4992a211cfcb: sherpa: support cxxstd=23; require mpi +fortran; conflicts %flang
 ## f2cd288e571100d84cc162270b4a8655bfda512c: podio: Add v1.9
 ## 3559ba1cb267e9d8f184f668d107b2a4a0e56c06: osg-ca-certs: add v1.148.igtf.1.148
 ## 7a947be73425bc15f0912725438900b833ffae08: yasm: patch for CMake 4.0 support
