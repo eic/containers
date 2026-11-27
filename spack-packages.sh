@@ -24,6 +24,9 @@ f2cd288e571100d84cc162270b4a8655bfda512c
 7a947be73425bc15f0912725438900b833ffae08
 71e1c15a2c0bbc0782543f7054db00c3683f8837
 e1b25efbd1bd97ca796307e1e2c3aad3241f04f4
+d6f26955c6bae50eb5788f6f0d6a607cde90ab1a
+97a33be7f3b82d35fb6b29797a513d46a666a7f5
+38779bd1610718ce8c47365921496c2e5ae9bc93
 ---
 ## Optional hash table with comma-separated file list
 ## For these commits, the cherry-pick will be restricted to the listed files only.
@@ -45,3 +48,6 @@ read -r -d '' SPACKPACKAGES_CHERRYPICKS_FILES <<- \
 ## 7a947be73425bc15f0912725438900b833ffae08: yasm: patch for CMake 4.0 support
 ## 71e1c15a2c0bbc0782543f7054db00c3683f8837: pcre: only build tests when requested
 ## e1b25efbd1bd97ca796307e1e2c3aad3241f04f4: pcre: pcre: patch to support CMake 4
+## d6f26955c6bae50eb5788f6f0d6a607cde90ab1a: acts: use release archives with pre-generated code for 47.5+
+## 97a33be7f3b82d35fb6b29797a513d46a666a7f5: acts: add v48.4.0
+## 38779bd1610718ce8c47365921496c2e5ae9bc93: acts: add v48.5.0
