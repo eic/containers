@@ -1,22 +1,33 @@
 #!/usr/bin/env bash
 
+## Properly setup environment
+# shellcheck source=/dev/null
+. "${EIC_ENV_SH:-/etc/eic-env.sh}"
+
+if [ "${1:-}" = "--" ]; then
+  shift
+fi
+
+### Fire off requested command directly (inheriting original stdin)
+if [ $# -gt 0 ]; then
+  if [ $# -eq 1 ]; then
+    exec bash -c "$1"
+  else
+    exec "$@"
+  fi
+fi
+
+### No command specified: interactive shell or piped script
 piped_args=()
 if [ -p /dev/stdin ]; then
   # If we want to read the input line by line
-  while IFS= read line; do
+  while IFS= read -r line || [ -n "$line" ]; do
     piped_args+=("${line}")
   done
 fi
 
-## Properly setup environment
-. /etc/eic-env.sh
-
-
-### Fire off bash
 if [ "${#piped_args[@]}" != "0" ]; then
   printf "%s\n" "${piped_args[@]}" | bash -s -- --norc --noprofile
-elif [ $# -gt 0 ]; then
-  exec bash -c "$@"
 else
   exec bash --norc --noprofile
 fi
